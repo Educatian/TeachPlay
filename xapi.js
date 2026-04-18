@@ -37,7 +37,7 @@
     return {
       objectType: 'Agent',
       account: {
-        homePage: 'https://educatian.github.io/TeachPlay/',
+        homePage: 'https://teachplay.dev/',
         name: id,
       },
       // Extension-style cohort tag carried on each statement via context.
@@ -61,7 +61,7 @@
   };
 
   // ── Activity object builder ─────────────────────────────────
-  const BASE_IRI = 'https://educatian.github.io/TeachPlay/activities';
+  const BASE_IRI = 'https://teachplay.dev/activities';
   function obj(kind, id, name) {
     return {
       id: `${BASE_IRI}/${kind}/${id}`,
@@ -99,8 +99,8 @@
         platform: CONFIG.platform,
         language: 'en-US',
         extensions: Object.assign(
-          { 'https://educatian.github.io/TeachPlay/ext/cohort': actor._cohort,
-            'https://educatian.github.io/TeachPlay/ext/version': CONFIG.version },
+          { 'https://teachplay.dev/ext/cohort': actor._cohort,
+            'https://teachplay.dev/ext/version': CONFIG.version },
           extras.contextExt || {}
         ),
         contextActivities: extras.parent ? { parent: [extras.parent] } : undefined,

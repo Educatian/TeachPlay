@@ -38,7 +38,7 @@ Each resource gets a **CTID** (a UUID-based stable identifier) that other system
 | --- | --- |
 | `ceterms:name` | `credential/badge-class-v3.json` · `name` |
 | `ceterms:description` | `credential/badge-class-v3.json` · `description` |
-| `ceterms:subjectWebpage` | `https://educatian.github.io/TeachPlay/credential.html` |
+| `ceterms:subjectWebpage` | `https://teachplay.dev/credential.html` |
 | `ceterms:image` | `credential/badge.svg` |
 | `ceterms:ownedBy` | Issuer organization resource (College of Education) |
 | `ceterms:credentialStatusType` | `ceterms:Active` (update annually after rubric audit) |

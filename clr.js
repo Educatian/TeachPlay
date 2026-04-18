@@ -21,7 +21,7 @@
     return;
   }
 
-  const BASE_IRI = 'https://educatian.github.io/TeachPlay';
+  const BASE_IRI = 'https://teachplay.dev';
   const ISSUER = {
     id: `${BASE_IRI}/credential/issuer-v3.json`,
     type: ['Profile'],

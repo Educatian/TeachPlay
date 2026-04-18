@@ -215,8 +215,8 @@
                   response: String(v),
                   score: { raw: v, min: 0, max: 4, scaled: v / 4 },
                   extensions: {
-                    'https://educatian.github.io/TeachPlay/ext/sa-phase': phase,
-                    'https://educatian.github.io/TeachPlay/ext/sa-skill': skill,
+                    'https://teachplay.dev/ext/sa-phase': phase,
+                    'https://teachplay.dev/ext/sa-skill': skill,
                   },
                 },
               });

@@ -550,7 +550,7 @@
       const [, d, crit] = m;
       const who = actorId(s);
       const rater = s.context && s.context.extensions
-        && s.context.extensions['https://educatian.github.io/TeachPlay/ext/rater'];
+        && s.context.extensions['https://teachplay.dev/ext/rater'];
       const score = s.result && s.result.success === true;
       const key = `${who}|${d}|${crit}`;
       seen[key] = seen[key] || {};
@@ -618,8 +618,8 @@
       const actor = s.actor && s.actor.account && s.actor.account.name;
       if (!actor) continue;
       const ext = (s.result && s.result.extensions) || {};
-      const phase = ext['https://educatian.github.io/TeachPlay/ext/sa-phase'];
-      const skill = ext['https://educatian.github.io/TeachPlay/ext/sa-skill'];
+      const phase = ext['https://teachplay.dev/ext/sa-phase'];
+      const skill = ext['https://teachplay.dev/ext/sa-skill'];
       const v = s.result && s.result.score && s.result.score.raw;
       if (!phase || !skill || v == null) continue;
       const key = `${actor}|${phase}|${skill}`;
@@ -695,18 +695,18 @@
         const ticks = 2 + Math.floor(Math.random() * 2);
         for (let t = 0; t < ticks; t++) {
           q.push(makeStmt(learnerId, 'completed',
-            { id:`https://educatian.github.io/TeachPlay/activities/checklist/s${sNum}/item-${t+1}`,
+            { id:`https://teachplay.dev/activities/checklist/s${sNum}/item-${t+1}`,
               definition:{ name:{'en-US':`S${sNum} checklist · item-${t+1}`}, type:'http://adlnet.gov/expapi/activities/checklist'} },
             tBase + t * 1200_000, { completion: true }));
         }
         // exit ticket
         q.push(makeStmt(learnerId, 'responded',
-          { id:`https://educatian.github.io/TeachPlay/activities/ticket/s${sNum}/exit`,
+          { id:`https://teachplay.dev/activities/ticket/s${sNum}/exit`,
             definition:{ name:{'en-US':`S${sNum} exit ticket · exit`}, type:'http://adlnet.gov/expapi/activities/ticket'} },
           tBase + 3600_000, { response: `(synthetic response for S${sNum})` }));
         // session complete
         q.push(makeStmt(learnerId, 'completed',
-          { id:`https://educatian.github.io/TeachPlay/activities/session/s${sNum}`,
+          { id:`https://teachplay.dev/activities/session/s${sNum}`,
             definition:{ name:{'en-US':`Session ${String(sNum).padStart(2,'0')}`}, type:'http://adlnet.gov/expapi/activities/session'} },
           tBase + 7200_000, { completion: true }));
       }
@@ -721,24 +721,24 @@
         // Pre: clustered around 1 (tried once) — noisy.
         const pre = Math.max(0, Math.min(4, Math.round(1 + (Math.random() - 0.5) * 1.6)));
         q.push(makeStmt(learnerId, 'responded',
-          { id:`https://educatian.github.io/TeachPlay/activities/self-assessment/pre/${sk}`,
+          { id:`https://teachplay.dev/activities/self-assessment/pre/${sk}`,
             definition:{ name:{'en-US':`Self-assessment pre · ${sk}`}, type:'http://adlnet.gov/expapi/activities/self-assessment'} },
           tPre, { response: String(pre), score: { raw: pre, min: 0, max: 4, scaled: pre/4 },
             extensions: {
-              'https://educatian.github.io/TeachPlay/ext/sa-phase': 'pre',
-              'https://educatian.github.io/TeachPlay/ext/sa-skill': sk,
+              'https://teachplay.dev/ext/sa-phase': 'pre',
+              'https://teachplay.dev/ext/sa-skill': sk,
             }}));
         if (didPost) {
           // Post: mean ~2.6 with skill-correlated lift; occasional negative calibration.
           const lift = (skill - 0.55) * 4 + (Math.random() - 0.4) * 1.2;
           const post = Math.max(0, Math.min(4, Math.round(pre + lift)));
           q.push(makeStmt(learnerId, 'responded',
-            { id:`https://educatian.github.io/TeachPlay/activities/self-assessment/post/${sk}`,
+            { id:`https://teachplay.dev/activities/self-assessment/post/${sk}`,
               definition:{ name:{'en-US':`Self-assessment post · ${sk}`}, type:'http://adlnet.gov/expapi/activities/self-assessment'} },
             tPost, { response: String(post), score: { raw: post, min: 0, max: 4, scaled: post/4 },
               extensions: {
-                'https://educatian.github.io/TeachPlay/ext/sa-phase': 'post',
-                'https://educatian.github.io/TeachPlay/ext/sa-skill': sk,
+                'https://teachplay.dev/ext/sa-phase': 'post',
+                'https://teachplay.dev/ext/sa-skill': sk,
               }}));
         }
       });
@@ -754,7 +754,7 @@
         // second rater — correlated with first
         const p2 = Math.random() < 0.78 ? p1 : Math.random() < (skill - critHardness);
         const actObj = {
-          id:`https://educatian.github.io/TeachPlay/activities/rubric-criterion/${d}/${k}`,
+          id:`https://teachplay.dev/activities/rubric-criterion/${d}/${k}`,
           definition:{ name:{'en-US':`${d} · ${k}`}, type:'http://adlnet.gov/expapi/activities/rubric-criterion'},
         };
         q.push(makeStmt(learnerId, 'reviewed', actObj, now - (12 - delivSession) * 86400_000 + 100,
@@ -772,7 +772,7 @@
   function makeStmt(actorName, verbKey, object, ts, result, ctxExt) {
     const stmt = {
       id: crypto.randomUUID(),
-      actor: { objectType: 'Agent', account: { homePage: 'https://educatian.github.io/TeachPlay/', name: actorName } },
+      actor: { objectType: 'Agent', account: { homePage: 'https://teachplay.dev/', name: actorName } },
       verb: xapi.V[verbKey],
       object,
       timestamp: new Date(ts).toISOString(),
@@ -780,9 +780,9 @@
         platform: 'eduu-game-design-handbook',
         language: 'en-US',
         extensions: Object.assign(
-          { 'https://educatian.github.io/TeachPlay/ext/cohort': 'demo-fall-2026',
-            'https://educatian.github.io/TeachPlay/ext/version': '2.0.0' },
-          ctxExt ? Object.fromEntries(Object.entries(ctxExt).map(([k, v]) => [`https://educatian.github.io/TeachPlay/ext/${k}`, v])) : {}
+          { 'https://teachplay.dev/ext/cohort': 'demo-fall-2026',
+            'https://teachplay.dev/ext/version': '2.0.0' },
+          ctxExt ? Object.fromEntries(Object.entries(ctxExt).map(([k, v]) => [`https://teachplay.dev/ext/${k}`, v])) : {}
         ),
       },
     };
