@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Facilitator Guide · Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  .fg-stance {
+    background: #161616;
+    color: #f4f4f4;
+    padding: 48px 48px 40px;
+    margin: 0 0 56px;
+    border-left: 6px solid var(--crimson);
+  }
+  .fg-stance__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: #ffb3b8;
+    margin-bottom: 12px;
+  }
+  .fg-stance__title {
+    font-family: var(--font-sans);
+    font-size: 28px;
+    line-height: 1.2;
+    margin: 0 0 16px;
+    color: #ffffff;
+  }
+  .fg-stance__body { font-size: 15.5px; color: #c6c6c6; max-width: 72ch; }
+  .fg-stance__body strong { color: #f4f4f4; }
+  .fg-stance__rules {
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .fg-stance__rules li {
+    background: #262626;
+    padding: 14px 16px;
+    border-left: 3px solid #ffb3b8;
+    font-size: 14px;
+    color: #e0e0e0;
+  }
+  .fg-stance__rules li strong { display: block; color: #ffffff; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .fg-toc {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 6px;
+    margin: 0 0 48px;
+    padding: 18px 20px;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    font-size: 13px;
+  }
+  .fg-toc a {
+    color: #161616;
+    text-decoration: none;
+    padding: 4px 6px;
+    border-left: 2px solid transparent;
+  }
+  .fg-toc a:hover {
+    background: #fff;
+    border-left-color: var(--crimson);
+    color: var(--crimson);
+  }
+  .fg-toc strong { color: #525252; font-family: var(--font-mono); margin-right: 6px; }
+
+  .fg-session {
+    margin: 0 0 56px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+  }
+  .fg-session__head {
+    padding: 24px 32px;
+    border-bottom: 4px solid var(--crimson);
+    background: #fafafa;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .fg-session__num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--crimson);
+    margin-bottom: 4px;
+  }
+  .fg-session__title {
+    font-family: var(--font-sans);
+    font-size: 26px;
+    line-height: 1.15;
+    margin: 0;
+    color: #161616;
+  }
+  .fg-session__arc {
+    font-size: 14px;
+    color: #525252;
+    font-style: italic;
+    max-width: 50ch;
+  }
+  .fg-session__link a {
+    color: var(--crimson);
+    font-size: 13px;
+    text-decoration: none;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+  .fg-session__link a:hover { text-decoration: underline; }
+
+  .fg-session__body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  @media (max-width: 900px) { .fg-session__body { grid-template-columns: 1fr; } }
+
+  .fg-block {
+    padding: 28px 32px;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .fg-block:nth-child(even) { border-right: none; }
+
+  .fg-block__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: #525252;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .fg-block h4 {
+    margin: 0 0 14px;
+    font-size: 17px;
+    font-family: var(--font-sans);
+    color: #161616;
+  }
+  .fg-block ul, .fg-block ol { margin: 0; padding-left: 20px; }
+  .fg-block li { margin: 0 0 8px; font-size: 14.5px; line-height: 1.5; color: #262626; }
+  .fg-block li strong { color: #161616; }
+
+  .fg-timing {
+    background: #f4f4f4;
+  }
+  .fg-timing-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .fg-timing-tbl td {
+    padding: 6px 0;
+    vertical-align: top;
+    border-bottom: 1px dashed #c6c6c6;
+  }
+  .fg-timing-tbl td:first-child {
+    width: 64px;
+    font-family: var(--font-mono);
+    color: var(--crimson);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    padding-right: 10px;
+  }
+  .fg-timing-tbl td:nth-child(2) { width: 76px; color: #525252; font-size: 12px; font-family: var(--font-mono); }
+  .fg-timing-tbl tr:last-child td { border-bottom: none; }
+
+  .fg-pitfall, .fg-calibrate, .fg-decide {
+    border-top: 1px solid #e0e0e0;
+  }
+  .fg-pitfall .fg-block__eyebrow { color: #a2191f; }
+  .fg-calibrate .fg-block__eyebrow { color: #0e6027; }
+  .fg-decide .fg-block__eyebrow { color: #002d9c; }
+
+  .fg-callout {
+    margin: 40px 0 56px;
+    padding: 20px 24px;
+    background: #fff8e1;
+    border-left: 4px solid #ff832b;
+    font-size: 14.5px;
+  }
+  .fg-callout strong { color: #8a3800; }
+</style>
+</head>
+<body>
+
+<!-- ─── Utility bar ─────────────────────────────────────────────── -->
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <a href="#">myBama</a>
+  </div>
+</div>
+
+<!-- ─── Site header ─────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html">Overview</a>
+    <a href="index.html#sessions">Sessions</a>
+    <a href="index.html#deliverables">Deliverables</a>
+    <a href="rubrics.html">Rubrics</a>
+    <a href="alignment.html">Alignment</a>
+    <a href="credential.html">Credential</a>
+    <a href="facilitator.html" class="is-active">Facilitator</a>
+    <a href="resources.html">Resource Library</a>
+  </nav>
+</header>
+
+<!-- ─── Hero ────────────────────────────────────────────────────── -->
+<section class="hero" style="padding-top: 56px; padding-bottom: 48px; min-height: 0;">
+  <div class="hero__bg"></div>
+  <div class="hero__content" style="padding-top: 40px;">
+    <div class="hero__eyebrow">Facilitator Guide · 12 Sessions · Instructor-Facing</div>
+    <h1 class="hero__title" style="font-size: 48px;">Teaching this is mostly<br/>about not rescuing.</h1>
+    <p class="hero__lede">
+      A per-session guide for instructors: how the three hours should shape up, what Proficient work looks
+      like in the room (not the rubric), the failure modes that keep repeating, and the moments where you
+      have to choose between intervening and letting the discomfort do the teaching.
+    </p>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<!-- ─── Main ──────────────────────────────────────────────────── -->
+<section class="section" style="padding-top: 40px;">
+
+  <!-- Facilitator stance -->
+  <div class="fg-stance">
+    <div class="fg-stance__eyebrow">THE FACILITATION STANCE</div>
+    <h2 class="fg-stance__title">You are running a studio, not delivering a lecture.</h2>
+    <p class="fg-stance__body">
+      The course is built on the assumption that <strong>design capability transfers through revision, not
+      reception</strong>. Your job is to hold the frame — a clear objective for the session, a visible
+      artifact, a deadline — and to <strong>let the learner's first attempt be wrong in public</strong>.
+      Most growth happens when a learner ships something they're not proud of and sees, immediately, what a
+      better version would look like. Rescuing short-circuits that loop.
+    </p>
+    <ul class="fg-stance__rules">
+      <li><strong>Hold the artifact</strong> Every session ends with something in hand: a statement, a crosswalk, a loop, a guide.</li>
+      <li><strong>Critique the work, not the learner</strong> Point at the artifact, not the person holding it.</li>
+      <li><strong>Name your intervention</strong> When you step in, say why — so learners can calibrate next time.</li>
+      <li><strong>Protect the pass bar</strong> Proficient on every criterion, or it's not done. No averaging.</li>
+      <li><strong>Budget revision time</strong> Half of the session's value is in the second attempt.</li>
+    </ul>
+  </div>
+
+  <!-- TOC -->
+  <nav class="fg-toc" aria-label="Session table of contents">
+    <a href="#s01"><strong>S01</strong>Framing</a>
+    <a href="#s02"><strong>S02</strong>Learner &amp; context</a>
+    <a href="#s03"><strong>S03</strong>Objectives &amp; crosswalk</a>
+    <a href="#s04"><strong>S04</strong>Mechanics I</a>
+    <a href="#s05"><strong>S05</strong>Mechanics II</a>
+    <a href="#s06"><strong>S06</strong>Facilitator design</a>
+    <a href="#s07"><strong>S07</strong>Low-fi prototyping</a>
+    <a href="#s08"><strong>S08</strong>Interaction spec</a>
+    <a href="#s09"><strong>S09</strong>Playtest design</a>
+    <a href="#s10"><strong>S10</strong>Audit</a>
+    <a href="#s11"><strong>S11</strong>Revision studio</a>
+    <a href="#s12"><strong>S12</strong>Final presentations</a>
+  </nav>
+
+  <!-- ────────── S01 ────────── -->
+  <article class="fg-session" id="s01">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 01 · Week 1</div>
+        <h3 class="fg-session__title">Framing</h3>
+      </div>
+      <p class="fg-session__arc">Shift: learners stop saying "make learning fun" and start naming a specific transfer problem.</p>
+      <div class="fg-session__link"><a href="session-01.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>15 min</td><td>Stance question discussion: "what is a learning game <em>not</em>?"</td></tr>
+          <tr><td>0:15</td><td>40 min</td><td>Reading-led discussion: three failure modes of gamification (points, theme, drill).</td></tr>
+          <tr><td>0:55</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>1:10</td><td>60 min</td><td>Casebook walkthrough: three games, name what each actually teaches.</td></tr>
+          <tr><td>2:10</td><td>30 min</td><td>Studio: each learner writes the engagement–transfer problem they intend to solve.</td></tr>
+          <tr><td>2:40</td><td>20 min</td><td>Exit ticket: stance commitment + capstone framing draft.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Stance commitment names a <strong>specific objective type</strong>, not a domain ("discrimination in clinical reasoning," not "medical education").</li>
+          <li>Learner can state <strong>what the game is not trying to do</strong> — a visible scope edge.</li>
+          <li>At least one <strong>casebook game</strong> is named with a concrete mechanic-to-objective link.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>"Make X more engaging."</strong> Push for the specific cognition that has to change.</li>
+          <li><strong>Choosing a domain before an objective type.</strong> Objective type is the design-decisive lens; domain is decoration.</li>
+          <li><strong>Defaulting to quiz games</strong> because they feel safe. Note it, do not forbid — the mechanics weeks will do the work.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>When a learner's framing is too broad:</strong> ask "which of these three cognitions?" and accept whichever they pick. Narrowing matters more than correctness this week.</li>
+          <li><strong>When a learner wants to change topic mid-week:</strong> fine before S03. Past S03, they owe the class a revised crosswalk before the switch.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S02 ────────── -->
+  <article class="fg-session" id="s02">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 02 · Week 2 · <a href="rubrics.html#d1">D1 due</a></div>
+        <h3 class="fg-session__title">Learner &amp; context</h3>
+      </div>
+      <p class="fg-session__arc">Shift: learners write about a real person with real constraints, not "the student."</p>
+      <div class="fg-session__link"><a href="session-02.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>10 min</td><td>Warm-up: name three things about your learner you cannot Google.</td></tr>
+          <tr><td>0:10</td><td>30 min</td><td>Mini-lecture: learner-context-constraint-measurable-shift structure.</td></tr>
+          <tr><td>0:40</td><td>60 min</td><td>Studio: write D1 v0.</td></tr>
+          <tr><td>1:40</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>1:55</td><td>40 min</td><td>Peer critique in triads — structured protocol, one voice per round.</td></tr>
+          <tr><td>2:35</td><td>25 min</td><td>Revision pass + log what changed and why.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Learner description includes <strong>prior knowledge, motivation, and binding constraint</strong> — all three.</li>
+          <li>The measurable shift is stated as <strong>a behavior a stranger could verify</strong>, not an internal state.</li>
+          <li>Revision log names <strong>which specific feedback</strong> drove which change.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>Composite learners.</strong> "Students who are either X or Y" — kill it. One population, one context.</li>
+          <li><strong>"Increase engagement" as the measurable shift.</strong> Ask what they would <em>do</em> differently.</li>
+          <li><strong>Vague constraints.</strong> "Limited time" is not a constraint; "30 minutes, once, on a phone, in waiting rooms" is.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If peer critique devolves into "I like it":</strong> stop the room, re-read the protocol together. Do not let it drift.</li>
+          <li><strong>If a D1 passes four criteria and blocks on one:</strong> Proficient floor is non-negotiable. Return it; do not average.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S03 ────────── -->
+  <article class="fg-session" id="s03">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 03 · Week 3 · <a href="rubrics.html#d2">D2 due</a></div>
+        <h3 class="fg-session__title">Objectives &amp; crosswalk</h3>
+      </div>
+      <p class="fg-session__arc">Shift: learners stop picking a genre and start picking a mechanic family that fits an objective type.</p>
+      <div class="fg-session__link"><a href="session-03.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>10 min</td><td>Warm-up: classify five objectives from the casebook against the five-type taxonomy.</td></tr>
+          <tr><td>0:10</td><td>40 min</td><td>Mini-lecture + guided practice: objective type → signature mechanic family.</td></tr>
+          <tr><td>0:50</td><td>60 min</td><td>Studio: write D2 crosswalk, 2–4 objectives × mechanic × rationale × risk.</td></tr>
+          <tr><td>1:50</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>2:05</td><td>35 min</td><td>Structured peer review: defend one mechanic choice against a plausible alternative.</td></tr>
+          <tr><td>2:40</td><td>20 min</td><td>Mark at least one objective <strong>out of scope</strong> and say why. Log in D2.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Every objective is <strong>classified by type</strong> before a mechanic is chosen.</li>
+          <li>Rationale is a <strong>two-sentence argument</strong>, not a label.</li>
+          <li>Declined alternative is named and its <em>reason for decline</em> is specific to this learner and context.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>Mechanic before objective.</strong> "I'll use a card game" before deciding what cognition it should exercise. Return it.</li>
+          <li><strong>Five objectives.</strong> Scope creep. Keep to 2–4; the rubric explicitly caps this.</li>
+          <li><strong>Rationale that's really a description.</strong> "Cards are fun and engaging" is not rationale.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If an objective resists classification:</strong> it's almost certainly two objectives fused. Split it.</li>
+          <li><strong>If a learner wants to use the <a href="minigames/orbit-sum-lab/index.html">Orbit Sum Lab</a> pattern:</strong> good — add it as a seventh casebook case with their own mechanic/risk/rationale.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S04 ────────── -->
+  <article class="fg-session" id="s04">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 04 · Week 4</div>
+        <h3 class="fg-session__title">Mechanics I — challenge, feedback, failure</h3>
+      </div>
+      <p class="fg-session__arc">Shift: learners see that difficulty is a zone you tune, not a number you pick.</p>
+      <div class="fg-session__link"><a href="session-04.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>15 min</td><td>Warm-up: name the four kinds of feedback by timing and grain.</td></tr>
+          <tr><td>0:15</td><td>45 min</td><td>Mini-lecture: target difficulty zone, adjustment knobs, feedback taxonomy.</td></tr>
+          <tr><td>1:00</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>1:15</td><td>55 min</td><td>Studio: design a failure loop that teaches <em>or</em> argue why this objective should not have one.</td></tr>
+          <tr><td>2:10</td><td>50 min</td><td>Revision of D2: annotate every row with challenge / feedback / failure risks.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Difficulty is named as <strong>a zone between two specific boundaries</strong>, with the knob to move within it.</li>
+          <li>Feedback is differentiated by <strong>timing and grain</strong>, not just "immediate."</li>
+          <li>D2 annotations identify at least <strong>one plausible failure mode per row</strong>.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>Difficulty as single number.</strong> "Medium difficulty" — not useful. What's the zone, what moves it?</li>
+          <li><strong>Failure loops everywhere.</strong> Some objectives (safety-critical procedures) should not have failure baked in. Name it.</li>
+          <li><strong>Feedback = score.</strong> Score is summative. Most learning feedback is process-grain, not outcome-grain.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If a learner's mechanic has no failure state:</strong> decide together whether that's principled or avoidance. Either answer is fine — but it must be <em>named</em>.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S05 ────────── -->
+  <article class="fg-session" id="s05">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 05 · Week 5</div>
+        <h3 class="fg-session__title">Mechanics II — narrative, role, social</h3>
+      </div>
+      <p class="fg-session__arc">Shift: narrative stops being wrapper and starts being a mechanic that lowers threshold-to-try.</p>
+      <div class="fg-session__link"><a href="session-05.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>15 min</td><td>Warm-up: for a casebook game, is the narrative wrapper or mechanic? Justify.</td></tr>
+          <tr><td>0:15</td><td>40 min</td><td>Mini-lecture: narrative-as-mechanic, roles, collaboration structures.</td></tr>
+          <tr><td>0:55</td><td>60 min</td><td>Studio: role brief — a teammate could implement it.</td></tr>
+          <tr><td>1:55</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>2:10</td><td>50 min</td><td>Integrate narrative/role/social choices into D2 — revise rationale column.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Role brief specifies <strong>what the role does, decides, and cannot do</strong>.</li>
+          <li>Collaboration structure fits both <strong>objective type and D1 constraints</strong> (not just "looks fun").</li>
+          <li>Learner can state <strong>one failure mode of this role</strong> and how they'd scaffold around it.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>Narrative-as-theme.</strong> Space pirates doing arithmetic. Nice, but not a mechanic.</li>
+          <li><strong>Four-person cooperative for a solo objective.</strong> Social scale mismatched to learning target.</li>
+          <li><strong>Roles with no teeth.</strong> If every role can do everything, there is no role.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If narrative and mechanic conflict:</strong> mechanic wins. Theme can flex; cognition cannot.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S06 ────────── -->
+  <article class="fg-session" id="s06">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 06 · Week 6</div>
+        <h3 class="fg-session__title">Facilitator design</h3>
+      </div>
+      <p class="fg-session__arc">Shift: the game includes the person running it, and that person is not always you.</p>
+      <div class="fg-session__link"><a href="session-06.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>15 min</td><td>Warm-up: three non-negotiable sections of a facilitator guide.</td></tr>
+          <tr><td>0:15</td><td>45 min</td><td>Mini-lecture: opening, mid-play, debrief — word-level scripts.</td></tr>
+          <tr><td>1:00</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>1:15</td><td>65 min</td><td>Studio: write v0.1 of facilitator guide — specific words, not summaries.</td></tr>
+          <tr><td>2:20</td><td>40 min</td><td>Table-read: peer runs your guide without asking questions. Revise where they stumbled.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Guide includes <strong>opening script, mid-play decision tree, debrief questions</strong> — all three present.</li>
+          <li>A peer runs it on the first try <strong>without asking clarifying questions</strong>.</li>
+          <li>At least <strong>three failure modes</strong> have recovery lines.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>"Explain the rules."</strong> Not a guide. What words exactly?</li>
+          <li><strong>Debrief = "what did you think?"</strong> The debrief is where transfer happens. Write three specific questions that point at the objective.</li>
+          <li><strong>No mid-play decisions.</strong> What does the facilitator do when it's boring? When it's too hard? Name two intervention points.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If the table-read fails silently</strong> (peer shrugs through it): that's a worse signal than explicit confusion. Return for revision even if nothing was "wrong."</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S07 ────────── -->
+  <article class="fg-session" id="s07">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 07 · Week 7 · <a href="rubrics.html#d3">D3 due</a></div>
+        <h3 class="fg-session__title">Low-fi prototyping</h3>
+      </div>
+      <p class="fg-session__arc">Shift: learners stop designing on paper and start <em>playing</em> on paper.</p>
+      <div class="fg-session__link"><a href="session-07.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape (studio-heavy)</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>10 min</td><td>Demo: instructor builds a paper loop in 5 minutes, live.</td></tr>
+          <tr><td>0:10</td><td>25 min</td><td>Cycle 1: build paper prototype. Timer hard-stop.</td></tr>
+          <tr><td>0:35</td><td>15 min</td><td>Cycle 1 playtest: peer-as-proxy, instructor observes silently.</td></tr>
+          <tr><td>0:50</td><td>10 min</td><td>Cycle 1 revision based on one specific observation.</td></tr>
+          <tr><td>1:00</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>1:15</td><td>75 min</td><td>Cycles 2 + 3: same loop, faster. Iteration log required.</td></tr>
+          <tr><td>2:30</td><td>30 min</td><td>Submit D3: surviving version + facilitator guide v0.3 + what-I-cut note.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>By end of hour 1, something is <strong>being played</strong>, not being planned.</li>
+          <li>Iteration log names, for each cycle: <strong>what changed, why, and the observation that drove it</strong>.</li>
+          <li>What-I-cut note identifies at least one idea that <strong>didn't survive contact with play</strong>.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>"I'll build it nicely first."</strong> No. Ugly and playable beats beautiful and static.</li>
+          <li><strong>Instructor-as-observer narrates during playtest.</strong> Silence. The designer must see the silence too.</li>
+          <li><strong>Cycles 2 and 3 re-make the whole thing.</strong> They should <em>tune</em>, not rebuild.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If a learner insists "it's not ready to playtest":</strong> enforce the 25-min cycle. Ready-feeling is the problem this session solves.</li>
+          <li><strong>If the loop genuinely breaks:</strong> fine — document it and pick a simpler loop for Cycle 2. Failing the cycle is not failing the session.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S08 ────────── -->
+  <article class="fg-session" id="s08">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 08 · Week 8</div>
+        <h3 class="fg-session__title">Interaction spec</h3>
+      </div>
+      <p class="fg-session__arc">Shift: the paper loop becomes something a developer could build without asking.</p>
+      <div class="fg-session__link"><a href="session-08.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>15 min</td><td>Warm-up: draw your paper loop as three states.</td></tr>
+          <tr><td>0:15</td><td>40 min</td><td>Mini-lecture: state machines, event→feedback maps, Three.js bridge.</td></tr>
+          <tr><td>0:55</td><td>60 min</td><td>Studio part 1: formal state machine (entry, exit, transitions).</td></tr>
+          <tr><td>1:55</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>2:10</td><td>40 min</td><td>Studio part 2: event→feedback map. Launch <a href="minigames/electric-circuit-lab/index.html">Electric Circuit Lab</a> as worked example.</td></tr>
+          <tr><td>2:50</td><td>10 min</td><td>Exit ticket: say <strong>no to 3D</strong> in one scene. Explicitly.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>State machine is <strong>readable without the author present</strong>. Every arrow has a label.</li>
+          <li>Event→feedback map is a <strong>table, not prose</strong>. Event column, feedback column, timing column.</li>
+          <li>Learner can identify <strong>one scene where 3D adds nothing</strong> and cuts it in the spec.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>State machines that are flowcharts.</strong> States vs. steps. Push.</li>
+          <li><strong>"3D everywhere."</strong> 3D is a bridge tool, not a theme. Force the no-3D scene.</li>
+          <li><strong>Events without grain.</strong> "Player wrong" is not an event. "Player submits answer X when correct was Y, within 3s" is.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If a learner has no dev background:</strong> the spec is still the goal. Pair them in-session with a peer who does — handoff is the artifact.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S09 ────────── -->
+  <article class="fg-session" id="s09">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 09 · Week 9 · <a href="rubrics.html#d4">D4 due</a></div>
+        <h3 class="fg-session__title">Playtest design</h3>
+      </div>
+      <p class="fg-session__arc">Shift: learners stop asking "did they like it?" and start asking "what did they do?"</p>
+      <div class="fg-session__link"><a href="session-09.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>15 min</td><td>Warm-up: separate observation from interpretation in three transcripts.</td></tr>
+          <tr><td>0:15</td><td>40 min</td><td>Mini-lecture: protocol design, recruitment (target-learner, not peers), finding taxonomy.</td></tr>
+          <tr><td>0:55</td><td>60 min</td><td>Studio: write protocol a stranger could run.</td></tr>
+          <tr><td>1:55</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>2:10</td><td>35 min</td><td>Peer simulation: run each other's protocol. Observe silently.</td></tr>
+          <tr><td>2:45</td><td>15 min</td><td>Commit to three target-learner sessions before next week.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Protocol is <strong>step-by-step executable</strong> by someone with no context.</li>
+          <li>Findings vocabulary separates <strong>observation, interpretation, recommendation</strong> — three columns, not one.</li>
+          <li>Recruitment plan names <strong>actual people or a realistic channel</strong>, not "I'll find three students."</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>Peer playtests as "data."</strong> Peers are rehearsal, not evidence.</li>
+          <li><strong>Likert surveys.</strong> Feeling is not behavior. Can they do the thing?</li>
+          <li><strong>Leading questions.</strong> "Was it fun?" → "What did you try first?"</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If recruitment of three target learners is infeasible:</strong> acceptable substitute is two target learners + one practitioner review — but it must be <em>named</em> as a limit in D4.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S10 ────────── -->
+  <article class="fg-session" id="s10">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 10 · Week 10</div>
+        <h3 class="fg-session__title">Audit — accessibility, ethics, UDL</h3>
+      </div>
+      <p class="fg-session__arc">Shift: the design gets stress-tested against learners the designer didn't imagine.</p>
+      <div class="fg-session__link"><a href="session-10.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>15 min</td><td>Warm-up: name a UDL principle that your design currently violates.</td></tr>
+          <tr><td>0:15</td><td>45 min</td><td>Mini-lecture: UDL 3.0 crosswalk, accessibility audit checklist, ethics prompts.</td></tr>
+          <tr><td>1:00</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>1:15</td><td>55 min</td><td>Studio: self-audit against UDL + accessibility. Write three concrete changes.</td></tr>
+          <tr><td>2:10</td><td>50 min</td><td>Peer audit: score each other's design against the checklist. Revise D3/D4 entries accordingly.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Self-audit names <strong>at least one violation</strong> honestly, not just "we meet all of them."</li>
+          <li>Three concrete changes are <strong>implementable this week</strong>, not aspirational.</li>
+          <li>Peer audit produces at least <strong>one blind spot</strong> the designer missed.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>"It's accessible because it's a card game."</strong> Not a finding. Which specific affordance for which specific learner?</li>
+          <li><strong>Treating UDL as a checklist.</strong> It's a design lens; most violations are in the debrief, not the mechanic.</li>
+          <li><strong>Peer audit as rubber-stamp.</strong> Require at least one concrete critique per pair.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If a change is required but infeasible this semester:</strong> acceptable to log as "known limit" in D5, but only if a mitigation is proposed.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S11 ────────── -->
+  <article class="fg-session" id="s11">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 11 · Week 11</div>
+        <h3 class="fg-session__title">Revision studio</h3>
+      </div>
+      <p class="fg-session__arc">Shift: learners prioritize revisions by evidence strength, not by what was easiest to fix.</p>
+      <div class="fg-session__link"><a href="session-11.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape (studio-only)</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>10 min</td><td>Check-in: what's the one thing you're afraid your final is going to be judged on?</td></tr>
+          <tr><td>0:10</td><td>80 min</td><td>Studio block 1: revise based on evidence ranking from D4 + audit findings.</td></tr>
+          <tr><td>1:30</td><td>15 min</td><td>Break.</td></tr>
+          <tr><td>1:45</td><td>60 min</td><td>Studio block 2: D5 spec completion. Instructor floats, 5-min slots per learner.</td></tr>
+          <tr><td>2:45</td><td>15 min</td><td>Dry-run outline for final presentation — 6 slides, no more.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Every revision is <strong>tied to a specific piece of evidence</strong> from D4 or audit — not "we thought it'd be better."</li>
+          <li>At least one revision is <strong>deferred and justified</strong> (not enough evidence to act).</li>
+          <li>D5 is <strong>80%+ complete by end of session</strong>.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>Revising everything.</strong> Weak evidence + big change = wasted week. Push for triage.</li>
+          <li><strong>"We'll revise based on final demo feedback."</strong> No — the final is a presentation, not a playtest.</li>
+          <li><strong>Instructor-as-consultant.</strong> 5-min slots per learner, not 30. Studio, not office hours.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If a learner's D5 is blocking:</strong> ask whether the block is conceptual (help) or mechanical (they can finish this week). Do not do the mechanical work for them.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ────────── S12 ────────── -->
+  <article class="fg-session" id="s12">
+    <header class="fg-session__head">
+      <div>
+        <div class="fg-session__num">Session 12 · Week 12 · <a href="rubrics.html#d5">D5 due</a></div>
+        <h3 class="fg-session__title">Final presentations</h3>
+      </div>
+      <p class="fg-session__arc">Shift: learner defends the handoff as something a team could pick up on Monday.</p>
+      <div class="fg-session__link"><a href="session-12.html">Open session →</a></div>
+    </header>
+    <div class="fg-session__body">
+      <div class="fg-block fg-timing">
+        <div class="fg-block__eyebrow">Three-hour shape</div>
+        <table class="fg-timing-tbl">
+          <tr><td>0:00</td><td>10 min</td><td>Ground rules: critique the spec, not the presenter.</td></tr>
+          <tr><td>0:10</td><td>150 min</td><td>12 presentations × 10 min each (6 talk, 4 Q&amp;A). Rotating role: dev / learner / skeptic.</td></tr>
+          <tr><td>2:40</td><td>15 min</td><td>Break between blocks as needed — keep presentations on timer.</td></tr>
+          <tr><td>2:55</td><td>15 min</td><td>Credential sign-off: instructor confirms rubric pass on all D1–D5 or names the open item.</td></tr>
+        </table>
+      </div>
+      <div class="fg-block">
+        <div class="fg-block__eyebrow">What "in-session Proficient" looks like</div>
+        <ul>
+          <li>Presenter can walk a dev through D5 <strong>without reading slides</strong>.</li>
+          <li>Known limits section is <strong>present and honest</strong>.</li>
+          <li>Q&amp;A reveals the presenter can <strong>update the spec live</strong> when a real gap is surfaced.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-pitfall">
+        <div class="fg-block__eyebrow">Common pitfalls</div>
+        <ul>
+          <li><strong>Demo-as-finale.</strong> This is not a demo. Playtests happened in S09.</li>
+          <li><strong>"We're still iterating."</strong> Fine, but credential asks what you are <em>handing over</em>.</li>
+          <li><strong>Audience in default-positive mode.</strong> Assign the skeptic role explicitly, rotate it.</li>
+        </ul>
+      </div>
+      <div class="fg-block fg-decide">
+        <div class="fg-block__eyebrow">Decision points</div>
+        <ul>
+          <li><strong>If a learner misses Proficient on a single criterion:</strong> one-revision-per-D appeal is available. Sign off conditionally; close the open item within two weeks.</li>
+          <li><strong>If multiple learners cluster on the same miss:</strong> the curriculum has a gap, not the cohort. Log it for program review.</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- Callout -->
+  <div class="fg-callout">
+    <strong>Program-level note.</strong> If you see more than 30% of a cohort miss the same criterion, do not
+    tighten the rubric — tighten the session that owns that criterion. The rubric is calibrated; the session
+    is the lever. Log the signal and route it to the evaluation plan at program review.
+  </div>
+
+</section>
+
+<!-- ─── Footer ─────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <div>
+      <div class="site-footer__brand">Educational Game Design</div>
+      <div class="site-footer__meta">Facilitator Guide · v2 · 2026</div>
+    </div>
+    <div class="site-footer__meta">
+      Educational Technology · College of Education<br/>
+      The University of Alabama · Tuscaloosa, AL
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© 2026 The University of Alabama</span>
+    <span>Instructor-facing · Not for learner distribution</span>
+  </div>
+</footer>
+
+<script src="shell.js"></script>
+</body>
+</html>
