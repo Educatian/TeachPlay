@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cohort Analytics · Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  .an-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    padding: 16px 20px;
+    background: #161616;
+    color: #f4f4f4;
+    margin: 0 0 32px;
+    font-size: 13px;
+    font-family: var(--font-mono);
+  }
+  .an-bar__pill {
+    background: #393939;
+    color: #f4f4f4;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+  }
+  .an-bar__pill b { color: #ffb3b8; font-weight: 500; }
+  .an-bar__sep { flex: 1; }
+  .an-bar button {
+    background: transparent;
+    border: 1px solid #525252;
+    color: #f4f4f4;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+  .an-bar button:hover { background: var(--crimson); border-color: var(--crimson); }
+  .an-bar button.danger:hover { background: #8a3800; border-color: #8a3800; }
+
+  .an-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin: 0 0 48px;
+  }
+  .an-stat {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 18px 20px;
+  }
+  .an-stat__num { font-size: 36px; font-family: var(--font-mono); color: var(--crimson); line-height: 1; }
+  .an-stat__lbl { font-size: 11px; letter-spacing: 0.08em; color: #525252; text-transform: uppercase; margin-top: 8px; font-family: var(--font-mono); }
+
+  .an-section { margin: 0 0 56px; }
+  .an-section__head { margin: 0 0 16px; display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .an-section h2 { font-size: 24px; margin: 0; font-family: var(--font-sans); color: #161616; }
+  .an-section__sub { font-size: 13.5px; color: #525252; }
+
+  /* Criterion heatmap */
+  .an-heat {
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    overflow-x: auto;
+  }
+  .an-heat-tbl { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  .an-heat-tbl th, .an-heat-tbl td {
+    padding: 8px 10px;
+    text-align: center;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+  .an-heat-tbl th { background: #161616; color: #f4f4f4; font-weight: 500; letter-spacing: 0.04em; text-align: left; }
+  .an-heat-tbl th.crit { background: #262626; font-size: 11.5px; text-align: left; padding-left: 16px; min-width: 220px; }
+  .an-heat-tbl tbody th { background: #fafafa; color: #161616; text-align: left; padding: 10px 16px; min-width: 220px; }
+  .an-heat-tbl tbody th small { display: block; color: #6f6f6f; font-size: 10.5px; letter-spacing: 0; font-weight: 400; margin-top: 2px; }
+  .an-heat-cell { position: relative; }
+  .an-heat-val { position: relative; z-index: 1; color: #161616; }
+  .an-heat-cell.lo-10 { background: #fff1f1; }
+  .an-heat-cell.lo-30 { background: #ffd7d9; }
+  .an-heat-cell.lo-50 { background: #ffc6c9; color: #6f0100; }
+  .an-heat-cell.lo-70 { background: #fff8e1; }
+  .an-heat-cell.lo-80 { background: #defbe6; }
+  .an-heat-cell.lo-90 { background: #a7f0ba; color: #044317; }
+  .an-heat-cell.lo-100 { background: #6fdc8c; color: #044317; font-weight: 700; }
+  .an-heat-cell.nodata { color: #c6c6c6; background: #fafafa; }
+
+  /* Session funnel */
+  .an-funnel {
+    display: grid;
+    grid-template-columns: 120px 1fr 80px;
+    gap: 4px 12px;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 18px 20px;
+  }
+  .an-funnel__lbl { font-family: var(--font-mono); font-size: 13px; color: #161616; }
+  .an-funnel__bar { height: 22px; background: linear-gradient(90deg, #990000, #7a0019); }
+  .an-funnel__pct { font-family: var(--font-mono); font-size: 12.5px; color: #525252; text-align: right; }
+
+  /* Event stream */
+  .an-stream {
+    background: #161616;
+    color: #c6c6c6;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 16px 20px;
+    max-height: 360px;
+    overflow: auto;
+    border: 1px solid #161616;
+  }
+  .an-stream__row { padding: 2px 0; border-bottom: 1px dashed #393939; }
+  .an-stream__row:last-child { border-bottom: none; }
+  .an-stream__time { color: #8d8d8d; margin-right: 10px; }
+  .an-stream__verb { color: #ffb3b8; margin-right: 8px; }
+  .an-stream__actor { color: #82cfff; margin-right: 8px; }
+  .an-stream__obj { color: #78a9ff; }
+  .an-stream__empty { color: #8d8d8d; font-style: italic; text-align: center; padding: 40px 0; }
+
+  /* Reliability panel */
+  .an-rel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .an-rel__card {
+    border: 1px solid #e0e0e0;
+    padding: 18px 20px;
+    background: #fff;
+  }
+  .an-rel__card h4 { margin: 0 0 6px; font-size: 14px; color: #161616; }
+  .an-rel__card .k { font-size: 30px; font-family: var(--font-mono); color: var(--crimson); line-height: 1; }
+  .an-rel__card .t { font-size: 11.5px; color: #525252; font-family: var(--font-mono); margin-top: 6px; }
+  .an-rel__note { font-size: 13px; color: #525252; margin: 14px 0 0; line-height: 1.5; }
+
+  /* LO progression */
+  .an-lo-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(12, 1fr);
+    gap: 2px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+  .an-lo-grid__lbl { padding: 4px 6px; color: #161616; }
+  .an-lo-grid__cell { height: 22px; background: #fafafa; border: 1px solid #e8e8e8; }
+  .an-lo-grid__cell.covered { background: #6fdc8c; border-color: #42be65; }
+  .an-lo-grid__cell.active { background: #ffb3b8; border-color: #da1e28; }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="#">myBama</a></div>
+</div>
+
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html">Overview</a>
+    <a href="index.html#sessions">Sessions</a>
+    <a href="index.html#deliverables">Deliverables</a>
+    <a href="rubrics.html">Rubrics</a>
+    <a href="alignment.html">Alignment</a>
+    <a href="credential.html">Credential</a>
+    <a href="facilitator.html">Facilitator</a>
+    <a href="analytics.html" class="is-active">Analytics</a>
+    <a href="resources.html">Resource Library</a>
+  </nav>
+</header>
+
+<section class="hero" style="padding-top: 56px; padding-bottom: 48px; min-height: 0;">
+  <div class="hero__bg"></div>
+  <div class="hero__content" style="padding-top: 40px;">
+    <div class="hero__eyebrow">Cohort Analytics · xAPI-backed · Learning Engineering L1</div>
+    <h1 class="hero__title" style="font-size: 48px;">What the cohort<br/>actually did.</h1>
+    <p class="hero__lede">
+      Every checklist tick, exit-ticket response, session sign-off, and rubric assessment emits an xAPI
+      statement. This page reads the statement store, rolls it up against the 25-criterion rubric bar and
+      the 54 learning outcomes, and surfaces the three signals that drive program revision:
+      <strong>where the cohort is stuck, where raters disagree, and which LOs aren't getting evidence</strong>.
+    </p>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<section class="section" style="padding-top: 40px;">
+
+  <!-- Control bar -->
+  <div class="an-bar">
+    <span class="an-bar__pill">COHORT · <b id="bar-cohort">—</b></span>
+    <span class="an-bar__pill">ACTOR · <b id="bar-actor">—</b></span>
+    <span class="an-bar__pill">STATEMENTS · <b id="bar-count">0</b></span>
+    <span class="an-bar__pill">LRS · <b id="bar-lrs">local-only</b></span>
+    <span class="an-bar__sep"></span>
+    <button id="btn-seed">Seed synthetic cohort</button>
+    <button id="btn-export">Export NDJSON</button>
+    <button id="btn-clear" class="danger">Clear queue</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="an-stats">
+    <div class="an-stat"><div class="an-stat__num" id="stat-learners">0</div><div class="an-stat__lbl">Learners</div></div>
+    <div class="an-stat"><div class="an-stat__num" id="stat-sessions">0</div><div class="an-stat__lbl">Session completions</div></div>
+    <div class="an-stat"><div class="an-stat__num" id="stat-checks">0</div><div class="an-stat__lbl">Checklist events</div></div>
+    <div class="an-stat"><div class="an-stat__num" id="stat-tickets">0</div><div class="an-stat__lbl">Exit-ticket events</div></div>
+    <div class="an-stat"><div class="an-stat__num" id="stat-rubric">0</div><div class="an-stat__lbl">Rubric assessments</div></div>
+  </div>
+
+  <!-- Rubric criterion heatmap -->
+  <div class="an-section">
+    <div class="an-section__head">
+      <h2>Rubric criterion pass-rate</h2>
+      <span class="an-section__sub">Proficient-floor pass rate per criterion. &lt;70% cohort-wide signals a session gap, not a learner gap.</span>
+    </div>
+    <div class="an-heat"><div id="heatmap"></div></div>
+  </div>
+
+  <!-- Session funnel -->
+  <div class="an-section">
+    <div class="an-section__head">
+      <h2>Session completion funnel</h2>
+      <span class="an-section__sub">Share of cohort who have marked each session complete.</span>
+    </div>
+    <div class="an-funnel" id="funnel"></div>
+  </div>
+
+  <!-- LO coverage -->
+  <div class="an-section">
+    <div class="an-section__head">
+      <h2>LO evidence coverage</h2>
+      <span class="an-section__sub">Green = cohort has produced evidence against this LO this week. Gaps here flag evaluation-plan triggers.</span>
+    </div>
+    <div id="lo-coverage"></div>
+  </div>
+
+  <!-- Inter-rater reliability -->
+  <div class="an-section">
+    <div class="an-section__head">
+      <h2>Inter-rater reliability</h2>
+      <span class="an-section__sub">Two-grader sample across D1–D5. Cohen's κ tracked over time. Target κ ≥ 0.70.</span>
+    </div>
+    <div class="an-rel" id="reliability"></div>
+    <p class="an-rel__note" id="rel-note">
+      Live κ is computed from paired <code>reviewed</code> statements distinguished by
+      <code>context.extensions.rater</code>. A κ below 0.70 on a criterion is the signal to
+      re-calibrate raters against the written descriptor — not to re-grade the cohort.
+    </p>
+  </div>
+
+  <!-- Event stream -->
+  <div class="an-section">
+    <div class="an-section__head">
+      <h2>Event stream</h2>
+      <span class="an-section__sub">Most recent 50 xAPI statements from the queue.</span>
+    </div>
+    <div class="an-stream" id="stream"></div>
+  </div>
+
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <div>
+      <div class="site-footer__brand">Educational Game Design</div>
+      <div class="site-footer__meta">Cohort Analytics · xAPI 1.0.3 · Learning Engineering L1</div>
+    </div>
+    <div class="site-footer__meta">
+      Data contract: queue is authoritative; LRS is optional delivery.<br/>
+      Actor identity is pseudonymous UUID.
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© 2026 The University of Alabama</span>
+    <span>Statements conform to xAPI 1.0.3 · ADL Initiative</span>
+  </div>
+</footer>
+
+<script src="xapi.js"></script>
+<script>
+(function(){
+  // ── Rubric criteria (matches rubrics.html) ─────────────────────
+  const CRITERIA = [
+    ['D1','learner_specificity',    'Learner specificity'],
+    ['D1','context_constraints',    'Context + constraints'],
+    ['D1','measurable_shift',       'Measurable shift'],
+    ['D1','evidence_of_problem',    'Evidence the problem exists'],
+    ['D1','revision_response',      'Revision response log'],
+    ['D2','objective_specificity',  'Objective specificity'],
+    ['D2','mechanic_rationale',     'Mechanic rationale'],
+    ['D2','risk_identification',    'Risk identification'],
+    ['D2','declined_alternative',   'Declined alternative'],
+    ['D2','traceability_to_D1',     'Traceability to D1'],
+    ['D3','playability',            'Playable in five minutes'],
+    ['D3','loop_fidelity',          'Loop fidelity to D2'],
+    ['D3','facilitator_guide',      'Facilitator guide completeness'],
+    ['D3','artifact_quality',       'Artifact legibility'],
+    ['D3','iteration_log',          'Iteration log'],
+    ['D4','protocol_design',        'Protocol design'],
+    ['D4','evidence_base',          'Target-learner evidence base'],
+    ['D4','obs_vs_interp',          'Observation vs. interpretation'],
+    ['D4','finding_taxonomy',       'Finding taxonomy'],
+    ['D4','revision_plan',          'Evidence-ranked revision'],
+    ['D5','state_machine',          'State machine formality'],
+    ['D5','event_feedback_map',     'Event→feedback map'],
+    ['D5','threejs_bridge',         'Three.js bridge'],
+    ['D5','coherence',              'Coherence with D1–D4'],
+    ['D5','known_limits',           'Known limits'],
+  ];
+
+  const SESSIONS = [
+    [1,'Framing'],[2,'Learner & context'],[3,'Objectives & crosswalk'],[4,'Mechanics I'],
+    [5,'Mechanics II'],[6,'Facilitator design'],[7,'Low-fi prototyping'],[8,'Interaction spec'],
+    [9,'Playtest design'],[10,'Audit'],[11,'Revision studio'],[12,'Final presentations'],
+  ];
+
+  // LO coverage: 54 LOs across 12 sessions. Roughly 4–5 per session.
+  const LOS_PER_SESSION = [4,5,5,4,4,4,5,4,5,5,4,5];
+
+  const $ = sel => document.querySelector(sel);
+
+  // ── Bar ─────────────────────────────────────────────────────────
+  function refreshBar() {
+    $('#bar-cohort').textContent = xapi.getCohort();
+    $('#bar-actor').textContent = xapi.getActorId().slice(0, 8);
+    $('#bar-count').textContent = xapi.readQueue().length;
+    $('#bar-lrs').textContent = xapi.CONFIG.endpoint ? 'configured' : 'local-only';
+  }
+
+  // ── Stats ───────────────────────────────────────────────────────
+  function isVerb(s, key) {
+    return s.verb && s.verb.id === xapi.V[key].id;
+  }
+  function objKind(s) {
+    // Extract "/activities/<kind>/..." from object.id
+    const m = s.object && s.object.id && s.object.id.match(/activities\/([^/]+)\//);
+    return m ? m[1] : null;
+  }
+  function actorId(s) { return s.actor && s.actor.account && s.actor.account.name; }
+
+  function computeStats(q) {
+    const actors = new Set(), checks = [], tickets = [], sessions = [], rubric = [];
+    for (const s of q) {
+      actors.add(actorId(s));
+      const k = objKind(s);
+      if (k === 'checklist') checks.push(s);
+      else if (k === 'ticket') tickets.push(s);
+      else if (k === 'session' && isVerb(s, 'completed')) sessions.push(s);
+      else if (k === 'rubric-criterion') rubric.push(s);
+    }
+    return { actors, checks, tickets, sessions, rubric };
+  }
+
+  function renderStats(stats) {
+    $('#stat-learners').textContent = stats.actors.size;
+    $('#stat-sessions').textContent = stats.sessions.length;
+    $('#stat-checks').textContent = stats.checks.length;
+    $('#stat-tickets').textContent = stats.tickets.length;
+    $('#stat-rubric').textContent = stats.rubric.length;
+  }
+
+  // ── Heatmap ─────────────────────────────────────────────────────
+  function bucket(p) {
+    if (p == null) return 'nodata';
+    if (p >= 1.0) return 'lo-100';
+    if (p >= 0.90) return 'lo-90';
+    if (p >= 0.80) return 'lo-80';
+    if (p >= 0.70) return 'lo-70';
+    if (p >= 0.50) return 'lo-50';
+    if (p >= 0.30) return 'lo-30';
+    return 'lo-10';
+  }
+  function renderHeatmap(stats) {
+    // Group rubric assessments: key = D|criterion, value = array of {actor, pass}
+    const byKey = {};
+    for (const s of stats.rubric) {
+      const m = s.object.id.match(/rubric-criterion\/(D\d+)\/([^?]+)/);
+      if (!m) continue;
+      const key = `${m[1]}|${m[2]}`;
+      const pass = s.result && s.result.success === true;
+      (byKey[key] = byKey[key] || []).push({ actor: actorId(s), pass });
+    }
+    const cohortSize = stats.actors.size || 1;
+
+    const rows = CRITERIA.map(([d, k, label]) => {
+      const key = `${d}|${k}`;
+      const obs = byKey[key] || [];
+      const byActor = {};
+      obs.forEach(o => { byActor[o.actor] = o.pass || byActor[o.actor]; });
+      const passers = Object.values(byActor).filter(v => v).length;
+      const p = obs.length ? passers / cohortSize : null;
+      const valText = p == null ? '—' : (Math.round(p * 100) + '%');
+      return `<tr>
+        <th scope="row">${d} · ${label.replace(/_/g,' ')}<small>${k}</small></th>
+        <td class="an-heat-cell ${bucket(p)}"><span class="an-heat-val">${valText}</span></td>
+        <td>${obs.length}</td>
+        <td>${passers}/${cohortSize}</td>
+      </tr>`;
+    }).join('');
+
+    $('#heatmap').innerHTML = `
+      <table class="an-heat-tbl">
+        <thead><tr>
+          <th class="crit">Criterion</th>
+          <th style="width: 120px;">Pass rate</th>
+          <th style="width: 90px;">Events</th>
+          <th style="width: 110px;">Passers</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  // ── Session funnel ──────────────────────────────────────────────
+  function renderFunnel(stats) {
+    const cohortSize = stats.actors.size || 1;
+    const perSession = {};
+    for (const s of stats.sessions) {
+      const m = s.object.id.match(/session\/s(\d+)/);
+      if (!m) continue;
+      const n = parseInt(m[1], 10);
+      (perSession[n] = perSession[n] || new Set()).add(actorId(s));
+    }
+    const html = SESSIONS.map(([n, t]) => {
+      const c = (perSession[n] || new Set()).size;
+      const pct = cohortSize ? Math.round((c / cohortSize) * 100) : 0;
+      return `
+        <div class="an-funnel__lbl">S${String(n).padStart(2,'0')} · ${t}</div>
+        <div class="an-funnel__bar" style="width: ${pct}%;"></div>
+        <div class="an-funnel__pct">${c} / ${cohortSize} · ${pct}%</div>`;
+    }).join('');
+    $('#funnel').innerHTML = html;
+  }
+
+  // ── LO coverage ─────────────────────────────────────────────────
+  function renderLoCoverage(stats) {
+    // Any ticket, checklist, or rubric event against session n counts as coverage
+    // for that session's LOs. (Coarse proxy — real impl would tag statements with LO IDs.)
+    const covered = new Set();
+    for (const s of stats.checks.concat(stats.tickets, stats.rubric, stats.sessions)) {
+      const m = s.object.id.match(/s(\d+)/);
+      if (m) covered.add(parseInt(m[1], 10));
+    }
+    const header = `<div class="an-lo-grid__lbl"></div>` +
+      SESSIONS.map(([n]) => `<div class="an-lo-grid__lbl">S${n}</div>`).join('');
+    const maxLos = Math.max(...LOS_PER_SESSION);
+    let rows = '';
+    for (let i = 1; i <= maxLos; i++) {
+      rows += `<div class="an-lo-grid__lbl">LO ${i}</div>`;
+      for (let s = 1; s <= 12; s++) {
+        const has = i <= LOS_PER_SESSION[s - 1];
+        const isCovered = has && covered.has(s);
+        rows += `<div class="an-lo-grid__cell ${has ? (isCovered ? 'covered' : '') : 'nodata'}" style="${has ? '' : 'visibility:hidden;'}"></div>`;
+      }
+    }
+    $('#lo-coverage').innerHTML = `<div class="an-lo-grid">${header}${rows}</div>`;
+  }
+
+  // ── Reliability ─────────────────────────────────────────────────
+  function kappa(pairs) {
+    if (pairs.length < 2) return null;
+    let agree = 0, pA1 = 0, pB1 = 0;
+    for (const [a, b] of pairs) {
+      if (a === b) agree++;
+      if (a) pA1++;
+      if (b) pB1++;
+    }
+    const n = pairs.length;
+    const po = agree / n;
+    const pA = pA1 / n, pB = pB1 / n;
+    const pe = pA * pB + (1 - pA) * (1 - pB);
+    if (pe >= 1) return 1;
+    return (po - pe) / (1 - pe);
+  }
+  function renderReliability(stats) {
+    // pairs: for each (actor, D|criterion), look for two reviewed statements with different rater IDs.
+    const pairsByD = { D1: [], D2: [], D3: [], D4: [], D5: [] };
+    const seen = {}; // actor|D|crit -> {rater1, rater2}
+    for (const s of stats.rubric) {
+      if (!isVerb(s, 'reviewed')) continue;
+      const m = s.object.id.match(/rubric-criterion\/(D\d+)\/([^?]+)/);
+      if (!m) continue;
+      const [, d, crit] = m;
+      const who = actorId(s);
+      const rater = s.context && s.context.extensions
+        && s.context.extensions['https://educatian.github.io/TeachPlay/ext/rater'];
+      const score = s.result && s.result.success === true;
+      const key = `${who}|${d}|${crit}`;
+      seen[key] = seen[key] || {};
+      seen[key][rater || 'r1'] = score;
+    }
+    for (const key of Object.keys(seen)) {
+      const vals = Object.values(seen[key]);
+      if (vals.length >= 2) {
+        const d = key.split('|')[1];
+        pairsByD[d].push([vals[0], vals[1]]);
+      }
+    }
+    const cards = Object.entries(pairsByD).map(([d, pairs]) => {
+      const k = kappa(pairs);
+      const kStr = k == null ? '—' : k.toFixed(2);
+      const target = k != null && k >= 0.70;
+      return `<div class="an-rel__card">
+        <h4>${d}</h4>
+        <div class="k" style="color: ${target ? '#0e6027' : k == null ? '#525252' : '#a2191f'};">${kStr}</div>
+        <div class="t">${pairs.length} pairs · target κ ≥ 0.70</div>
+      </div>`;
+    }).join('');
+    $('#reliability').innerHTML = cards;
+  }
+
+  // ── Event stream ────────────────────────────────────────────────
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function renderStream(q) {
+    if (!q.length) {
+      $('#stream').innerHTML = `<div class="an-stream__empty">No statements yet. Visit a session and tick a checkbox — or click "Seed synthetic cohort" above.</div>`;
+      return;
+    }
+    const recent = q.slice(-50).reverse();
+    $('#stream').innerHTML = recent.map(s => {
+      const t = new Date(s.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      const v = s.verb && s.verb.display && s.verb.display['en-US'];
+      const a = (actorId(s) || '?').slice(0, 8);
+      const o = (s.object && s.object.definition && s.object.definition.name && s.object.definition.name['en-US']) || s.object.id;
+      return `<div class="an-stream__row">
+        <span class="an-stream__time">${t}</span>
+        <span class="an-stream__actor">${esc(a)}</span>
+        <span class="an-stream__verb">${esc(v)}</span>
+        <span class="an-stream__obj">${esc(o)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Render all ──────────────────────────────────────────────────
+  function renderAll() {
+    const q = xapi.readQueue();
+    const stats = computeStats(q);
+    refreshBar();
+    renderStats(stats);
+    renderHeatmap(stats);
+    renderFunnel(stats);
+    renderLoCoverage(stats);
+    renderReliability(stats);
+    renderStream(q);
+  }
+
+  // ── Synthetic cohort seed ───────────────────────────────────────
+  function seedCohort() {
+    const N = 22;
+    const now = Date.now();
+    const q = xapi.readQueue();
+
+    // 22 learners, each with a plausible trajectory.
+    for (let i = 0; i < N; i++) {
+      const learnerId = `learner-${String(i + 1).padStart(2, '0')}-${Math.random().toString(36).slice(2, 10)}`;
+      const skill = 0.55 + Math.random() * 0.35; // 0.55–0.90 base competence
+
+      // how many sessions they've finished — skewed by skill and a time-in-term factor
+      const sessionsDone = Math.max(1, Math.min(12, Math.round(skill * 12 + (Math.random() - 0.5) * 3)));
+
+      for (let sNum = 1; sNum <= sessionsDone; sNum++) {
+        const tBase = now - (N - i) * 3600_000 - (12 - sNum) * 86400_000;
+
+        // 2–3 checklist ticks per session
+        const ticks = 2 + Math.floor(Math.random() * 2);
+        for (let t = 0; t < ticks; t++) {
+          q.push(makeStmt(learnerId, 'completed',
+            { id:`https://educatian.github.io/TeachPlay/activities/checklist/s${sNum}/item-${t+1}`,
+              definition:{ name:{'en-US':`S${sNum} checklist · item-${t+1}`}, type:'http://adlnet.gov/expapi/activities/checklist'} },
+            tBase + t * 1200_000, { completion: true }));
+        }
+        // exit ticket
+        q.push(makeStmt(learnerId, 'responded',
+          { id:`https://educatian.github.io/TeachPlay/activities/ticket/s${sNum}/exit`,
+            definition:{ name:{'en-US':`S${sNum} exit ticket · exit`}, type:'http://adlnet.gov/expapi/activities/ticket'} },
+          tBase + 3600_000, { response: `(synthetic response for S${sNum})` }));
+        // session complete
+        q.push(makeStmt(learnerId, 'completed',
+          { id:`https://educatian.github.io/TeachPlay/activities/session/s${sNum}`,
+            definition:{ name:{'en-US':`Session ${String(sNum).padStart(2,'0')}`}, type:'http://adlnet.gov/expapi/activities/session'} },
+          tBase + 7200_000, { completion: true }));
+      }
+
+      // Rubric assessments with two raters
+      CRITERIA.forEach(([d, k]) => {
+        // cap by how far learner got through the term
+        const delivSession = { D1: 2, D2: 3, D3: 7, D4: 9, D5: 12 }[d];
+        if (sessionsDone < delivSession) return;
+        // probability of passing this specific criterion
+        const critHardness = { playability: 0.15, obs_vs_interp: 0.18, state_machine: 0.08 }[k] || 0.05;
+        const p1 = Math.random() < (skill - critHardness);
+        // second rater — correlated with first
+        const p2 = Math.random() < 0.78 ? p1 : Math.random() < (skill - critHardness);
+        const actObj = {
+          id:`https://educatian.github.io/TeachPlay/activities/rubric-criterion/${d}/${k}`,
+          definition:{ name:{'en-US':`${d} · ${k}`}, type:'http://adlnet.gov/expapi/activities/rubric-criterion'},
+        };
+        q.push(makeStmt(learnerId, 'reviewed', actObj, now - (12 - delivSession) * 86400_000 + 100,
+          { success: p1 }, { rater: 'r1' }));
+        q.push(makeStmt(learnerId, 'reviewed', actObj, now - (12 - delivSession) * 86400_000 + 200,
+          { success: p2 }, { rater: 'r2' }));
+      });
+    }
+
+    xapi.writeQueue(q);
+    xapi.setCohort('demo-fall-2026');
+    renderAll();
+  }
+
+  function makeStmt(actorName, verbKey, object, ts, result, ctxExt) {
+    const stmt = {
+      id: crypto.randomUUID(),
+      actor: { objectType: 'Agent', account: { homePage: 'https://educatian.github.io/TeachPlay/', name: actorName } },
+      verb: xapi.V[verbKey],
+      object,
+      timestamp: new Date(ts).toISOString(),
+      context: {
+        platform: 'eduu-game-design-handbook',
+        language: 'en-US',
+        extensions: Object.assign(
+          { 'https://educatian.github.io/TeachPlay/ext/cohort': 'demo-fall-2026',
+            'https://educatian.github.io/TeachPlay/ext/version': '2.0.0' },
+          ctxExt ? Object.fromEntries(Object.entries(ctxExt).map(([k, v]) => [`https://educatian.github.io/TeachPlay/ext/${k}`, v])) : {}
+        ),
+      },
+    };
+    if (result) stmt.result = result;
+    return stmt;
+  }
+
+  // ── Buttons ─────────────────────────────────────────────────────
+  $('#btn-seed').addEventListener('click', seedCohort);
+  $('#btn-export').addEventListener('click', () => {
+    const q = xapi.readQueue();
+    const ndjson = q.map(s => JSON.stringify(s)).join('\n');
+    const blob = new Blob([ndjson], { type: 'application/x-ndjson' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `xapi-${xapi.getCohort()}-${Date.now()}.ndjson`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+  $('#btn-clear').addEventListener('click', () => {
+    if (confirm('Clear all xAPI statements from the local queue? This cannot be undone.')) {
+      xapi.clearQueue();
+      renderAll();
+    }
+  });
+
+  renderAll();
+  setInterval(renderAll, 5000); // auto-refresh
+})();
+</script>
+
+</body>
+</html>

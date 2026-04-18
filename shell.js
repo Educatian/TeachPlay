@@ -95,8 +95,16 @@
     const n = currentSession();
     if (!n) return;
     const done = getDoneSet();
+    const nowDone = !done.has(n);
     if (done.has(n)) done.delete(n); else done.add(n);
     saveDoneSet(done);
+    if (window.xapi) {
+      window.xapi.emit(
+        nowDone ? 'completed' : 'experienced',
+        window.xapi.activities.session(n),
+        { result: { completion: nowDone } }
+      );
+    }
     // refresh sidebar if present
     const sb = document.querySelector('[data-sidebar]');
     if (sb) renderSidebar(sb);
@@ -124,6 +132,14 @@
           if (!cb) return;
           localStorage.setItem(LS_CHECK(n, id), cb.checked ? '1' : '0');
           li.classList.toggle('is-done', cb.checked);
+          if (window.xapi) {
+            window.xapi.emit(
+              cb.checked ? 'completed' : 'experienced',
+              window.xapi.activities.checklistItem(n, id),
+              { parent: window.xapi.activities.session(n),
+                result: { completion: cb.checked } }
+            );
+          }
         };
         if (cb) cb.addEventListener('change', toggle);
         li.addEventListener('click', (e) => {
@@ -151,10 +167,20 @@
         }
       };
       let timer = null;
+      let emitTimer = null;
       ta.addEventListener('input', () => {
         localStorage.setItem(LS_TICKET(n, id), ta.value);
         if (timer) clearTimeout(timer);
         timer = setTimeout(flash, 300);
+        if (window.xapi) {
+          if (emitTimer) clearTimeout(emitTimer);
+          emitTimer = setTimeout(() => {
+            window.xapi.emit('responded',
+              window.xapi.activities.ticket(n, id),
+              { parent: window.xapi.activities.session(n),
+                result: { response: ta.value.slice(0, 4096) } });
+          }, 2000);
+        }
       });
       if (ta.value) flash();
     });
