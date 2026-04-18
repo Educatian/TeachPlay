@@ -26,7 +26,7 @@
 
 ## [FRAME] Purpose
 
-This handout adds a curated external resource layer to the `Educational Game Design` microcredential. It does three jobs at once:
+This handout adds a curated external resource layer to the `AI-enhanced Educational Game Design` microcredential. It does three jobs at once:
 
 - gives facilitators one verified place to find high-value external resources
 - classifies those resources by `beginner`, `intermediate`, and `advanced` levels
@@ -51,7 +51,7 @@ All external links in this handout were rechecked on `April 18, 2026` using offi
 
 ```mermaid
 flowchart TD
-    A["Educational Game Design microcredential"] --> B["Pedagogy and game-based learning"]
+    A["AI-enhanced Educational Game Design microcredential"] --> B["Pedagogy and game-based learning"]
     A --> C["Accessibility and inclusive design"]
     A --> D["Prototype and collaboration workflows"]
     A --> E["Three.js and 3D implementation"]

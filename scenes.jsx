@@ -49,7 +49,7 @@ function Chrome() {
         fontFamily: FMONO, fontSize: 13, color: C.ink3,
         letterSpacing: '0.04em', textTransform: 'uppercase',
       }}>
-        Educational Game Design · Session 3
+        AI-enhanced Educational Game Design · Session 3
       </div>
       <div style={{
         position: 'absolute', top: 32, right: 48,
@@ -823,7 +823,7 @@ function SceneTakeaway() {
                 letterSpacing: '0.08em', textTransform: 'uppercase',
                 fontWeight: 600,
               }}>
-                Educational Game Design · Micro-credential
+                AI-enhanced Educational Game Design · Micro-credential
               </div>
               <div style={{
                 fontFamily: FMONO, fontSize: 12, color: C.ink3,

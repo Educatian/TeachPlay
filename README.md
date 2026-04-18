@@ -1,6 +1,6 @@
-# Educational Game Design — Microcredential Handbook
+# AI-enhanced Educational Game Design — Microcredential Handbook
 
-Static handbook for The University of Alabama's Educational Game Design microcredential (v2, 12 sessions, ~36 contact hours). Vanilla HTML/CSS/JS — no build step required for the shell. Two embedded interactive labs (SCORM packages) live under `minigames/`.
+Static handbook for The University of Alabama's AI-enhanced Educational Game Design microcredential (v2, 12 sessions, ~36 contact hours). Vanilla HTML/CSS/JS — no build step required for the shell. Two embedded interactive labs (SCORM packages) live under `minigames/`.
 
 ## Run locally
 

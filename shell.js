@@ -53,7 +53,7 @@
     let html = `
       <div class="sidebar-brand">
         <div class="sidebar-brand__eyebrow">Micro-credential</div>
-        <div class="sidebar-brand__title">Educational<br/>Game Design</div>
+        <div class="sidebar-brand__title">AI-enhanced<br/>Educational<br/>Game Design</div>
         <div class="sidebar-brand__meta">v2 · 12 sessions</div>
       </div>
       <nav class="toc" aria-label="Sessions">

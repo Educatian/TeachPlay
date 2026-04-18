@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Cohort Analytics · Educational Game Design</title>
+<title>Cohort Analytics · AI-enhanced Educational Game Design</title>
 <link rel="stylesheet" href="handbook.css" />
 <style>
   .an-bar {
@@ -161,12 +161,13 @@
 
 <div class="utility">
   <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
-  <div class="utility__right"><a href="#">myBama</a></div>
+  <div class="utility__right">
+    <span data-role-switch></span><a href="#">myBama</a></div>
 </div>
 
 <header class="site-header">
   <div class="site-header__row">
-    <a href="index.html" class="site-header__section">Educational Game Design</a>
+    <a href="index.html" class="site-header__section">AI-enhanced Educational Game Design</a>
     <form class="site-header__search" onsubmit="return false;">
       <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
@@ -179,8 +180,8 @@
     <a href="rubrics.html">Rubrics</a>
     <a href="alignment.html">Alignment</a>
     <a href="credential.html">Credential</a>
-    <a href="facilitator.html">Facilitator</a>
-    <a href="analytics.html" class="is-active">Analytics</a>
+    <a href="facilitator.html" class="instructor-only">Facilitator</a>
+    <a href="analytics.html" class="is-active instructor-only">Analytics</a>
     <a href="resources.html">Resource Library</a>
   </nav>
 </header>
@@ -280,7 +281,7 @@
 <footer class="site-footer">
   <div class="site-footer__row">
     <div>
-      <div class="site-footer__brand">Educational Game Design</div>
+      <div class="site-footer__brand">AI-enhanced Educational Game Design</div>
       <div class="site-footer__meta">Cohort Analytics · xAPI 1.0.3 · Learning Engineering L1</div>
     </div>
     <div class="site-footer__meta">
@@ -295,6 +296,7 @@
 </footer>
 
 <script src="xapi.js"></script>
+<script src="role.js"></script>
 <script>
 (function(){
   // ── Rubric criteria (matches rubrics.html) ─────────────────────

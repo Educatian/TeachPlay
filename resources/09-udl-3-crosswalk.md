@@ -26,7 +26,7 @@
 
 ## [FRAME] Purpose
 
-This handout translates `CAST UDL Guidelines 3.0` into a working crosswalk for the `Educational Game Design` microcredential. It helps facilitators ask:
+This handout translates `CAST UDL Guidelines 3.0` into a working crosswalk for the `AI-enhanced Educational Game Design` microcredential. It helps facilitators ask:
 
 - where variability is expected
 - where barriers are likely

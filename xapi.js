@@ -1,4 +1,4 @@
-// xapi.js — learning-analytics event emitter for the Educational Game Design handbook.
+// xapi.js — learning-analytics event emitter for the AI-enhanced Educational Game Design handbook.
 //
 // Emits lightweight xAPI-1.0.3 statements on learner actions (checklist toggles,
 // exit-ticket edits, session completions, rubric sign-offs). Statements are written

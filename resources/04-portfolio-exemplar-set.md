@@ -122,7 +122,7 @@ Why this is weaker:
 - Are real constraints acknowledged?
 - Does the argument for game-based learning make sense?
 
-## [ACTION] Artifact 2: Educational Game Design Brief
+## [ACTION] Artifact 2: AI-enhanced Educational Game Design Brief
 
 ### What Exemplary Work Includes
 

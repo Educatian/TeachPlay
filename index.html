@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Educational Game Design — Handbook</title>
+<title>AI-enhanced Educational Game Design — Handbook</title>
 <link rel="stylesheet" href="handbook.css" />
 </head>
 <body>
@@ -12,6 +12,7 @@
 <div class="utility">
   <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
   <div class="utility__right">
+    <span data-role-switch></span>
     <a href="#">myBama</a>
   </div>
 </div>
@@ -19,7 +20,7 @@
 <!-- ─── Site header ─────────────────────────────────────────────── -->
 <header class="site-header">
   <div class="site-header__row">
-    <a href="index.html" class="site-header__section">Educational Game Design</a>
+    <a href="index.html" class="site-header__section">AI-enhanced Educational Game Design</a>
     <form class="site-header__search" onsubmit="return false;">
       <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
@@ -32,8 +33,8 @@
     <a href="rubrics.html">Rubrics</a>
     <a href="alignment.html">Alignment</a>
     <a href="credential.html">Credential</a>
-    <a href="facilitator.html">Facilitator</a>
-    <a href="analytics.html">Analytics</a>
+    <a href="facilitator.html" class="instructor-only">Facilitator</a>
+    <a href="analytics.html" class="instructor-only">Analytics</a>
     <a href="resources.html">Resource Library</a>
     <a href="resources.html#labs">Labs</a>
     <a href="#what-you-learn">What You Learn</a>
@@ -175,7 +176,7 @@
 <footer class="site-footer">
   <div class="site-footer__row">
     <div>
-      <div class="site-footer__brand">Educational Game Design</div>
+      <div class="site-footer__brand">AI-enhanced Educational Game Design</div>
       <div class="site-footer__meta">A micro-credential handbook · v2 · 2026</div>
     </div>
     <div class="site-footer__meta">
@@ -190,6 +191,7 @@
 </footer>
 
 <script src="xapi.js"></script>
+<script src="role.js"></script>
 <script src="shell.js"></script>
 </body>
 </html>

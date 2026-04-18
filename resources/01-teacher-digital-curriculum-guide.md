@@ -26,7 +26,7 @@
 
 ## [FRAME] Purpose
 
-This guide helps facilitators run an `Educational Game Design` microcredential for instructional designers, teachers, educators, curriculum developers, and learning experience professionals. It is designed for facilitators who want more than a syllabus. It provides teaching moves, workshop flow, discussion prompts, implementation supports, and troubleshooting guidance.
+This guide helps facilitators run an `AI-enhanced Educational Game Design` microcredential for instructional designers, teachers, educators, curriculum developers, and learning experience professionals. It is designed for facilitators who want more than a syllabus. It provides teaching moves, workshop flow, discussion prompts, implementation supports, and troubleshooting guidance.
 
 ## [FRAME] Who This Guide Is For
 
