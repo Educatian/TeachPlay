@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Assessment Rubrics · Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  /* Rubric-specific layout */
+  .rubric {
+    margin: 0 0 56px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+  }
+  .rubric__head {
+    padding: 28px 32px 20px;
+    border-bottom: 4px solid var(--crimson);
+    background: #fafafa;
+  }
+  .rubric__num {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--crimson);
+    margin-bottom: 6px;
+  }
+  .rubric__title {
+    font-family: var(--font-sans);
+    font-size: 30px;
+    line-height: 1.15;
+    margin: 0 0 8px;
+    color: #161616;
+  }
+  .rubric__meta {
+    font-size: 14px;
+    color: #525252;
+    margin: 0;
+  }
+  .rubric__meta a { color: var(--crimson); text-decoration: none; }
+  .rubric__meta a:hover { text-decoration: underline; }
+
+  .rubric__body { padding: 0; }
+
+  .rubric-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+  .rubric-tbl thead th {
+    background: #161616;
+    color: #fff;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    border-right: 1px solid #393939;
+  }
+  .rubric-tbl thead th:last-child { border-right: none; }
+  .rubric-tbl thead th.lvl-proficient {
+    background: #0e6027;
+    position: relative;
+  }
+  .rubric-tbl thead th.lvl-proficient::after {
+    content: "PASS BAR";
+    position: absolute;
+    top: 2px;
+    right: 6px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    opacity: 0.85;
+  }
+  .rubric-tbl thead th.lvl-exemplary { background: #002d9c; }
+
+  .rubric-tbl tbody td {
+    padding: 16px;
+    border-top: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .rubric-tbl tbody td:last-child { border-right: none; }
+  .rubric-tbl tbody td.criterion {
+    background: #f4f4f4;
+    font-weight: 500;
+    width: 18%;
+  }
+  .rubric-tbl tbody td.criterion small {
+    display: block;
+    font-weight: 400;
+    color: #525252;
+    font-size: 12.5px;
+    margin-top: 4px;
+  }
+  .rubric-tbl tbody td.lvl-proficient { background: #f6fbf7; }
+  .rubric-tbl tbody td.lvl-exemplary { background: #f4f7ff; }
+
+  .rubric__footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid #e0e0e0;
+    background: #fafafa;
+  }
+  .rubric__footer > div {
+    padding: 20px 24px;
+    border-right: 1px solid #e0e0e0;
+  }
+  .rubric__footer > div:last-child { border-right: none; }
+  .rubric__footer h4 {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #525252;
+    margin: 0 0 8px;
+  }
+  .rubric__footer p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #161616;
+  }
+
+  .pass-rule {
+    margin: 32px 0 48px;
+    padding: 24px 28px;
+    background: #defbe6;
+    border-left: 4px solid #0e6027;
+  }
+  .pass-rule h3 {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: #0e6027;
+  }
+  .pass-rule p { margin: 0 0 8px; font-size: 14.5px; line-height: 1.55; }
+  .pass-rule p:last-child { margin: 0; }
+
+  @media (max-width: 900px) {
+    .rubric-tbl, .rubric-tbl thead, .rubric-tbl tbody, .rubric-tbl tr { display: block; }
+    .rubric-tbl thead { display: none; }
+    .rubric-tbl tbody td {
+      display: block;
+      border-right: none;
+    }
+    .rubric-tbl tbody td.criterion { font-size: 16px; padding: 14px 16px; }
+    .rubric-tbl tbody td:not(.criterion)::before {
+      content: attr(data-lvl);
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: #525252;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .rubric__footer { grid-template-columns: 1fr; }
+    .rubric__footer > div { border-right: none; border-bottom: 1px solid #e0e0e0; }
+    .rubric__footer > div:last-child { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <a href="#">myBama</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html">Overview</a>
+    <a href="index.html#sessions">Sessions</a>
+    <a href="index.html#deliverables">Deliverables</a>
+    <a href="rubrics.html" class="is-active">Rubrics</a>
+    <a href="resources.html">Resource Library</a>
+    <a href="resources.html#labs">Labs</a>
+    <a href="session-01.html">Begin Session 01</a>
+  </nav>
+</header>
+
+<section class="hero" style="padding-top: 56px; padding-bottom: 48px; min-height: 0;">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <div class="hero__eyebrow">Assessment · D1–D5</div>
+    <h1 class="hero__title" style="font-size: 52px; line-height: 1.05; margin-bottom: 22px;">Five rubrics.<br/>One pass bar.</h1>
+    <p class="hero__lede" style="max-width: 820px; margin-bottom: 0;">
+      Every deliverable in this microcredential is judged against four to five criteria at four performance
+      levels. The green column — <strong>Proficient</strong> — is the credential floor. You earn the badge by
+      reaching Proficient on every criterion of every deliverable, not by averaging high scores.
+    </p>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<section class="section">
+  <span class="section__eyebrow">How the rubrics work</span>
+  <h2 class="section__title">Four levels, one floor.</h2>
+  <div class="card-grid card-grid--3">
+    <div class="card">
+      <div class="card__label">Levels</div>
+      <h3 class="card__title">Emerging → Exemplary</h3>
+      <p>Each row describes four observable levels. They are not grades — they are evidence targets. You do not need Exemplary to pass; you need Proficient on every row.</p>
+    </div>
+    <div class="card">
+      <div class="card__label">Pass bar</div>
+      <h3 class="card__title">Proficient on all criteria</h3>
+      <p>The green column is the microcredential floor. Missing Proficient on one criterion blocks the credential until that artifact is revised — high scores elsewhere do not compensate.</p>
+    </div>
+    <div class="card">
+      <div class="card__label">Evidence</div>
+      <h3 class="card__title">Artifact + log</h3>
+      <p>Each deliverable is scored against the rubric using the artifact itself plus a short change log. Self-assessment first, instructor assessment second, peer review between.</p>
+    </div>
+  </div>
+
+  <div class="pass-rule">
+    <h3>The Non-Compensatory Rule</h3>
+    <p>
+      An Exemplary on D4 does not cover a Developing on D2. Every deliverable has a floor; every floor is
+      required. This is the structural property that distinguishes a microcredential from a course grade.
+    </p>
+    <p>
+      Any artifact scored below Proficient returns to the learner with one revision path and a clear
+      resubmission deadline. A revision that reaches Proficient earns the credit; the original is not averaged.
+    </p>
+  </div>
+</section>
+
+<!-- ─── D1 ───────────────────────────────────────────────────── -->
+<section class="section section--tint" id="d1">
+  <span class="section__eyebrow">Deliverable 01 · Session 02 · Week 2</span>
+  <h2 class="section__title">D1 — Design Problem Statement</h2>
+  <p class="section__lede" style="max-width: 820px;">
+    A one-page statement of learner, context, constraint, and the measurable shift you intend to produce.
+    Everything downstream cites D1. A sloppy D1 compounds.
+  </p>
+
+  <div class="rubric">
+    <div class="rubric__head">
+      <div class="rubric__num">D1 · 5 criteria</div>
+      <h3 class="rubric__title">Design Problem Statement</h3>
+      <p class="rubric__meta">Produced in <a href="session-02.html">Session 02</a> · LO 2.4, 2.5</p>
+    </div>
+    <div class="rubric__body">
+      <table class="rubric-tbl">
+        <thead>
+          <tr>
+            <th>Criterion</th>
+            <th class="lvl-emerging">Emerging</th>
+            <th class="lvl-developing">Developing</th>
+            <th class="lvl-proficient">Proficient</th>
+            <th class="lvl-exemplary">Exemplary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="criterion">Learner specificity<small>Named, not "students"</small></td>
+            <td data-lvl="Emerging">"Students" or a whole course; no differentiation.</td>
+            <td data-lvl="Developing">A population (e.g., "first-year residents") with one trait.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">A named population with role, prior knowledge, and at least one motivational condition.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus named variation within the population that changes design decisions.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Context constraints<small>Observable, not inferred</small></td>
+            <td data-lvl="Emerging">No constraints named, or only generic ones ("busy," "limited time").</td>
+            <td data-lvl="Developing">Two constraints named but without source or observable trigger.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Three or more context constraints, each observable and each one that will force a design decision.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus the constraint that is most likely to be violated by a naive design, flagged.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Measurable shift<small>Verb, baseline, target</small></td>
+            <td data-lvl="Emerging">Outcome is a feeling or attitude with no measurement path.</td>
+            <td data-lvl="Developing">Observable verb, but baseline or target is missing.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Observable verb, stated baseline, stated target, and a realistic window for the shift.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus the discrimination this shift tests (performance ≠ understanding).</td>
+          </tr>
+          <tr>
+            <td class="criterion">Evidence of the problem<small>Why now, not invented</small></td>
+            <td data-lvl="Emerging">No evidence; the problem is assumed.</td>
+            <td data-lvl="Developing">Anecdote or one secondary source; could be generalized.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">At least one primary-source data point (observation, artifact, interview) that the problem exists in this context.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus a disconfirming check — what would make this not the problem?</td>
+          </tr>
+          <tr>
+            <td class="criterion">Revision response<small>Log + rationale</small></td>
+            <td data-lvl="Emerging">No revision log, or cosmetic edits only.</td>
+            <td data-lvl="Developing">One revision with what changed but not why.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">One revision based on specific peer feedback; what changed and why, in ≤3 sentences.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus one piece of feedback the author chose not to apply and the reason.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rubric__footer">
+      <div>
+        <h4>Evidence required</h4>
+        <p>The one-page D1 artifact, tracked-changes version from Session 02 workshop, and one peer-review comment quoted in the change log.</p>
+      </div>
+      <div>
+        <h4>Most common block</h4>
+        <p>Proficient on "measurable shift" is the frequent miss. An outcome without a baseline is not a shift — it is a wish.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── D2 ───────────────────────────────────────────────────── -->
+<section class="section" id="d2">
+  <span class="section__eyebrow">Deliverable 02 · Session 03 · Week 3</span>
+  <h2 class="section__title">D2 — Objective × Mechanic Crosswalk</h2>
+  <p class="section__lede" style="max-width: 820px;">
+    Two to four objectives mapped to mechanics with rationale, risks, and a declined alternative. D2 is
+    the spine of the design — it is cited in every session from S4 onward.
+  </p>
+
+  <div class="rubric">
+    <div class="rubric__head">
+      <div class="rubric__num">D2 · 5 criteria</div>
+      <h3 class="rubric__title">Objective × Mechanic Crosswalk</h3>
+      <p class="rubric__meta">Produced in <a href="session-03.html">Session 03</a> · LO 3.3</p>
+    </div>
+    <div class="rubric__body">
+      <table class="rubric-tbl">
+        <thead>
+          <tr>
+            <th>Criterion</th>
+            <th class="lvl-emerging">Emerging</th>
+            <th class="lvl-developing">Developing</th>
+            <th class="lvl-proficient">Proficient</th>
+            <th class="lvl-exemplary">Exemplary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="criterion">Objective specificity<small>Verb, condition, criterion</small></td>
+            <td data-lvl="Emerging">Objectives are topics, not behaviors ("fractions," "triage").</td>
+            <td data-lvl="Developing">Observable verbs but no condition or criterion.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Every objective has verb + condition + success criterion; types are named (skill / concept / judgment / disposition).</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus objectives tagged to Bloom or equivalent taxonomy with justification for the tag.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Mechanic rationale<small>Why this, not another</small></td>
+            <td data-lvl="Emerging">Mechanic named without rationale; "it will be fun."</td>
+            <td data-lvl="Developing">Rationale is generic (e.g., "engaging") without link to the objective type.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Each row explains why this mechanic fits this objective type and this learner context.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus a citation to a worked case (Casebook handout or external) supporting the choice.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Risk identification<small>Named, specific</small></td>
+            <td data-lvl="Emerging">No risks, or "might not work."</td>
+            <td data-lvl="Developing">Generic risks (too hard, too long).</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Each row names at least one risk specific to the mechanic-objective pair and how it would show up in play.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus the leading indicator that would tell you the risk is materializing during playtest.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Declined alternative<small>The honesty column</small></td>
+            <td data-lvl="Emerging">No declined row.</td>
+            <td data-lvl="Developing">A declined row exists but reads as a straw man.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">At least one objective the author was tempted to include, named, with a one-sentence reason for exclusion.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus the condition under which the declined row would re-enter scope.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Traceability to D1<small>Constraint-linked</small></td>
+            <td data-lvl="Emerging">D2 does not reference D1.</td>
+            <td data-lvl="Developing">One row references a D1 element.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Every row cites at least one specific D1 context constraint that shaped the mechanic choice.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus a row where a D1 constraint forced the author to reject their first mechanic choice.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rubric__footer">
+      <div>
+        <h4>Evidence required</h4>
+        <p>The crosswalk table (markdown or .csv), version-stamped in the repo; the S5 collaboration-structure appendix counts as part of D2.</p>
+      </div>
+      <div>
+        <h4>Most common block</h4>
+        <p>Traceability. Learners write D2 and D1 as separate artifacts; the rubric requires D1 to live inside D2 as evidence.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── D3 ───────────────────────────────────────────────────── -->
+<section class="section section--tint" id="d3">
+  <span class="section__eyebrow">Deliverable 03 · Session 07 · Week 7</span>
+  <h2 class="section__title">D3 — Paper Prototype &amp; Facilitator Guide</h2>
+  <p class="section__lede" style="max-width: 820px;">
+    A paper prototype playable at the table in five minutes, plus the facilitator guide that lets a
+    colleague run it without you. Playability is the rubric bar.
+  </p>
+
+  <div class="rubric">
+    <div class="rubric__head">
+      <div class="rubric__num">D3 · 5 criteria</div>
+      <h3 class="rubric__title">Paper Prototype &amp; Facilitator Guide</h3>
+      <p class="rubric__meta">Produced in <a href="session-07.html">Session 07</a> · LO 7.1–7.4</p>
+    </div>
+    <div class="rubric__body">
+      <table class="rubric-tbl">
+        <thead>
+          <tr>
+            <th>Criterion</th>
+            <th class="lvl-emerging">Emerging</th>
+            <th class="lvl-developing">Developing</th>
+            <th class="lvl-proficient">Proficient</th>
+            <th class="lvl-exemplary">Exemplary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="criterion">Playability<small>Colleague-run, 5 min to loop</small></td>
+            <td data-lvl="Emerging">Author must explain to start. Loop not reached.</td>
+            <td data-lvl="Developing">Runs with author present; stalls on one rule.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">A colleague picks it up from the guide and reaches the full loop within 5 minutes, no author present.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus two independent runners reach consistent decisions on the same scenario.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Loop fidelity<small>Matches the D2 row</small></td>
+            <td data-lvl="Emerging">Prototype demonstrates a different mechanic than D2.</td>
+            <td data-lvl="Developing">Core mechanic present but the feedback channel differs from D2.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Prototype implements the mechanic, feedback kind, and one risk case named in the chosen D2 row.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus the prototype reveals a D2 assumption the author did not know they were making.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Facilitator guide completeness<small>Setup · rules · edges · debrief</small></td>
+            <td data-lvl="Emerging">No guide, or rules only.</td>
+            <td data-lvl="Developing">Setup + rules; no edge cases or debrief prompts.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Setup, rules, at least three edge cases with resolutions, and three debrief prompts targeting the learning objective.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus a facilitator calibration note — the one rule runners disagree on and how to hold the line.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Artifact quality<small>No placeholder play</small></td>
+            <td data-lvl="Emerging">Cards/boards have "TBD" or lorem text in play area.</td>
+            <td data-lvl="Developing">Real content but inconsistent (one theme, many voices).</td>
+            <td data-lvl="Proficient" class="lvl-proficient">All play-area text is real content at final voice; art placeholders clearly marked and do not block play.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus content audited for accuracy by a domain expert or a cited source.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Iteration log<small>3+ cycles</small></td>
+            <td data-lvl="Emerging">No log; one pass only.</td>
+            <td data-lvl="Developing">Two cycles logged; changes not tied to observations.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Three or more cycles; each entry names what was observed, what changed, and what the next test will check.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus one cycle where the author reverted a change after evidence against it.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rubric__footer">
+      <div>
+        <h4>Evidence required</h4>
+        <p>Photographs of the prototype, a PDF of the facilitator guide, the iteration log, and one 2-minute video of a non-author running the loop.</p>
+      </div>
+      <div>
+        <h4>Most common block</h4>
+        <p>Playability. Authors underestimate how much they were narrating. The video-run requirement catches this cheaply.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── D4 ───────────────────────────────────────────────────── -->
+<section class="section" id="d4">
+  <span class="section__eyebrow">Deliverable 04 · Session 09 · Week 9</span>
+  <h2 class="section__title">D4 — Playtest Report</h2>
+  <p class="section__lede" style="max-width: 820px;">
+    Protocol, three or more target-learner sessions, observations separated from interpretation, and an
+    evidence-ranked revision plan. Not peers. Target learners.
+  </p>
+
+  <div class="rubric">
+    <div class="rubric__head">
+      <div class="rubric__num">D4 · 5 criteria</div>
+      <h3 class="rubric__title">Playtest Report</h3>
+      <p class="rubric__meta">Produced in <a href="session-09.html">Session 09</a> · LO 9.1–9.5</p>
+    </div>
+    <div class="rubric__body">
+      <table class="rubric-tbl">
+        <thead>
+          <tr>
+            <th>Criterion</th>
+            <th class="lvl-emerging">Emerging</th>
+            <th class="lvl-developing">Developing</th>
+            <th class="lvl-proficient">Proficient</th>
+            <th class="lvl-exemplary">Exemplary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="criterion">Protocol design<small>Target learners, consent</small></td>
+            <td data-lvl="Emerging">Peers playtested; no protocol document.</td>
+            <td data-lvl="Developing">Mix of peers and target learners; protocol thin.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Three or more target-learner sessions; written protocol with consent language, task brief, capture method, and debrief script.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus the protocol evolved between sessions and the change is documented.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Evidence base<small>Capture + traceability</small></td>
+            <td data-lvl="Emerging">Notes from memory; no raw capture.</td>
+            <td data-lvl="Developing">One capture mode (notes only, or video only).</td>
+            <td data-lvl="Proficient" class="lvl-proficient">At least two capture modes (e.g., observation notes + artifacts + recording); every finding in the report is traceable to a specific capture moment.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus structured event logging against the S10 taxonomy.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Observation vs. interpretation<small>Separated, labeled</small></td>
+            <td data-lvl="Emerging">Observations and interpretations mixed; no labels.</td>
+            <td data-lvl="Developing">Labels present but inconsistent; interpretations imported as observations.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Every finding is written as an observation first (what was seen/heard), then one interpretation, with the boundary visible on the page.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus at least one observation the author cannot yet interpret — flagged as open.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Finding taxonomy<small>Severity × domain</small></td>
+            <td data-lvl="Emerging">Findings as a flat list; no severity or domain.</td>
+            <td data-lvl="Developing">One dimension (severity or domain), not both.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Every finding tagged with severity (stopper / major / minor) and domain (mechanic / UX / content / ethics / tech).</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus inter-rater check — a peer tagged a sample of findings and disagreements are discussed.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Revision plan<small>Impact × effort, cut line</small></td>
+            <td data-lvl="Emerging">"Fix everything" or no plan.</td>
+            <td data-lvl="Developing">Ranked list; no explicit cut line; effort not estimated.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Backlog with impact (1–5) and effort (1–5) per item, a drawn cut line for S11, and a one-sentence reason for each decline.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus the item the author most wanted to do but cut, and the condition that would bring it above the line.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rubric__footer">
+      <div>
+        <h4>Evidence required</h4>
+        <p>Protocol PDF, consent records (scrubbed), raw capture (notes and/or recording links), tagged findings table, and the ranked backlog.</p>
+      </div>
+      <div>
+        <h4>Most common block</h4>
+        <p>Observation-vs-interpretation. Authors write "players were confused" (interpretation) instead of "three of three asked the same question at second round" (observation).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── D5 ───────────────────────────────────────────────────── -->
+<section class="section section--tint" id="d5">
+  <span class="section__eyebrow">Deliverable 05 · Session 12 · Week 12</span>
+  <h2 class="section__title">D5 — Implementation Spec</h2>
+  <p class="section__lede" style="max-width: 820px;">
+    State machine, event map, asset list, and a Three.js bridge for one hero scene. D5 is what a developer
+    could build from. It absorbs D1–D4 into a single implementation artifact.
+  </p>
+
+  <div class="rubric">
+    <div class="rubric__head">
+      <div class="rubric__num">D5 · 5 criteria</div>
+      <h3 class="rubric__title">Implementation Spec</h3>
+      <p class="rubric__meta">Produced in <a href="session-12.html">Session 12</a> · LO 8.1–8.4 + 11.1–11.4</p>
+    </div>
+    <div class="rubric__body">
+      <table class="rubric-tbl">
+        <thead>
+          <tr>
+            <th>Criterion</th>
+            <th class="lvl-emerging">Emerging</th>
+            <th class="lvl-developing">Developing</th>
+            <th class="lvl-proficient">Proficient</th>
+            <th class="lvl-exemplary">Exemplary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="criterion">State machine<small>One page, fully guarded</small></td>
+            <td data-lvl="Emerging">Prose description; no diagram.</td>
+            <td data-lvl="Developing">Diagram exists; states or transitions unguarded.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Single-page diagram; every state has entry and exit; every transition has event + guard; two designers reading it produce the same mental model.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus a runnable reference (Codex-generated state-machine runtime) passing the included assertions.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Event → feedback map<small>Every cell specified</small></td>
+            <td data-lvl="Emerging">Prose; no table.</td>
+            <td data-lvl="Developing">Table exists; &gt;20% of cells blank.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">All cells filled or marked "none" intentionally; events tagged with reward_kind against the S4 taxonomy.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus a gap audit (Codex lint or manual) showing zero silent cells.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Three.js bridge<small>Scene purpose, graph, budget</small></td>
+            <td data-lvl="Emerging">3D gestured at; no spec.</td>
+            <td data-lvl="Developing">Scene graph present; no camera, input, or perf budget.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">One hero scene fully specified: purpose, graph, camera, input, entry/exit, assets with budgets, and a named 2D fallback condition.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus a scaffold produced from the spec with the bridge handout's prompt, running on a device-floor target.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Coherence with D1–D4<small>Cited, not restated</small></td>
+            <td data-lvl="Emerging">D5 reads as if D1–D4 do not exist.</td>
+            <td data-lvl="Developing">Prior deliverables cited once or twice.</td>
+            <td data-lvl="Proficient" class="lvl-proficient">Every major spec decision cites the D1 constraint, D2 row, D3 iteration, or D4 finding that forced it; divergences are called out.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus a "changed my mind" annex — one D2 decision the author reversed between D3 and D5 and why.</td>
+          </tr>
+          <tr>
+            <td class="criterion">Known limits<small>Above-the-line honesty</small></td>
+            <td data-lvl="Emerging">No limits section, or "no known issues."</td>
+            <td data-lvl="Developing">Limits list is generic ("needs more testing").</td>
+            <td data-lvl="Proficient" class="lvl-proficient">A "Known Limits" annex drawn from the S11 backlog items above the line; each with the condition under which it would be resolved.</td>
+            <td data-lvl="Exemplary" class="lvl-exemplary">Proficient plus a limit the author considers disqualifying for a next audience the game should not yet be used with.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rubric__footer">
+      <div>
+        <h4>Evidence required</h4>
+        <p>The spec document (PDF or web), state-machine diagram file, event map table, Three.js bridge document, and links to any Codex scaffolds produced from the spec.</p>
+      </div>
+      <div>
+        <h4>Most common block</h4>
+        <p>Coherence with D1–D4. Learners treat D5 as a fresh start; the rubric requires it to be a compound artifact that carries its history visibly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Credential summary ───────────────────────────────────── -->
+<section class="section" id="credential">
+  <span class="section__eyebrow">The credential</span>
+  <h2 class="section__title">What the badge means.</h2>
+  <p class="section__lede" style="max-width: 820px;">
+    The Educational Game Design microcredential is issued when all five deliverables reach Proficient or
+    above on every rubric criterion. The credential declares that the holder can take a learning problem
+    from statement to implementation-ready spec, with evidence at every step.
+  </p>
+
+  <div class="card-grid card-grid--2">
+    <div class="card">
+      <div class="card__label">Criteria</div>
+      <h3 class="card__title">25 rubric rows</h3>
+      <p>Five criteria × five deliverables. The credential requires Proficient on all 25. Resubmission is available once per deliverable within the course window.</p>
+    </div>
+    <div class="card">
+      <div class="card__label">Issuer</div>
+      <h3 class="card__title">The University of Alabama</h3>
+      <p>Badge metadata (Open Badges 2.0 / CLR-compatible) publishes the rubric URL as criteria, the learner's artifact set as evidence, and the issuer profile as verification.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <span class="site-footer__brand">Educational Game Design · v2 · 12 Sessions</span>
+    <span class="site-footer__meta">The University of Alabama · College of Education</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1197,6 +1197,12 @@ pre.prompt .tag { color: #ffd580; }
   display: flex;
   flex-direction: column;
   gap: 8px;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+a.deliverable:hover {
+  background: var(--crimson-deep, #7a0019);
+  transform: translateY(-2px);
 }
 .deliverable__num {
   font-family: var(--font-display);
