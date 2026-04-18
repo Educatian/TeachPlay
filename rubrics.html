@@ -233,6 +233,54 @@
     </div>
   </div>
 
+  <div class="pass-rule" style="margin-bottom: 20px;">
+    <h3 style="display:flex; justify-content:space-between; align-items:center; gap:16px;">
+      <span>AI-assisted skill tagging <span style="font-size:11px; font-family: var(--font-mono); color:#525252; font-weight:400; letter-spacing:0.1em; margin-left:8px;">DESIGN STUB</span></span>
+      <button class="btn btn--ghost instructor-only" id="btn-suggest-skills" style="font-size:12px; padding:7px 14px;">Suggest skills (AI) →</button>
+    </h3>
+    <p style="margin-bottom: 0;">
+      For any deliverable the cohort has submitted, an instructor can ask the model to propose ESCO /
+      Lightcast skill tags <em>with evidence excerpts</em>. The instructor confirms each tag before it
+      attaches to the learner's OBv3 assertion. The model never grades, never writes to the credential
+      directly, and is rate-audited for acceptance-rate drift.
+      Full design: <a href="docs/L1-ai-skill-tagging-design.md" style="color:var(--crimson);">docs/L1-ai-skill-tagging-design.md</a>.
+    </p>
+  </div>
+
+  <dialog id="ai-suggest-modal" style="border: 1px solid #e0e0e0; padding: 0; max-width: 760px; width: 92%;">
+    <div style="background: #161616; color:#fff; padding: 14px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.06em;">AI skill suggestions · D1 example · prompt v0.3</span>
+      <button id="ai-close" style="background: transparent; color:#fff; border:1px solid #525252; padding:4px 10px; cursor:pointer;">Close</button>
+    </div>
+    <div style="padding: 20px 24px; font-family: var(--font-sans); font-size: 14px; line-height: 1.55; background:#fff;">
+      <p style="margin:0 0 14px; color:#a2191f; font-weight: 600;">Design stub — no API call is made. Below is a deterministic example so the UX is reviewable without an API key.</p>
+      <div style="background:#f4f4f4; padding: 12px 14px; font-family: var(--font-mono); font-size: 12.5px; margin-bottom: 16px;">
+<pre style="margin:0; white-space:pre-wrap;">{
+  "tags": [
+    { "skill_code": "LXD",      "excerpt": "My learner is a 5th-grade student reading two years below grade level; the game must fit a 25-minute station.",
+      "reason": "Learner + context constraints stated explicitly", "confidence": "high" },
+    { "skill_code": "RESEARCH", "excerpt": "I interviewed three reading specialists at Tuscaloosa City Schools.",
+      "reason": "Evidence of problem gathered from named sources", "confidence": "medium" }
+  ],
+  "claimed_but_not_shown": [
+    { "skill_code": "ACCESS", "reason": "Artifact mentions accessibility once; no UDL mapping present." }
+  ],
+  "notes": "D1 meets the floor on learner specificity and evidence. Accessibility claim is surface-level — ask the learner to either demonstrate or remove it in revision."
+}</pre>
+      </div>
+      <p style="margin:0; font-size:12.5px; color:#525252;">Guardrails: nothing auto-commits; excerpt required; artifact hash cached; model + prompt version logged to xAPI; PII stripped before send.</p>
+    </div>
+  </dialog>
+
+  <script>
+    document.getElementById('btn-suggest-skills')?.addEventListener('click', () => {
+      document.getElementById('ai-suggest-modal').showModal();
+    });
+    document.getElementById('ai-close')?.addEventListener('click', () => {
+      document.getElementById('ai-suggest-modal').close();
+    });
+  </script>
+
   <div class="pass-rule">
     <h3>The Non-Compensatory Rule</h3>
     <p>

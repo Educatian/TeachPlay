@@ -83,6 +83,7 @@
   .chip--iste { background: #edf5ff; color: #002d9c; }
   .chip--udl { background: #defbe6; color: #0e6027; }
   .chip--netp { background: #fff1f1; color: #a2191f; }
+  .chip--skill { background: #f6f2ff; color: #6929c4; }
 
   .align-tbl {
     width: 100%;
@@ -264,7 +265,27 @@
         <span class="chip" data-val="NETP">NETP 2024</span>
       </div>
     </div>
+    <div class="align-filter__group">
+      <span class="align-filter__label">Skill (ESCO / Lightcast)</span>
+      <div class="align-filter__chips" data-filter-group="skill">
+        <span class="chip is-active" data-val="all">All</span>
+        <span class="chip" data-val="LXD">Learning Exp. Design</span>
+        <span class="chip" data-val="ASSESS">Assessment Design</span>
+        <span class="chip" data-val="PROTO">Rapid Prototyping</span>
+        <span class="chip" data-val="RESEARCH">Learner Research</span>
+        <span class="chip" data-val="SPEC">Specification Writing</span>
+        <span class="chip" data-val="ACCESS">Accessibility Design</span>
+        <span class="chip" data-val="ITERATE">Iterative Improvement</span>
+        <span class="chip" data-val="ANALYTICS">Learning Analytics</span>
+      </div>
+    </div>
   </div>
+  <p style="font-size: 12.5px; color: #525252; max-width: 860px; margin: 8px 0 24px;">
+    Skill tags crosswalk to public taxonomies (ESCO, Lightcast Open Skills) so employers and registrars
+    can reason about transferability. See
+    <a href="credential/skills-crosswalk.json" style="color: var(--crimson);">skills-crosswalk.json</a>
+    for the full per-criterion mapping.
+  </p>
 
   <table class="align-tbl">
     <thead>
@@ -276,6 +297,7 @@
         <th style="width: 90px;">Deliverable</th>
         <th style="width: 180px;">Rubric criterion</th>
         <th style="width: 220px;">Frameworks</th>
+        <th style="width: 180px;">Skills (ESCO / Lightcast)</th>
       </tr>
     </thead>
     <tbody id="align-body"></tbody>
@@ -381,7 +403,49 @@ document.getElementById('stat-lo').textContent = ROWS.length;
 const FRAME_CLS = { "ISTE-5":"chip--iste", "ISTE-6":"chip--iste", "ISTE-7":"chip--iste", "UDL":"chip--udl", "NETP":"chip--netp" };
 const FRAME_LABEL = { "ISTE-5":"ISTE 5 Designer", "ISTE-6":"ISTE 6 Facilitator", "ISTE-7":"ISTE 7 Analyst", "UDL":"UDL 3.0", "NETP":"NETP 2024" };
 
-const FILTER = { session:"all", deliv:"all", frame:"all" };
+// Skill tags keyed by rubric criterion ref. Short codes map to the chips in the
+// Skill filter and are defined in credential/skills-crosswalk.json.
+const SKILL_LABEL = {
+  LXD: "Learning Exp. Design",
+  ASSESS: "Assessment Design",
+  PROTO: "Rapid Prototyping",
+  RESEARCH: "Learner Research",
+  SPEC: "Specification Writing",
+  ACCESS: "Accessibility Design",
+  ITERATE: "Iterative Improvement",
+  ANALYTICS: "Learning Analytics",
+};
+const RUBRIC_SKILLS = {
+  "D1.learner_specificity":   ["RESEARCH","LXD"],
+  "D1.context_constraints":   ["LXD"],
+  "D1.measurable_shift":      ["LXD","ASSESS"],
+  "D1.evidence_of_problem":   ["RESEARCH"],
+  "D1.revision_response":     ["ITERATE"],
+  "D1.all_criteria":          ["LXD"],
+  "D2.objective_specificity": ["LXD","ASSESS"],
+  "D2.mechanic_rationale":    ["LXD"],
+  "D2.risk_identification":   ["LXD"],
+  "D2.declined_alternative":  ["LXD"],
+  "D2.traceability_to_D1":    ["LXD"],
+  "D2.all_criteria":          ["LXD","ASSESS"],
+  "D3.loop_fidelity":         ["PROTO"],
+  "D3.facilitator_guide":     ["SPEC"],
+  "D3.iteration_log":         ["ITERATE","PROTO"],
+  "D3.playability":           ["PROTO","ACCESS"],
+  "D3.all_criteria":          ["PROTO"],
+  "D4.finding_taxonomy":      ["ANALYTICS","RESEARCH"],
+  "D4.protocol_design":       ["RESEARCH"],
+  "D4.observation_vs_interp": ["RESEARCH"],
+  "D4.revision_plan":         ["ITERATE"],
+  "D5.state_machine":         ["SPEC"],
+  "D5.event_feedback_map":    ["SPEC","ANALYTICS"],
+  "D5.threejs_bridge":        ["SPEC"],
+  "D5.coherence_d1_d4":       ["SPEC"],
+  "D5.known_limits":          ["SPEC"],
+  "Rubric calibration":       ["ASSESS"],
+};
+
+const FILTER = { session:"all", deliv:"all", frame:"all", skill:"all" };
 
 function rubricHref(ref){
   if (!ref || ref === "—" || ref === "Rubric calibration") return null;
@@ -389,10 +453,15 @@ function rubricHref(ref){
   return m ? `rubrics.html#d${m[1]}` : null;
 }
 
+function skillsFor(rubricRef){
+  return RUBRIC_SKILLS[rubricRef] || [];
+}
+
 function rowMatches(r){
   if (FILTER.session !== "all" && String(r.s) !== FILTER.session) return false;
   if (FILTER.deliv !== "all" && !r.d.includes(FILTER.deliv)) return false;
   if (FILTER.frame !== "all" && !r.f.includes(FILTER.frame)) return false;
+  if (FILTER.skill !== "all" && !skillsFor(r.r).includes(FILTER.skill)) return false;
   return true;
 }
 
@@ -407,6 +476,7 @@ function render(){
       : `<span class="rubric-ref">${r.r}</span>`;
     const delivCls = r.d.startsWith("→") ? "deliv" : "deliv deliv--support";
     const frames = r.f.map(k => `<span class="chip ${FRAME_CLS[k]}">${FRAME_LABEL[k]}</span>`).join("");
+    const skills = skillsFor(r.r).map(k => `<span class="chip chip--skill">${SKILL_LABEL[k]}</span>`).join("");
     return `
       <tr>
         <td class="lo-code">LO ${r.lo}</td>
@@ -416,6 +486,7 @@ function render(){
         <td class="${delivCls}">${r.d}</td>
         <td>${rubricCell}</td>
         <td><div class="frame-list">${frames}</div></td>
+        <td><div class="frame-list">${skills || '<span style="color:#8d8d8d;font-size:11.5px;">—</span>'}</div></td>
       </tr>`;
   }).join("");
   empty.hidden = hits.length > 0;

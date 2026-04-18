@@ -22,6 +22,7 @@
   const LS_DONE = 'hb:done';
   const LS_CHECK = (sessionN, itemId) => `hb:s${sessionN}:chk:${itemId}`;
   const LS_TICKET = (sessionN, id) => `hb:s${sessionN}:ticket:${id}`;
+  const LS_SA = (phase, skill) => `hb:self-assess:${phase}:${skill}`;
 
   function getDoneSet() {
     try { return new Set(JSON.parse(localStorage.getItem(LS_DONE) || '[]')); }
@@ -186,6 +187,46 @@
     });
   }
 
+  // ── Self-assessment (pre/post) ───────────────────────────────
+  function wireSelfAssessment() {
+    document.querySelectorAll('.self-assess[data-self-assessment]').forEach(host => {
+      const phase = host.dataset.selfAssessment; // "pre" | "post"
+      const saved = host.querySelector('.self-assess__saved');
+      const flash = () => {
+        if (saved) saved.textContent = 'Saved · ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+      };
+      host.querySelectorAll('.self-assess__row').forEach(row => {
+        const skill = row.dataset.skill;
+        const prior = localStorage.getItem(LS_SA(phase, skill));
+        if (prior !== null) {
+          const input = row.querySelector(`input[value="${prior}"]`);
+          if (input) input.checked = true;
+        }
+        row.querySelectorAll('input[type="radio"]').forEach(inp => {
+          inp.addEventListener('change', () => {
+            if (!inp.checked) return;
+            const v = Number(inp.value);
+            localStorage.setItem(LS_SA(phase, skill), String(v));
+            flash();
+            if (window.xapi) {
+              const obj = window.xapi.activities.obj('self-assessment', `${phase}/${skill}`, `Self-assessment ${phase} · ${skill}`);
+              window.xapi.emit('responded', obj, {
+                result: {
+                  response: String(v),
+                  score: { raw: v, min: 0, max: 4, scaled: v / 4 },
+                  extensions: {
+                    'https://educatian.github.io/TeachPlay/ext/sa-phase': phase,
+                    'https://educatian.github.io/TeachPlay/ext/sa-skill': skill,
+                  },
+                },
+              });
+            }
+          });
+        });
+      });
+    });
+  }
+
   // ── Print button ─────────────────────────────────────────────
   function wirePrint() {
     document.querySelectorAll('[data-print]').forEach(btn => {
@@ -283,6 +324,7 @@
     if (sb) renderSidebar(sb);
     wireChecklists();
     wireTickets();
+    wireSelfAssessment();
     wirePrint();
     wireMarkDone();
     wireCrosswalk();

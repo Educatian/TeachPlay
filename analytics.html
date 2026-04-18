@@ -155,6 +155,42 @@
   .an-lo-grid__cell { height: 22px; background: #fafafa; border: 1px solid #e8e8e8; }
   .an-lo-grid__cell.covered { background: #6fdc8c; border-color: #42be65; }
   .an-lo-grid__cell.active { background: #ffb3b8; border-color: #da1e28; }
+
+  /* Skills growth (pre/post) */
+  .an-sa-growth { background:#fff; border:1px solid #e0e0e0; padding: 14px 20px; }
+  .an-sa-row {
+    display: grid;
+    grid-template-columns: 220px 1fr 80px;
+    gap: 18px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #f0f0f0;
+  }
+  .an-sa-row:last-child { border-bottom: none; }
+  .an-sa-lbl { font-family: var(--font-sans); font-size: 13.5px; color:#161616; font-weight:600; }
+  .an-sa-n { font-family: var(--font-mono); font-weight:400; color:#8d8d8d; font-size: 11.5px; margin-left: 6px; }
+  .an-sa-bars { display: flex; flex-direction: column; gap: 6px; }
+  .an-sa-bar { position: relative; height: 16px; background: #f4f4f4; }
+  .an-sa-bar span { position: absolute; top:0; left:0; bottom:0; display:block; }
+  .an-sa-bar em {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    font-family: var(--font-mono); font-size: 11px; font-style: normal; color: #161616;
+  }
+  .an-sa-bar--pre span { background: #c6c6c6; }
+  .an-sa-bar--post span { background: linear-gradient(90deg, #990000, #da1e28); }
+  .an-sa-delta {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: right;
+  }
+  .an-sa-delta--pos { color: #0e6027; }
+  .an-sa-delta--flat { color: #8d8d8d; }
+  .an-sa-delta--neg { color: #a2191f; }
+  @media (max-width: 720px) {
+    .an-sa-row { grid-template-columns: 1fr; gap: 6px; }
+    .an-sa-delta { text-align: left; }
+  }
 </style>
 </head>
 <body>
@@ -213,7 +249,9 @@
     <span class="an-bar__pill">LRS · <b id="bar-lrs">local-only</b></span>
     <span class="an-bar__sep"></span>
     <button id="btn-seed">Seed synthetic cohort</button>
-    <button id="btn-export">Export NDJSON</button>
+    <button id="btn-export">Export xAPI NDJSON</button>
+    <button id="btn-clr">Export CLR 2.0 (cohort)</button>
+    <button id="btn-clr-one">Export CLR 2.0 (me)</button>
     <button id="btn-clear" class="danger">Clear queue</button>
   </div>
 
@@ -251,6 +289,15 @@
       <span class="an-section__sub">Green = cohort has produced evidence against this LO this week. Gaps here flag evaluation-plan triggers.</span>
     </div>
     <div id="lo-coverage"></div>
+  </div>
+
+  <!-- Skills growth (pre/post self-assessment) -->
+  <div class="an-section">
+    <div class="an-section__head">
+      <h2>Skills growth · pre vs post self-assessment</h2>
+      <span class="an-section__sub">0–4 Likert on 8 skills. Left bar = S1 pre, right bar = S12 post. Negative deltas are real: they usually mean calibration, not regression.</span>
+    </div>
+    <div id="sa-growth" class="an-sa-growth"></div>
   </div>
 
   <!-- Inter-rater reliability -->
@@ -296,6 +343,7 @@
 </footer>
 
 <script src="xapi.js"></script>
+<script src="clr.js"></script>
 <script src="role.js"></script>
 <script>
 (function(){
@@ -550,6 +598,68 @@
     }).join('');
   }
 
+  // ── Skills growth: pre vs post self-assessment ─────────────────
+  const SA_SKILLS = [
+    { k:"LXD", label:"Learning Exp. Design" },
+    { k:"ASSESS", label:"Assessment Design" },
+    { k:"PROTO", label:"Rapid Prototyping" },
+    { k:"RESEARCH", label:"Learner Research" },
+    { k:"SPEC", label:"Specification Writing" },
+    { k:"ACCESS", label:"Accessibility Design" },
+    { k:"ITERATE", label:"Iterative Improvement" },
+    { k:"ANALYTICS", label:"Learning Analytics" },
+  ];
+  function renderGrowth(q) {
+    // Walk statements for self-assessment responses; the latest response per
+    // (actor, phase, skill) is authoritative.
+    const latest = new Map(); // key = `${actor}|${phase}|${skill}` → value
+    for (const s of q) {
+      if (!s.object || !s.object.id || !s.object.id.includes('/self-assessment/')) continue;
+      const actor = s.actor && s.actor.account && s.actor.account.name;
+      if (!actor) continue;
+      const ext = (s.result && s.result.extensions) || {};
+      const phase = ext['https://educatian.github.io/TeachPlay/ext/sa-phase'];
+      const skill = ext['https://educatian.github.io/TeachPlay/ext/sa-skill'];
+      const v = s.result && s.result.score && s.result.score.raw;
+      if (!phase || !skill || v == null) continue;
+      const key = `${actor}|${phase}|${skill}`;
+      const prior = latest.get(key);
+      if (!prior || new Date(s.timestamp) > new Date(prior.ts)) {
+        latest.set(key, { v, ts: s.timestamp });
+      }
+    }
+    // Aggregate to cohort mean per (phase, skill).
+    const agg = {}; // agg[skill][phase] = { sum, n }
+    for (const [key, { v }] of latest) {
+      const [, phase, skill] = key.split('|');
+      if (!agg[skill]) agg[skill] = { pre:{sum:0,n:0}, post:{sum:0,n:0} };
+      if (!agg[skill][phase]) continue;
+      agg[skill][phase].sum += v;
+      agg[skill][phase].n += 1;
+    }
+    const host = $('#sa-growth');
+    const rows = SA_SKILLS.map(({ k, label }) => {
+      const a = agg[k] || { pre:{sum:0,n:0}, post:{sum:0,n:0} };
+      const pre = a.pre.n ? a.pre.sum / a.pre.n : 0;
+      const post = a.post.n ? a.post.sum / a.post.n : 0;
+      const delta = post - pre;
+      const preW = Math.max(0, Math.min(100, (pre / 4) * 100));
+      const postW = Math.max(0, Math.min(100, (post / 4) * 100));
+      const deltaCls = delta > 0.3 ? 'pos' : (delta < -0.1 ? 'neg' : 'flat');
+      const nLabel = `n=${a.pre.n}/${a.post.n}`;
+      return `
+        <div class="an-sa-row">
+          <div class="an-sa-lbl">${label} <span class="an-sa-n">${nLabel}</span></div>
+          <div class="an-sa-bars">
+            <div class="an-sa-bar an-sa-bar--pre"><span style="width:${preW}%"></span><em>${pre.toFixed(2)}</em></div>
+            <div class="an-sa-bar an-sa-bar--post"><span style="width:${postW}%"></span><em>${post.toFixed(2)}</em></div>
+          </div>
+          <div class="an-sa-delta an-sa-delta--${deltaCls}">${delta >= 0 ? '+' : ''}${delta.toFixed(2)}</div>
+        </div>`;
+    }).join('');
+    host.innerHTML = rows || '<div class="an-stream__empty">No self-assessment responses yet. Visit S1 or S12 and rate the eight skills.</div>';
+  }
+
   // ── Render all ──────────────────────────────────────────────────
   function renderAll() {
     const q = xapi.readQueue();
@@ -559,6 +669,7 @@
     renderHeatmap(stats);
     renderFunnel(stats);
     renderLoCoverage(stats);
+    renderGrowth(q);
     renderReliability(stats);
     renderStream(q);
   }
@@ -599,6 +710,38 @@
             definition:{ name:{'en-US':`Session ${String(sNum).padStart(2,'0')}`}, type:'http://adlnet.gov/expapi/activities/session'} },
           tBase + 7200_000, { completion: true }));
       }
+
+      // Pre/post self-assessment per learner for each of 8 skills
+      const skillKeys = ['LXD','ASSESS','PROTO','RESEARCH','SPEC','ACCESS','ITERATE','ANALYTICS'];
+      const tPre = now - 90 * 86400_000;   // 90 days ago (S1)
+      const tPost = now - 2 * 86400_000;   // 2 days ago (S12)
+      // Only learners who finished (sessionsDone >= 12) have completed the post.
+      const didPost = sessionsDone >= 11;
+      skillKeys.forEach(sk => {
+        // Pre: clustered around 1 (tried once) — noisy.
+        const pre = Math.max(0, Math.min(4, Math.round(1 + (Math.random() - 0.5) * 1.6)));
+        q.push(makeStmt(learnerId, 'responded',
+          { id:`https://educatian.github.io/TeachPlay/activities/self-assessment/pre/${sk}`,
+            definition:{ name:{'en-US':`Self-assessment pre · ${sk}`}, type:'http://adlnet.gov/expapi/activities/self-assessment'} },
+          tPre, { response: String(pre), score: { raw: pre, min: 0, max: 4, scaled: pre/4 },
+            extensions: {
+              'https://educatian.github.io/TeachPlay/ext/sa-phase': 'pre',
+              'https://educatian.github.io/TeachPlay/ext/sa-skill': sk,
+            }}));
+        if (didPost) {
+          // Post: mean ~2.6 with skill-correlated lift; occasional negative calibration.
+          const lift = (skill - 0.55) * 4 + (Math.random() - 0.4) * 1.2;
+          const post = Math.max(0, Math.min(4, Math.round(pre + lift)));
+          q.push(makeStmt(learnerId, 'responded',
+            { id:`https://educatian.github.io/TeachPlay/activities/self-assessment/post/${sk}`,
+              definition:{ name:{'en-US':`Self-assessment post · ${sk}`}, type:'http://adlnet.gov/expapi/activities/self-assessment'} },
+            tPost, { response: String(post), score: { raw: post, min: 0, max: 4, scaled: post/4 },
+              extensions: {
+                'https://educatian.github.io/TeachPlay/ext/sa-phase': 'post',
+                'https://educatian.github.io/TeachPlay/ext/sa-skill': sk,
+              }}));
+        }
+      });
 
       // Rubric assessments with two raters
       CRITERIA.forEach(([d, k]) => {
@@ -659,6 +802,14 @@
     a.download = `xapi-${xapi.getCohort()}-${Date.now()}.ndjson`;
     a.click();
     URL.revokeObjectURL(url);
+  });
+  $('#btn-clr').addEventListener('click', () => {
+    if (!window.clr) { alert('clr.js not loaded'); return; }
+    window.clr.downloadNdjson();
+  });
+  $('#btn-clr-one').addEventListener('click', () => {
+    if (!window.clr) { alert('clr.js not loaded'); return; }
+    window.clr.downloadJson();
   });
   $('#btn-clear').addEventListener('click', () => {
     if (confirm('Clear all xAPI statements from the local queue? This cannot be undone.')) {
