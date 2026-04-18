@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 05 · Mechanics II — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 2 · Design toolkit</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 05 · Week 5</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Mechanics II: narrative, <em>role</em>, and the shape of collaboration.
+      </h1>
+      <p class="session-header__lede">
+        If Mechanics I governs whether your game teaches, Mechanics II governs whether your learner stays.
+        Narrative gives context; role gives identity; collaboration structure gives the social shape that
+        decides whether your game scales past solo play. None of them teach on their own — all three amplify
+        or sabotage Mechanics I.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">45 lecture · 75 role design · 60 critique</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">Role brief</span>
+          <span class="session-meta__sub">½-page appendix to D2</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">4</span>
+          <span class="session-meta__sub">Peer critiqued</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Materials</span>
+          <span class="session-meta__value">Role catalog</span>
+          <span class="session-meta__sub">Eight archetypes</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 5.1</span><span class="outcomes__text">Distinguish narrative-as-wrapper from narrative-as-mechanic, and say which your project needs.</span></li>
+          <li><span class="outcomes__num">LO 5.2</span><span class="outcomes__text">Choose a <strong>role</strong> that maps to the learner's professional identity and lowers their threshold to try the objective behaviors.</span></li>
+          <li><span class="outcomes__num">LO 5.3</span><span class="outcomes__text">Pick a <strong>collaboration structure</strong> (solo, parallel, cooperative, competitive, asymmetric) that fits the objective type and the context constraints from D1.</span></li>
+          <li><span class="outcomes__num">LO 5.4</span><span class="outcomes__text">Write a half-page role brief that a teammate could implement without asking you questions.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="narrative">
+        <div class="block__kicker">02 · Narrative</div>
+        <h2 class="block__title">Wrapper vs. mechanic</h2>
+        <p class="lead">
+          Most educational games use narrative as a wrapper: a story frame that makes the content feel less
+          like content. That is fine for retrieval and basic discrimination — and almost useless for judgment
+          under uncertainty, where narrative is not a wrapper but the <em>medium</em> in which the skill lives.
+        </p>
+
+        <div class="card-grid card-grid--2">
+          <div class="card">
+            <div class="card__label">Option A</div>
+            <h3 class="card__title">Narrative as wrapper</h3>
+            <p>A thin story justifies the loop. Quiz questions become a space mission. Cheap, safe, adds five points of engagement. Appropriate for retrieval and procedural fluency.</p>
+            <p><strong>Watch out:</strong> the story becomes bigger than the content; learners remember the narrative, not the lesson.</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Option B</div>
+            <h3 class="card__title">Narrative as mechanic</h3>
+            <p>Story generates the situations the learner must judge. A shift, a case, a negotiation. The narrative is not around the game — the narrative <em>is</em> the game. Required for judgment under uncertainty.</p>
+            <p><strong>Watch out:</strong> expensive to author; linear narratives telegraph answers. Plan for branching or procedural generation.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="role">
+        <div class="block__kicker">03 · Role</div>
+        <h2 class="block__title">Who the learner <em>becomes</em></h2>
+        <p>
+          Role is the single most under-used lever in educational games. A well-chosen role lowers the psychological
+          cost of trying a behavior the learner does not yet own — they are not the one making the clinical call,
+          the pandemic chief is. Once in role, they will attempt things they would not attempt as themselves.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:20%;">Role archetype</th><th>What it affords</th><th>Fit with objective types</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Apprentice</strong></td><td>Permission to not know; explicit mentor feedback.</td><td>Retrieval, procedural fluency.</td></tr>
+            <tr><td><strong>First responder</strong></td><td>Time pressure, partial info, moral weight.</td><td>Judgment under uncertainty.</td></tr>
+            <tr><td><strong>Investigator</strong></td><td>Gathering evidence, hypothesizing, ruling out.</td><td>Conceptual reasoning, discrimination.</td></tr>
+            <tr><td><strong>Steward</strong></td><td>Tending a system over time; second-order effects.</td><td>Conceptual reasoning, judgment.</td></tr>
+            <tr><td><strong>Negotiator</strong></td><td>Trade-offs, alliances, incomplete alignment.</td><td>Judgment, social reasoning.</td></tr>
+            <tr><td><strong>Journalist</strong></td><td>Collecting &amp; synthesizing accounts.</td><td>Conceptual reasoning, critical evaluation.</td></tr>
+            <tr><td><strong>Engineer</strong></td><td>Build, test, revise under constraint.</td><td>Procedural fluency, reasoning.</td></tr>
+            <tr><td><strong>Peer</strong></td><td>No hierarchy; honest collaboration.</td><td>Any; flattens stake when identity load is too high.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout__icon">i</div>
+          <div class="callout__body">
+            <div class="callout__title">The identity distance question</div>
+            <p>
+              Give the learner a role one step closer to their future self than where they are today. Too close
+              and role adds nothing. Too far and they cannot stay in character under pressure.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="collab">
+        <div class="block__kicker">04 · Collaboration structure</div>
+        <h2 class="block__title">Five shapes, five consequences</h2>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:16%;">Structure</th><th>What it is</th><th>When to pick it</th><th>Main risk</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Solo</strong></td><td>One player, no others.</td><td>Self-paced; async contexts; sensitive content.</td><td>No social accountability; attrition.</td></tr>
+            <tr><td><strong>Parallel</strong></td><td>Each plays alone; compare after.</td><td>Retrieval &amp; discrimination; uneven pacing okay.</td><td>No real collaboration; "compare" often skipped.</td></tr>
+            <tr><td><strong>Cooperative</strong></td><td>Shared goal, shared state.</td><td>Judgment &amp; reasoning; deliberation is the skill.</td><td>Dominant-player problem; free-riding.</td></tr>
+            <tr><td><strong>Competitive</strong></td><td>Zero-sum or relative scoring.</td><td>Retrieval &amp; discrimination; motivation through salience.</td><td>Erodes psychological safety; narrows strategies.</td></tr>
+            <tr><td><strong>Asymmetric</strong></td><td>Different roles, different information.</td><td>Cross-disciplinary judgment; systems thinking.</td><td>Onboarding cost; hard to playtest.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">Context beats preference</div>
+            <p>
+              Your D1 context constraints probably decide this for you. If learners play alone on a night shift
+              (see Session 02 example), asymmetric cooperation is not an option, no matter how well it fits.
+              Pick the structure the context allows, then optimize.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="tools">
+        <div class="block__kicker">05 · Tools — Google AI Studio</div>
+        <h2 class="block__title">Casting the role; writing the world</h2>
+        <p class="lead">
+          Narrative and role are writing problems. You wrote learning objectives in S3 — now you need a
+          2-sentence role brief, a world-state description, and 5-8 NPC voice samples. AI Studio will give you
+          a usable draft of all three in a single session, provided you brief it like a director briefs a
+          writer, not like a user briefs a chatbot.
+        </p>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · Draft three role candidates for the same objective</h3>
+            <span class="aitool__hint">Gemini 2.5 · temperature 0.8</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              Role choice is irreversible once you've built art for it. Generate three candidates before you
+              commit. The model is particularly good at pushing you past the obvious role ("you are the
+              student") to roles that change the cognitive stance.
+            </p>
+
+            <div class="aitool__usecase">System prompt</div>
+<pre class="prompt"><span class="sys">You are proposing role framings for educational games.
+A role is defined by three things, in this order:
+  1. Epistemic stance (what the player is trying to find out).
+  2. Agency (what the player can do; what they cannot).
+  3. Stakes (what is at risk inside the fiction).
+
+You will produce THREE role candidates per brief. Each must:
+  - Be different in epistemic stance, not just costume.
+  - Include one sentence on what the role EXCLUDES (the power the
+    player gives up by accepting this role).
+  - Name one mechanic that the role makes easy, and one it makes hard.
+
+Do not use: "hero," "champion," "master," "explorer" as default
+role names.</span></pre>
+
+            <div class="aitool__usecase">Your message</div>
+<pre class="prompt"><span class="usr">Objective (from S3 crosswalk): Residents will state a leading
+diagnosis and three differentials, given an ambiguous vignette.
+
+Objective type: judgment under uncertainty.
+Learner (D1): IM resident, year 1.
+Constraint: single-player, 30-45 min sessions, no audio.
+
+Propose three role candidates.</span></pre>
+
+            <div class="callout">
+              <div class="callout__icon">i</div>
+              <div class="callout__body">
+                <div class="callout__title">The exclusion is the design</div>
+                <p>
+                  Watch the "what the role excludes" line. The best role for a game is usually the one that
+                  removes a power the learner has in real life — e.g., "you cannot order the test yourself;
+                  you can only request it from the attending." Constraints reveal structure.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="aitool__when">
+            <div class="aitool__when--yes">
+              <h4>Use it when</h4>
+              <p>You have your S3 crosswalk and are choosing a role for D2. The model is usefully naive — it will propose roles you dismissed too quickly.</p>
+            </div>
+            <div class="aitool__when--no">
+              <h4>Don't use it when</h4>
+              <p>Your mechanic is not locked yet. Role amplifies or fights mechanic; pick the mechanic first (S4), then cast the role to match.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · NPC voice samples, consistent across scenes</h3>
+            <span class="aitool__hint">Voice bible · temperature 0.5</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              You will write roughly 40-80 lines of NPC dialogue for a single-session game. Writing them
+              one-by-one produces tonal drift. Instead: establish a voice bible with the model, then generate
+              lines against it.
+            </p>
+
+            <div class="aitool__usecase">Step 1 · Establish voice</div>
+<pre class="prompt"><span class="usr">NPC: the senior attending on call. Sleep-deprived. Speaks in short
+sentences. Never uses the word "just." Does not explain her reasoning
+unless asked. Responds to requests with one of three registers:
+
+  (A) Terse approval: "Do it."
+  (B) Terse redirect: "Not that. Why?"
+  (C) Interrogative pressure: "What would change your mind?"
+
+Give me 10 sample lines across all three registers. Keep each under
+12 words. Do not break character. Do not invent clinical content I
+have not provided.</span></pre>
+
+            <div class="aitool__usecase">Step 2 · Generate in-context</div>
+<pre class="prompt"><span class="usr">Using the voice bible above, write three lines the attending would say
+in response to:
+
+  Resident has ordered troponin + ECG on a 40yo with atypical chest
+  pain and no risk factors, but has not yet examined the patient.
+
+One line per register (A, B, C).</span></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="workshop">
+        <div class="block__kicker">06 · Workshop — 75 min</div>
+        <h2 class="block__title">Draft your role brief</h2>
+
+        <table class="tbl tbl--timeplan">
+          <thead><tr><th>Time</th><th>What happens</th><th>Facilitator cue</th></tr></thead>
+          <tbody>
+            <tr><td>00:00–20:00</td><td>Solo — fill the role brief template: archetype, identity distance, what the role permits, what it forbids.</td><td>"One sentence per field. Not an essay."</td></tr>
+            <tr><td>20:00–40:00</td><td>Solo — choose collaboration structure; note the three context constraints that forced the choice.</td><td>"If you did not feel forced, go back to D1."</td></tr>
+            <tr><td>40:00–60:00</td><td>Triads — read aloud; each listener names one failure mode.</td><td>"Failure modes, not alternative designs."</td></tr>
+            <tr><td>60:00–75:00</td><td>Revise brief; append to D2 in the repo.</td><td>Capture the best brief on the board.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="worked">
+          <div class="worked__tag">Role brief · template</div>
+          <h3 class="worked__title">Five fields, ½ page, written in the second person</h3>
+          <dl class="worked__kv">
+            <dt>Archetype</dt><dd>Which of the eight, and why this one over the nearest alternative.</dd>
+            <dt>Identity distance</dt><dd>How far from the learner's current self. Too-close / right / too-far and your rationale.</dd>
+            <dt>Role permits</dt><dd>Two or three behaviors the role makes available that the learner would not attempt as themselves.</dd>
+            <dt>Role forbids</dt><dd>One behavior the role explicitly excludes. Protects the content from category slip.</dd>
+            <dt>Exit</dt><dd>How play ends and how the learner steps out of role (debrief, reflection, epilogue).</dd>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ─── Section: Minigame ──────────────────── -->
+      <div id="minigame-mount" data-minigame="s05"></div>
+
+      <section class="block" id="checklist-prep">
+        <div class="block__kicker">08 · Preparation for Session 06</div>
+        <h2 class="block__title">Before next week</h2>
+        <ul class="checklist">
+          <li data-chk-id="brief-submit"><input type="checkbox"/><label class="checklist__label">Submit role brief as appendix to D2.</label></li>
+          <li data-chk-id="read-facilitator"><input type="checkbox"/><label class="checklist__label">Read: "The guide a colleague can run from" (course reader, ~30 min).</label></li>
+          <li data-chk-id="observe"><input type="checkbox"/><label class="checklist__label">Observe a colleague running a training; log how they opened, recovered from confusion, and closed.</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">09 · Exit ticket</div>
+        <h2 class="block__title">Role &amp; structure, in one paragraph</h2>
+        <div class="ticket" data-ticket-id="role">
+          <div class="ticket__prompt">My learner's role, collaboration structure, and the D1 constraint that forced the structure choice:</div>
+          <textarea placeholder="Role: first responder. Structure: solo (context: night shift). The constraint that forced this…"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-04.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 04</span>
+        <span class="session-nav__title">Mechanics I</span>
+      </a>
+      <a href="session-06.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 06 →</span>
+        <span class="session-nav__title">Facilitator design</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="minigames.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>

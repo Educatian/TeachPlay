@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 12 · Final presentations — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 4 · Audit &amp; close</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 12 · Week 12 · D5 due</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Final presentations: show the game, defend the <em>trade-offs</em>.
+      </h1>
+      <p class="session-header__lede">
+        D5 is not a demo. It is a defense. You are walking a reviewing panel through the decisions that produced
+        this game — D1 through D4 made visible in eight slides and one live loop. The panel's job is to trust
+        your design process; your job is to give them reason to.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">12 presentations · 12 min each</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">D5</span>
+          <span class="session-meta__sub">Presentation + repo + one-pager</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">5</span>
+          <span class="session-meta__sub">Rubric-scored by panel</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Panel</span>
+          <span class="session-meta__value">3 reviewers</span>
+          <span class="session-meta__sub">Instructor + 2 guests</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 12.1</span><span class="outcomes__text">Present the design journey D1 → D5 in 8 slides and 8 minutes, with every claim traceable to an artifact in the repo.</span></li>
+          <li><span class="outcomes__num">LO 12.2</span><span class="outcomes__text">Run a 2-minute live demo of the loop that carried the most risk — not the one with the prettiest UI.</span></li>
+          <li><span class="outcomes__num">LO 12.3</span><span class="outcomes__text">Answer reviewer questions without defending — clarify the decision, cite the artifact, acknowledge limits.</span></li>
+          <li><span class="outcomes__num">LO 12.4</span><span class="outcomes__text">Reviewer-score two other teams using the rubric; produce actionable written feedback.</span></li>
+          <li><span class="outcomes__num">LO 12.5</span><span class="outcomes__text">Submit D5 — repo snapshot, one-pager, presentation deck — within 24 hours of defense.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="format">
+        <div class="block__kicker">02 · Format</div>
+        <h2 class="block__title">12 minutes. 8 slides. Every minute a commitment.</h2>
+
+        <table class="tbl tbl--timeplan">
+          <thead><tr><th>Time</th><th>Segment</th><th>What the panel is scoring</th></tr></thead>
+          <tbody>
+            <tr><td>00:00–01:00</td><td>Frame — who the learner is, what the gap is, why a game.</td><td>Whether you earn the right to have built this at all.</td></tr>
+            <tr><td>01:00–03:00</td><td>Crosswalk — objective types → mechanics, with one out-of-scope row.</td><td>Defensibility of the design direction.</td></tr>
+            <tr><td>03:00–05:00</td><td>Live demo — the riskiest loop, one run, no narration.</td><td>Whether the thing runs and teaches.</td></tr>
+            <tr><td>05:00–08:00</td><td>Playtest findings — pre-registered hypotheses, verdicts, revisions.</td><td>Rigor; willingness to be disproven.</td></tr>
+            <tr><td>08:00–09:30</td><td>Audit — one paragraph per lens; the hardest finding.</td><td>Self-awareness; design maturity.</td></tr>
+            <tr><td>09:30–11:00</td><td>Known limits &amp; v2 roadmap.</td><td>What you chose not to do, and why.</td></tr>
+            <tr><td>11:00–12:00</td><td>Close — the one claim you are most confident in, and the artifact that backs it.</td><td>Clarity under time pressure.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" id="deck">
+        <div class="block__kicker">03 · Deck outline</div>
+        <h2 class="block__title">Eight slides, exact</h2>
+
+        <div class="card-grid card-grid--2">
+          <div class="card"><div class="card__label">Slide 01</div><h3 class="card__title">Title + one-sentence claim</h3><p>"This game teaches [specific skill] to [specific learner] in [specific context]."</p></div>
+          <div class="card"><div class="card__label">Slide 02</div><h3 class="card__title">Problem &amp; learner (from D1)</h3><p>Gap + context. Numbers if you have them. A face if you have consent.</p></div>
+          <div class="card"><div class="card__label">Slide 03</div><h3 class="card__title">Crosswalk (from D2)</h3><p>One table; highlight the out-of-scope row.</p></div>
+          <div class="card"><div class="card__label">Slide 04</div><h3 class="card__title">The loop</h3><p>One diagram — your state machine, simplified for reviewers.</p></div>
+          <div class="card"><div class="card__label">Slide 05</div><h3 class="card__title">Live demo marker</h3><p>A single hold-slide. No text. You run the game here.</p></div>
+          <div class="card"><div class="card__label">Slide 06</div><h3 class="card__title">Playtest (from D4)</h3><p>Hypotheses / verdicts / revisions. No gloss.</p></div>
+          <div class="card"><div class="card__label">Slide 07</div><h3 class="card__title">Audit &amp; limits</h3><p>The hardest finding; three known limits; v2 roadmap.</p></div>
+          <div class="card"><div class="card__label">Slide 08</div><h3 class="card__title">One claim, one artifact</h3><p>The claim you stand behind and where in the repo the evidence sits.</p></div>
+        </div>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">Do not add a "thank you" slide</div>
+            <p>
+              End on the claim. The claim is why the panel is here; "thanks for watching" is for conference
+              talks. Your close slide is evaluated; the thank-you slide is not.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="qa">
+        <div class="block__kicker">04 · Q&amp;A discipline</div>
+        <h2 class="block__title">Clarify, cite, acknowledge</h2>
+        <p>
+          Every reviewer question is one of three kinds. Your job is to recognize which kind, and respond in
+          the register it calls for — not to defend reflexively.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:22%;">Question type</th><th>What it sounds like</th><th>How to respond</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Clarifying</strong></td><td>"How does the pager interrupt work again?"</td><td>Clarify in one sentence; point to the artifact for depth.</td></tr>
+            <tr><td><strong>Probing</strong></td><td>"Why not branching feedback instead of delayed consequence?"</td><td>Cite the decision in the crosswalk; name the trade-off; cite the playtest evidence if any.</td></tr>
+            <tr><td><strong>Limit</strong></td><td>"What about learners who cannot use a mouse?"</td><td>Acknowledge. Name it as a known limit on slide 7, or commit to capturing it in the v2 roadmap on the spot.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout__icon">i</div>
+          <div class="callout__body">
+            <div class="callout__title">"Good question" is a tell</div>
+            <p>
+              When you say "good question," you are stalling. Replace it with the first clause of your answer.
+              If you cannot answer in one clause, you are probing for a limit — say so.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="review">
+        <div class="block__kicker">05 · You as reviewer</div>
+        <h2 class="block__title">Score two teams, in writing</h2>
+        <p>
+          Every participant reviews two presentations using the rubric. Submit written feedback within 24
+          hours of the defense. Your reviews are themselves rubric-scored — for actionability, for specificity,
+          and for engagement with what the team did, not what you would have done.
+        </p>
+
+        <ul class="checklist">
+          <li data-chk-id="rv-specific"><input type="checkbox"/><label class="checklist__label">Feedback cites a specific slide, claim, or artifact — not a general impression.</label></li>
+          <li data-chk-id="rv-actionable"><input type="checkbox"/><label class="checklist__label">Every critique proposes at least one concrete next step.</label></li>
+          <li data-chk-id="rv-charitable"><input type="checkbox"/><label class="checklist__label">Feedback engages with the team's actual design — not a design you would have preferred.</label></li>
+          <li data-chk-id="rv-strength"><input type="checkbox"/><label class="checklist__label">At least one strength is named specifically enough to be replicable.</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="submit">
+        <div class="block__kicker">06 · The D5 package</div>
+        <h2 class="block__title">What you submit within 24 hours</h2>
+
+        <table class="tbl">
+          <thead><tr><th style="width:26%;">Artifact</th><th>Contents</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Repo snapshot</strong></td><td>Versioned folder with D1–D4 final versions, facilitator guide v-final, spec, audit memo, backlog (frozen), change log.</td></tr>
+            <tr><td><strong>Presentation deck</strong></td><td>The 8 slides as shown — no post-hoc edits. Panel is scoring what they saw.</td></tr>
+            <tr><td><strong>One-pager</strong></td><td>Front: claim, learner, loop diagram, one playtest finding. Back: limits and v2 roadmap.</td></tr>
+            <tr><td><strong>Demo recording</strong></td><td>Screen capture of the live demo segment; unedited; submitted as-is even if it stumbled.</td></tr>
+            <tr><td><strong>Self-reflection</strong></td><td>300 words: the decision you are proudest of, the one you would revisit, and what you learned as a designer — not as a project manager.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+            <!-- ─── Section: Companion reading ─────────────────── -->
+      <section class="block" id="reading">
+        <div class="block__kicker">Companion reading</div>
+        <h2 class="block__title">Two closing handouts for the portfolio and beyond</h2>
+        <p class="block__subtitle">The first is the evaluators' shared reference for what strong portfolio work looks like; bring it to your own defense. The second is the curated resource pathway for everything you are about to keep doing once the credential closes.</p>
+
+        <div class="resources">
+          <div class="resource">
+            <div class="resource__num">04</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Closing handout · Portfolio calibration</div>
+              <h3 class="resource__title">Portfolio Exemplar Set</h3>
+              <p class="resource__desc">Annotated benchmarks for the five portfolio artifacts — learner analysis, design brief, teacher implementation guide, playtest report, final presentation. Shows what strong work includes, what weak work misses, how evaluators read quality.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Read the chain before your defense. If any artifact in your own portfolio breaks the chain (design logic → facilitation → evidence → revision), fix it tonight.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=04-portfolio-exemplar-set.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/04-portfolio-exemplar-set.md" download>Download</a>
+              <span class="resource__meta">MD · ~25 min</span>
+            </div>
+          </div>
+          <div class="resource">
+            <div class="resource__num">07</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Closing handout · Next-step pathways</div>
+              <h3 class="resource__title">Additional Learning Resources Guide</h3>
+              <p class="resource__desc">Curated external resources classified by beginner / intermediate / advanced and mapped back to the 12-session arc. Pedagogy and game-based learning, accessibility, prototyping, Three.js, input/telemetry, evidence. Verified April 2026.</p>
+              <p class="resource__why"><b>Why this week</b>
+                After the credential closes, pick one pathway — pedagogy, accessibility, implementation, or evidence — and follow it for the next quarter. This handout is how you keep the discipline.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=07-additional-learning-resources.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/07-additional-learning-resources.md" download>Download</a>
+              <span class="resource__meta">MD · ~20 min</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Section: Minigame ──────────────────── -->
+      <div id="minigame-mount" data-minigame="s12"></div>
+
+      <section class="block" id="close">
+        <div class="block__kicker">08 · Close</div>
+        <h2 class="block__title">What you take with you</h2>
+        <p class="lead">
+          You have spent twelve weeks learning that educational game design is not about games that happen to
+          teach, or lessons that happen to play. It is about the disciplined alignment of a specific learner,
+          a specific gap, a specific mechanic, and a specific claim you are willing to defend.
+        </p>
+        <p>
+          Every deliverable in this credential exists to keep you honest against that alignment. D1 forces you
+          to name the learner. D2 forces you to match mechanic to objective type. D3 forces you to disprove
+          your loop cheaply. D4 forces you to listen to someone other than yourself. D5 forces you to say out
+          loud what the game does and does not do. If you took the process seriously, the game you built this
+          semester is not your best work — it is your baseline. The next one will be better, because the
+          process is now yours.
+        </p>
+      </section>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">09 · Final exit ticket</div>
+        <h2 class="block__title">The claim you will carry forward</h2>
+        <div class="ticket" data-ticket-id="final">
+          <div class="ticket__prompt">In one sentence: what I now believe about educational game design that I did not believe in week 1.</div>
+          <textarea placeholder="I used to think engagement was the goal. I now believe engagement is a prerequisite and a trap, and that…"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-11.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 11</span>
+        <span class="session-nav__title">Revision studio</span>
+      </a>
+      <a href="index.html" class="session-nav__next">
+        <span class="session-nav__label">Back to handbook →</span>
+        <span class="session-nav__title">All sessions</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="minigames.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>

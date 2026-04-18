@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 04 · Mechanics I — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 2 · Design toolkit</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 04 · Week 4</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Mechanics I: challenge, feedback, and <em>productive</em> failure.
+      </h1>
+      <p class="session-header__lede">
+        Three mechanics do more heavy lifting than all others combined. Get challenge calibration, feedback
+        timing, and failure design right and almost any crosswalk will teach. Get one of them wrong and no
+        amount of polish on the others will save you.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">60 lecture · 90 analysis · 30 apply</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">Revise D2</span>
+          <span class="session-meta__sub">Annotate failure modes</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">4</span>
+          <span class="session-meta__sub">Peer discussed</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Materials</span>
+          <span class="session-meta__value">Video bank</span>
+          <span class="session-meta__sub">Three pre-class clips</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 4.1</span><span class="outcomes__text">Locate your target difficulty as a <strong>zone</strong>, not a single point — and describe the adjustment knobs that keep learners inside it.</span></li>
+          <li><span class="outcomes__num">LO 4.2</span><span class="outcomes__text">Distinguish <strong>four kinds of feedback</strong> by timing and grain, and choose the right kind for each objective type.</span></li>
+          <li><span class="outcomes__num">LO 4.3</span><span class="outcomes__text">Design a <strong>failure loop</strong> that teaches — short, costly-enough, recoverable, and instructive — and say when <em>not</em> to design one.</span></li>
+          <li><span class="outcomes__num">LO 4.4</span><span class="outcomes__text">Annotate your D2 with the specific challenge/feedback/failure risks per row; identify the highest-risk row first.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="challenge">
+        <div class="block__kicker">02 · Challenge</div>
+        <h2 class="block__title">Difficulty is a zone, not a point</h2>
+        <p class="lead">
+          "Flow" is popular and mostly right but too coarse to design against. Think instead about two ranges
+          inside one envelope: <strong>the tolerance band</strong> (where most learners can continue without
+          help) and <strong>the productive-struggle band</strong> (where they stall but can recover within one
+          or two attempts). Your game should spend 70% of time in the first and 25% in the second. The remaining
+          5% is genuine failure — see §04.
+        </p>
+
+        <div class="card-grid card-grid--2">
+          <div class="card">
+            <div class="card__label">Knob A</div>
+            <h3 class="card__title">Time pressure</h3>
+            <p>Shorten the clock and every other difficulty goes up with it. Most powerful for retrieval, discrimination, and procedural fluency; dangerous for judgment under uncertainty (it hides reasoning).</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Knob B</div>
+            <h3 class="card__title">Information completeness</h3>
+            <p>Hide features, delay readouts, obscure second-order effects. Most powerful for conceptual reasoning and judgment; can frustrate retrieval/discrimination if overused.</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Knob C</div>
+            <h3 class="card__title">Distractor similarity</h3>
+            <p>Make the wrong options look more like the right one. The fulcrum of discrimination learning. Too subtle and learners guess; too crude and they never have to look at the discriminating feature.</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Knob D</div>
+            <h3 class="card__title">Stake</h3>
+            <p>What the player loses on error. Progress, resources, relationship, identity. Low stake = low engagement <em>and</em> low attention. High stake = avoidance. Calibrate against the learner's risk tolerance.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="callout__icon">i</div>
+          <div class="callout__body">
+            <div class="callout__title">Rule of the adjustable knob</div>
+            <p>
+              Every mechanic in your game should have at least one tunable knob that you — or an adaptive
+              system — can turn during play. If you have no knobs, your game teaches one learner and fails the
+              rest.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="feedback">
+        <div class="block__kicker">03 · Feedback</div>
+        <h2 class="block__title">Four kinds, four purposes</h2>
+        <p>
+          Most educational games default to immediate, verification-grain feedback ("correct!"). That choice is
+          only defensible for retrieval. Every other objective type wants something else.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:20%;">Kind</th><th>Timing / grain</th><th>Best used for</th><th>Characteristic mistake</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Verification</strong></td><td>Immediate; correct/incorrect.</td><td>Retrieval, basic discrimination.</td><td>Used for judgment tasks — short-circuits the reasoning you wanted.</td></tr>
+            <tr><td><strong>Elaborative</strong></td><td>Immediate; why the answer was right or wrong.</td><td>Discrimination, procedural fluency.</td><td>Too long — players skim past it and lose the point.</td></tr>
+            <tr><td><strong>Consequence</strong></td><td>Delayed; change in world state.</td><td>Judgment under uncertainty, conceptual reasoning.</td><td>Consequence is ambiguous or lucky — learner cannot trace cause.</td></tr>
+            <tr><td><strong>Reflection</strong></td><td>Post-loop; learner-generated.</td><td>Conceptual reasoning, transfer.</td><td>Written prompts treated as paperwork; no integration with play.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">The immediacy trap</div>
+            <p>
+              Immediate feedback maximizes engagement but can destroy transfer. Judgment and reasoning learners
+              need time to sit in uncertainty — give feedback after a round, a shift, a day of game-time. Your
+              players will hate it in week 1 and thank you in week 4.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="failure">
+        <div class="block__kicker">04 · Productive failure</div>
+        <h2 class="block__title">Designing a failure loop that teaches</h2>
+        <p>
+          Kapur showed it in classrooms and every designer who has shipped a roguelite knows it: failure
+          <em>before</em> instruction beats instruction-then-practice for conceptual transfer. But only if the
+          failure is productive — short, costly-enough, recoverable, and instructive.
+        </p>
+
+        <ol class="outcomes">
+          <li><span class="outcomes__num">Short</span><span class="outcomes__text">One failure-to-retry cycle &lt; 5 minutes for first-hour play. If recovery is slow, learners quit before they reach the lesson.</span></li>
+          <li><span class="outcomes__num">Costly</span><span class="outcomes__text">Losing has to feel like losing — not a reset-with-everything. Resource or progress loss is fine; identity loss almost never is.</span></li>
+          <li><span class="outcomes__num">Recoverable</span><span class="outcomes__text">The retry must be available immediately and changeable — player must be able to try a different approach. Same-exact retry teaches nothing.</span></li>
+          <li><span class="outcomes__num">Instructive</span><span class="outcomes__text">The failure state reveals a cue the player can use next attempt. If the player cannot tell why they lost, you have frustration, not failure-as-teacher.</span></li>
+        </ol>
+
+        <div class="callout">
+          <div class="callout__icon">✕</div>
+          <div class="callout__body">
+            <div class="callout__title">When <em>not</em> to design a failure loop</div>
+            <p>
+              Retrieval-only games. High-stakes professional domains where modeling failure is itself the
+              harm (e.g., giving clinical trainees explicit "how to miss a diagnosis" patterns). In those
+              cases, use consequence feedback without framing it as a failure loop.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="minigame">
+        <div class="block__kicker">05 · Minigame — 4 min</div>
+        <h2 class="block__title">Dial your failure loop</h2>
+        <p class="lead">
+          Productive failure has four criteria: <em>short</em>, <em>costly</em>, <em>recoverable</em>,
+          <em>instructive</em>. The criteria trade off. Turn the dials, watch the verdict change, and see
+          which combinations collapse into "homework," "punishment," or a real teach.
+        </p>
+
+        <div class="minigame">
+          <div class="minigame__head">
+            <span class="minigame__tag">Minigame</span>
+            <h3 class="minigame__title">Productive-failure sandbox</h3>
+            <span class="minigame__hint">Drag any dial</span>
+          </div>
+          <div class="minigame__body">
+            <p class="minigame__lede">
+              Imagine a single iteration of your failure loop — the time between a player getting a call
+              wrong and their next meaningful decision. Adjust the dials to fit your game. The verdict
+              updates live.
+            </p>
+
+            <div class="dial" id="s4-dials">
+              <div class="dial-row">
+                <div class="dial-label">Loop length
+                  <small>Seconds between failure and next decision</small>
+                </div>
+                <input type="range" id="d-length" min="5" max="300" step="5" value="30" />
+                <div class="dial-value"><span id="v-length">30</span>s</div>
+              </div>
+              <div class="dial-row">
+                <div class="dial-label">Cost of failure
+                  <small>How much in-game state the player loses</small>
+                </div>
+                <input type="range" id="d-cost" min="0" max="100" step="5" value="40" />
+                <div class="dial-value"><span id="v-cost">40</span>%</div>
+              </div>
+              <div class="dial-row">
+                <div class="dial-label">Recoverability
+                  <small>How quickly the player can climb back</small>
+                </div>
+                <input type="range" id="d-recover" min="0" max="100" step="5" value="60" />
+                <div class="dial-value"><span id="v-recover">60</span>%</div>
+              </div>
+              <div class="dial-row">
+                <div class="dial-label">Instruction density
+                  <small>Signal in feedback that names the discriminator</small>
+                </div>
+                <input type="range" id="d-instruct" min="0" max="100" step="5" value="50" />
+                <div class="dial-value"><span id="v-instruct">50</span>%</div>
+              </div>
+            </div>
+
+            <div class="minigame__verdict">
+              <div class="verdict-label">Verdict</div>
+              <div class="verdict-body" id="s4-verdict"></div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        (function() {
+          var els = {
+            length:   document.getElementById('d-length'),
+            cost:     document.getElementById('d-cost'),
+            recover:  document.getElementById('d-recover'),
+            instruct: document.getElementById('d-instruct'),
+            vL: document.getElementById('v-length'),
+            vC: document.getElementById('v-cost'),
+            vR: document.getElementById('v-recover'),
+            vI: document.getElementById('v-instruct'),
+            verdict: document.getElementById('s4-verdict')
+          };
+
+          function verdict() {
+            var L = +els.length.value;       // 5..300 seconds
+            var C = +els.cost.value;          // 0..100
+            var R = +els.recover.value;       // 0..100
+            var I = +els.instruct.value;      // 0..100
+
+            els.vL.textContent = L;
+            els.vC.textContent = C;
+            els.vR.textContent = R;
+            els.vI.textContent = I;
+
+            var lines = [];
+            var label, body;
+
+            // Collapse cases (catastrophic failures first)
+            if (L > 120 && R < 40) {
+              label = 'Homework.';
+              body = 'Long loops with low recoverability turn failure into a punishment lesson. Players will not retry; they will close the tab.';
+            } else if (C > 70 && R < 30) {
+              label = 'Punishment.';
+              body = 'High cost and low recoverability is a grief simulator, not a game. Players learn to avoid the system, not to reason within it.';
+            } else if (C < 15 && I < 30) {
+              label = 'Participation trophy.';
+              body = 'Near-zero cost and no elaborative signal. Failure is invisible; so is the lesson. The player will not discriminate correct from incorrect play.';
+            } else if (I < 25) {
+              label = 'Frustrating.';
+              body = 'Failure happens but you never tell the player <em>why</em>. Raise instruction density — even one line that names the discriminating feature.';
+            } else if (L < 15 && I > 60 && C > 20 && R > 50) {
+              label = 'Textbook productive failure.';
+              body = 'Short enough to retry, costly enough to notice, recoverable enough to keep going, instructive enough to learn. This is the zone to aim for.';
+            } else if (L < 45 && C >= 20 && C <= 60 && R > 40 && I > 40) {
+              label = 'Good. This teaches.';
+              body = 'You are inside the productive-failure zone. Small optimizations left — usually tighten the loop length or raise instruction density on the discriminator.';
+            } else if (L > 60 && I > 50) {
+              label = 'Simulation, not a game loop.';
+              body = 'Long loops can teach, but they are expensive per iteration. If loop length is forced by the domain (a full surgery, a whole shift), make sure mid-loop feedback is richer than end-loop feedback.';
+            } else if (R > 85 && C < 25) {
+              label = 'Engagement without transfer.';
+              body = 'Almost no cost + trivial recovery = fun, but players never feel the discriminator. Good Candy Crush; bad pedagogy.';
+            } else {
+              label = 'Mixed.';
+              body = 'The loop is workable but no single quality is doing enough work. Pick one dial — usually instruction density — and push it until the verdict changes.';
+            }
+
+            // Extra notes
+            var notes = [];
+            if (L > 180) notes.push('A ' + L + '-second loop will test ~15 iterations per hour. Make sure each one carries its weight.');
+            if (C > 85) notes.push('At ' + C + '% cost, players will bank progress conservatively and stop taking pedagogically useful risks.');
+            if (I > 85 && L < 30) notes.push('Very high instruction density in a short loop risks crowding out the player\'s own reasoning. Try one line, not three.');
+
+            els.verdict.innerHTML = '<strong>' + label + '</strong> ' + body +
+              (notes.length ? '<br/><br/><em>' + notes.join(' ') + '</em>' : '');
+          }
+
+          ['length','cost','recover','instruct'].forEach(function(k){
+            els[k].addEventListener('input', verdict);
+          });
+          verdict();
+        })();
+        </script>
+      </section>
+
+      <section class="block" id="videos">
+        <div class="block__kicker">06 · Analysis — 60 min</div>
+        <h2 class="block__title">Three clips, three verdicts</h2>
+        <p class="block__subtitle">
+          Watch each clip in triads. Log challenge, feedback, and failure design choices; judge whether each
+          one fits the game's apparent objective. Deliverables: one-paragraph verdict per clip.
+        </p>
+
+        <div class="video-slot">
+          <div class="video-slot__frame" style="background: #111; display:flex; align-items:center; justify-content:center; color:#888; font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.14em;">CLIP A · PLACEHOLDER (6 MIN)</div>
+          <div class="video-slot__caption">
+            <span>Clip A · Timed discrimination · commercial release</span>
+            <a href="#">Open worksheet →</a>
+          </div>
+        </div>
+        <div class="video-slot">
+          <div class="video-slot__frame" style="background: #111; display:flex; align-items:center; justify-content:center; color:#888; font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.14em;">CLIP B · PLACEHOLDER (8 MIN)</div>
+          <div class="video-slot__caption">
+            <span>Clip B · Branching scenario · high-stakes domain</span>
+            <a href="#">Open worksheet →</a>
+          </div>
+        </div>
+        <div class="video-slot">
+          <div class="video-slot__frame" style="background: #111; display:flex; align-items:center; justify-content:center; color:#888; font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.14em;">CLIP C · PLACEHOLDER (5 MIN)</div>
+          <div class="video-slot__caption">
+            <span>Clip C · Roguelite failure loop · consumer hit</span>
+            <a href="#">Open worksheet →</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="tools">
+        <div class="block__kicker">07 · Tools — Google AI Studio</div>
+        <h2 class="block__title">Writing feedback copy that lands</h2>
+        <p class="lead">
+          Feedback is copy before it is UX. "Correct!" is a copywriting decision. Elaborative feedback is 1-2
+          lines of writing that must do three jobs in 30 words: confirm or contradict, explain the
+          discriminating feature, and leave the player attentive for the next round. AI Studio is excellent at
+          generating that kind of short-form copy — if you brief it properly.
+        </p>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · Draft feedback copy for every event in your loop</h3>
+            <span class="aitool__hint">Gemini 2.5 · temperature 0.5</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              Give the model your event → feedback map (even a draft) and ask for copy by feedback kind. You
+              will get 30–50 candidate lines in one pass. Most will be wrong tone. Three will be right — and
+              three is more than you had five minutes ago.
+            </p>
+
+            <div class="aitool__usecase">System prompt</div>
+<pre class="prompt"><span class="sys">You write in-game feedback copy for educational games. You follow four
+feedback kinds with distinct rules:
+
+- VERIFICATION: &lt;=5 words, no elaboration. "Correct." "Miss."
+- ELABORATIVE: &lt;=30 words, names the discriminating feature or
+  corrects the specific error. Second person. No praise words.
+- CONSEQUENCE: 0 words on-screen; describe instead what changes in
+  world state (score, NPC reaction, resource).
+- REFLECTION: a question the player answers, not a statement. One
+  sentence. Not leading.
+
+For each event I give you, produce three candidates in EACH of the four
+kinds (12 lines total). Label them. Never invent content I did not
+give you; if a field is missing, ask.
+
+Do not use: "Great job," "Awesome," "Oops," exclamation points,
+emoji, "Let's," or the word "learn."</span></pre>
+
+            <div class="aitool__usecase">Your message</div>
+<pre class="prompt"><span class="usr">Event: Resident picks a non-discriminating test (e.g., CBC when the
+discriminator was lactate).
+
+Context:
+- Learner: 1st-year IM resident, night shift, overnight on call.
+- Objective type: discrimination.
+- Role: the intern.
+- Tone: plain clinical; no cheerleading; no clinical shorthand a
+  layperson would need decoded.
+
+Give me 12 lines across the four feedback kinds.</span></pre>
+
+            <div class="callout callout--warn">
+              <div class="callout__icon">!</div>
+              <div class="callout__body">
+                <div class="callout__title">The "Great job!" test</div>
+                <p>
+                  If AI Studio gives you a line that could appear in a toothpaste ad, delete it. Educational
+                  game copy has a register; match your learner's professional culture, not the model's default
+                  cheerful LMS voice.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="aitool__when">
+            <div class="aitool__when--yes">
+              <h4>Use it when</h4>
+              <p>You have an event→feedback map (even a rough one from S8 drafts) and need to populate each cell with copy candidates. The model is faster than you at the first 20 lines; you are better at choosing.</p>
+            </div>
+            <div class="aitool__when--no">
+              <h4>Don't use it when</h4>
+              <p>You have not decided which feedback kind each event uses. The choice is a design decision that carries from S4's taxonomy — not a copywriting detail.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · Diagnose a failure loop that feels "stuck"</h3>
+            <span class="aitool__hint">Adversarial</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              If your paper prototype's failure loop is frustrating playtesters and you cannot tell why, walk
+              the model through the loop and ask it to locate which of the four failure-design criteria (short /
+              costly / recoverable / instructive) is failing.
+            </p>
+
+            <div class="aitool__usecase">Prompt</div>
+<pre class="prompt"><span class="usr">Here is a failure loop from my game, described step by step:
+
+1. Player makes a triage call.
+2. Scene advances; they see more patients.
+3. At shift end, the critical patient they under-triaged is revealed.
+4. Score summary screen.
+5. "Retry shift" button.
+
+Playtesters say it "feels like homework." Using the four criteria —
+short, costly, recoverable, instructive — identify which is failing and
+why. Do not propose a fix yet. Diagnose first. Be specific about which
+step in my loop carries the failure.</span></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="apply">
+        <div class="block__kicker">08 · Apply to your D2</div>
+        <h2 class="block__title">Annotate your crosswalk</h2>
+        <p>
+          Return to your D2. For each row, write one sentence on challenge (which knob dominates), one on
+          feedback (which kind, why), one on failure (loop / no loop, why). Star the row with the most
+          unresolved risk; that row drives your prototype priorities in Session 07.
+        </p>
+
+        <ul class="checklist">
+          <li data-chk-id="knob"><input type="checkbox"/><label class="checklist__label">Named at least one adjustable knob per D2 row.</label></li>
+          <li data-chk-id="feedback-choice"><input type="checkbox"/><label class="checklist__label">Chose one feedback kind per row and justified it in one sentence.</label></li>
+          <li data-chk-id="failure-choice"><input type="checkbox"/><label class="checklist__label">Decided loop-or-not per row; if yes, specified recovery and instructive cue.</label></li>
+          <li data-chk-id="starred"><input type="checkbox"/><label class="checklist__label">Starred the row with the most unresolved risk.</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="checklist-prep">
+        <div class="block__kicker">09 · Preparation for Session 05</div>
+        <h2 class="block__title">Before next week</h2>
+        <ul class="checklist">
+          <li data-chk-id="read-narrative"><input type="checkbox"/><label class="checklist__label">Read: one chapter on narrative transportation (Green &amp; Brock summary, ~30 min).</label></li>
+          <li data-chk-id="read-roles"><input type="checkbox"/><label class="checklist__label">Read: role adoption in serious games (one short empirical paper, ~40 min).</label></li>
+          <li data-chk-id="sketch-role"><input type="checkbox"/><label class="checklist__label">Sketch the role your learner plays in your game. Half a page.</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">10 · Exit ticket</div>
+        <h2 class="block__title">Your riskiest row</h2>
+        <div class="ticket" data-ticket-id="risk">
+          <div class="ticket__prompt">The D2 row with the highest unresolved challenge/feedback/failure risk, and what will make me drop it:</div>
+          <textarea placeholder="Row 2 (judgment). Risk: branching telegraphs. Would drop if playtest shows…"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-03.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 03</span>
+        <span class="session-nav__title">Objectives &amp; crosswalk</span>
+      </a>
+      <a href="session-05.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 05 →</span>
+        <span class="session-nav__title">Mechanics II</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="shell.js"></script>
+</body>
+</html>

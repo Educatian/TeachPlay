@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 02 · Learner &amp; context — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<!-- ─── Utility bar ─────────────────────────────────────────── -->
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 1 · Foundations</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 02 · Week 2 · D1 due</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Learner &amp; context: the <em>specific</em> person you are designing for.
+      </h1>
+      <p class="session-header__lede">
+        Generic learners produce generic games. This session replaces "students" with a named population,
+        a measurable gap, and a concrete context of use — ending in your first deliverable: the
+        one-page Design Problem Statement that anchors everything downstream.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">30 read · 90 workshop · 60 review</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">D1</span>
+          <span class="session-meta__sub">Design Problem Statement · 1pg</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">5</span>
+          <span class="session-meta__sub">Assessed via peer review</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Materials</span>
+          <span class="session-meta__value">Interview notes</span>
+          <span class="session-meta__sub">From pre-work</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 2.1</span><span class="outcomes__text">Write a learner description that names a specific population, their current capability, and the context in which they practice.</span></li>
+          <li><span class="outcomes__num">LO 2.2</span><span class="outcomes__text">Articulate a measurable <strong>gap</strong> between current and desired performance — something a colleague could verify.</span></li>
+          <li><span class="outcomes__num">LO 2.3</span><span class="outcomes__text">List the three most binding <strong>constraints of use</strong> (time, device, setting, supervision) that any solution must respect.</span></li>
+          <li><span class="outcomes__num">LO 2.4</span><span class="outcomes__text">Produce D1 — a one-page Design Problem Statement — and defend it through one round of peer critique.</span></li>
+          <li><span class="outcomes__num">LO 2.5</span><span class="outcomes__text">Revise your D1 based on one specific piece of feedback; log what you changed and why.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="why">
+        <div class="block__kicker">02 · Core concept</div>
+        <h2 class="block__title">Generic learners produce generic games</h2>
+        <p class="lead">
+          Almost every failed learning game can be traced back to a learner description that was too thin to
+          discipline the design. "High school students" is not a learner. "Trainee pharmacists in their third clinical
+          rotation who can recall drug names but freeze when asked to reason about interactions under time pressure"
+          is a learner.
+        </p>
+        <p>
+          The level of specificity you reach here determines how sharp your mechanics can be in later sessions.
+          You cannot design a game to teach "judgment" — you can only design a game to teach <em>this group</em> how
+          to resolve <em>this kind</em> of ambiguous situation in <em>this setting</em>.
+        </p>
+
+        <div class="callout">
+          <div class="callout__icon">?</div>
+          <div class="callout__body">
+            <div class="callout__title">The three-sentence test</div>
+            <p>
+              If you cannot say the learner, the gap, and the context in three short sentences, you do not know
+              them yet. Go talk to one more person before the next session.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="spec">
+        <div class="block__kicker">03 · Deliverable spec — D1</div>
+        <h2 class="block__title">The Design Problem Statement</h2>
+        <p class="block__subtitle">
+          One page. Six fields. This document lives at the top of every subsequent deliverable's repo — it is the
+          reference every later design decision is measured against.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width: 24%;">Field</th><th>What belongs</th><th>What disqualifies it</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Learner</strong></td><td>Named population, career stage, prior exposure to the domain.</td><td>"Students." "Learners." Anything that would also describe 100M people.</td></tr>
+            <tr><td><strong>Current state</strong></td><td>What they can already do; common patterns of error.</td><td>Assertions with no source. Write "observed in interview" or drop it.</td></tr>
+            <tr><td><strong>Desired state</strong></td><td>The behavior or judgment you want them to show afterward.</td><td>"Understand X." Unobservable verbs are not targets.</td></tr>
+            <tr><td><strong>Gap</strong></td><td>The measurable distance between current and desired — stated as a scenario one could score.</td><td>Vague direction words ("improve," "be better at").</td></tr>
+            <tr><td><strong>Context of use</strong></td><td>Where / when / how long / with whom / on what device the game will be played.</td><td>"Anywhere." Everything is a trade-off; own one.</td></tr>
+            <tr><td><strong>Constraints</strong></td><td>Three hard limits: time budget per session, setting, supervision level.</td><td>Aspirational caveats. These are walls, not preferences.</td></tr>
+            <tr><td><strong>Success signal</strong></td><td>One observable that, if true after play, tells you the game worked.</td><td>"They enjoyed it." Engagement ≠ learning. See Session 01.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" id="example">
+        <div class="block__kicker">04 · Worked example</div>
+        <h2 class="block__title">A filled-in D1, ready to defend</h2>
+
+        <div class="worked worked--hero">
+          <div class="worked__tag">D1 · The On-Call</div>
+          <h3 class="worked__title">Night-shift resuscitation decisions for first-year residents</h3>
+          <dl class="worked__kv">
+            <dt>Learner</dt><dd>First-year internal-medicine residents in an academic teaching hospital, in the first three months of night-float rotations. They have passed step exams and completed a simulation orientation.</dd>
+            <dt>Current state</dt><dd>They can recite protocols. When a real patient deteriorates, they over-order tests, delay calling the attending, and freeze on low-information decisions (observed in six shadowing sessions).</dd>
+            <dt>Desired state</dt><dd>When presented with an ambiguous deteriorating patient, they escalate <em>earlier</em>, order <em>fewer but more discriminating</em> tests, and articulate a leading diagnosis within five minutes.</dd>
+            <dt>Gap</dt><dd>On the departmental sim-lab rubric, current cohort averages 2.1/5 on "prioritizes high-yield data"; target is 3.5/5 after a single 45-minute session with the game.</dd>
+            <dt>Context of use</dt><dd>Played in the resident lounge, 30–45 minute blocks, alone or in pairs, on hospital-issued laptops during down-time on call.</dd>
+            <dt>Constraints</dt><dd>(1) No audio — call rooms are shared. (2) Must pause gracefully for pages. (3) No cost to residents; runs in browser.</dd>
+            <dt>Success signal</dt><dd>On a blinded post-test scenario, residents who played name the leading diagnosis within five minutes at a rate 20 pp above a matched control.</dd>
+          </dl>
+        </div>
+
+        <p>
+          Notice every field resists a category slip. The gap is a rubric score, not a vibe. The context is a room,
+          not a platform. The success signal is an observable, not a feeling. This is what you are aiming at.
+        </p>
+      </section>
+
+      <section class="block" id="activity">
+        <div class="block__kicker">05 · Workshop — 90 min</div>
+        <h2 class="block__title">Draft, critique, revise</h2>
+
+        <table class="tbl tbl--timeplan">
+          <thead><tr><th>Time</th><th>What happens</th><th>Facilitator cue</th></tr></thead>
+          <tbody>
+            <tr><td>00:00–25:00</td><td>Solo drafting. Fill all seven fields from your interview notes.</td><td>"Do not start with the fun parts. Learner, then gap."</td></tr>
+            <tr><td>25:00–55:00</td><td>Triads. Each person reads their D1 aloud; others score each field pass/revise; 10 min each.</td><td>Circulate; enforce the timer. No design talk yet — just the D1.</td></tr>
+            <tr><td>55:00–80:00</td><td>Revise your D1 in place, tracked changes on.</td><td>"Revise one field. Don't start over."</td></tr>
+            <tr><td>80:00–90:00</td><td>One triad volunteers; present revised version to the full room.</td><td>Capture the sharpest revision on the board.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">The critique trap</div>
+            <p>
+              Reviewers will want to suggest mechanics. Shut that down. At this stage, feedback is only on the
+              seven fields — specificity, observability, defensibility. Mechanic critique comes in Session 04.
+            </p>
+          </div>
+        </div>
+      </section>
+
+            <!-- ─── Section: Companion reading ─────────────────── -->
+      <section class="block" id="reading">
+        <div class="block__kicker">Companion reading</div>
+        <h2 class="block__title">An equity lens for the learner analysis</h2>
+        <p class="block__subtitle">This week we committed to who the learner is and what gap we are closing. The UDL 3.0 Crosswalk keeps variability visible so your design problem does not quietly assume a single &ldquo;default&rdquo; learner.</p>
+
+        <div class="resources">
+          <div class="resource">
+            <div class="resource__num">09</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Facilitator handout · Equity lens</div>
+              <h3 class="resource__title">UDL 3.0 Crosswalk</h3>
+              <p class="resource__desc">Translates CAST's UDL Guidelines 3.0 into a working crosswalk for this course — engagement, representation, and action/expression mapped across course design, artifact design, and prototype design.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Before you lock a gap statement, read the crosswalk and add one sentence to your learner analysis about where variability will be expected and where barriers are likely.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=09-udl-3-crosswalk.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/09-udl-3-crosswalk.md" download>Download</a>
+              <span class="resource__meta">MD · ~15 min</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="checklist">
+        <div class="block__kicker">06 · Preparation for Session 03</div>
+        <h2 class="block__title">Before next week</h2>
+
+        <ul class="checklist">
+          <li data-chk-id="d1-submit"><input type="checkbox"/><label class="checklist__label">Submit the revised D1 to the course repository; use the template filename.</label></li>
+          <li data-chk-id="bloom"><input type="checkbox"/><label class="checklist__label">Read: Krathwohl's summary of the revised Bloom taxonomy (2002, ~40 min).</label></li>
+          <li data-chk-id="types"><input type="checkbox"/><label class="checklist__label">Classify your desired state against the five objective types we will use: retrieval, discrimination, procedural fluency, conceptual reasoning, judgment under uncertainty.</label></li>
+          <li data-chk-id="list"><input type="checkbox"/><label class="checklist__label">List 2–4 candidate learning objectives your project will target. Rough is fine; we sharpen them in class.</label></li>
+          <li data-chk-id="peer"><input type="checkbox"/><label class="checklist__label">Review one classmate's D1 and leave a comment identifying the single weakest field.</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="tools">
+        <div class="block__kicker">07 · Tools — Google AI Studio</div>
+        <h2 class="block__title">Drafting a D1 faster without making it worse</h2>
+        <p class="lead">
+          Google AI Studio (<a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a>)
+          is useful for three specific D1 tasks: pulling a first-pass learner description from interview notes,
+          pressure-testing the "gap" field for specificity, and generating three failure-mode variants of your
+          problem statement so you can see what a weak version looks like.
+        </p>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · Draft the learner description from interview notes</h3>
+            <span class="aitool__hint">Model: Gemini 2.5 · temperature 0.4</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              Paste your raw interview notes into a new chat. The first prompt does one job only — extract a
+              named population from the evidence you collected. You will still write the final description;
+              AI Studio is a scaffold, not a ghostwriter.
+            </p>
+
+            <div class="aitool__usecase">System prompt</div>
+<pre class="prompt"><span class="sys">You are helping an educator write the "Learner" field of a Design Problem
+Statement for an educational game. Your job is to extract — not invent — a
+named population from the notes I paste.
+
+Rules:
+- Every claim you make must be traceable to a specific note I gave you.
+- If the notes do not support a claim, say "not in notes."
+- Reject generic descriptors ("students," "learners," "young people").
+- Output in exactly this structure:
+    Population: ...
+    Career stage: ...
+    Prior exposure: ...
+    Evidence per line: "[quote or paraphrase] — note #N"
+- Do not suggest mechanics, games, or solutions. Stay on the learner.</span></pre>
+
+            <div class="aitool__usecase">Your first message</div>
+<pre class="prompt"><span class="usr">Here are my interview notes from 4 shadowing sessions. Extract the Learner
+field. Anything generic, flag and ask a clarifying question instead of
+smoothing it over.
+
+[paste notes]</span></pre>
+          </div>
+          <div class="aitool__when">
+            <div class="aitool__when--yes">
+              <h4>Use it when</h4>
+              <p>You have ≥3 pages of interview notes and feel stuck turning them into one paragraph. Or when you want to see a stripped-back version of what the evidence actually supports.</p>
+            </div>
+            <div class="aitool__when--no">
+              <h4>Don't use it when</h4>
+              <p>You have no notes yet. AI will happily invent a plausible learner from a vague prompt — that is the failure mode this session is built to prevent. Talk to a real person first.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · Pressure-test the Gap field</h3>
+            <span class="aitool__hint">Adversarial mode</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              After you have drafted a Gap sentence, ask the model to attack it. The value here is not the
+              answer — it is the list of angles a skeptical reviewer (your peers in the workshop) will come at
+              you with.
+            </p>
+
+            <div class="aitool__usecase">Prompt</div>
+<pre class="prompt"><span class="usr">My Gap field, draft 1:
+"[paste your one sentence]"
+
+Critique it against the D1 quality bar: specific population? observable?
+scorable? measurable? Name three concrete weaknesses and three
+rewrite options that would survive peer critique. Do not soften. I need
+to hear the worst version of the feedback now, not in workshop.</span></pre>
+
+            <div class="callout callout--warn">
+              <div class="callout__icon">!</div>
+              <div class="callout__body">
+                <div class="callout__title">Ignore rewrite options that generalize your learner</div>
+                <p>
+                  The model's instinct is to broaden ("replace 'night-shift residents' with 'new clinicians'").
+                  That is the opposite of the D1 discipline. Keep rewrites that tighten specificity; throw out
+                  rewrites that widen the population.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Section: Minigame ──────────────────── -->
+      <div id="minigame-mount" data-minigame="s02"></div>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">09 · Exit ticket</div>
+        <h2 class="block__title">Paste your revised gap statement</h2>
+        <p class="block__subtitle">
+          Copy just the "Gap" field of your revised D1 here. If you cannot state it as a scorable scenario, say so
+          — the instructor will review before next week.
+        </p>
+
+        <div class="ticket" data-ticket-id="gap">
+          <div class="ticket__prompt">My measurable gap, as a scorable scenario:</div>
+          <textarea placeholder="e.g., On rubric X, cohort scores Y; target Z after one session…"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-01.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 01</span>
+        <span class="session-nav__title">Framing</span>
+      </a>
+      <a href="session-03.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 03 →</span>
+        <span class="session-nav__title">Objectives &amp; crosswalk</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="minigames.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>

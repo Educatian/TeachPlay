@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Educational Game Design — Handbook</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<!-- ─── Utility bar ─────────────────────────────────────────────── -->
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <a href="#">myBama</a>
+  </div>
+</div>
+
+<!-- ─── Site header ─────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html" class="is-active">Overview</a>
+    <a href="#sessions">Sessions</a>
+    <a href="#deliverables">Deliverables</a>
+    <a href="resources.html">Resource Library</a>
+    <a href="resources.html#labs">Labs</a>
+    <a href="#what-you-learn">What You Learn</a>
+    <a href="session-01.html">Begin Session 01</a>
+  </nav>
+</header>
+
+<!-- ─── Hero ────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <div class="hero__eyebrow">Micro-credential · v2 · 12 Sessions · ~36 Contact Hours</div>
+    <h1 class="hero__title">Design a game that<br/>actually <em>teaches</em>.</h1>
+    <p class="hero__lede">
+      A twelve-session handbook for designers, educators, and developers who ship small, rigorous
+      learning games — grounded in objectives, shaped by playtest, and implementable in a real engine.
+    </p>
+    <div class="hero__ctas">
+      <a href="session-01.html" class="btn">Begin Session 01</a>
+      <a href="#sessions" class="btn btn--outline">See all sessions</a>
+    </div>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<!-- ─── What you learn ─────────────────────────────────────────── -->
+<section class="section" id="what-you-learn">
+  <span class="section__eyebrow">What You Will Learn</span>
+  <h2 class="section__title">From learning objective<br/>to playable artifact.</h2>
+  <p class="section__lede">
+    Three core capabilities build across the semester. Each session sharpens one of them against
+    your own project.
+  </p>
+  <div class="card-grid card-grid--3">
+    <div class="card">
+      <div class="card__label">Core Skill 01</div>
+      <h3 class="card__title">Diagnose Objective Type</h3>
+      <p>Separate retrieval, discrimination, procedure, reasoning, and judgment — and choose the mechanics that actually teach each one.</p>
+    </div>
+    <div class="card">
+      <div class="card__label">Core Skill 02</div>
+      <h3 class="card__title">Prototype & Playtest</h3>
+      <p>Build a paper loop in under five minutes. Run a protocol with target learners, not peers. Revise from evidence, not taste.</p>
+    </div>
+    <div class="card">
+      <div class="card__label">Core Skill 03</div>
+      <h3 class="card__title">Specify to Implementation</h3>
+      <p>Hand a developer a state machine, event-feedback map, and Three.js bridge they can build from on day one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Sessions grid ──────────────────────────────────────────── -->
+<section class="section section--tint" id="sessions">
+  <span class="section__eyebrow">The Curriculum</span>
+  <h2 class="section__title">Twelve sessions.<br/>Five deliverables.</h2>
+  <p class="section__lede">
+    Each session is ~3 hours of contact time plus homework. Sessions build on each other — a playable
+    artifact walks across every week. Select any session to open its handbook page.
+  </p>
+  <div class="session-card-grid" data-session-grid></div>
+</section>
+
+<!-- ─── Deliverables band ──────────────────────────────────────── -->
+<section class="section" id="deliverables" style="padding-bottom: 40px;">
+  <span class="section__eyebrow">Deliverables</span>
+  <h2 class="section__title">Five artifacts.<br/>One credential.</h2>
+  <p class="section__lede">
+    Each deliverable compounds on the last. By the final presentation you hand over an artifact that a
+    development team could actually pick up and build.
+  </p>
+</section>
+<section class="section" style="padding-top: 0;">
+  <div class="deliverables">
+    <div class="deliverable">
+      <span class="deliverable__num">D1</span>
+      <h3 class="deliverable__title">Design Problem Statement</h3>
+      <p class="deliverable__desc">Learner, context, constraint, and the measurable shift you intend to produce.</p>
+      <span class="deliverable__session">Session 02 · Week 2</span>
+    </div>
+    <div class="deliverable">
+      <span class="deliverable__num">D2</span>
+      <h3 class="deliverable__title">Objective × Mechanic Crosswalk</h3>
+      <p class="deliverable__desc">Two to four objectives mapped to mechanics with rationale and risks.</p>
+      <span class="deliverable__session">Session 03 · Week 3</span>
+    </div>
+    <div class="deliverable">
+      <span class="deliverable__num">D3</span>
+      <h3 class="deliverable__title">Paper Prototype &amp; Facilitator Guide</h3>
+      <p class="deliverable__desc">Playable-at-table in five minutes. A colleague can run it without you.</p>
+      <span class="deliverable__session">Session 07 · Week 7</span>
+    </div>
+    <div class="deliverable">
+      <span class="deliverable__num">D4</span>
+      <h3 class="deliverable__title">Playtest Report</h3>
+      <p class="deliverable__desc">Protocol, three-plus target-learner sessions, an evidence-ranked revision plan.</p>
+      <span class="deliverable__session">Session 09 · Week 9</span>
+    </div>
+    <div class="deliverable">
+      <span class="deliverable__num">D5</span>
+      <h3 class="deliverable__title">Implementation Spec</h3>
+      <p class="deliverable__desc">State machine, event map, asset list, and the Three.js bridge for a key scene.</p>
+      <span class="deliverable__session">Session 12 · Week 12</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Resource library teaser ────────────────────────────────── -->
+<section class="section" style="padding-top: 48px; padding-bottom: 48px;">
+  <span class="section__eyebrow">The Companion Library</span>
+  <h2 class="section__title">Twelve handouts.<br/>One beside every session.</h2>
+  <p class="section__lede">
+    Each week ships with a companion handout built to sit next to the session: worked examples, a UDL crosswalk,
+    a playtesting toolkit, a Three.js foundations pack, a Codex build playbook, and more. Read online or
+    download as Markdown.
+  </p>
+  <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+    <a href="resources.html" class="btn">Open the library</a>
+    <a href="read.html?doc=07-additional-learning-resources.md" class="btn btn--outline" target="_blank" rel="noopener">Browse external resources →</a>
+  </div>
+</section>
+
+<!-- ─── Ready-to-begin banner ──────────────────────────────────── -->
+<section class="section section--crimson" style="text-align: center; padding: 80px 64px;">
+  <span class="section__eyebrow">Ready to Begin?</span>
+  <h2 class="section__title" style="margin-left: auto; margin-right: auto;">The best time to sharpen<br/>your design practice is now.</h2>
+  <p class="section__lede" style="margin-left: auto; margin-right: auto;">
+    Open Session 01 and start with the stance question that will anchor the next twelve weeks.
+  </p>
+  <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+    <a href="session-01.html" class="btn">Begin Session 01</a>
+    <a href="#sessions" class="btn btn--outline">Browse All Sessions</a>
+  </div>
+</section>
+
+<!-- ─── Footer ─────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <div>
+      <div class="site-footer__brand">Educational Game Design</div>
+      <div class="site-footer__meta">A micro-credential handbook · v2 · 2026</div>
+    </div>
+    <div class="site-footer__meta">
+      Educational Technology · College of Education<br/>
+      The University of Alabama · Tuscaloosa, AL
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© 2026 The University of Alabama</span>
+    <span>Crimson Flame · Capstone Gray · Victory White</span>
+  </div>
+</footer>
+
+<script src="shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electric Circuit Lab 3D</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="lab-shell">
+    <section class="hero-panel">
+      <p class="eyebrow">PHYSICS MICRO-LAB · SCORM 1.2 · THREE.JS</p>
+      <h1>BUILD A CIRCUIT THAT ACTUALLY FLOWS.</h1>
+      <p class="hero-copy">
+        Drag each electrical component into the correct socket, rotate it until the connectors align with the circuit path,
+        click the switch to close the loop, and then click the diagnostic probes to confirm current flow.
+      </p>
+
+      <div class="hero-grid">
+        <article class="panel-card">
+          <p class="card-label">Mission</p>
+          <h2 id="objectiveTitle">Place the four circuit components.</h2>
+          <p id="objectiveText">
+            Match each component to its colored slot. When a component snaps in, rotate it until its connector strip follows the wire path.
+          </p>
+        </article>
+
+        <article class="panel-card">
+          <p class="card-label">Controls</p>
+          <ul class="control-list">
+            <li><strong>Drag:</strong> move a component</li>
+            <li><strong>Orbit:</strong> drag empty space</li>
+            <li><strong>Rotate:</strong> mouse wheel or <kbd>Q</kbd> / <kbd>E</kbd></li>
+            <li><strong>Click:</strong> select parts, close the switch, activate probes</li>
+          </ul>
+        </article>
+      </div>
+
+      <article class="legend-card">
+        <p class="card-label">Component Legend</p>
+        <div class="legend-list">
+          <div class="legend-item"><span class="swatch swatch-battery"></span><strong>Battery</strong><span>Stores voltage</span></div>
+          <div class="legend-item"><span class="swatch swatch-resistor"></span><strong>Resistor</strong><span>Limits current</span></div>
+          <div class="legend-item"><span class="swatch swatch-switch"></span><strong>Switch</strong><span>Opens and closes the loop</span></div>
+          <div class="legend-item"><span class="swatch swatch-lamp"></span><strong>Lamp</strong><span>Glows when the loop is complete</span></div>
+        </div>
+      </article>
+
+      <article class="panel-card scorm-card">
+        <p class="card-label">SCORM Session</p>
+        <strong id="learnerName">Learner: local preview</strong>
+        <p id="scormStatusText">Waiting for LMS or local preview mode.</p>
+      </article>
+
+      <div class="hero-actions">
+        <button id="restartButton" class="action-button solid" type="button">Restart Lab</button>
+      </div>
+    </section>
+
+    <section class="simulation-panel">
+      <div class="top-hud">
+        <div class="scoreboard" aria-label="Simulation scoreboard">
+          <div class="score-tile">
+            <span>Score</span>
+            <strong id="scoreValue">0</strong>
+          </div>
+          <div class="score-tile">
+            <span>Efficiency</span>
+            <strong id="efficiencyValue">0%</strong>
+          </div>
+          <div class="score-tile">
+            <span>Aligned</span>
+            <strong id="alignedValue">0 / 4</strong>
+          </div>
+          <div class="score-tile">
+            <span>Current</span>
+            <strong id="currentValue">0 / 100</strong>
+          </div>
+          <div class="score-tile">
+            <span>Time</span>
+            <strong id="timeValue">95s</strong>
+          </div>
+        </div>
+
+        <div class="status-card">
+          <p class="card-label">Selected</p>
+          <strong id="selectedValue">None</strong>
+          <p id="statusText" class="status-copy">Drag a component to begin. Matching sockets glow in the same color.</p>
+        </div>
+      </div>
+
+      <div id="simulationRoot" class="simulation-root" aria-label="Interactive 3D electric circuit simulation"></div>
+
+      <div class="bottom-hud">
+        <div id="toast" class="toast-pill">The circuit is open. Place the components first.</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./scormdriver.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

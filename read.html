@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reading · Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+<style>
+/* ─── Document reader layout ───────────────────────────────── */
+.reader {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 220px;
+  gap: 56px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 40px 96px;
+}
+@media (max-width: 1100px) {
+  .reader { grid-template-columns: 1fr; padding: 32px 24px 64px; gap: 24px; }
+  .reader__toc, .reader__meta-rail { display: none; }
+}
+
+.reader__toc, .reader__meta-rail {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  align-self: start;
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+}
+.reader__toc-label, .reader__meta-label {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--crimson);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid var(--crimson);
+}
+.reader__toc ul { list-style: none; padding: 0; margin: 0; }
+.reader__toc li { margin: 0; }
+.reader__toc a {
+  display: block;
+  padding: 6px 0 6px 12px;
+  border-left: 2px solid transparent;
+  color: var(--gray-80);
+  text-decoration: none;
+  line-height: 1.35;
+  font-size: 13px;
+  transition: all 120ms;
+}
+.reader__toc a:hover { color: var(--crimson); border-left-color: var(--crimson); }
+.reader__toc a.is-active { color: var(--crimson); border-left-color: var(--crimson); font-weight: 600; }
+.reader__toc .is-h3 { padding-left: 24px; font-size: 12px; color: var(--gray-70); }
+
+.reader__meta-rail div { margin-bottom: 18px; }
+.reader__meta-rail dt {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-70);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.reader__meta-rail dd {
+  margin: 0;
+  color: var(--gray-100);
+  font-weight: 500;
+}
+.reader__back {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--crimson);
+  text-decoration: none;
+}
+.reader__back:hover { text-decoration: underline; }
+
+/* ─── Document body ───────────────────────────────────────── */
+.doc {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--gray-100);
+  max-width: 720px;
+}
+.doc__kicker {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--crimson);
+  margin-bottom: 14px;
+}
+.doc h1 {
+  font-family: var(--font-display);
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1.02;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+  color: var(--crimson);
+  margin: 0 0 36px;
+  padding-bottom: 24px;
+  border-bottom: 3px solid var(--crimson);
+}
+.doc h2 {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--gray-100);
+  margin: 56px 0 20px;
+  padding-top: 8px;
+  scroll-margin-top: 20px;
+}
+.doc h3 {
+  font-family: var(--font-sans);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--crimson);
+  margin: 36px 0 12px;
+  scroll-margin-top: 20px;
+}
+.doc h4 {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--gray-100);
+  text-transform: uppercase;
+  margin: 28px 0 10px;
+}
+
+/* Tag badge before headings: [FRAME], [MAP], [ACTION], etc. */
+.doc h2 .tag-badge,
+.doc h3 .tag-badge {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  background: var(--crimson);
+  color: var(--white);
+  vertical-align: middle;
+  margin-right: 12px;
+  position: relative;
+  top: -2px;
+  border-radius: 2px;
+}
+.tag-badge[data-tag="FRAME"]    { background: #123B5D; }
+.tag-badge[data-tag="MAP"]      { background: #0F766E; }
+.tag-badge[data-tag="ACTION"]   { background: #A16207; }
+.tag-badge[data-tag="CHECK"]    { background: #2F855A; }
+.tag-badge[data-tag="EVIDENCE"] { background: #7C3AED; }
+.tag-badge[data-tag="RISK"]     { background: #B42318; }
+.tag-badge[data-tag="LINKS"]    { background: #334155; }
+
+.doc p { margin: 0 0 18px; }
+.doc p:last-child { margin-bottom: 0; }
+.doc a { color: var(--crimson); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.doc a:hover { background: rgba(158, 27, 50, 0.08); }
+
+.doc strong { font-weight: 700; color: var(--crimson-deep); }
+.doc em { font-style: italic; }
+
+.doc ul, .doc ol { margin: 0 0 20px; padding-left: 24px; }
+.doc li { margin-bottom: 6px; }
+.doc li > p { margin-bottom: 8px; }
+
+/* Code */
+.doc code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  background: rgba(158, 27, 50, 0.08);
+  color: var(--crimson-deep);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.doc pre {
+  background: var(--gray-05);
+  border-left: 4px solid var(--crimson);
+  padding: 18px 22px;
+  overflow-x: auto;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 20px 0 28px;
+}
+.doc pre code {
+  background: transparent;
+  color: var(--gray-100);
+  padding: 0;
+}
+
+/* Blockquotes → callouts */
+.doc blockquote {
+  margin: 20px 0 28px;
+  padding: 18px 22px;
+  border-left: 4px solid var(--crimson);
+  background: #fbf6f7;
+  font-style: normal;
+}
+.doc blockquote > p:last-child { margin-bottom: 0; }
+
+/* Tables */
+.doc table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0 28px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.doc thead { background: var(--crimson); color: var(--white); }
+.doc thead th {
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.doc tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--gray-20);
+  vertical-align: top;
+}
+.doc tbody tr:nth-child(even) { background: var(--gray-05); }
+.doc tbody tr:hover { background: #fbf6f7; }
+
+/* Horizontal rule */
+.doc hr {
+  border: none;
+  height: 1px;
+  background: var(--gray-20);
+  margin: 48px 0;
+}
+
+/* Inline HTML callout blocks (the MD uses custom <div style=...>) — let them render but harmonize */
+.doc div[style*="border-left"] {
+  border-radius: 0 !important;
+}
+
+/* Mermaid diagram wrapper */
+.mermaid {
+  background: var(--gray-05);
+  padding: 24px;
+  margin: 20px 0 28px;
+  border-left: 4px solid #0F766E;
+  overflow-x: auto;
+  text-align: center;
+  font-family: var(--font-sans);
+}
+.mermaid svg { max-width: 100%; height: auto !important; }
+
+/* Loading / error */
+.reader__status {
+  padding: 80px 0;
+  text-align: center;
+  font-family: var(--font-sans);
+  color: var(--gray-70);
+}
+.reader__status--error {
+  color: var(--crimson-deep);
+  background: #fbf6f7;
+  border-left: 4px solid var(--crimson);
+  padding: 24px;
+  text-align: left;
+}
+
+/* Reading progress bar */
+.read-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: var(--crimson);
+  z-index: 100;
+  transition: width 80ms linear;
+}
+</style>
+</head>
+<body>
+
+<div class="read-progress" id="readProgress" style="width:0%"></div>
+
+<!-- ─── Utility bar ───────────────────────────────────────── -->
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="#">myBama</a></div>
+</div>
+
+<!-- ─── Site header ───────────────────────────────────────── -->
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html">Overview</a>
+    <a href="index.html#sessions">Sessions</a>
+    <a href="index.html#deliverables">Deliverables</a>
+    <a href="resources.html" class="is-active">Resource Library</a>
+    <a href="session-01.html">Begin Session 01</a>
+  </nav>
+</header>
+
+<!-- ─── Reader ────────────────────────────────────────────── -->
+<main class="reader">
+
+  <!-- Left rail: Table of contents -->
+  <aside class="reader__toc" id="toc">
+    <div class="reader__toc-label">On this page</div>
+    <ul id="tocList"></ul>
+  </aside>
+
+  <!-- Center: Article -->
+  <article>
+    <a href="resources.html" class="reader__back">← Back to Resource Library</a>
+    <div class="doc__kicker" id="docKicker">Companion Handout</div>
+    <div id="docBody" class="doc">
+      <div class="reader__status">Loading document…</div>
+    </div>
+  </article>
+
+  <!-- Right rail: Metadata -->
+  <aside class="reader__meta-rail" id="metaRail">
+    <div class="reader__meta-label">About this handout</div>
+    <dl id="metaList"></dl>
+  </aside>
+
+</main>
+
+<!-- ─── Footer ──────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <div>
+      <div class="site-footer__brand">Educational Game Design</div>
+      <div class="site-footer__meta">A micro-credential handbook · v2 · 2026</div>
+    </div>
+    <div class="site-footer__meta">
+      Educational Technology · College of Education<br/>
+      The University of Alabama · Tuscaloosa, AL
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© 2026 The University of Alabama</span>
+    <span>Crimson Flame · Capstone Gray · Victory White</span>
+  </div>
+</footer>
+
+<!-- ─── Libs ──────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
+<script>
+// ─── Handout metadata ──────────────────────────────────────
+const HANDOUTS = {
+  '01-teacher-digital-curriculum-guide.md':       { num: '01', kicker: 'Facilitator handout · Teaching moves',    title: 'Teacher Digital Curriculum Guide',     reading: '~30 min', session: 'Session 06', tag: 'Facilitation' },
+  '02-worked-examples-casebook.md':               { num: '02', kicker: 'Facilitator handout · Worked examples',    title: 'Worked Examples Casebook',             reading: '~25 min', session: 'Sessions 01 & 03', tag: 'Design' },
+  '03-playtesting-toolkit.md':                    { num: '03', kicker: 'Facilitator handout · Evidence lens',      title: 'Playtesting Toolkit',                  reading: '~25 min', session: 'Session 09', tag: 'Evidence & audit' },
+  '04-portfolio-exemplar-set.md':                 { num: '04', kicker: 'Closing handout · Portfolio calibration',  title: 'Portfolio Exemplar Set',               reading: '~25 min', session: 'Session 12', tag: 'Evidence & audit' },
+  '05-threejs-foundations-learning-pack.md':      { num: '05', kicker: 'Implementation handout · 3D foundations',  title: 'Three.js Foundations Learning Pack',   reading: '~30 min', session: 'Session 08', tag: 'Implementation' },
+  '06-technical-qa-and-data-logging-checklists.md': { num: '06', kicker: 'Audit handout · Evidence hygiene',       title: 'Technical QA and Data Logging Checklists', reading: '~25 min', session: 'Session 10', tag: 'Evidence & audit' },
+  '07-additional-learning-resources.md':          { num: '07', kicker: 'Closing handout · Next-step pathways',     title: 'Additional Learning Resources Guide',  reading: '~20 min', session: 'Session 12', tag: 'Facilitation' },
+  '08-game-accessibility-playbook.md':            { num: '08', kicker: 'Audit handout · Inclusion',                title: 'Game Accessibility Playbook',          reading: '~20 min', session: 'Session 10', tag: 'Evidence & audit' },
+  '09-udl-3-crosswalk.md':                        { num: '09', kicker: 'Facilitator handout · Equity lens',        title: 'UDL 3.0 Crosswalk',                    reading: '~15 min', session: 'Session 02', tag: 'Facilitation' },
+  '10-asset-licensing-and-attribution-pack.md':   { num: '10', kicker: 'Implementation handout · Rights & credit', title: 'Asset Licensing and Attribution Pack', reading: '~15 min', session: 'Session 08', tag: 'Implementation' },
+  '11-performance-and-device-test-pack.md':       { num: '11', kicker: 'Audit handout · Reliability',              title: 'Performance and Device Test Pack',     reading: '~20 min', session: 'Session 10', tag: 'Evidence & audit' },
+  '12-codex-to-threejs-build-playbook.md':        { num: '12', kicker: 'Implementation handout · AI-assisted build', title: 'Codex-To-Three.js Build Playbook',   reading: '~20 min', session: 'Sessions 08 & 11', tag: 'Implementation' },
+};
+
+// Tag badge labels we want to promote from "## [FRAME] Purpose" → "<span class='tag-badge'>FRAME</span> Purpose"
+const TAG_PATTERN = /^\[(FRAME|MAP|ACTION|CHECK|EVIDENCE|RISK|LINKS)\]\s*/;
+
+// ─── Mermaid init ───────────────────────────────────────────
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  themeVariables: {
+    primaryColor: '#9E1B32',
+    primaryTextColor: '#ffffff',
+    primaryBorderColor: '#7a1226',
+    lineColor: '#5a0f1f',
+    secondaryColor: '#f4ebe0',
+    tertiaryColor: '#ffffff',
+    fontFamily: 'inherit',
+    fontSize: '14px'
+  },
+  flowchart: { curve: 'basis', padding: 20 }
+});
+
+// ─── Load handout ──────────────────────────────────────────
+const params = new URLSearchParams(location.search);
+const docName = params.get('doc') || '02-worked-examples-casebook.md';
+const meta    = HANDOUTS[docName] || { num: '??', kicker: 'Companion handout', title: docName, reading: '—', session: '—', tag: '—' };
+
+// Set page title + kicker + metadata rail
+document.title = `${meta.title} · Reading`;
+document.getElementById('docKicker').textContent = meta.kicker;
+
+const metaList = document.getElementById('metaList');
+metaList.innerHTML = `
+  <div><dt>Handout</dt><dd>${meta.num} of 12</dd></div>
+  <div><dt>Reading time</dt><dd>${meta.reading}</dd></div>
+  <div><dt>Pairs with</dt><dd>${meta.session}</dd></div>
+  <div><dt>Focus</dt><dd>${meta.tag}</dd></div>
+  <div><dt>Download</dt><dd><a href="resources/${docName}" download>Markdown source ↓</a></dd></div>
+`;
+
+// ─── Fetch + render ────────────────────────────────────────
+(async () => {
+  let raw;
+  try {
+    const res = await fetch(`resources/${docName}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    raw = await res.text();
+  } catch (err) {
+    document.getElementById('docBody').innerHTML = `
+      <div class="reader__status reader__status--error">
+        <strong>Could not load this handout.</strong><br/>
+        ${err.message}<br/><br/>
+        <a href="resources.html">← Return to the Resource Library</a>
+      </div>`;
+    return;
+  }
+
+  // Configure marked to allow inline HTML (the MD contains styled divs and tables)
+  marked.setOptions({ gfm: true, breaks: false });
+
+  // Custom renderer: promote heading tag prefixes to badges, and catch mermaid code blocks
+  const renderer = new marked.Renderer();
+
+  const origHeading = renderer.heading.bind(renderer);
+  renderer.heading = (text, level, raw) => {
+    const m = text.match(TAG_PATTERN);
+    if (m) {
+      const tag = m[1];
+      const rest = text.replace(TAG_PATTERN, '');
+      const id = rest.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').slice(0, 60);
+      return `<h${level} id="${id}"><span class="tag-badge" data-tag="${tag}">${tag}</span>${rest}</h${level}>\n`;
+    }
+    return origHeading(text, level, raw);
+  };
+
+  renderer.code = (code, lang) => {
+    if (lang === 'mermaid') {
+      // Escape angle brackets to be safe for the host DOM, but mermaid re-parses the raw text
+      const safe = code.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return `<div class="mermaid">${safe}</div>`;
+    }
+    return `<pre><code class="language-${lang || ''}">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>`;
+  };
+
+  // First heading (# Title) → we render it as a big styled <h1>. We'll let marked do it, just intercept to strip underscore.
+  const html = marked.parse(raw, { renderer });
+
+  const body = document.getElementById('docBody');
+  body.innerHTML = html;
+
+  // Clean up: if the MD starts with "# Title" and then a boxed "Facilitator Handout NN" div, that's ok.
+  // Render any mermaid that landed inside .mermaid containers — mermaid.run handles decoded text
+  // But because we HTML-escaped mermaid source, we need to unescape before letting mermaid parse:
+  document.querySelectorAll('.mermaid').forEach(el => {
+    el.textContent = el.textContent; // leaves HTML-encoded entities decoded by textContent
+  });
+  try {
+    await mermaid.run({ querySelector: '.mermaid' });
+  } catch (e) {
+    console.warn('Mermaid render error:', e);
+  }
+
+  // ─── Build TOC ──────────────────────────────────────────
+  const tocList = document.getElementById('tocList');
+  const headings = body.querySelectorAll('h2, h3');
+  const tocItems = [];
+  headings.forEach((h, i) => {
+    if (!h.id) {
+      h.id = `h-${i}-${(h.textContent||'').toLowerCase().replace(/[^\w]+/g,'-').slice(0,40)}`;
+    }
+    // Get "clean" text: strip badge text, keep rest
+    const badge = h.querySelector('.tag-badge');
+    const label = badge ? h.textContent.replace(badge.textContent, '').trim() : h.textContent.trim();
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="#${h.id}" class="${h.tagName === 'H3' ? 'is-h3' : ''}">${label}</a>`;
+    tocList.appendChild(li);
+    tocItems.push({ h, a: li.querySelector('a') });
+  });
+
+  // ─── Active section tracking ────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        tocItems.forEach(item => {
+          item.a.classList.toggle('is-active', item.h.id === id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+  headings.forEach(h => observer.observe(h));
+
+  // ─── Reading progress bar ───────────────────────────────
+  const bar = document.getElementById('readProgress');
+  const update = () => {
+    const scrolled = window.scrollY;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = Math.min(100, Math.max(0, (scrolled / (max || 1)) * 100));
+    bar.style.width = pct + '%';
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+
+  // Scroll to #hash if present
+  if (location.hash) {
+    const el = document.getElementById(location.hash.slice(1));
+    if (el) el.scrollIntoView({ block: 'start' });
+  }
+})();
+</script>
+
+</body>
+</html>

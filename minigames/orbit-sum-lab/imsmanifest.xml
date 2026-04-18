@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="orbit-sum-lab-scorm"
+  version="1.0"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 ims_xml.xsd http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+  <organizations default="org-1">
+    <organization identifier="org-1">
+      <title>Orbit Sum Lab</title>
+      <item identifier="item-1" identifierref="resource-1" adlcp:masteryscore="80">
+        <title>Orbit Sum Lab SCO</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="resource-1" type="webcontent" adlcp:scormtype="sco" href="scorm-launch-orbit-lab.html">
+      <file href="scorm-launch-orbit-lab.html"/>
+      <file href="index.html"/>
+      <file href="scormdriver.js"/>
+      <file href="assets/index.js"/>
+      <file href="assets/index.css"/>
+    </resource>
+  </resources>
+</manifest>

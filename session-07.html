@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 07 · Low-fi prototyping — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 3 · Build &amp; test</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 07 · Week 7 · D3 due</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Low-fi prototyping: a playable-at-table loop in <em>five minutes</em>.
+      </h1>
+      <p class="session-header__lede">
+        Paper prototypes exist to disprove your design as cheaply as possible. The goal today is not a
+        polished artifact — it is a loop you can run at a table in five minutes, watch fail, and revise in
+        ten. By end of session you will have played your own loop three times; the version you keep is the
+        one that survived.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">3 cycles · build → play → revise</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">D3</span>
+          <span class="session-meta__sub">Prototype + facilitator guide</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">5</span>
+          <span class="session-meta__sub">Demonstrated, not scored</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Materials</span>
+          <span class="session-meta__value">Paper &amp; tokens</span>
+          <span class="session-meta__sub">NO laptops for the build</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 7.1</span><span class="outcomes__text">Build a paper prototype of one loop from your D2 in under 25 minutes.</span></li>
+          <li><span class="outcomes__num">LO 7.2</span><span class="outcomes__text">Run a 5-minute playtest cycle with a peer-as-proxy; observe silently.</span></li>
+          <li><span class="outcomes__num">LO 7.3</span><span class="outcomes__text">Revise the prototype in under 10 minutes based on one specific observation — not everything you saw.</span></li>
+          <li><span class="outcomes__num">LO 7.4</span><span class="outcomes__text">Repeat the build–play–revise cycle three times in a single session.</span></li>
+          <li><span class="outcomes__num">LO 7.5</span><span class="outcomes__text">Submit D3: the surviving version + facilitator guide v0.3 + a one-paragraph "what I cut" note.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="why">
+        <div class="block__kicker">02 · Why paper</div>
+        <h2 class="block__title">The cheapest disproof</h2>
+        <p class="lead">
+          Every hour you spend in an engine before a loop exists on paper costs you roughly twenty hours in
+          rework later. Paper is not a charming pedagogical exercise — it is the most efficient instrument
+          you have for disproving a loop while disproof is still cheap.
+        </p>
+
+        <div class="card-grid card-grid--3">
+          <div class="card">
+            <div class="card__label">Rule 01</div>
+            <h3 class="card__title">No laptops during build</h3>
+            <p>The temptation to prematurely formalize is too strong. Index cards, markers, tokens, a timer. That is the toolkit today.</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Rule 02</div>
+            <h3 class="card__title">One loop, not a game</h3>
+            <p>You are prototyping the single loop from your D2 that carries the most risk (see Session 04 star). Not the meta-structure. Not the narrative. The loop.</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Rule 03</div>
+            <h3 class="card__title">Silent observation</h3>
+            <p>When you run a cycle, you do not coach, clarify, or defend. You observe. You write down exactly what the player did and said. You will hate this.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="loop">
+        <div class="block__kicker">03 · The cycle</div>
+        <h2 class="block__title">Build–play–revise, three times</h2>
+
+        <table class="tbl tbl--timeplan">
+          <thead><tr><th>Time</th><th>Activity</th><th>Deliverable</th></tr></thead>
+          <tbody>
+            <tr><td>00:00–25:00</td><td>Build v0.1. Cards, rules on an index card, one token type per mechanic.</td><td>A runnable prototype.</td></tr>
+            <tr><td>25:00–35:00</td><td>Play cycle 1 with a peer-as-proxy. You facilitate silently. Peer plays the loop once.</td><td>Observation notes.</td></tr>
+            <tr><td>35:00–45:00</td><td>Revise — pick ONE observation. Change ONE thing.</td><td>v0.2.</td></tr>
+            <tr><td>45:00–60:00</td><td>Play cycle 2. Different peer if possible.</td><td>Observation notes.</td></tr>
+            <tr><td>60:00–80:00</td><td>Revise — again, one observation, one change.</td><td>v0.3.</td></tr>
+            <tr><td>80:00–95:00</td><td>Play cycle 3.</td><td>Observation notes.</td></tr>
+            <tr><td>95:00–115:00</td><td>Final revision pass. Write the "what I cut" paragraph.</td><td>v0.4 — this is D3.</td></tr>
+            <tr><td>115:00–180:00</td><td>Gallery walk; run the strongest loops for the full room; cross-critique.</td><td>Peer feedback log.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">The one-change rule is load-bearing</div>
+            <p>
+              The most common mistake is changing three things between cycles. When cycle 2 then goes badly, you
+              cannot tell which change caused what. Change one thing. The others go on the "for later" list.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="observe">
+        <div class="block__kicker">04 · Silent observation protocol</div>
+        <h2 class="block__title">What to write down</h2>
+        <p>
+          While your peer plays, write on a single sheet. Four columns, pen only. You will be tempted to
+          interpret — resist. Interpretation happens in the revise window, not during play.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:22%;">Column</th><th>What it captures</th><th>What it is not</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Time</strong></td><td>Clock at the moment of the observation.</td><td>—</td></tr>
+            <tr><td><strong>Did</strong></td><td>The specific action the player took.</td><td>Not what you wish they had done.</td></tr>
+            <tr><td><strong>Said</strong></td><td>Verbatim quote — even a fragment.</td><td>Not paraphrase. Not interpretation.</td></tr>
+            <tr><td><strong>Stuck?</strong></td><td>Y/N flag if the player paused &gt; 10s or asked a rules question.</td><td>Not a severity score. Just Y or N.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" id="cut">
+        <div class="block__kicker">05 · The "what I cut" paragraph</div>
+        <h2 class="block__title">Design is subtraction</h2>
+        <p>
+          D3 submission includes a one-paragraph note on what you removed between v0.1 and v0.4. This is graded.
+          A prototype that grew between cycles is suspicious. A prototype that shrank is almost always stronger.
+        </p>
+
+        <div class="worked">
+          <div class="worked__tag">Example · What I cut</div>
+          <h3 class="worked__title">From <em>The On-Call</em>, v0.1 → v0.4</h3>
+          <p style="font-family: var(--font-serif);">
+            "Cycle 1 had four token types (evidence, time, fatigue, trust). Playtester spent 3 of 5 minutes
+            tracking tokens rather than deciding. v0.2 cut fatigue entirely and merged trust into a single
+            end-of-scenario score. Cycle 2 still stalled on the evidence deck; v0.3 replaced the deck with a
+            face-up shared pile. Cycle 3 ran in 4:20 with the discrimination objective clearly visible in
+            player decisions. Net cut: two mechanics, one ruleset page, one component type."
+          </p>
+        </div>
+      </section>
+
+      <!-- ─── Section: Minigame ──────────────────── -->
+      <div id="minigame-mount" data-minigame="s07"></div>
+
+      <section class="block" id="checklist-prep">
+        <div class="block__kicker">07 · Preparation for Session 08</div>
+        <h2 class="block__title">Before next week</h2>
+        <ul class="checklist">
+          <li data-chk-id="d3-submit"><input type="checkbox"/><label class="checklist__label">Submit D3: prototype photos, rules card, facilitator guide v0.3, "what I cut" note.</label></li>
+          <li data-chk-id="read-spec"><input type="checkbox"/><label class="checklist__label">Read: one primer on state machines for interactive systems (course reader).</label></li>
+          <li data-chk-id="diagram"><input type="checkbox"/><label class="checklist__label">Sketch — on paper — the states your loop passes through. Rough is fine.</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">08 · Exit ticket</div>
+        <h2 class="block__title">One cut you were afraid to make</h2>
+        <div class="ticket" data-ticket-id="cut">
+          <div class="ticket__prompt">Between v0.1 and v0.4, the cut I was most reluctant to make — and why I made it:</div>
+          <textarea placeholder="I cut the fatigue system. I loved it. The playtesters did not notice it once in three cycles…"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-06.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 06</span>
+        <span class="session-nav__title">Facilitator design</span>
+      </a>
+      <a href="session-08.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 08 →</span>
+        <span class="session-nav__title">Interaction spec</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="minigames.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 11 · Revision studio — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 4 · Audit &amp; close</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 11 · Week 11</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Revision studio: protect the <em>backlog</em>, not your feelings.
+      </h1>
+      <p class="session-header__lede">
+        You have three documents in tension — your playtest report, your audit memo, and the design you fell
+        in love with in week 4. Today you merge them into a single ranked backlog, then execute the top of it
+        without flinching. The discipline today is not creativity. It is triage.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">30 triage · 120 work · 30 show</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">Backlog + build</span>
+          <span class="session-meta__sub">Merged into D5</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">4</span>
+          <span class="session-meta__sub">Demonstrated</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Materials</span>
+          <span class="session-meta__value">D4 + memo</span>
+          <span class="session-meta__sub">Both in repo, both open</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 11.1</span><span class="outcomes__text">Merge playtest findings and audit findings into one ranked backlog with impact × effort scored.</span></li>
+          <li><span class="outcomes__num">LO 11.2</span><span class="outcomes__text">Commit to a revision frontier — the top N items that fit within budget — and defend the cut line.</span></li>
+          <li><span class="outcomes__num">LO 11.3</span><span class="outcomes__text">Execute at least three revisions in the studio period; log the diff.</span></li>
+          <li><span class="outcomes__num">LO 11.4</span><span class="outcomes__text">Present your revised loop to a peer group in a 5-minute show-and-ask.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="backlog">
+        <div class="block__kicker">02 · The merged backlog</div>
+        <h2 class="block__title">One table. Every finding. Ranked.</h2>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:20%;">Column</th><th>What belongs</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>ID</strong></td><td>Short handle — PT-03, AU-02. Easy to reference in commits.</td></tr>
+            <tr><td><strong>Source</strong></td><td>Playtest / audit / instructor / own observation.</td></tr>
+            <tr><td><strong>Finding</strong></td><td>One sentence. No paragraph; those go in the source doc.</td></tr>
+            <tr><td><strong>Impact</strong></td><td>1–5. How much does fixing this move a D2 objective forward?</td></tr>
+            <tr><td><strong>Effort</strong></td><td>1–5. How many studio hours realistically?</td></tr>
+            <tr><td><strong>Flag</strong></td><td>Red if stopper (ethics, safety, content error). Non-negotiable top priority.</td></tr>
+            <tr><td><strong>Decision</strong></td><td>Do / defer / decline. Deferred and declined items have a one-sentence reason.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout__icon">i</div>
+          <div class="callout__body">
+            <div class="callout__title">The cut line is a design decision</div>
+            <p>
+              A good backlog has items below the line. Items below the line have a reason they are there —
+              low impact, high effort, out of scope, or a deliberate choice about what this version is not.
+              A backlog with no declines is a to-do list, not a design.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="triage">
+        <div class="block__kicker">03 · Triage — 30 min</div>
+        <h2 class="block__title">Score, sort, draw the line</h2>
+
+        <table class="tbl tbl--timeplan">
+          <thead><tr><th>Time</th><th>What happens</th><th>Cue</th></tr></thead>
+          <tbody>
+            <tr><td>00:00–10:00</td><td>Solo — transfer all findings into the backlog. One row per finding.</td><td>"No editing yet. Capture everything."</td></tr>
+            <tr><td>10:00–20:00</td><td>Solo — score impact and effort. Flag stoppers.</td><td>"If you rate &gt;5 items at Impact 5, you have not really scored them."</td></tr>
+            <tr><td>20:00–25:00</td><td>Pair — swap backlogs; partner queries the top three rankings.</td><td>"Why is PT-03 impact 4, not 3?"</td></tr>
+            <tr><td>25:00–30:00</td><td>Draw the cut line. Above it: this session's work. Below: the decline/defer note.</td><td>"The line is a commitment, not a filter."</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" id="studio">
+        <div class="block__kicker">04 · Studio — 120 min</div>
+        <h2 class="block__title">Execute. Log the diff.</h2>
+        <p>
+          Work above the line, top down. After each revision, make a commit (or a dated entry in your
+          change log) with the backlog ID and a one-sentence diff. The log is graded — a fast revision
+          with no trace is worth less than a slow revision that is documented.
+        </p>
+
+        <ul class="checklist">
+          <li data-chk-id="top1"><input type="checkbox"/><label class="checklist__label">Executed the top-ranked item in the backlog.</label></li>
+          <li data-chk-id="top2"><input type="checkbox"/><label class="checklist__label">Executed the second-ranked item.</label></li>
+          <li data-chk-id="top3"><input type="checkbox"/><label class="checklist__label">Executed one of the top 5, even if it was a stopper that leap-frogged the list.</label></li>
+          <li data-chk-id="log"><input type="checkbox"/><label class="checklist__label">Each revision has a one-sentence diff entry with its backlog ID.</label></li>
+          <li data-chk-id="no-scope"><input type="checkbox"/><label class="checklist__label">No scope additions this session. Any new idea goes to the backlog below the line.</label></li>
+        </ul>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">The new-idea trap</div>
+            <p>
+              Today you will think of a great new feature. Write it below the line. You are not building it.
+              This is the last revision week; what is not on the list is not in the game.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="show">
+        <div class="block__kicker">05 · Show-and-ask — 30 min</div>
+        <h2 class="block__title">5 minutes, 2 slides, 1 question</h2>
+        <p>
+          Demo the revised loop to your triad. Two slides max — before and after, or the revised state machine.
+          Bring one question you want feedback on. Not "thoughts?" — a specific question. Your peers' job is
+          to answer that question only.
+        </p>
+
+        <div class="worked">
+          <div class="worked__tag">Question discipline</div>
+          <h3 class="worked__title">Good questions / bad questions</h3>
+          <dl class="worked__kv">
+            <dt>Bad</dt><dd>"What do you think of my game?"</dd>
+            <dt>Better</dt><dd>"Does the revised pager-interrupt state visibly teach escalation, or does it feel like a chore?"</dd>
+            <dt>Bad</dt><dd>"Any feedback?"</dd>
+            <dt>Better</dt><dd>"Between the old and new feedback for incorrect picks, which lands the discrimination point faster?"</dd>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ─── Section: Minigame ──────────────────── -->
+      <div id="minigame-mount" data-minigame="s11"></div>
+
+      <section class="block" id="checklist-prep">
+        <div class="block__kicker">07 · Preparation for Session 12</div>
+        <h2 class="block__title">Before final presentations</h2>
+        <ul class="checklist">
+          <li data-chk-id="backlog-frozen"><input type="checkbox"/><label class="checklist__label">Freeze the backlog. Items still above the line become D5 "known limits."</label></li>
+          <li data-chk-id="deck"><input type="checkbox"/><label class="checklist__label">Assemble D5 deck — 8 slides, to the outline published in the handbook.</label></li>
+          <li data-chk-id="demo"><input type="checkbox"/><label class="checklist__label">Rehearse the demo segment at least twice; time it.</label></li>
+          <li data-chk-id="one-pager"><input type="checkbox"/><label class="checklist__label">Print one-pager summary for the reviewing panel.</label></li>
+        </ul>
+      </section>
+
+            <!-- ─── Section: Companion reading ─────────────────── -->
+      <section class="block" id="reading">
+        <div class="block__kicker">Companion reading</div>
+        <h2 class="block__title">The build-discipline handout for revision</h2>
+        <p class="block__subtitle">Revision studio is when teams overbuild. Today's handout is the counterweight: structured implementation with Codex, task packets scoped tight enough to debug, and decisions about what to cut.</p>
+
+        <div class="resources">
+          <div class="resource">
+            <div class="resource__num">12</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Implementation handout · Discipline</div>
+              <h3 class="resource__title">Codex-To-Three.js Build Playbook</h3>
+              <p class="resource__desc">The build-loop discipline for teams turning revision findings into bounded, testable code changes. Written to prevent the classic failure: asking Codex for a full game instead of a disciplined next slice.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Write your revision cycle as Codex task packets from this playbook. If the packet won't fit the template, the revision is too big.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=12-codex-to-threejs-build-playbook.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/12-codex-to-threejs-build-playbook.md" download>Download</a>
+              <span class="resource__meta">MD · ~20 min</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">08 · Exit ticket</div>
+        <h2 class="block__title">What you chose not to do</h2>
+        <div class="ticket" data-ticket-id="decline">
+          <div class="ticket__prompt">The backlog item I most wanted to do but cut — and the one-sentence reason it is below the line:</div>
+          <textarea placeholder="PT-07 — new narrative branch. Below the line because: high effort, uncertain impact on judgment-transfer, better handled in v2."></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-10.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 10</span>
+        <span class="session-nav__title">Audit</span>
+      </a>
+      <a href="session-12.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 12 →</span>
+        <span class="session-nav__title">Final presentations</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="minigames.js"></script>
+<script src="shell.js"></script>
+</body>
+</html>

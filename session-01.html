@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 01 · Framing — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<!-- ─── Utility bar ─────────────────────────────────────────── -->
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 1 · Foundations</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 01 · Week 1</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Framing: what is, and is <em>not</em>, an educational game.
+      </h1>
+      <p class="session-header__lede">
+        Before you pick a mechanic, before you open an engine, you need a working definition of the
+        thing you are building. This session establishes the difference between a game that <em>is about</em>
+        a topic and a game that <em>teaches</em> one — and sets the engagement–transfer problem you will fight
+        every week from here on.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">60 read · 75 activity · 45 debrief</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">None yet</span>
+          <span class="session-meta__sub">Exit ticket only</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">4</span>
+          <span class="session-meta__sub">Diagnostic, not graded</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Materials</span>
+          <span class="session-meta__value">Three games</span>
+          <span class="session-meta__sub">Bring one you have played</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ─── Section: Outcomes ──────────────────────────── -->
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li>
+            <span class="outcomes__num">LO 1.1</span>
+            <span class="outcomes__text">
+              Distinguish a <strong>learning game</strong> from three adjacent things — a game with educational content,
+              a gamified worksheet, and a simulation — using the engagement–transfer test.
+            </span>
+          </li>
+          <li>
+            <span class="outcomes__num">LO 1.2</span>
+            <span class="outcomes__text">
+              Name the three failure modes of gamification — reward substitution, competition flattening, and
+              narrative capture — and identify which is operating in a given artifact.
+            </span>
+          </li>
+          <li>
+            <span class="outcomes__num">LO 1.3</span>
+            <span class="outcomes__text">
+              State, in one sentence, the <strong>engagement–transfer problem</strong> your own project must solve.
+            </span>
+          </li>
+          <li>
+            <span class="outcomes__num">LO 1.4</span>
+            <span class="outcomes__text">
+              Commit to one of three stance questions as a framing for your capstone project.
+            </span>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ─── Section: Core concept ──────────────────────── -->
+      <section class="block" id="core">
+        <div class="block__kicker">02 · Core concept</div>
+        <h2 class="block__title">The engagement–transfer problem</h2>
+        <p class="lead">
+          A game can be deeply engaging and teach nothing. A worksheet can teach a great deal and engage no one.
+          Educational game design is the discipline of refusing both failure modes simultaneously.
+        </p>
+
+        <p>
+          Most projects that fail do not fail because they were boring, and do not fail because the content was wrong.
+          They fail because the <strong>mechanic that drove engagement did not carry the learning</strong>. The learner
+          mastered the <em>scoring system</em>, not the domain. This is the engagement–transfer problem, and it is the
+          central puzzle of everything that follows.
+        </p>
+
+        <div class="callout">
+          <div class="callout__icon">i</div>
+          <div class="callout__body">
+            <div class="callout__title">Working definition — for the rest of the course</div>
+            <p>
+              A <strong>learning game</strong> is an interactive artifact in which the moment-to-moment decisions the
+              player makes to succeed in the game are the same decisions a competent practitioner makes in the target
+              domain. If those two sets of decisions diverge, you are building something else.
+            </p>
+          </div>
+        </div>
+
+        <h3 style="color: var(--white-0); font-weight: 400; font-size: 22px; margin: 36px 0 12px;">The three failure modes</h3>
+        <div class="card-grid card-grid--3">
+          <div class="card card--warn">
+            <div class="card__label">Failure mode 01</div>
+            <h4 class="card__title">Reward substitution</h4>
+            <p>Players optimize the reward shell (points, streaks, stars) instead of the underlying domain behavior. Stripping rewards returns performance to baseline.</p>
+          </div>
+          <div class="card card--warn">
+            <div class="card__label">Failure mode 02</div>
+            <h4 class="card__title">Competition flattening</h4>
+            <p>Leaderboards and timers push every learner toward the same dominant strategy — usually the one with lowest cognitive load. Variety of reasoning collapses.</p>
+          </div>
+          <div class="card card--warn">
+            <div class="card__label">Failure mode 03</div>
+            <h4 class="card__title">Narrative capture</h4>
+            <p>Beautifully-themed wrapper, mechanically thin inside. Players remember the world, not the decisions. Transfer to the real domain is near zero.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Section: Three categories ──────────────────── -->
+      <section class="block" id="categories">
+        <div class="block__kicker">03 · Discrimination exercise</div>
+        <h2 class="block__title">Four things that look alike</h2>
+        <p class="block__subtitle">
+          Not everything interactive-and-educational is a learning game. Being precise about the category you are
+          working in saves months of misdirected effort. Read the table, then argue about the edge cases.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width: 22%;">Category</th>
+              <th>Loop driver</th>
+              <th>What is actually being practiced</th>
+              <th>Typical failure mode</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Game with<br/>educational content</strong></td>
+              <td>Traditional game loop; facts appear as theme.</td>
+              <td>The game's own skills — shooting, platforming, matching.</td>
+              <td>Narrative capture.</td>
+            </tr>
+            <tr>
+              <td><strong>Gamified worksheet</strong></td>
+              <td>Extrinsic reward loop (points, badges, timers).</td>
+              <td>Completion behavior; same task as the worksheet.</td>
+              <td>Reward substitution.</td>
+            </tr>
+            <tr>
+              <td><strong>Simulation</strong></td>
+              <td>Causal model of a real system; no explicit win state.</td>
+              <td>Mental model of system dynamics — often without feedback on correctness.</td>
+              <td>Open-ended; learner builds the wrong model unseen.</td>
+            </tr>
+            <tr style="background: rgba(15,98,254,0.08);">
+              <td><strong style="color: var(--blue-30);">Learning game</strong></td>
+              <td>Goal + constraint + feedback; decisions are domain decisions.</td>
+              <td>The target competency itself.</td>
+              <td>— (the one we are trying to build)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="margin-top: 24px;">
+          The row you sit in determines everything downstream: which objectives are legitimate, which mechanics are
+          available, what counts as evidence of learning. A project that doesn't know its row produces confused
+          artifacts.
+        </p>
+      </section>
+
+      <!-- ─── Section: Worked example ────────────────────── -->
+      <section class="block" id="worked">
+        <div class="block__kicker">04 · Worked example</div>
+        <h2 class="block__title">The same topic, three artifacts</h2>
+        <p class="block__subtitle">
+          "Interpreting a pediatric vital-signs trend" — how the same content yields three very different artifacts
+          depending on which category you pick.
+        </p>
+
+        <div class="worked">
+          <div class="worked__tag">Version A · Game with content</div>
+          <h3 class="worked__title">Trauma Rescue! (arcade shooter with medical theme)</h3>
+          <dl class="worked__kv">
+            <dt>Loop</dt><dd>Shoot incoming pathogens. Between waves, a vitals chart scrolls past.</dd>
+            <dt>Player learns</dt><dd>How to aim and dodge. Vitals are visual noise.</dd>
+            <dt>Verdict</dt><dd>Engagement: high. Transfer: ~zero. Classic narrative capture.</dd>
+          </dl>
+        </div>
+
+        <div class="worked">
+          <div class="worked__tag">Version B · Gamified worksheet</div>
+          <h3 class="worked__title">VitalsQuiz (multiple choice + points + streak)</h3>
+          <dl class="worked__kv">
+            <dt>Loop</dt><dd>Read a scenario, pick an answer, earn points. Streak for consecutive correct.</dd>
+            <dt>Player learns</dt><dd>Which answer looks right. Pattern-matches on surface features of the question stem.</dd>
+            <dt>Verdict</dt><dd>Transfer limited to recognition, not judgment. Reward substitution: players chase streaks.</dd>
+          </dl>
+        </div>
+
+        <div class="worked" style="border-left: 3px solid var(--blue-50);">
+          <div class="worked__tag" style="background: var(--blue-60);">Version C · Learning game</div>
+          <h3 class="worked__title">The On-Call (branching decision game, hidden variables)</h3>
+          <dl class="worked__kv">
+            <dt>Loop</dt><dd>You are the resident on night shift. You can order one test, call one consultant, or wait and observe. Time advances; the patient's state — not just the numbers — shifts.</dd>
+            <dt>Player learns</dt><dd>To prioritize <em>which</em> information is worth the cost of getting; to tolerate uncertainty; to recognize patterns across cases.</dd>
+            <dt>Verdict</dt><dd>Decisions in the game <em>are</em> decisions in the domain. Transfer designed in, not hoped for.</dd>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ─── Section: Minigame ──────────────────────────── -->
+      <section class="block" id="minigame">
+        <div class="block__kicker">05 · Minigame — 5 min</div>
+        <h2 class="block__title">"Teach" or "is about"? Call it.</h2>
+        <p class="block__subtitle">
+          Eight real learning-game pitches. For each, decide whether the verb the designer chose puts them
+          inside the trap or outside it. No partial credit; no "it depends." Commit, read the feedback, move
+          on.
+        </p>
+
+        <div class="minigame">
+          <div class="minigame__head">
+            <span class="minigame__tag">Minigame</span>
+            <h3 class="minigame__title">Framing check · teach vs. is-about</h3>
+            <span class="minigame__hint">~3 min · click to answer</span>
+          </div>
+          <div class="minigame__body">
+            <p class="minigame__lede">
+              Each pitch is a real-world sentence a designer might write in a grant application. Pick the
+              frame that most accurately describes what the sentence is <em>actually</em> committing to.
+              Answers lock on first click.
+            </p>
+
+            <div class="classifier" id="s1-classifier">
+              <!-- items injected by JS -->
+            </div>
+
+            <div class="minigame__score" id="s1-score" style="display:none;">
+              <span class="score-label">Score</span>
+              <span class="score-value"><span id="s1-correct">0</span> / <span id="s1-total">0</span></span>
+              <span class="score-note" id="s1-note"></span>
+            </div>
+
+            <div class="minigame__verdict" id="s1-verdict" style="display:none;">
+              <div class="verdict-label">Takeaway</div>
+              <div class="verdict-body" id="s1-verdict-body"></div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        (function() {
+          var ITEMS = [
+            {
+              prompt: 'An <em>educational game about</em> Reconstruction-era America.',
+              answer: 'is-about',
+              why: '"About" commits to coverage, not change. The game will contain Reconstruction; it has not yet committed to any learner behavior that changes.'
+            },
+            {
+              prompt: 'A game that <em>teaches</em> middle-schoolers to discriminate primary from secondary sources.',
+              answer: 'teach',
+              why: 'A specific verb ("discriminate"), a specific learner, a specific behavior. This sentence can be tested by asking a player, after play, to sort a stack of sources.'
+            },
+            {
+              prompt: 'An experience that <em>makes players feel</em> the weight of supply-chain decisions.',
+              answer: 'experience',
+              why: 'Experience-first framing. Nothing wrong with it — but whether a player "felt weight" can only be measured by asking them, and self-reports are notoriously unreliable.'
+            },
+            {
+              prompt: 'An engaging puzzle game <em>for learners</em> interested in graph theory.',
+              answer: 'is-about',
+              why: 'Topic-framed. "For learners interested in" is an audience description, not a transfer commitment. The game will be in the graph-theory aisle; that is all it promises.'
+            },
+            {
+              prompt: 'A simulation where residents <em>practice escalating</em> to attendings under time pressure.',
+              answer: 'teach',
+              why: 'Practice of a specific behavior under a specific constraint. You can film a resident before and after and compare escalation latency.'
+            },
+            {
+              prompt: 'A narrative game <em>exploring</em> the ethics of gene editing.',
+              answer: 'experience',
+              why: 'Exploration framing. The designer is committing to raise questions, not answer them. This is legitimate — but S3 will show you it cannot be crosswalked into learning objectives.'
+            },
+            {
+              prompt: 'A card game <em>about</em> bond pricing for first-year MBA students.',
+              answer: 'is-about',
+              why: 'Topic framing, even though the audience is specific. "About bond pricing" does not name which pricing decision, under what constraint, the student will be able to make afterward.'
+            },
+            {
+              prompt: 'A role-play where participants <em>learn to distinguish</em> productive from corrosive team conflict.',
+              answer: 'teach',
+              why: 'Classic teach-to-a-discrimination frame. "Distinguish" is observable: give them eight transcripts after play and count the ones they sort correctly.'
+            }
+          ];
+
+          var host = document.getElementById('s1-classifier');
+          var correctEl = document.getElementById('s1-correct');
+          var totalEl = document.getElementById('s1-total');
+          var scoreBar = document.getElementById('s1-score');
+          var noteEl = document.getElementById('s1-note');
+          var verdict = document.getElementById('s1-verdict');
+          var verdictBody = document.getElementById('s1-verdict-body');
+
+          var answered = 0, correct = 0;
+          totalEl.textContent = ITEMS.length;
+
+          ITEMS.forEach(function(item, i) {
+            var row = document.createElement('div');
+            row.className = 'classifier-item';
+
+            var prompt = document.createElement('p');
+            prompt.className = 'classifier-prompt';
+            prompt.innerHTML = '<strong>' + (i + 1) + '.</strong> ' + item.prompt;
+            row.appendChild(prompt);
+
+            var choices = document.createElement('div');
+            choices.className = 'classifier-choices';
+
+            ['teach', 'is-about', 'experience'].forEach(function(opt) {
+              var b = document.createElement('button');
+              b.className = 'chip';
+              b.type = 'button';
+              b.textContent = opt === 'teach' ? 'Teach' : opt === 'is-about' ? 'Is about' : 'Experience';
+              b.addEventListener('click', function() {
+                if (row.classList.contains('is-answered')) return;
+                row.classList.add('is-answered');
+                b.classList.add('is-picked');
+                if (opt === item.answer) {
+                  b.classList.add('is-correct');
+                  correct++;
+                } else {
+                  b.classList.add('is-wrong');
+                  // reveal the right one
+                  choices.querySelectorAll('.chip').forEach(function(c) {
+                    if (c !== b) {
+                      var val = c.textContent.toLowerCase().replace(' ', '-');
+                      if (val === item.answer) c.classList.add('is-correct');
+                    }
+                  });
+                }
+                answered++;
+                correctEl.textContent = correct;
+                scoreBar.style.display = 'flex';
+                if (answered === ITEMS.length) {
+                  var pct = Math.round(correct / ITEMS.length * 100);
+                  noteEl.textContent = pct >= 75
+                    ? 'You can already tell them apart. Now watch for this in your own drafts.'
+                    : pct >= 50
+                      ? 'Halfway. The tricky ones are usually "is about" hiding inside verbs like "explore."'
+                      : 'The trap is real. Re-read section 02 before drafting your stance.';
+                  verdict.style.display = 'block';
+                  verdictBody.innerHTML = '<strong>The three frames are not equally useful for D1.</strong> ' +
+                    'Only "teach" commits to a learner behavior you can test. "Is about" is a topic promise; "experience" is an affect promise. Both are legitimate art, but neither can be crosswalked to a learning objective. Your D1 must be in the "teach" frame — or you must rewrite it before S3.';
+                }
+              });
+              choices.appendChild(b);
+            });
+            row.appendChild(choices);
+
+            var fb = document.createElement('div');
+            fb.className = 'classifier-feedback';
+            fb.innerHTML = '<strong>Answer:</strong> ' + (
+              item.answer === 'teach' ? 'Teach.' : item.answer === 'is-about' ? 'Is about.' : 'Experience.'
+            ) + ' ' + item.why;
+            row.appendChild(fb);
+
+            host.appendChild(row);
+          });
+        })();
+        </script>
+      </section>
+
+      <!-- ─── Section: Video ─────────────────────────────── -->
+      <section class="block" id="video">
+        <div class="block__kicker">06 · Animated primer</div>
+        <h2 class="block__title">What the engagement–trap looks like in practice</h2>
+        <p class="block__subtitle">
+          A thirty-second walk-through of a prototype that tested beautifully on engagement metrics and transferred
+          nothing. Watch for the three failure modes appearing in order.
+        </p>
+
+        <div class="video-slot">
+          <iframe class="video-slot__frame" src="The Engagement Trap.html" title="The Engagement Trap — animated primer"></iframe>
+          <div class="video-slot__caption">
+            <span>Video · 00:30 · Engagement Trap</span>
+            <a href="The Engagement Trap.html" target="_blank">Open full →</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Section: In-class activity ─────────────────── -->
+      <section class="block" id="activity">
+        <div class="block__kicker">07 · Activity — 45 min</div>
+        <h2 class="block__title">Triangulate a game you have played</h2>
+        <p class="block__subtitle">
+          Pairs. Pick a game (digital or analog) that someone called "educational." Classify it against the four-row
+          table above. Defend your placement; a neighbor pair will challenge it.
+        </p>
+
+        <table class="tbl tbl--timeplan">
+          <thead>
+            <tr><th>Time</th><th>What happens</th><th>Facilitator cue</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>00:00–05:00</td><td>Solo: pick game; jot loop + what it teaches.</td><td>"One game. Five minutes. Written, not spoken."</td></tr>
+            <tr><td>05:00–15:00</td><td>Pair: classify against table; write your category choice on a sticky.</td><td>Roam; ask "Which row?" not "Is it good?"</td></tr>
+            <tr><td>15:00–30:00</td><td>Adjacent pairs swap; challenge each other's category.</td><td>Listen for the word "but" — the real disagreement.</td></tr>
+            <tr><td>30:00–45:00</td><td>Whole group: three pairs present. Map the disagreements.</td><td>Capture disagreements on a board; do not resolve them.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">What not to do</div>
+            <p>
+              Do not rank the games "good / bad." Do not declare a winning category. The point is to make the
+              category choice visible and defensible. Projects that skip this step invariably build Version A
+              while believing they are building Version C.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Section: Companion reading ─────────────────── -->
+      <section class="block" id="reading">
+        <div class="block__kicker">Companion reading</div>
+        <h2 class="block__title">A handout that pairs with this week</h2>
+        <p class="block__subtitle">
+          Open this when you want concrete examples alongside the framing we've built. The casebook gives you
+          six annotated educational-game concepts to argue about — exactly the kind of material that makes the
+          "teach vs. is-about" distinction stop being abstract.
+        </p>
+
+        <div class="resources">
+          <div class="resource">
+            <div class="resource__num">02</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Facilitator handout · Worked examples</div>
+              <h3 class="resource__title">Worked Examples Casebook</h3>
+              <p class="resource__desc">
+                Six educational-game concepts (fractions market, ancient-city council, watershed sim, inclusive-classroom sim, customer-service navigator, lab-safety triage) annotated with loop, facilitation, risks, and revisions. Use it to stress-test the vocabulary from today.
+              </p>
+              <p class="resource__why"><b>Why this week</b>
+                The cases make concrete what "teach" vs. "is-about" means in practice. Bring a challenge to Session 02: pick one case and argue whether its frame holds up.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=02-worked-examples-casebook.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/02-worked-examples-casebook.md" download>Download</a>
+              <span class="resource__meta">MD · ~20 min</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Section: Pre-session checklist ─────────────── -->
+      <section class="block" id="checklist">
+        <div class="block__kicker">08 · Preparation for Session 02</div>
+        <h2 class="block__title">Arrive next week with these in hand</h2>
+        <p class="block__subtitle">
+          Check each item as you complete it — your progress is saved locally. Session 02 is the first deliverable
+          (the Design Problem Statement) so the groundwork matters.
+        </p>
+
+        <ul class="checklist">
+          <li data-chk-id="read1">
+            <input type="checkbox" />
+            <label class="checklist__label">Read: one chapter on Bloom's Revised Taxonomy (any source; ~20 min).</label>
+          </li>
+          <li data-chk-id="read2">
+            <input type="checkbox" />
+            <label class="checklist__label">Read: Gee's "What video games have to teach us" — introduction only (~30 min).</label>
+          </li>
+          <li data-chk-id="pick">
+            <input type="checkbox" />
+            <label class="checklist__label">Identify a candidate learner population for your capstone. A specific group, not "students."</label>
+          </li>
+          <li data-chk-id="interview">
+            <input type="checkbox" />
+            <label class="checklist__label">Conduct one 15-minute conversation with someone from that population or who teaches them.</label>
+          </li>
+          <li data-chk-id="notes">
+            <input type="checkbox" />
+            <label class="checklist__label">Bring written notes from that conversation — no slide deck needed. We will work from the notes directly.</label>
+          </li>
+          <li data-chk-id="stance">
+            <input type="checkbox" />
+            <label class="checklist__label">Draft one sentence answering the stance question you chose below.</label>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ─── Section: Exit ticket ───────────────────────── -->
+      <section class="block" id="ticket">
+        <div class="block__kicker">09 · Exit ticket</div>
+        <h2 class="block__title">The one-sentence commitment</h2>
+        <p class="block__subtitle">
+          Pick <em>one</em> of the three stance questions. Answer it in a single sentence — no hedges, no "might." This
+          is a commitment, not a hypothesis; you will revise it formally in Session 03, but you need a stake in the
+          ground now. Saved automatically to this browser.
+        </p>
+
+        <div class="ticket" data-ticket-id="stance">
+          <div class="ticket__prompt">
+            <strong>Choose one:</strong><br/>
+            <span style="color: var(--gray-30); font-size: 15px; font-weight: 400;">
+              a) My game will help <em>whom</em> do <em>what</em>, differently than they do today?<br/>
+              b) What decision does a competent practitioner make that my learner cannot yet make?<br/>
+              c) Where is my learner currently failing, and what kind of practice would move them?
+            </span>
+          </div>
+          <textarea placeholder="My one-sentence answer…"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+
+        <p style="color: var(--gray-40); font-size: 13px; font-family: var(--cds-font-mono); letter-spacing: 0.02em;">
+          Your answer is saved to this browser's local storage. It will not leave this device.
+        </p>
+      </section>
+
+    </div>
+
+    <!-- ─── Footer nav ─────────────────────────────────── -->
+    <nav class="session-nav">
+      <a href="index.html" class="session-nav__prev">
+        <span class="session-nav__label">← Index</span>
+        <span class="session-nav__title">All sessions</span>
+      </a>
+      <a href="session-02.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 02 →</span>
+        <span class="session-nav__title">Learner &amp; context</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 10 · Audit — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 4 · Audit &amp; close</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 10 · Week 10</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Audit: reward, load, accessibility, <em>ethics</em>, data.
+      </h1>
+      <p class="session-header__lede">
+        Five lenses your design must pass before it ships. Reward asks whether your incentives match your
+        objectives. Load asks whether the player has enough working memory left to learn. Accessibility asks
+        who your game excludes. Ethics asks what harm your game could do, even when used as intended. Data
+        asks what you know about your players — and whether you should.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">5 × 30 min · one per lens</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">Audit memo</span>
+          <span class="session-meta__sub">Folded into D5</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">5</span>
+          <span class="session-meta__sub">One per lens</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Materials</span>
+          <span class="session-meta__value">5 checklists</span>
+          <span class="session-meta__sub">Bring your D4 report</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 10.1</span><span class="outcomes__text">Trace every reward in your game to a learning objective; identify any reward that motivates non-target behavior.</span></li>
+          <li><span class="outcomes__num">LO 10.2</span><span class="outcomes__text">Estimate cognitive load per scene and say where extraneous load crowds out learning.</span></li>
+          <li><span class="outcomes__num">LO 10.3</span><span class="outcomes__text">Name three populations your current design excludes and decide which you will accommodate.</span></li>
+          <li><span class="outcomes__num">LO 10.4</span><span class="outcomes__text">Write one paragraph on the ethical risks specific to your content domain, and the mitigations.</span></li>
+          <li><span class="outcomes__num">LO 10.5</span><span class="outcomes__text">State what data your game collects, who sees it, and what a player can do to stop it.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="reward">
+        <div class="block__kicker">02 · Reward audit</div>
+        <h2 class="block__title">What behaviors are you actually paying for?</h2>
+        <p>
+          Players optimize for what you reward, not what you intended to teach. If your fastest path to a high
+          score does not pass through the objective, your reward structure is working against you.
+        </p>
+
+        <ul class="checklist">
+          <li data-chk-id="rw-trace"><input type="checkbox"/><label class="checklist__label">Every reward in the game can be traced to a D2 objective.</label></li>
+          <li data-chk-id="rw-fastest"><input type="checkbox"/><label class="checklist__label">The fastest path to a high score requires engaging with the objective — not avoiding it.</label></li>
+          <li data-chk-id="rw-cheese"><input type="checkbox"/><label class="checklist__label">I have asked "how would a cynical player cheese this?" and the answer is not alarming.</label></li>
+          <li data-chk-id="rw-extrinsic"><input type="checkbox"/><label class="checklist__label">Extrinsic rewards (points, stars, streaks) are used sparingly and not in judgment-under-uncertainty loops.</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="minigame">
+        <div class="block__kicker">03 · Minigame — 5 min</div>
+        <h2 class="block__title">Log five minutes of play. Read the reward mix.</h2>
+        <p class="lead">
+          A reward audit is not an opinion. It is a count. Click the buttons below to simulate logging a
+          5-minute play session from your prototype — every time a reward fires, tag it by kind. The bars on
+          the right update live. The verdict tells you what your current mix is actually teaching.
+        </p>
+
+        <div class="minigame">
+          <div class="minigame__head">
+            <span class="minigame__tag">Minigame</span>
+            <h3 class="minigame__title">Reward-mix auditor</h3>
+            <span class="minigame__hint">Click fast · like you're logging live</span>
+          </div>
+          <div class="minigame__body">
+            <p class="minigame__lede">
+              Load one of the preset profiles — a real pattern we have seen in student capstones — or start
+              blank and tap out your own. Aim for 20-30 events total. Count ratios, not absolute numbers.
+            </p>
+
+            <div class="audit-controls">
+              <button class="audit-preset" data-preset="blank">Start blank</button>
+              <button class="audit-preset" data-preset="candy">"Candy Crush" profile</button>
+              <button class="audit-preset" data-preset="textbook">"Textbook" profile</button>
+              <button class="audit-preset" data-preset="mixed">"Good educational" profile</button>
+            </div>
+
+            <div class="audit-counter-row" id="s10-counters">
+              <button class="audit-counter-btn" data-kind="verification">+ Verification <span class="ct" id="s10-c-verification">0</span></button>
+              <button class="audit-counter-btn" data-kind="elaborative">+ Elaborative <span class="ct" id="s10-c-elaborative">0</span></button>
+              <button class="audit-counter-btn" data-kind="consequence">+ Consequence <span class="ct" id="s10-c-consequence">0</span></button>
+              <button class="audit-counter-btn" data-kind="progression">+ Progression <span class="ct" id="s10-c-progression">0</span></button>
+              <button class="audit-counter-btn" data-kind="social">+ Social <span class="ct" id="s10-c-social">0</span></button>
+            </div>
+
+            <div class="audit-rows" id="s10-bars">
+              <!-- populated by JS -->
+            </div>
+
+            <div class="minigame__verdict">
+              <div class="verdict-label">Audit verdict</div>
+              <div class="verdict-body" id="s10-verdict">Start logging. The verdict updates after the 5th event.</div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        (function() {
+          var KINDS = [
+            { key: 'verification', label: 'Verification', bar: '' },
+            { key: 'elaborative',  label: 'Elaborative',  bar: 'bar-2' },
+            { key: 'consequence',  label: 'Consequence',  bar: 'bar-3' },
+            { key: 'progression',  label: 'Progression',  bar: 'bar-4' },
+            { key: 'social',       label: 'Social',       bar: 'bar-5' }
+          ];
+
+          var PRESETS = {
+            blank:    { verification: 0, elaborative: 0, consequence: 0, progression: 0, social: 0 },
+            candy:    { verification: 14, elaborative: 1, consequence: 0, progression: 9, social: 1 },
+            textbook: { verification: 8, elaborative: 12, consequence: 0, progression: 2, social: 0 },
+            mixed:    { verification: 3, elaborative: 8, consequence: 6, progression: 4, social: 2 }
+          };
+
+          var counts = Object.assign({}, PRESETS.blank);
+          var barsHost = document.getElementById('s10-bars');
+          var verdictEl = document.getElementById('s10-verdict');
+
+          // Build bars once
+          KINDS.forEach(function(k) {
+            var row = document.createElement('div');
+            row.className = 'audit-row';
+            row.innerHTML = '<div class="audit-name">' + k.label + '</div>' +
+              '<div class="audit-bar-wrap"><div class="audit-bar ' + k.bar + '" id="s10-bar-' + k.key + '" style="width:0%"></div></div>' +
+              '<div class="audit-pct" id="s10-pct-' + k.key + '">0%</div>';
+            barsHost.appendChild(row);
+          });
+
+          function render() {
+            var total = 0;
+            KINDS.forEach(function(k) { total += counts[k.key]; });
+
+            KINDS.forEach(function(k) {
+              var pct = total ? Math.round(counts[k.key] / total * 100) : 0;
+              document.getElementById('s10-bar-' + k.key).style.width = pct + '%';
+              document.getElementById('s10-pct-' + k.key).textContent = pct + '%';
+              document.getElementById('s10-c-' + k.key).textContent = counts[k.key];
+            });
+
+            // Verdict
+            if (total < 5) {
+              verdictEl.innerHTML = 'Keep logging. Audits need at least 5 events before a mix means anything; aim for 20-30.';
+              return;
+            }
+
+            var verif = counts.verification / total;
+            var elab  = counts.elaborative / total;
+            var cons  = counts.consequence / total;
+            var prog  = counts.progression / total;
+            var soc   = counts.social / total;
+
+            var label, body, notes = [];
+
+            if (verif > 0.5 && elab < 0.15) {
+              label = 'Skinner box.';
+              body = 'Over half your rewards are verification ("correct!") with almost no elaboration. Players will learn to click quickly, not to reason. This is the most common failure mode in capstones.';
+            } else if (prog > 0.4 && elab + cons < 0.25) {
+              label = 'Candy Crush mode.';
+              body = 'Progression rewards (levels, stars, streaks) dominate; meaning-carrying feedback is starved. Players will engage — the question is whether they will transfer.';
+            } else if (elab > 0.5 && cons < 0.1 && prog < 0.1) {
+              label = 'Textbook with a score.';
+              body = 'Elaborative feedback is strong but nothing else changes in world-state. Everything is a right/wrong lecture. This teaches, but it does not feel like a game.';
+            } else if (cons > 0.3 && elab > 0.2 && verif < 0.4) {
+              label = 'Healthy mix.';
+              body = 'Consequence feedback and elaborative feedback together > verification. Players feel decisions in world-state and get reasoning signal when they need it.';
+            } else if (soc > 0.3) {
+              label = 'Social-heavy.';
+              body = 'Social rewards dominate. Fine if the game is intentionally collaborative (S5), otherwise players may be optimizing for social standing more than the objective.';
+            } else if (verif + prog > 0.7) {
+              label = 'Extrinsic-heavy.';
+              body = 'Verification + progression together > 70%. Players are being paid to finish, not to think. Reduce — or tie progression to objective-aligned behavior, not time-on-task.';
+            } else {
+              label = 'Workable; no single dominant pattern.';
+              body = 'No single kind is pathologically high. Next pass: check whether your consequence and elaborative events are landing on the <em>objective-relevant</em> decisions, not just on any decision.';
+            }
+
+            if (cons === 0) notes.push('Zero consequence events. If your game is judgment-under-uncertainty (S3), this is a problem — consequence is how players feel uncertainty.');
+            if (elab === 0 && total > 10) notes.push('Zero elaborative events across 10+ rewards. The game cannot teach discrimination without them.');
+
+            verdictEl.innerHTML = '<strong>' + label + '</strong> ' + body +
+              (notes.length ? '<br/><br/><em>' + notes.join(' ') + '</em>' : '');
+          }
+
+          // Counter buttons
+          document.querySelectorAll('.audit-counter-btn').forEach(function(b) {
+            b.addEventListener('click', function() {
+              counts[b.dataset.kind]++;
+              render();
+            });
+          });
+
+          // Presets
+          document.querySelectorAll('.audit-preset').forEach(function(p) {
+            p.addEventListener('click', function() {
+              counts = Object.assign({}, PRESETS[p.dataset.preset]);
+              document.querySelectorAll('.audit-preset').forEach(function(x) { x.classList.remove('is-active'); });
+              p.classList.add('is-active');
+              render();
+            });
+          });
+
+          render();
+        })();
+        </script>
+      </section>
+
+      <section class="block" id="load">
+        <div class="block__kicker">04 · Cognitive load audit</div>
+        <h2 class="block__title">How much of the player's attention is the game consuming?</h2>
+        <p>
+          Three kinds of cognitive load (Sweller): intrinsic (the domain itself), germane (the reasoning you
+          want them doing), extraneous (everything you accidentally added). Extraneous load is your enemy.
+          Game dressing, unclear UI, long rules — all tax the same working-memory budget as the learning.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:22%;">Load source</th><th>Symptoms in playtest</th><th>Typical fix</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Rules overhead</strong></td><td>Learner references rules page &gt;1× per loop.</td><td>Strip rules to a single card; move edge cases to the facilitator guide.</td></tr>
+            <tr><td><strong>UI search</strong></td><td>Cursor moves twice before acting.</td><td>Consolidate actions; default highlight on most-likely action.</td></tr>
+            <tr><td><strong>Narrative density</strong></td><td>Learner skips or visibly loses the thread.</td><td>Cut backstory; move context to just-in-time reveals.</td></tr>
+            <tr><td><strong>Scoring complexity</strong></td><td>Learner asks "how am I doing?" and cannot tell from the HUD.</td><td>Reduce score dimensions; delay scoring to end-of-round.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" id="access">
+        <div class="block__kicker">05 · Accessibility audit</div>
+        <h2 class="block__title">Who can't play your game?</h2>
+        <p>
+          Every design choice excludes someone. The question is whether the exclusion is necessary and whether
+          you have a plan. Name three populations affected by your current choices. Decide which you will
+          accommodate, which you will document as a known limit, and which are non-negotiable.
+        </p>
+
+        <ul class="checklist">
+          <li data-chk-id="ac-vision"><input type="checkbox"/><label class="checklist__label">Color is never the only channel for feedback (color + shape/text/motion).</label></li>
+          <li data-chk-id="ac-audio"><input type="checkbox"/><label class="checklist__label">Audio cues have a visual counterpart — or the game runs with audio off.</label></li>
+          <li data-chk-id="ac-motor"><input type="checkbox"/><label class="checklist__label">All critical actions are reachable without precise timing or fine motor control.</label></li>
+          <li data-chk-id="ac-reading"><input type="checkbox"/><label class="checklist__label">Reading level is matched to the target learner population (not to peers).</label></li>
+          <li data-chk-id="ac-device"><input type="checkbox"/><label class="checklist__label">Device floor is documented. Below that floor, game refuses to launch rather than degrade silently.</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="ethics">
+        <div class="block__kicker">06 · Ethics audit</div>
+        <h2 class="block__title">What could go wrong when used as intended?</h2>
+        <p>
+          Ethics in educational games is not only about edge cases — it is about the behavior the game teaches
+          <em>when it works</em>. A game that successfully teaches triage also, by construction, teaches how
+          to de-prioritize people. Own that. Write the mitigations.
+        </p>
+
+        <div class="card-grid card-grid--3">
+          <div class="card">
+            <div class="card__label">Risk 01</div>
+            <h3 class="card__title">Stereotype amplification</h3>
+            <p>Scenarios that over-represent particular demographics as specific kinds of patients, workers, or threats. Audit your vignette bank for balance.</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Risk 02</div>
+            <h3 class="card__title">Distress without support</h3>
+            <p>High-stake domains (clinical, crisis, historical trauma) can land hard. Debrief is part of the design, not an add-on.</p>
+          </div>
+          <div class="card">
+            <div class="card__label">Risk 03</div>
+            <h3 class="card__title">Gamified harm</h3>
+            <p>Points, streaks, and leaderboards can trivialize content that should not be trivialized. If the win feels cheap, change the mechanic or drop the leaderboard.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="data">
+        <div class="block__kicker">07 · Data audit</div>
+        <h2 class="block__title">What you know, and whether you should</h2>
+
+        <table class="tbl">
+          <thead><tr><th style="width:24%;">Question</th><th>What a defensible answer looks like</th></tr></thead>
+          <tbody>
+            <tr><td><strong>What you collect</strong></td><td>A full list of fields, scoped to the minimum needed to evaluate learning.</td></tr>
+            <tr><td><strong>Who sees it</strong></td><td>Named roles (instructor, researcher, self); never "anyone with access."</td></tr>
+            <tr><td><strong>Retention</strong></td><td>A dated policy; deletion path available to the learner.</td></tr>
+            <tr><td><strong>Inference limits</strong></td><td>Explicit: scores are not assessments; performance ≠ capability in the domain.</td></tr>
+            <tr><td><strong>Consent</strong></td><td>Given in plain language; withdrawal does not penalize.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">The minimum-necessary rule</div>
+            <p>
+              Every field you log is a liability. If you would not defend it to a learner who asked "why do you
+              have this?", do not log it.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="tools">
+        <div class="block__kicker">08 · Tools — Codex</div>
+        <h2 class="block__title">Instrumenting the audit you will actually run</h2>
+        <p class="lead">
+          The audits in this session run on evidence. "I think my reward structure is off" is a feeling; "the
+          log shows 78% of reward events are verification, 6% are progression, 16% are consequence" is an
+          audit. Codex is the tool that gets you from the first sentence to the second without spending a
+          month building analytics infrastructure you will throw away in week 13.
+        </p>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">Codex</span>
+            <h3 class="aitool__title">Use case · Add structured event logging to your prototype</h3>
+            <span class="aitool__hint">~60 lines, zero dependencies</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              Your S8 state machine already emits events. Codex adds a logging layer that records them to
+              localStorage, exposes a download button for CSV export, and tags each event with
+              learner-session-id, state, timestamp, and reward-kind. Then the reward audit is a pivot table,
+              not a memory exercise.
+            </p>
+
+            <div class="aitool__usecase">Prompt</div>
+<pre class="prompt"><span class="usr">Add event logging to my existing game prototype. Requirements:
+
+Schema (one log row per event)
+  session_id    — random uuid per play, stable across page reloads
+                   within the same session until "End session" button.
+  timestamp_ms  — Date.now() - sessionStart.
+  state         — current state-machine state before the event.
+  event         — event name (e.g. SUBMIT, OPEN_CHART).
+  reward_kind   — one of: verification | elaborative | consequence |
+                   progression | social | none.
+  extras        — JSON object with event-specific fields (optional).
+
+Storage
+- localStorage key "playlog/&lt;session_id&gt;" — array of rows.
+- Capped at 5,000 rows/session; drop oldest on overflow with warning.
+- "Export CSV" button in a small floating debug panel (Alt+D to
+  toggle visibility). CSV headers match schema above.
+
+Audit helpers (second file, plain JS, used from devtools)
+- rewardMix(rows)         → counts per reward_kind, percentages.
+- stateDwell(rows)        → mean / p50 / p95 ms spent in each state.
+- eventCadence(rows)      → events/minute rolling, by minute.
+
+No framework. No build step. Keep both files under 120 LoC each.</span></pre>
+
+            <div class="callout">
+              <div class="callout__icon">i</div>
+              <div class="callout__body">
+                <div class="callout__title">Why localStorage and not a server</div>
+                <p>
+                  You are not running a product. You are running an audit on your own prototype, with
+                  playtesters you can ask for the CSV. Server logging introduces privacy work, IRB work, and
+                  infrastructure you will not use. Local first; ship later if the project warrants it.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="aitool__when">
+            <div class="aitool__when--yes">
+              <h4>Use it when</h4>
+              <p>You have a working prototype and want to run the reward + cognitive-load audits against real play data instead of intuition. Two hours of Codex work beats two weeks of retrospective guessing.</p>
+            </div>
+            <div class="aitool__when--no">
+              <h4>Don't use it when</h4>
+              <p>You have not yet tagged your events with reward_kind. The logger is only as useful as the taxonomy you feed it; do the S4 tagging first (even by hand) so the rows are meaningful.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">Codex</span>
+            <h3 class="aitool__title">Use case · Accessibility lint pass on your prototype's markup</h3>
+            <span class="aitool__hint">Static audit, one-shot</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              The accessibility audit (section 04) is easier if a machine has already pointed at the easy
+              violations. Codex won't catch the nuanced issues — role confusion, unclear focus order — but it
+              will catch the mechanical ones (contrast ratios, missing alt text, color-only signaling) so your
+              own review covers what matters.
+            </p>
+
+            <div class="aitool__usecase">Prompt</div>
+<pre class="prompt"><span class="usr">Scan the attached HTML + CSS of my game's UI. Report every instance of:
+
+1. Interactive element without a text label or aria-label.
+2. Color pair that fails WCAG AA (4.5:1 for body; 3:1 for large text).
+3. State change signaled only by color (e.g., "invalid" styling
+   changes bg-color only, no text or icon change).
+4. Focus-visible missing or overridden.
+5. Keyboard traps (element that opens on Enter but can't be closed
+   with Escape).
+
+For each: file, selector, rule, severity (block/warn/info), and a
+one-line specific fix. Do NOT rewrite my code. Report only.</span></pre>
+
+            <div class="callout callout--warn">
+              <div class="callout__icon">!</div>
+              <div class="callout__body">
+                <div class="callout__title">The lint is the floor, not the ceiling</div>
+                <p>
+                  A prototype that passes Codex's lint can still be unusable for a screen-reader user. The
+                  machine audit means you spent your human-review time on the problems machines can't see —
+                  role clarity, scene coherence, keyboard flow.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="memo">
+        <div class="block__kicker">09 · The audit memo</div>
+        <h2 class="block__title">One page, five paragraphs</h2>
+        <p>
+          Draft the memo today. One paragraph per lens. For each lens, say: what you found, what you will
+          change before D5, and what you are knowingly leaving as a limit. This memo ships with D5.
+        </p>
+      </section>
+
+      <section class="block" id="checklist-prep">
+        <div class="block__kicker">10 · Preparation for Session 11</div>
+        <h2 class="block__title">Before next week — revision studio</h2>
+        <ul class="checklist">
+          <li data-chk-id="memo-submit"><input type="checkbox"/><label class="checklist__label">Submit audit memo v0.1.</label></li>
+          <li data-chk-id="backlog"><input type="checkbox"/><label class="checklist__label">Merge D4 revisions + audit findings into a single ranked backlog for Session 11.</label></li>
+          <li data-chk-id="stop"><input type="checkbox"/><label class="checklist__label">Mark any item that is a stopper (ethics, safety, content error) with a red flag in the backlog.</label></li>
+        </ul>
+      </section>
+
+            <!-- ─── Section: Companion reading ─────────────────── -->
+      <section class="block" id="reading">
+        <div class="block__kicker">Companion reading</div>
+        <h2 class="block__title">Three audit lenses you just used, in depth</h2>
+        <p class="block__subtitle">Today's audit moved across accessibility, technical QA, performance, and ethics. Each of those deserves its own handout — they are not checklist items, they are design disciplines. Read the one your audit flagged hardest.</p>
+
+        <div class="resources">
+          <div class="resource">
+            <div class="resource__num">08</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Audit handout · Inclusion</div>
+              <h3 class="resource__title">Game Accessibility Playbook</h3>
+              <p class="resource__desc">Game-specific accessibility design, review, and iteration: input complexity, timing pressure, readability under play conditions, tutorial clarity, configurable difficulty, multi-sensory feedback. Goes beyond generic WCAG into the places where games break.</p>
+              <p class="resource__why"><b>Why this week</b>
+                If color-only signaling, fast-input pressure, or tiny targets showed up in audit — read this first. Rewrite one mechanic before revision studio.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=08-game-accessibility-playbook.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/08-game-accessibility-playbook.md" download>Download</a>
+              <span class="resource__meta">MD · ~20 min</span>
+            </div>
+          </div>
+          <div class="resource">
+            <div class="resource__num">06</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Audit handout · Evidence hygiene</div>
+              <h3 class="resource__title">Technical QA and Data Logging Checklists</h3>
+              <p class="resource__desc">Pre-test technical checks, stability review, interaction QA, event logging design, and instrumentation review. A prototype that runs badly or logs the wrong events produces illusion-of-failure and illusion-of-success in equal measure.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Before the next playtest, spend 20 minutes with the QA and logging checklists. Fix what lets bad data in before you fix the design.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=06-technical-qa-and-data-logging-checklists.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/06-technical-qa-and-data-logging-checklists.md" download>Download</a>
+              <span class="resource__meta">MD · ~25 min</span>
+            </div>
+          </div>
+          <div class="resource">
+            <div class="resource__num">11</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Audit handout · Reliability</div>
+              <h3 class="resource__title">Performance and Device Test Pack</h3>
+              <p class="resource__desc">Load time, response latency, stability across real devices, input-mode coverage. For browser-based and Three.js-heavy projects, performance contaminates engagement and learning evidence — this handout helps you tell them apart.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Especially important for teams moving to a Three.js build. Run the device-coverage matrix before you interpret another playtest.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=11-performance-and-device-test-pack.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/11-performance-and-device-test-pack.md" download>Download</a>
+              <span class="resource__meta">MD · ~20 min</span>
+            </div>
+          </div>
+          <div class="resource">
+            <div class="resource__num" style="background:#edf5ff;color:#002d9c;">B</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Interactive lab · Audit target</div>
+              <h3 class="resource__title">Electric Circuit Lab</h3>
+              <p class="resource__desc">A Three.js prototype you can actually audit: run the accessibility checklist against it, open devtools and profile frame time on your device floor, inspect what events fire and what they log.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Use it as a second subject for today's audits. Running the playbooks on someone else's prototype sharpens what you look for in your own.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="minigames/electric-circuit-lab/index.html" target="_blank" rel="noopener">Launch lab</a>
+              <span class="resource__meta">Three.js · ~15 min</span>
+            </div>
+          </div>
+          <div class="resource">
+            <div class="resource__num" style="background:#defbe6;color:#0e6027;">A</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Interactive lab · Data target</div>
+              <h3 class="resource__title">Orbit Sum Lab</h3>
+              <p class="resource__desc">A React/SCORM lab that emits learner events and reports to an LMS. A concrete reference for the event schema, reward tagging, and data-retention questions your data audit is asking.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Launch it, then walk your section-07 data audit questions against it. What does it collect, who sees it, what is the retention path?
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="minigames/orbit-sum-lab/scorm-launch-orbit-lab.html" target="_blank" rel="noopener">Launch lab</a>
+              <span class="resource__meta">SCORM · ~15 min</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">11 · Exit ticket</div>
+        <h2 class="block__title">The lens that hurt the most</h2>
+        <div class="ticket" data-ticket-id="audit">
+          <div class="ticket__prompt">The audit lens that surfaced my hardest finding, and the change I will make before D5:</div>
+          <textarea placeholder="Lens: ethics. Finding: triage scoring incentivizes de-prioritizing one demographic. Fix: …"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-09.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 09</span>
+        <span class="session-nav__title">Playtest design</span>
+      </a>
+      <a href="session-11.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 11 →</span>
+        <span class="session-nav__title">Revision studio</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="shell.js"></script>
+</body>
+</html>

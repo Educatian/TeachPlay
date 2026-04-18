@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 09 · Playtest design — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 3 · Build &amp; test</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 09 · Week 9 · D4 due</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Playtest design: target learners, not <em>peers</em>.
+      </h1>
+      <p class="session-header__lede">
+        Peer playtests make you feel better. Target-learner playtests make your game better. This session is
+        the turning point where your design starts answering to someone other than you — someone who will never
+        politely ignore a broken mechanic.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">45 protocol · 90 dry-run · 45 debrief</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">D4</span>
+          <span class="session-meta__sub">Playtest report · due week 10</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">5</span>
+          <span class="session-meta__sub">Report-scored</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Sessions</span>
+          <span class="session-meta__value">3+</span>
+          <span class="session-meta__sub">Target learners, 45 min each</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 9.1</span><span class="outcomes__text">Write a playtest protocol a stranger could run — 45-minute script, consent language, data collection sheet.</span></li>
+          <li><span class="outcomes__num">LO 9.2</span><span class="outcomes__text">State three hypotheses about your loop <em>before</em> the playtest; each with an observable that would falsify it.</span></li>
+          <li><span class="outcomes__num">LO 9.3</span><span class="outcomes__text">Recruit three or more target learners; state how they differ from your peers.</span></li>
+          <li><span class="outcomes__num">LO 9.4</span><span class="outcomes__text">Run the protocol once, end to end, with a peer as a dry-run before contact with real learners.</span></li>
+          <li><span class="outcomes__num">LO 9.5</span><span class="outcomes__text">Plan your <strong>revision budget</strong> — in advance, not after the results.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="who">
+        <div class="block__kicker">02 · Who you playtest with</div>
+        <h2 class="block__title">Peers are not cheaper target learners</h2>
+        <p class="lead">
+          Peers are too forgiving, too design-aware, and too invested in you. They will play the game you meant
+          to build. Target learners will play the game you actually built. That difference is where most of
+          your design debt lives.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:30%;">Playtester type</th><th>What they surface</th><th>What they hide</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Peer from this course</strong></td><td>Craft issues; missing affordances they would have added.</td><td>All learning-transfer issues. All motivation issues for your real population.</td></tr>
+            <tr><td><strong>Adjacent expert (not a peer)</strong></td><td>Content errors, category slips, domain risks.</td><td>Learner confusion at onboarding.</td></tr>
+            <tr><td><strong>Target learner, pre-session</strong></td><td>Baseline familiarity, motivation, onboarding stumbles.</td><td>Transfer. Retention.</td></tr>
+            <tr><td><strong>Target learner, in context</strong></td><td>Context-dependent failure (the 2am test).</td><td>Longitudinal effect.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">If you cannot recruit target learners, say so</div>
+            <p>
+              A spec with "target learner access unavailable" documented is stronger than a report padded with
+              peer sessions labeled as playtests. Own the limit; it shapes what D5 claims.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="protocol">
+        <div class="block__kicker">03 · The 45-minute protocol</div>
+        <h2 class="block__title">A script, not a vibe</h2>
+
+        <table class="tbl tbl--timeplan">
+          <thead><tr><th>Time</th><th>What happens</th><th>What you capture</th></tr></thead>
+          <tbody>
+            <tr><td>00:00–05:00</td><td>Greet, consent, baseline question ("what do you already know about X?").</td><td>Baseline note + demographics if relevant.</td></tr>
+            <tr><td>05:00–08:00</td><td>Onboarding. You read the opening script from your facilitator guide.</td><td>Time to first decision; clarifying questions asked.</td></tr>
+            <tr><td>08:00–25:00</td><td>Play. You observe silently (see Session 07).</td><td>Did / Said / Stuck observations.</td></tr>
+            <tr><td>25:00–35:00</td><td>Debrief — three questions, in order. No follow-ups that lead.</td><td>Learner paraphrase of objectives; self-report of confidence.</td></tr>
+            <tr><td>35:00–40:00</td><td>Post-test vignette: ask learner to reason about a fresh case.</td><td>Transfer signal — did they use the move the game trained?</td></tr>
+            <tr><td>40:00–45:00</td><td>Thank; ask for one thing that would make them recommend the game to a colleague.</td><td>Recommendation barrier — recurring themes are gold.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" id="hypotheses">
+        <div class="block__kicker">04 · Pre-register hypotheses</div>
+        <h2 class="block__title">Three falsifiable statements, before you run</h2>
+        <p>
+          Write three hypotheses about your game. Each names an observable that, if you saw it, would make you
+          change the design. Submit this with your protocol; reviewers will check your D4 against it. Hypotheses
+          written <em>after</em> the data are stories, not science.
+        </p>
+
+        <div class="worked worked--hero">
+          <div class="worked__tag">Example · Pre-registered hypotheses</div>
+          <h3 class="worked__title"><em>The On-Call</em>, pre-playtest</h3>
+          <dl class="worked__kv">
+            <dt>H1 · Discrimination</dt><dd>Target residents will correctly identify the discriminating test ≥60% of the time by round 3. Falsifier: accuracy stays below 50% across rounds.</dd>
+            <dt>H2 · Escalation timing</dt><dd>Residents will call the attending within the indicated window on ≥2 of the 3 judgment vignettes. Falsifier: calls delayed past window on ≥2 vignettes.</dd>
+            <dt>H3 · Transfer</dt><dd>On the fresh post-test vignette, ≥2 of 3 residents will name a leading diagnosis and two differentials within 3 minutes. Falsifier: learners freeze or produce a differential list without a leading.</dd>
+          </dl>
+        </div>
+      </section>
+
+      <section class="block" id="minigame">
+        <div class="block__kicker">05 · Minigame — 5 min</div>
+        <h2 class="block__title">Falsifiable or not? Make the call.</h2>
+        <p class="lead">
+          You will write three hypotheses before every playtest. Two will be falsifiable. One will slip past
+          you disguised as a statement but be unfalsifiable on inspection — and that one will burn a playtest
+          session you cannot afford. Train your ear here, in the low-stakes sandbox.
+        </p>
+
+        <div class="minigame">
+          <div class="minigame__head">
+            <span class="minigame__tag">Minigame</span>
+            <h3 class="minigame__title">Hypothesis falsifier — call each one</h3>
+            <span class="minigame__hint">~4 min · click to answer</span>
+          </div>
+          <div class="minigame__body">
+            <p class="minigame__lede">
+              Each line is a candidate playtest hypothesis a designer wrote. Decide whether there exists an
+              observation you could make during playtest that would <em>prove it wrong</em>. If yes, it is
+              falsifiable. If no — if every outcome could be read as "support" — it is not.
+            </p>
+
+            <div class="classifier" id="s9-classifier"></div>
+
+            <div class="minigame__score" id="s9-score" style="display:none;">
+              <span class="score-label">Score</span>
+              <span class="score-value"><span id="s9-correct">0</span> / <span id="s9-total">0</span></span>
+              <span class="score-note" id="s9-note"></span>
+            </div>
+
+            <div class="minigame__verdict" id="s9-verdict" style="display:none;">
+              <div class="verdict-label">Takeaway</div>
+              <div class="verdict-body" id="s9-verdict-body"></div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+        (function() {
+          var ITEMS = [
+            {
+              prompt: '"Players will find the game engaging."',
+              answer: 'no',
+              why: 'No observation disproves it. "Engaging" has no threshold and no operational definition. Every reaction — enthusiasm, silence, complaint — can be read as evidence of engagement under some interpretation.'
+            },
+            {
+              prompt: '"At least 4 of 6 players will name lactate as the discriminating test after scenario 2, unprompted, in post-play interview."',
+              answer: 'yes',
+              why: 'Specific count, specific evidence, specific collection method. If 3 or fewer name it, the hypothesis is dead. Kills are the whole point.'
+            },
+            {
+              prompt: '"The game will be educational."',
+              answer: 'no',
+              why: 'Neither "educational" nor "will be" is operational. You cannot state in advance what would count as "not educational." Refuse this hypothesis at the pre-registration step.'
+            },
+            {
+              prompt: '"Players will spend more than 60 seconds on the differential screen before committing."',
+              answer: 'yes',
+              why: 'Timed observation, clean threshold. If mean dwell time is <60s across 5 players, falsified. (Bonus: also tells you something about reflection, if you trust the proxy.)'
+            },
+            {
+              prompt: '"Players will feel the weight of their triage decisions."',
+              answer: 'no',
+              why: 'Affect claim with no measurement plan. Even if you ask "did you feel the weight?" — "yes" answers can be demand-characteristic, "no" answers can be repression. Rewrite as a behavior claim.'
+            },
+            {
+              prompt: '"On the second playthrough, players will change their initial diagnosis in at least 3 of 5 vignettes."',
+              answer: 'yes',
+              why: 'Count + threshold + directly observable in play logs. You know in advance what "falsified" looks like: 0, 1, or 2 changes.'
+            },
+            {
+              prompt: '"No player will complain that the time pressure feels arbitrary in the post-play interview."',
+              answer: 'yes',
+              why: 'Negative existential, but testable: one complaint kills the hypothesis. (Note: this means designing for even one complaint is high-bar. That is the point.)'
+            },
+            {
+              prompt: '"Players will demonstrate deep understanding of differential diagnosis."',
+              answer: 'no',
+              why: '"Deep understanding" is unobservable. You need a behavior proxy — say "within three questions, players will state a differential that includes at least two non-leading diagnoses."'
+            }
+          ];
+
+          var host = document.getElementById('s9-classifier');
+          var correctEl = document.getElementById('s9-correct');
+          var totalEl = document.getElementById('s9-total');
+          var scoreBar = document.getElementById('s9-score');
+          var noteEl = document.getElementById('s9-note');
+          var verdict = document.getElementById('s9-verdict');
+          var verdictBody = document.getElementById('s9-verdict-body');
+
+          var answered = 0, correct = 0;
+          totalEl.textContent = ITEMS.length;
+
+          ITEMS.forEach(function(item, i) {
+            var row = document.createElement('div');
+            row.className = 'classifier-item';
+
+            var prompt = document.createElement('p');
+            prompt.className = 'classifier-prompt';
+            prompt.innerHTML = '<strong>' + (i + 1) + '.</strong> ' + item.prompt;
+            row.appendChild(prompt);
+
+            var choices = document.createElement('div');
+            choices.className = 'classifier-choices';
+
+            [['yes', 'Falsifiable'], ['no', 'Not falsifiable']].forEach(function(pair) {
+              var b = document.createElement('button');
+              b.className = 'chip';
+              b.type = 'button';
+              b.dataset.val = pair[0];
+              b.textContent = pair[1];
+              b.addEventListener('click', function() {
+                if (row.classList.contains('is-answered')) return;
+                row.classList.add('is-answered');
+                b.classList.add('is-picked');
+                if (pair[0] === item.answer) {
+                  b.classList.add('is-correct');
+                  correct++;
+                } else {
+                  b.classList.add('is-wrong');
+                  choices.querySelectorAll('.chip').forEach(function(c) {
+                    if (c !== b && c.dataset.val === item.answer) c.classList.add('is-correct');
+                  });
+                }
+                answered++;
+                correctEl.textContent = correct;
+                scoreBar.style.display = 'flex';
+                if (answered === ITEMS.length) {
+                  var pct = Math.round(correct / ITEMS.length * 100);
+                  noteEl.textContent = pct >= 75
+                    ? 'You will catch these in your own writing.'
+                    : pct >= 50
+                      ? 'Watch for affect words ("feel," "engage") — they almost always mean "not falsifiable."'
+                      : 'Re-read Popper before Session 09. Seriously.';
+                  verdict.style.display = 'block';
+                  verdictBody.innerHTML = '<strong>If your hypothesis has no kill condition, it is not a hypothesis — it is a wish.</strong> ' +
+                    'Three tests: (1) Can I state in one sentence what a failing playtest would look like? (2) Is the evidence I need observable without asking the player? (3) Would a skeptic agree that the observation kills it? If any answer is no, rewrite.';
+                }
+              });
+              choices.appendChild(b);
+            });
+            row.appendChild(choices);
+
+            var fb = document.createElement('div');
+            fb.className = 'classifier-feedback';
+            fb.innerHTML = '<strong>' + (item.answer === 'yes' ? 'Falsifiable.' : 'Not falsifiable.') + '</strong> ' + item.why;
+            row.appendChild(fb);
+
+            host.appendChild(row);
+          });
+        })();
+        </script>
+      </section>
+
+      <section class="block" id="budget">
+        <div class="block__kicker">06 · Revision budget</div>
+        <h2 class="block__title">Decide in advance how much you'll change</h2>
+        <p>
+          Most designers, seeing a playtest fail, either rewrite the game or dismiss the evidence. Pre-commit
+          to a revision budget — how much you will change <em>before</em> you know what broke. Two to five
+          specific changes is a healthy band for the week between D4 and D5.
+        </p>
+
+        <ul class="checklist">
+          <li data-chk-id="budget-n"><input type="checkbox"/><label class="checklist__label">I have pre-committed to ≤5 revisions, ranked by expected impact.</label></li>
+          <li data-chk-id="budget-stop"><input type="checkbox"/><label class="checklist__label">I know which observation type would <em>stop</em> the project (ethical concern, content error, impossible transfer).</label></li>
+          <li data-chk-id="budget-ignore"><input type="checkbox"/><label class="checklist__label">I know which observations I will deliberately <em>not</em> act on (one-off preference, taste disagreement).</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="report">
+        <div class="block__kicker">07 · D4 report structure</div>
+        <h2 class="block__title">Six sections, ~6 pages</h2>
+
+        <table class="tbl">
+          <thead><tr><th style="width:26%;">Section</th><th>Contents</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1. Protocol</strong></td><td>Script, consent, data sheet. Link to version in repo.</td></tr>
+            <tr><td><strong>2. Participants</strong></td><td>Count, how recruited, how they differ from peers, what limits to acknowledge.</td></tr>
+            <tr><td><strong>3. Pre-registered hypotheses</strong></td><td>Verbatim from the protocol submission. Do not rewrite.</td></tr>
+            <tr><td><strong>4. Observations</strong></td><td>Did / Said / Stuck table; verbatim quotes (anonymized); transfer-vignette transcripts.</td></tr>
+            <tr><td><strong>5. Verdict per hypothesis</strong></td><td>Supported / mixed / falsified. Cite evidence.</td></tr>
+            <tr><td><strong>6. Revision plan</strong></td><td>Ranked ≤5 changes; which hypothesis each addresses; which observations you are declining to act on and why.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" id="tools">
+        <div class="block__kicker">08 · Tools — Google AI Studio</div>
+        <h2 class="block__title">Turning 45 minutes of transcript into evidence</h2>
+        <p class="lead">
+          Playtest data is cheap to collect and expensive to read. A single 45-minute session produces 20+
+          pages of think-aloud transcript plus observation notes. Reading that honestly — without
+          confirmation-biasing toward your favorite mechanics — is hard. AI Studio is the second reader you
+          wish you had, and unlike a human it has no stake in your game.
+        </p>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · Tag transcript against your pre-registered hypotheses</h3>
+            <span class="aitool__hint">Gemini 2.5 · temperature 0.2</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              This is the single highest-leverage use of AI in the program. You wrote three hypotheses before
+              the playtest. The model reads the transcript and marks every utterance or observation as
+              supporting, contradicting, or silent on each hypothesis. No interpretation — just evidence
+              location.
+            </p>
+
+            <div class="aitool__usecase">System prompt</div>
+<pre class="prompt"><span class="sys">You are a qualitative coder tagging playtest data against
+pre-registered hypotheses. You will be given:
+  (1) 1-3 hypotheses, each a falsifiable statement.
+  (2) A transcript + observation notes.
+
+For EACH hypothesis, produce:
+  SUPPORTING evidence — verbatim quotes / observation lines.
+  CONTRADICTING evidence — verbatim quotes / observation lines.
+  AMBIGUOUS — evidence that could be read either way; explain why.
+
+Rules:
+- Quote verbatim. Include line numbers or timestamps if given.
+- Do NOT paraphrase. Do NOT summarize across quotes.
+- If a hypothesis has zero evidence in either direction, say so.
+  Do not fabricate support.
+- Do not conclude which hypotheses "won." Your job is evidence
+  location only. The designer decides.
+
+Refusal rule: if a hypothesis is not falsifiable ("the game will be
+engaging"), refuse to tag it and explain why.</span></pre>
+
+            <div class="aitool__usecase">Your message</div>
+<pre class="prompt"><span class="usr">Hypotheses (pre-registered):
+
+H1. At least 3 of 5 players will correctly name lactate as the
+    discriminating test after playing scenario 2.
+H2. Players will spend &gt;60s on the differential screen before
+    committing (indicator of reflection, not guessing).
+H3. No player will report that the time pressure felt "arbitrary" on
+    the post-play debrief.
+
+[Transcript of playtest #3 pasted below, 1,800 lines.]</span></pre>
+
+            <div class="callout">
+              <div class="callout__icon">i</div>
+              <div class="callout__body">
+                <div class="callout__title">Run it once per playtester, then once across all</div>
+                <p>
+                  Individual runs preserve each player's full arc. The cross-player run shows whether patterns
+                  are real or one-off. You need both; they answer different questions.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="aitool__when">
+            <div class="aitool__when--yes">
+              <h4>Use it when</h4>
+              <p>You have pre-registered hypotheses (from Session 09 checklist) and transcripts. The model's lack of investment in your game is the feature — it won't spare your feelings.</p>
+            </div>
+            <div class="aitool__when--no">
+              <h4>Don't use it when</h4>
+              <p>You have no pre-registered hypotheses. Post-hoc pattern-finding in a transcript is what got replication science in trouble; do not import the problem.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · Draft the D4 playtest report from tagged data</h3>
+            <span class="aitool__hint">Structured synthesis · temperature 0.3</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              Once each transcript is tagged, pass the tag sets back to the model with the D4 structure and
+              ask for a draft. You will rewrite all of it — but you will rewrite faster than you would draft.
+            </p>
+
+            <div class="aitool__usecase">Prompt</div>
+<pre class="prompt"><span class="usr">Using the tagged evidence sets (attached), draft sections 3-5 of my
+D4 playtest report:
+
+  3. Evidence per hypothesis (supporting / contradicting / ambiguous).
+  4. Design decisions made in response (mechanic / scene / copy /
+     no-change — and which hypothesis's evidence drove each).
+  5. What I would test next, and the hypothesis I would pre-register.
+
+Constraints:
+- Do not argue that ambiguous evidence supports a hypothesis.
+- Do not propose design changes for hypotheses that had zero evidence.
+- In section 5, name specifically which new constraint or learner
+  behavior the next playtest would surface.</span></pre>
+
+            <div class="callout callout--warn">
+              <div class="callout__icon">!</div>
+              <div class="callout__body">
+                <div class="callout__title">The model will soften contradictory evidence</div>
+                <p>
+                  Watch for language like "while some players struggled, most…" — this is the model smoothing
+                  your failure cases out of the report. Your job in the rewrite is to restore them. Playtests
+                  are only useful if the failures survive to inform design.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="checklist-prep">
+        <div class="block__kicker">09 · Preparation for Session 10</div>
+        <h2 class="block__title">Before next week</h2>
+        <ul class="checklist">
+          <li data-chk-id="run"><input type="checkbox"/><label class="checklist__label">Run at least 3 target-learner sessions; store raw notes in repo.</label></li>
+          <li data-chk-id="d4-draft"><input type="checkbox"/><label class="checklist__label">Draft D4 report; version it.</label></li>
+          <li data-chk-id="audit-pre"><input type="checkbox"/><label class="checklist__label">Skim the Session 10 audit lens; note which dimension you expect to fare worst.</label></li>
+        </ul>
+      </section>
+
+            <!-- ─── Section: Companion reading ─────────────────── -->
+      <section class="block" id="reading">
+        <div class="block__kicker">Companion reading</div>
+        <h2 class="block__title">The evidence discipline behind playtesting</h2>
+        <p class="block__subtitle">This session turned a hypothesis into a protocol. Today's handout goes deeper on the move from opinion to evidence — test types, observation protocols, synthesis, and how to decide what to revise next.</p>
+
+        <div class="resources">
+          <div class="resource">
+            <div class="resource__num">03</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Facilitator handout · Evidence lens</div>
+              <h3 class="resource__title">Playtesting Toolkit</h3>
+              <p class="resource__desc">Early and repeated playtesting for educational game prototypes: what to test, who to test with, how to observe without contaminating, how to translate evidence into revision decisions. Includes an evidence-loop visual and common failure modes.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Run your first playtest against the toolkit's protocol — not your instincts. Bring your synthesis notes to Session 10 so the audit has real data to critique.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=03-playtesting-toolkit.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/03-playtesting-toolkit.md" download>Download</a>
+              <span class="resource__meta">MD · ~25 min</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">10 · Exit ticket</div>
+        <h2 class="block__title">Your scariest hypothesis</h2>
+        <div class="ticket" data-ticket-id="hypothesis">
+          <div class="ticket__prompt">The pre-registered hypothesis I am most afraid will be falsified, and what I will do if it is:</div>
+          <textarea placeholder="H2 (escalation timing). If falsified, I will replace the continuous timer with a shift-end summary…"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-08.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 08</span>
+        <span class="session-nav__title">Interaction spec</span>
+      </a>
+      <a href="session-10.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 10 →</span>
+        <span class="session-nav__title">Audit</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 08 · Interaction spec — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 3 · Build &amp; test</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 08 · Week 8</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Interaction spec: what a <em>developer</em> can build from.
+      </h1>
+      <p class="session-header__lede">
+        Your paper prototype survived three cycles. Now you translate it into an artifact a developer
+        can implement without asking you what you meant. A state machine, an event → feedback map, and
+        a Three.js-ready bridge for the hero scene. Fidelity here saves your final weeks.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">60 lecture · 90 draft · 30 review</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">Spec v0.1</span>
+          <span class="session-meta__sub">Folded into D5</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">4</span>
+          <span class="session-meta__sub">Dev-reviewed</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Materials</span>
+          <span class="session-meta__value">Spec template</span>
+          <span class="session-meta__sub">Three artifacts, one folder</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 8.1</span><span class="outcomes__text">Draw the game's loop as an explicit state machine with entry, exit, and transition conditions.</span></li>
+          <li><span class="outcomes__num">LO 8.2</span><span class="outcomes__text">Author an <strong>event → feedback map</strong> that a developer can wire without interpreting your intent.</span></li>
+          <li><span class="outcomes__num">LO 8.3</span><span class="outcomes__text">Identify the single scene where 3D matters and spec its Three.js bridge: scene graph, camera, input.</span></li>
+          <li><span class="outcomes__num">LO 8.4</span><span class="outcomes__text">Say no to 3D in the scenes where it adds nothing — explicitly, in the spec.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="statemachine">
+        <div class="block__kicker">02 · State machine</div>
+        <h2 class="block__title">Your loop, formalized</h2>
+        <p class="lead">
+          A state machine is the contract between you and a developer. States are nouns the player can be in;
+          transitions are events that move them between. If two designers can read your state machine and end
+          up with the same mental model of your loop, you did it right.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:22%;">Element</th><th>What it specifies</th><th>Common error</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>State</strong></td><td>A situation the player can be in; names are nouns or gerunds.</td><td>Verbs as states ("click button") — those are transitions.</td></tr>
+            <tr><td><strong>Entry condition</strong></td><td>What must be true to enter this state.</td><td>Entry conditions that are not checkable from game state alone.</td></tr>
+            <tr><td><strong>Transition</strong></td><td>Event + guard that moves the player to another state.</td><td>Unguarded transitions — "always go here" is rarely what you meant.</td></tr>
+            <tr><td><strong>Exit</strong></td><td>What the state leaves behind (score, flags, world changes).</td><td>Exits that mutate state silently; downstream bugs guaranteed.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout__icon">i</div>
+          <div class="callout__body">
+            <div class="callout__title">If it does not fit on one page, your loop is too big</div>
+            <p>
+              A good learning-game loop fits on a single sheet of paper. If yours sprawls, split into nested
+              machines — one per scene. Do not accept a wall of boxes as a sign of thoroughness.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="events">
+        <div class="block__kicker">03 · Event → feedback map</div>
+        <h2 class="block__title">The line-item every developer will thank you for</h2>
+        <p>
+          In prose, feedback design is ambiguous. In a table, it is implementation. One row per event the player
+          can trigger; one column per feedback channel. Every cell is either specified or marked "none."
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:24%;">Event</th><th>Visual</th><th>Audio</th><th>Text / UI</th><th>World state</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Correct-discrimination pick</strong></td>
+              <td>Card glows crimson 180ms; settles to dark.</td>
+              <td>none (context rule)</td>
+              <td>Score tick; no label.</td>
+              <td>Card exits deck; next drawn.</td>
+            </tr>
+            <tr>
+              <td><strong>Incorrect-discrimination pick</strong></td>
+              <td>Card flashes gray 90ms.</td>
+              <td>none</td>
+              <td>Toast: "reason?" — awaits input.</td>
+              <td>Card stays; requires retry or skip.</td>
+            </tr>
+            <tr>
+              <td><strong>Time expires</strong></td>
+              <td>Timer bar fades to 10% opacity.</td>
+              <td>Soft tone at 500ms in (not immediate).</td>
+              <td>Scene label: "time."</td>
+              <td>Current choice auto-locked; scene exits.</td>
+            </tr>
+            <tr>
+              <td><strong>Pager interrupt</strong></td>
+              <td>Screen dims 40%; page modal.</td>
+              <td>Single page beep.</td>
+              <td>Modal with triage prompt.</td>
+              <td>Main timer pauses; pager branch enters its own state.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">"none" is a specification</div>
+            <p>
+              Writing "none" in a cell is different from leaving it blank. Leaving it blank invites the developer
+              to invent feedback you did not ask for. Writing "none" says: intentionally silent.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="threejs">
+        <div class="block__kicker">04 · The Three.js bridge</div>
+        <h2 class="block__title">One hero scene, spelled out</h2>
+        <p>
+          Most of your game is 2D UI. Pick the <em>one</em> scene where 3D does work a flat view cannot — a
+          spatial judgment, an embodied interaction, a camera move that teaches. Spec that scene in enough
+          detail that your developer can scaffold it in a day.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:22%;">Section</th><th>Contents</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Scene purpose</strong></td><td>One sentence: what objective this 3D scene teaches that a 2D view cannot.</td></tr>
+            <tr><td><strong>Scene graph</strong></td><td>Root + children; named nodes; which are interactive; which are decorative.</td></tr>
+            <tr><td><strong>Camera</strong></td><td>Perspective or orthographic; framing; permitted user moves; locked axes.</td></tr>
+            <tr><td><strong>Input</strong></td><td>Pointer? Drag? Hotkeys? Accessibility fallbacks.</td></tr>
+            <tr><td><strong>Entry &amp; exit</strong></td><td>What state triggers the 3D scene; what state follows; data carried through.</td></tr>
+            <tr><td><strong>Assets</strong></td><td>Models, textures, lighting — with polygon &amp; texture budgets.</td></tr>
+            <tr><td><strong>Perf budget</strong></td><td>Target FPS, device floor, fallback to 2D rendering if floor fails.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout__icon">✕</div>
+          <div class="callout__body">
+            <div class="callout__title">Say no to 3D everywhere else</div>
+            <p>
+              Every other scene is 2D. Write that down. Explicit 2D is a cost saver; implicit 2D is a scope
+              battle you will lose in week 10.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="tools">
+        <div class="block__kicker">05 · Tools — Codex</div>
+        <h2 class="block__title">From spec to runnable scaffold in one pass</h2>
+        <p class="lead">
+          The gap between "I finished my design spec" and "a developer can start coding" is about 400 lines
+          of boilerplate: the scene graph, the state-machine runtime, the event bus, the save/load stub. Codex
+          bridges that gap in one session. You remain the designer of record — but you hand off something
+          that runs on day one, not day fourteen.
+        </p>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">Codex</span>
+            <h3 class="aitool__title">Use case · Scaffold a Three.js hero scene from your spec</h3>
+            <span class="aitool__hint">One-shot; 200-400 LoC output</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              Your Three.js bridge document (section 04) already lists camera, lights, assets, and interaction
+              hitboxes. That document is a prompt. Paste it into Codex with a request for a runnable scaffold.
+            </p>
+
+            <div class="aitool__usecase">Prompt</div>
+<pre class="prompt"><span class="usr">Build a single-file Three.js scene from the spec below. Use
+Three.js r160 via ESM CDN; no build step. Requirements:
+
+Scene
+- Camera: perspective, 50° fov, positioned per spec's camera brief.
+- Lights: one hemisphere (sky→ground) + one directional with shadow.
+- Ground: plane, 20x20, receives shadow.
+- Placeholder geometry for each named asset in the spec; use named
+  meshes (mesh.name = "monitor", "chart", "door", etc.) so we can
+  target them by name later.
+
+Interaction
+- Raycaster on click. Emit a CustomEvent on window with type
+  "game:interact" and detail { meshName, worldPoint }.
+- No game logic in this file — the scene only emits events.
+
+Devex
+- Export a single init(container) function.
+- Log every emitted event to console with timestamp.
+- If a mesh name isn't recognized, log "unmapped:" + name, do not throw.
+
+[PASTE THREE.JS BRIDGE DOC FROM SPEC]</span></pre>
+
+            <div class="callout">
+              <div class="callout__icon">i</div>
+              <div class="callout__body">
+                <div class="callout__title">Codex is a junior developer with perfect recall</div>
+                <p>
+                  It knows the Three.js API better than you. It does not know your game. Brief it the way you
+                  would brief a junior — constraints first, then tasks, then "do not" lines. The "do not"
+                  lines are what make the output editable instead of opaque.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="aitool__when">
+            <div class="aitool__when--yes">
+              <h4>Use it when</h4>
+              <p>Your bridge doc is complete and locked. You want to hand a developer (or yourself, next week) a running scene with your named assets so game-logic work can start Monday.</p>
+            </div>
+            <div class="aitool__when--no">
+              <h4>Don't use it when</h4>
+              <p>Your scene composition is still in flux. Re-scaffolding costs Codex nothing, but it costs you the context you were building in your head; pin the composition first.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">Codex</span>
+            <h3 class="aitool__title">Use case · Generate the state-machine runtime from your transitions table</h3>
+            <span class="aitool__hint">Pure JS; no framework</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              Your state machine (section 02) is a table: states, events, transitions, guards. Codex
+              translates that table into a runtime in one pass. Ask for plain JS, no dependencies; that way
+              you or your developer can read the whole thing before running it.
+            </p>
+
+            <div class="aitool__usecase">Prompt</div>
+<pre class="prompt"><span class="usr">Generate a minimal state-machine runtime in plain JS (no XState, no
+dependencies). API:
+
+  const sm = createMachine({
+    initial: "triage",
+    states: {
+      triage: { on: { SUBMIT: "feedback" } },
+      feedback: { on: { NEXT: "triage", END_SHIFT: "debrief" } },
+      debrief: { on: { RETRY: "triage" } },
+    },
+    guards: { /* optional named fns returning boolean */ },
+  });
+
+  sm.send("SUBMIT");          // transitions if allowed
+  sm.state                    // current state name
+  sm.onTransition(fn)         // fn({ from, to, event })
+  sm.can("SUBMIT")            // boolean
+
+Requirements:
+- ~80 lines, readable, no cleverness.
+- Throws if sent an event not defined on current state (opt-out flag
+  allowMissing: true).
+- Ships with unit tests (10+ cases) using plain console.assert.
+
+Generate my game's machine as a second file, populated from this
+transitions table:
+
+[PASTE TRANSITIONS TABLE]</span></pre>
+          </div>
+        </div>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">Codex</span>
+            <h3 class="aitool__title">Use case · Lint your event→feedback map for missing coverage</h3>
+            <span class="aitool__hint">Static audit</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              A common failure in an event map is forgotten cells — events that never emit a response, or
+              response types that appear in one event's row but not in a parallel event's row. Codex can read
+              your table and list gaps before a developer does.
+            </p>
+
+            <div class="aitool__usecase">Prompt</div>
+<pre class="prompt"><span class="usr">Here is my event→feedback map as a markdown table. Audit it and
+output:
+
+1. Events with no response at all.
+2. Events whose "response kind" column uses a kind that doesn't
+   appear in the legend of my S4 taxonomy.
+3. Events that emit consequence feedback but don't specify what
+   world state changes.
+4. Pairs of events that look parallel but whose response schemas
+   differ (e.g., one logs to telemetry, the sibling doesn't).
+
+Don't propose fixes. Just list the gaps so I can decide each.</span></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="workshop">
+        <div class="block__kicker">06 · Workshop — 90 min</div>
+        <h2 class="block__title">Draft the spec</h2>
+
+        <table class="tbl tbl--timeplan">
+          <thead><tr><th>Time</th><th>Activity</th><th>Facilitator cue</th></tr></thead>
+          <tbody>
+            <tr><td>00:00–30:00</td><td>Draft state machine on paper; photograph for the repo.</td><td>"One page. If you need more, nest."</td></tr>
+            <tr><td>30:00–60:00</td><td>Draft event→feedback table. Fill every cell.</td><td>"No blanks. Write 'none' where you mean it."</td></tr>
+            <tr><td>60:00–80:00</td><td>Identify the hero 3D scene; outline the bridge section.</td><td>"One scene. If everything is 3D, none of it is."</td></tr>
+            <tr><td>80:00–90:00</td><td>Pair review; one peer marks the most underspecified row.</td><td>"Underspecified rows are next week's bugs."</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" id="checklist-prep">
+        <div class="block__kicker">07 · Preparation for Session 09</div>
+        <h2 class="block__title">Before next week</h2>
+        <ul class="checklist">
+          <li data-chk-id="spec-v01"><input type="checkbox"/><label class="checklist__label">Submit spec v0.1 — state machine, event map, Three.js bridge outline.</label></li>
+          <li data-chk-id="read-playtest"><input type="checkbox"/><label class="checklist__label">Read: one short guide to playtesting with target users (not peers).</label></li>
+          <li data-chk-id="recruit"><input type="checkbox"/><label class="checklist__label">Line up 3 target-learner playtesters for Session 09's pre-work.</label></li>
+        </ul>
+      </section>
+
+            <!-- ─── Section: Companion reading ─────────────────── -->
+      <section class="block" id="reading">
+        <div class="block__kicker">Companion reading</div>
+        <h2 class="block__title">Three bridges from spec to build</h2>
+        <p class="block__subtitle">You have a state machine and an event-feedback map. The jump to implementation is where most prototypes die. These three handouts cover the conceptual vocabulary (Three.js), the workflow (Codex), and the legal hygiene (asset licensing) — read the ones that match your team's next move.</p>
+
+        <div class="resources">
+          <div class="resource">
+            <div class="resource__num">05</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Implementation handout · 3D foundations</div>
+              <h3 class="resource__title">Three.js Foundations Learning Pack</h3>
+              <p class="resource__desc">Scene, camera, renderer, mesh, light, animation loop, raycaster — with a minimum conceptual model and an instructional lens on when 3D actually earns its place in an educational game.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Read before you write any Three.js code. If you cannot justify why 3D helps the learner think, inspect, or decide, the handout will save you a week of implementation.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=05-threejs-foundations-learning-pack.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/05-threejs-foundations-learning-pack.md" download>Download</a>
+              <span class="resource__meta">MD · ~30 min</span>
+            </div>
+          </div>
+          <div class="resource">
+            <div class="resource__num">12</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Implementation handout · AI-assisted build</div>
+              <h3 class="resource__title">Codex-To-Three.js Build Playbook</h3>
+              <p class="resource__desc">A disciplined workflow for using Codex to move from design docs into a bounded Three.js prototype slice: how to write build briefs, how to structure task packets, how to keep debugging evidence visible, how to decide what to build now vs. later.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Use this when your team is ready to implement. Bring a Codex build brief written from the playbook to the S11 revision studio.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=12-codex-to-threejs-build-playbook.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/12-codex-to-threejs-build-playbook.md" download>Download</a>
+              <span class="resource__meta">MD · ~20 min</span>
+            </div>
+          </div>
+          <div class="resource">
+            <div class="resource__num">10</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Implementation handout · Rights & credit</div>
+              <h3 class="resource__title">Asset Licensing and Attribution Pack</h3>
+              <p class="resource__desc">Licensing, attribution, reuse decisions, and asset tracking for images, audio, video, and 3D models. Five core principles, a decision flow, and the record-keeping that student teams routinely forget until the week of the final.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Before you pull your first texture, font, or sound asset, commit to how your team will track source and license. Retrofit is twice the work.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=10-asset-licensing-and-attribution-pack.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/10-asset-licensing-and-attribution-pack.md" download>Download</a>
+              <span class="resource__meta">MD · ~15 min</span>
+            </div>
+          </div>
+          <div class="resource">
+            <div class="resource__num" style="background:#edf5ff;color:#002d9c;">B</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Interactive lab · Three.js reference</div>
+              <h3 class="resource__title">Electric Circuit Lab</h3>
+              <p class="resource__desc">A working Three.js hero scene: scene graph, camera, raycast-driven interaction, and an event bus wired to a 2D UI panel. Inspect it as the reference implementation for your own bridge spec.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Play it, then open the source. Map your spec's state machine and event→feedback table onto what this lab actually does — that is the shape your Codex scaffold should produce.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="minigames/electric-circuit-lab/index.html" target="_blank" rel="noopener">Launch lab</a>
+              <span class="resource__meta">Three.js · ~15 min</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">08 · Exit ticket</div>
+        <h2 class="block__title">The most underspecified row</h2>
+        <div class="ticket" data-ticket-id="underspec">
+          <div class="ticket__prompt">The state or event→feedback row my partner flagged as most underspecified, and the clarification I will make:</div>
+          <textarea placeholder="Row: pager interrupt. Flag: unclear whether main timer pauses or continues. Clarification: …"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-07.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 07</span>
+        <span class="session-nav__title">Paper prototyping</span>
+      </a>
+      <a href="session-09.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 09 →</span>
+        <span class="session-nav__title">Playtest design</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Session 03 · Objectives &amp; crosswalk — Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="index.html">All sessions</a></div>
+</div>
+
+<div class="shell">
+  <aside class="sidebar" data-sidebar></aside>
+
+  <main class="main">
+    <header class="session-header">
+      <div class="session-header__top">
+        <div class="session-header__crumbs">
+          <span>Part 2 · Design toolkit</span>
+          <span class="sep">/</span>
+          <span class="session-header__session-num">Session 03 · Week 3 · D2 due</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn--ghost" data-print>Print / PDF</button>
+          <button class="btn btn--solid" data-mark-done>Mark session complete</button>
+        </div>
+      </div>
+      <h1 class="session-header__title">
+        Objectives &amp; crosswalk: matching the <em>kind</em> of learning to the <em>kind</em> of mechanic.
+      </h1>
+      <p class="session-header__lede">
+        Not every learning objective teaches through the same kind of play. Retrieval wants flashcard-adjacent
+        loops. Judgment under uncertainty wants branching scenarios with delayed consequence. This session gives
+        you the taxonomy and the tool — the Objective × Mechanic Crosswalk — that turns D1 into a defensible
+        design direction.
+      </p>
+
+      <div class="session-meta">
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Contact time</span>
+          <span class="session-meta__value">180 min</span>
+          <span class="session-meta__sub">45 read · 90 crosswalk · 45 critique</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Deliverable</span>
+          <span class="session-meta__value">D2</span>
+          <span class="session-meta__sub">Objective × Mechanic Crosswalk</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Outcomes</span>
+          <span class="session-meta__value">5</span>
+          <span class="session-meta__sub">Rubric-scored by peers</span>
+        </div>
+        <div class="session-meta__cell">
+          <span class="session-meta__label">Prerequisite</span>
+          <span class="session-meta__value">D1</span>
+          <span class="session-meta__sub">Approved Problem Statement</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <section class="block" id="outcomes">
+        <div class="block__kicker">01 · Learning outcomes</div>
+        <h2 class="block__title">By the end of this session, you can…</h2>
+        <ol class="outcomes">
+          <li><span class="outcomes__num">LO 3.1</span><span class="outcomes__text">Classify each objective in your project against the five-type taxonomy (retrieval, discrimination, procedural fluency, conceptual reasoning, judgment under uncertainty).</span></li>
+          <li><span class="outcomes__num">LO 3.2</span><span class="outcomes__text">Name the <strong>signature mechanic family</strong> that fits each objective type, and the common mismatches to avoid.</span></li>
+          <li><span class="outcomes__num">LO 3.3</span><span class="outcomes__text">Produce D2 — a crosswalk mapping 2–4 objectives to mechanics with rationale, risks, and an amplifier.</span></li>
+          <li><span class="outcomes__num">LO 3.4</span><span class="outcomes__text">Defend one mechanic choice against a plausible alternative, citing the objective type and a named failure mode.</span></li>
+          <li><span class="outcomes__num">LO 3.5</span><span class="outcomes__text">Mark at least one objective as <em>out of scope</em> for this build — and say why.</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="taxonomy">
+        <div class="block__kicker">02 · The five objective types</div>
+        <h2 class="block__title">A workable taxonomy for game design</h2>
+        <p class="lead">
+          Bloom's revised taxonomy has six levels and is faithful to how cognition layers. For <em>game design
+          decisions</em>, six is too many and the vertical metaphor misleads. The five categories below cover the
+          vast majority of educational-game objectives and — crucially — each one responds to a different kind
+          of loop.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:18%;">Type</th><th>What it is</th><th>Tell-tale verbs</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Retrieval</strong></td><td>Bring a fact, name, or definition back from memory on demand.</td><td>Name, list, recognize, recall</td></tr>
+            <tr><td><strong>Discrimination</strong></td><td>Tell two or more similar cases apart based on distinguishing features.</td><td>Distinguish, sort, classify, identify</td></tr>
+            <tr><td><strong>Procedural fluency</strong></td><td>Execute a known procedure quickly, accurately, and adaptively.</td><td>Perform, apply, operate, compute</td></tr>
+            <tr><td><strong>Conceptual reasoning</strong></td><td>Use a model to explain or predict; transfer across surface features.</td><td>Explain, predict, model, derive</td></tr>
+            <tr><td><strong>Judgment under uncertainty</strong></td><td>Choose among partially-informed options with real trade-offs.</td><td>Decide, prioritize, triage, weigh</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout__icon">i</div>
+          <div class="callout__body">
+            <div class="callout__title">Most projects need 2–3 types, not all five</div>
+            <p>
+              A good educational game picks a dominant type, supports it with one or two others, and says no
+              to the rest. A game that tries to teach all five is almost certainly teaching none of them well.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="signature">
+        <div class="block__kicker">03 · Signature mechanic families</div>
+        <h2 class="block__title">Which loops teach which kinds</h2>
+        <p>
+          There is no one-to-one map from objective to mechanic — but there are strong fits, bad fits, and
+          amplifiers. Treat this as a hypothesis generator. Test in prototype (Session 07), not in argument.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:22%;">Objective type</th><th>Signature mechanic families</th><th>Characteristic failure mode</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Retrieval</strong></td><td>Spaced recall; timed matching; streak-break loops.</td><td>Decorative context. Players memorize the quiz, not the content.</td></tr>
+            <tr><td><strong>Discrimination</strong></td><td>Sorting under pressure; progressive pair reveals; same-or-different bursts.</td><td>Surface cues leak. Learners pass without seeing the discriminating feature.</td></tr>
+            <tr><td><strong>Procedural fluency</strong></td><td>Step sequencing with drift detection; tool-chain puzzles; speed-run with correctness gates.</td><td>Procedure becomes mechanical. No transfer to new tools or edge cases.</td></tr>
+            <tr><td><strong>Conceptual reasoning</strong></td><td>Sandboxes with lawful constraints; prediction-then-test; scenario ladders that vary one feature.</td><td>Sandbox with no friction. Players play, do not reason; model never gets pressure-tested.</td></tr>
+            <tr><td><strong>Judgment under uncertainty</strong></td><td>Branching scenarios with delayed feedback; resource trade-off economies; role play with partial info.</td><td>Branching that telegraphs the right answer. No real trade-off → no real judgment.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="block" id="tool">
+        <div class="block__kicker">04 · The Crosswalk tool</div>
+        <h2 class="block__title">A one-page instrument you will revise every session</h2>
+        <p class="block__subtitle">
+          D2 is a four-column table. Each row is one objective. Every downstream deliverable references this
+          artifact — revisit it after every playtest.
+        </p>
+
+        <table class="tbl">
+          <thead>
+            <tr><th style="width:14%;">Column</th><th>Content</th><th>Quality cue</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Objective</strong></td><td>Written as an observable verb with a concrete object.</td><td>Passes the "what would I score?" test.</td></tr>
+            <tr><td><strong>Type</strong></td><td>One of the five types. No hyphenates.</td><td>If you need two, split into two rows.</td></tr>
+            <tr><td><strong>Mechanic (candidate)</strong></td><td>A specific loop — not a genre. "Time-pressured triage with delayed consequence," not "a strategy game."</td><td>Can be described in one sentence a developer would act on.</td></tr>
+            <tr><td><strong>Rationale &amp; risk</strong></td><td>Why this mechanic teaches this type for <em>your</em> learner; the most likely failure mode; an amplifier that would raise quality if budget allows.</td><td>The risk sentence names a concrete mechanism, not a feeling.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">The Crosswalk is a live document</div>
+            <p>
+              It will change after every playtest. Version it in your repo with a dated changelog; do not edit
+              in place. The reviewer's job in Session 12 is to audit what you changed and why.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="example">
+        <div class="block__kicker">05 · Worked example — The On-Call</div>
+        <h2 class="block__title">From D1 problem to D2 crosswalk</h2>
+
+        <div class="worked worked--hero">
+          <div class="worked__tag">D2 · The On-Call · v0.1</div>
+          <h3 class="worked__title">Three objectives; three mechanics; one amplifier; one explicit out-of-scope.</h3>
+
+          <table class="tbl" style="margin-top: 8px;">
+            <thead>
+              <tr><th>Objective</th><th>Type</th><th>Mechanic</th><th>Rationale &amp; risk</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Name the three tests most likely to discriminate leading diagnoses in an unstable patient, within 60 seconds.</td>
+                <td>Discrimination</td>
+                <td>Timed "pick the discriminating test" cards with near-neighbor distractors.</td>
+                <td>Fit: forces attention to feature differences. Risk: players memorize cards; <strong>amplifier</strong> — rotate patient contexts so the discriminator changes.</td>
+              </tr>
+              <tr>
+                <td>Escalate to attending within the indicated time window given five deterioration vignettes.</td>
+                <td>Judgment under uncertainty</td>
+                <td>Branching shift simulator with delayed consequence feedback at shift end.</td>
+                <td>Fit: the real skill is choosing under partial info. Risk: branching telegraphs; <strong>mitigation</strong> — multiple valid paths with different trade-offs.</td>
+              </tr>
+              <tr>
+                <td>State a leading diagnosis with three differentials, given an ambiguous vignette.</td>
+                <td>Conceptual reasoning</td>
+                <td>Post-shift "whiteboard" reflection with peer-review loop.</td>
+                <td>Fit: articulation surfaces the model. Risk: social desirability; <strong>mitigation</strong> — anonymous peer review, rubric-scored.</td>
+              </tr>
+              <tr>
+                <td><em>Out of scope:</em> Full pharmacology recall.</td>
+                <td>—</td>
+                <td>—</td>
+                <td>Covered by existing curriculum; including it dilutes the judgment core. Documented and declined.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Notice that the fourth row exists. Every good D2 names at least one objective that was tempting but
+          rejected — with a reason. If your crosswalk has no out-of-scope row, you have not made a design.
+        </p>
+      </section>
+
+      <section class="block" id="tools">
+        <div class="block__kicker">07 · Tools — Google AI Studio</div>
+        <h2 class="block__title">Drafting the crosswalk in minutes, not hours</h2>
+        <p class="lead">
+          AI Studio is faster than you at making a first pass and worse than you at getting it right. The D2
+          crosswalk is the perfect use case — a model can classify objectives against the five-type taxonomy
+          and propose mechanics, but it cannot tell you whether the proposal survives your D1 constraints.
+          That last step is why you are still the designer.
+        </p>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · Classify your objectives against the five-type taxonomy</h3>
+            <span class="aitool__hint">Gemini 2.5 · temperature 0.3</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              Paste your 2–4 candidate objectives. The model forces a single type per objective, which is
+              exactly the discipline this session requires. You will still override calls you disagree with —
+              but the disagreements are the useful part.
+            </p>
+
+            <div class="aitool__usecase">System prompt</div>
+<pre class="prompt"><span class="sys">You are classifying learning objectives for an educational game designer.
+Use ONLY these five types:
+
+1. Retrieval
+2. Discrimination
+3. Procedural fluency
+4. Conceptual reasoning
+5. Judgment under uncertainty
+
+For each objective I give you, output:
+  Objective: [verbatim]
+  Type: [one of the five, exactly]
+  Confidence: low | mid | high
+  Why: one sentence citing the verb + cognitive demand.
+  If it splits: say "SPLIT" and propose two separate objectives,
+    each a single type.
+
+Rules:
+- No hyphenated types.
+- No "it depends." Force a call.
+- If the objective is unobservable ("understand"), flag it and suggest
+  an observable rewrite. Do not classify it until rewritten.</span></pre>
+
+            <div class="aitool__usecase">Your message</div>
+<pre class="prompt"><span class="usr">Here are my objectives from D1 + pre-work for S3. Classify each.
+
+1. Residents will escalate to attending within the indicated time window
+   on 5 deterioration vignettes.
+2. Residents will name the three tests most likely to discriminate
+   leading diagnoses in an unstable patient, within 60 seconds.
+3. Residents will understand differential diagnosis.
+4. Residents will state a leading diagnosis and three differentials,
+   given an ambiguous vignette.</span></pre>
+
+            <p>
+              The model will flag #3 as unobservable and refuse to classify it until you rewrite. That refusal
+              is worth the whole session.
+            </p>
+          </div>
+          <div class="aitool__when">
+            <div class="aitool__when--yes">
+              <h4>Use it when</h4>
+              <p>You have 2–4 draft objectives and are unsure which type each one is. The model is quick and decisive, which is what you need to break analysis paralysis.</p>
+            </div>
+            <div class="aitool__when--no">
+              <h4>Don't use it when</h4>
+              <p>You have not written your D1 yet. A type is meaningless without a learner — AI will classify "students will understand fractions" in isolation, and you will build a crosswalk grounded in nothing.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Use case · Generate three mechanic candidates per objective</h3>
+            <span class="aitool__hint">Divergent mode · temperature 0.9</span>
+          </div>
+          <div class="aitool__body">
+            <p>
+              Once types are locked, run a divergent-generation pass. The point is not to find <em>the</em>
+              mechanic — it is to see three, so you can tell which one actually fits your D1 context. Almost
+              always the model's third idea is the best one; the first two are the ones it was trained to
+              expect.
+            </p>
+
+            <div class="aitool__usecase">Prompt</div>
+<pre class="prompt"><span class="usr">For each objective below, propose three candidate mechanics that fit
+its type. Keep in mind these D1 context constraints:
+- Played solo on a hospital laptop during down-time.
+- 30-45 min sessions.
+- No audio.
+- Must pause gracefully for pager interruptions.
+
+Format each candidate as:
+  Name (one sentence verb-phrase)
+  Fit rationale (one sentence)
+  Most likely failure mode (one sentence)
+
+Do not label one as "best." Give me three options per row, equally
+defended, so I can choose.</span></pre>
+
+            <div class="callout">
+              <div class="callout__icon">i</div>
+              <div class="callout__body">
+                <div class="callout__title">Why three, always</div>
+                <p>
+                  One option is a proposal. Two is a binary. Three forces you to articulate what you are
+                  actually optimizing for. Never accept a single-option answer from the model on design questions.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="aitool">
+          <div class="aitool__head">
+            <span class="aitool__tag">AI Studio</span>
+            <h3 class="aitool__title">Primer · Prompt engineering, 5 rules that matter</h3>
+            <span class="aitool__hint">If you remember nothing else</span>
+          </div>
+          <div class="aitool__body">
+            <ol class="outcomes" style="margin-top: 4px;">
+              <li><span class="outcomes__num">01</span><span class="outcomes__text"><strong>System prompt does the heavy lifting.</strong> Put role, constraints, output format, and refusal rules in the system prompt, not the user message. The user message is the data.</span></li>
+              <li><span class="outcomes__num">02</span><span class="outcomes__text"><strong>Force an output shape.</strong> Models that can wander, will. Name the fields and the exact format — the model will fill them and stop.</span></li>
+              <li><span class="outcomes__num">03</span><span class="outcomes__text"><strong>Write the refusal rule.</strong> Tell the model what to do when the input is bad ("if the objective is unobservable, flag it and refuse"). Without a refusal rule, the model smooths over bad input.</span></li>
+              <li><span class="outcomes__num">04</span><span class="outcomes__text"><strong>Temperature low for classification, high for divergence.</strong> 0.2–0.4 when you want the same call twice; 0.8–1.0 when you want three different answers.</span></li>
+              <li><span class="outcomes__num">05</span><span class="outcomes__text"><strong>Treat the output as a draft, not an answer.</strong> Every AI Studio session ends with you rewriting at least one thing. If you never override, you outsourced your design. Do not do that.</span></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="activity">
+        <div class="block__kicker">06 · Workshop — 90 min</div>
+        <h2 class="block__title">Build your crosswalk</h2>
+
+        <table class="tbl tbl--timeplan">
+          <thead><tr><th>Time</th><th>What happens</th><th>Facilitator cue</th></tr></thead>
+          <tbody>
+            <tr><td>00:00–20:00</td><td>Solo — classify each of your 2–4 objectives against the five types. One row per objective.</td><td>"Type is a forced choice. If it splits, split the row."</td></tr>
+            <tr><td>20:00–50:00</td><td>Draft the mechanic column. One specific loop per row.</td><td>Circulate; push back on genre labels.</td></tr>
+            <tr><td>50:00–70:00</td><td>Pair swap — partner names the most likely failure mode for each of your mechanics; you write it down.</td><td>"Your partner is not attacking. They are pre-paying the playtest tax."</td></tr>
+            <tr><td>70:00–90:00</td><td>Add one amplifier per row; mark one objective out of scope.</td><td>"If you cut nothing, you designed nothing."</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout--warn">
+          <div class="callout__icon">!</div>
+          <div class="callout__body">
+            <div class="callout__title">Do not fall in love with your mechanic</div>
+            <p>
+              The crosswalk is a hypothesis, not a commitment. It will be disproven in playtest. Your job today
+              is to make the hypothesis specific enough to be disprovable.
+            </p>
+          </div>
+        </div>
+      </section>
+
+            <!-- ─── Section: Companion reading ─────────────────── -->
+      <section class="block" id="reading">
+        <div class="block__kicker">Companion reading</div>
+        <h2 class="block__title">Cases to stress-test your crosswalk</h2>
+        <p class="block__subtitle">Before committing to a mechanic column, pressure-test your choice against six worked examples. Look at how each case justifies its game form — practice loop, systems sim, role-play, scenario sim, or spatial challenge.</p>
+
+        <div class="resources">
+          <div class="resource">
+            <div class="resource__num">02</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Facilitator handout · Worked examples</div>
+              <h3 class="resource__title">Worked Examples Casebook</h3>
+              <p class="resource__desc">Six educational-game concepts annotated with loop, facilitation notes, likely risks, revision ideas, and a Three.js implementation bridge. The Game Form Selection visual is the direct companion to today's crosswalk.</p>
+              <p class="resource__why"><b>Why this week</b>
+                Pick the case whose learning problem is closest to yours. Copy its loop one-liner. If you cannot copy it cleanly, your objective type is probably not yet the one you think it is.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="read.html?doc=02-worked-examples-casebook.md" target="_blank" rel="noopener">Read</a>
+              <a class="resource__btn" href="resources/02-worked-examples-casebook.md" download>Download</a>
+              <span class="resource__meta">MD · ~25 min</span>
+            </div>
+          </div>
+          <div class="resource">
+            <div class="resource__num" style="background:#defbe6;color:#0e6027;">A</div>
+            <div class="resource__body">
+              <div class="resource__kicker">Interactive lab · Worked crosswalk</div>
+              <h3 class="resource__title">Orbit Sum Lab</h3>
+              <p class="resource__desc">A practice-loop lab built on a concrete learning objective — estimate, commit, get feedback, repeat. Map it across your crosswalk: what is the objective type, which mechanic column does it sit in, what feedback kind does it emit?</p>
+              <p class="resource__why"><b>Why this week</b>
+                Use it as a seventh case against the casebook. If your D2 mechanic column cannot explain what this lab is doing, your column definition is underspecified.
+              </p>
+            </div>
+            <div class="resource__actions">
+              <a class="resource__btn resource__btn--solid" href="minigames/orbit-sum-lab/scorm-launch-orbit-lab.html" target="_blank" rel="noopener">Launch lab</a>
+              <span class="resource__meta">SCORM · ~15 min</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block" id="checklist">
+        <div class="block__kicker">07 · Preparation for Session 04</div>
+        <h2 class="block__title">Before next week</h2>
+        <ul class="checklist">
+          <li data-chk-id="d2-submit"><input type="checkbox"/><label class="checklist__label">Submit D2 to the course repo with a version stamp.</label></li>
+          <li data-chk-id="read-cf"><input type="checkbox"/><label class="checklist__label">Read: one chapter on challenge/flow (Csikszentmihalyi summary, ~30 min).</label></li>
+          <li data-chk-id="read-pf"><input type="checkbox"/><label class="checklist__label">Read: Kapur on productive failure (introduction + one case, ~30 min).</label></li>
+          <li data-chk-id="playtest-one"><input type="checkbox"/><label class="checklist__label">Play one commercial game that exhibits your signature mechanic; write a 1-paragraph note on why it works.</label></li>
+          <li data-chk-id="pair"><input type="checkbox"/><label class="checklist__label">Pair with a classmate whose dominant objective type differs from yours.</label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="ticket">
+        <div class="block__kicker">08 · Exit ticket</div>
+        <h2 class="block__title">Defend one mechanic choice</h2>
+        <p class="block__subtitle">
+          Pick the crosswalk row you are least sure about. In three sentences: objective type, why this mechanic,
+          what would make you drop it.
+        </p>
+        <div class="ticket" data-ticket-id="defense">
+          <div class="ticket__prompt">My least-certain crosswalk row, defended:</div>
+          <textarea placeholder="Type: judgment. Mechanic: branching shift sim. Would drop if playtest shows…"></textarea>
+          <div class="ticket__saved"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <nav class="session-nav">
+      <a href="session-02.html" class="session-nav__prev">
+        <span class="session-nav__label">← Previous · Session 02</span>
+        <span class="session-nav__title">Learner &amp; context</span>
+      </a>
+      <a href="session-04.html" class="session-nav__next">
+        <span class="session-nav__label">Next · Session 04 →</span>
+        <span class="session-nav__title">Mechanics I</span>
+      </a>
+    </nav>
+  </main>
+</div>
+
+<script src="shell.js"></script>
+</body>
+</html>

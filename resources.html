@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Resource Library · Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+</head>
+<body>
+
+<!-- ─── Utility bar ─────────────────────────────────────────────── -->
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <a href="#">myBama</a>
+  </div>
+</div>
+
+<!-- ─── Site header ─────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html">Overview</a>
+    <a href="index.html#sessions">Sessions</a>
+    <a href="index.html#deliverables">Deliverables</a>
+    <a href="resources.html" class="is-active">Resource Library</a>
+    <a href="resources.html#labs">Labs</a>
+    <a href="session-01.html">Begin Session 01</a>
+  </nav>
+</header>
+
+<!-- ─── Page header band ─────────────────────────────────────── -->
+<section class="hero" style="padding-top: 56px; padding-bottom: 48px; min-height: 0;">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <div class="hero__eyebrow">Resource Library · 12 Facilitator Handouts</div>
+    <h1 class="hero__title" style="font-size: 52px; line-height: 1.05; margin-bottom: 22px;">Twelve companion handouts.<br/>One working library.</h1>
+    <p class="hero__lede" style="max-width: 820px; margin-bottom: 0;">
+      Every handout below was written to sit next to a session — deepening the framing, supplying examples,
+      or handing your team the discipline they will need the week after. Read online or download as Markdown.
+    </p>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<!-- ─── How to use ─────────────────────────────────────────── -->
+<section class="section">
+  <span class="section__eyebrow">How to use this library</span>
+  <h2 class="section__title">Three ways in.</h2>
+  <div class="card-grid card-grid--3">
+    <div class="card">
+      <div class="card__label">By session</div>
+      <h3 class="card__title">Follow the course arc</h3>
+      <p>Each session page has a <em>Companion reading</em> block that names the one or two handouts that pair with that week's work. Open them from inside the session.</p>
+    </div>
+    <div class="card">
+      <div class="card__label">By role</div>
+      <h3 class="card__title">Pick a lane</h3>
+      <p>Facilitators live in handouts 01, 02, 03, 04, 07, 09. Designer-builders live in 05, 10, 12. Audit owners in 06, 08, 11. Use the filter below.</p>
+    </div>
+    <div class="card">
+      <div class="card__label">By need</div>
+      <h3 class="card__title">Skim, steal, apply</h3>
+      <p>Every handout is optimized for selective reading: visual maps, action bullets, checklists, risk flags. Take one pattern; leave the rest.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Library ─────────────────────────────────────────────── -->
+<section class="section section--tint" id="library">
+  <span class="section__eyebrow">The Library</span>
+  <h2 class="section__title">Twelve handouts, indexed.</h2>
+
+  <div class="res-filter" role="tablist" aria-label="Filter resources">
+    <button class="res-filter__btn is-active" data-filter="all">All 12</button>
+    <button class="res-filter__btn" data-filter="facilitation">Facilitation</button>
+    <button class="res-filter__btn" data-filter="design">Design</button>
+    <button class="res-filter__btn" data-filter="evidence">Evidence &amp; audit</button>
+    <button class="res-filter__btn" data-filter="implementation">Implementation</button>
+  </div>
+
+  <div class="resources resources--library" id="library-grid"></div>
+</section>
+
+<!-- ─── Interactive Labs ─────────────────────────────────────── -->
+<section class="section" id="labs">
+  <span class="section__eyebrow">Interactive Labs</span>
+  <h2 class="section__title">Two playable simulations.<br/>Built to be analyzed.</h2>
+  <p class="section__lede">
+    These SCORM labs are not just demos — they are case studies. Play each one, then use it as
+    raw material for the Objective × Mechanic Crosswalk (D2) and the Technical QA checklist (Session 10).
+  </p>
+
+  <div class="resources resources--library">
+
+    <div class="resource">
+      <div class="resource__num" style="background:#defbe6;color:#0e6027;">A</div>
+      <div class="resource__body">
+        <div class="resource__kicker">Interactive lab · Orbital mechanics · SCORM 1.2</div>
+        <h3 class="resource__title">Orbit Sum Lab</h3>
+        <p class="resource__desc">
+          A physics-grounded summation mechanic: learners manipulate orbital parameters and observe
+          how cumulative forces affect trajectory. Built with React + Vite. Mastery threshold: 80 %.
+          Pairs with Session 03 as a worked mechanic-objective example.
+        </p>
+        <p class="resource__why"><b>Course placement</b>
+          Session 03 · Objective × Mechanic Crosswalk
+        </p>
+      </div>
+      <div class="resource__actions">
+        <a class="resource__btn resource__btn--solid"
+           href="minigames/orbit-sum-lab/scorm-launch-orbit-lab.html"
+           target="_blank" rel="noopener">Launch lab</a>
+        <span class="resource__meta">SCORM 1.2 · React · Full-screen</span>
+      </div>
+    </div>
+
+    <div class="resource">
+      <div class="resource__num" style="background:#edf5ff;color:#002d9c;">B</div>
+      <div class="resource__body">
+        <div class="resource__kicker">Interactive lab · Three.js simulation · SCORM 1.2</div>
+        <h3 class="resource__title">Electric Circuit Lab 3D</h3>
+        <p class="resource__desc">
+          Drag-and-snap circuit assembly in a Three.js scene: place battery, resistor, switch, and
+          lamp; rotate components to align connectors; close the switch; probe for current flow.
+          Score, efficiency, and time are reported to the LMS. Mastery threshold: 80 %.
+        </p>
+        <p class="resource__why"><b>Course placement</b>
+          Session 08 · Three.js Foundations &amp; Session 10 · Technical QA
+        </p>
+      </div>
+      <div class="resource__actions">
+        <a class="resource__btn resource__btn--solid"
+           href="minigames/electric-circuit-lab/index.html"
+           target="_blank" rel="noopener">Launch lab</a>
+        <span class="resource__meta">SCORM 1.2 · Three.js · Two-panel</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── Footer ─────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <div>
+      <div class="site-footer__brand">Educational Game Design</div>
+      <div class="site-footer__meta">A micro-credential handbook · v2 · 2026</div>
+    </div>
+    <div class="site-footer__meta">
+      Educational Technology · College of Education<br/>
+      The University of Alabama · Tuscaloosa, AL
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© 2026 The University of Alabama</span>
+    <span>Crimson Flame · Capstone Gray · Victory White</span>
+  </div>
+</footer>
+
+<script>
+const RESOURCES = [
+  {
+    num: '01', file: '01-teacher-digital-curriculum-guide.md',
+    kicker: 'Facilitator handout · Teaching moves',
+    title: 'Teacher Digital Curriculum Guide',
+    desc: "A working guide for facilitators: before-during-after teaching moves, workshop rhythm, discussion prompts, implementation supports, troubleshooting. Built for teacher educators, ID faculty, and PD leads.",
+    tag: 'facilitation', sessions: 'Pairs with Session 06', meta: '~30 min read'
+  },
+  {
+    num: '02', file: '02-worked-examples-casebook.md',
+    kicker: 'Facilitator handout · Worked examples',
+    title: 'Worked Examples Casebook',
+    desc: "Six annotated educational-game concepts — fractions market, ancient-city council, watershed sim, inclusive-classroom sim, customer-service navigator, lab-safety triage. Includes a game-form selection visual.",
+    tag: 'design', sessions: 'Pairs with Sessions 01 &amp; 03', meta: '~25 min read'
+  },
+  {
+    num: '03', file: '03-playtesting-toolkit.md',
+    kicker: 'Facilitator handout · Evidence lens',
+    title: 'Playtesting Toolkit',
+    desc: "Early and repeated playtesting discipline: what to test, who with, how to observe without contaminating, how to translate evidence into revision decisions. Includes an evidence-loop visual.",
+    tag: 'evidence', sessions: 'Pairs with Session 09', meta: '~25 min read'
+  },
+  {
+    num: '04', file: '04-portfolio-exemplar-set.md',
+    kicker: 'Closing handout · Portfolio calibration',
+    title: 'Portfolio Exemplar Set',
+    desc: "Annotated benchmarks for the five portfolio artifacts — learner analysis, design brief, teacher implementation guide, playtest report, final presentation. Shows what strong work looks like.",
+    tag: 'evidence', sessions: 'Pairs with Session 12', meta: '~25 min read'
+  },
+  {
+    num: '05', file: '05-threejs-foundations-learning-pack.md',
+    kicker: 'Implementation handout · 3D foundations',
+    title: 'Three.js Foundations Learning Pack',
+    desc: "Scene, camera, renderer, mesh, light, animation loop, raycaster. Written for beginners with an instructional lens on when 3D actually earns its place in an educational game.",
+    tag: 'implementation', sessions: 'Pairs with Session 08', meta: '~30 min read'
+  },
+  {
+    num: '06', file: '06-technical-qa-and-data-logging-checklists.md',
+    kicker: 'Audit handout · Evidence hygiene',
+    title: 'Technical QA and Data Logging Checklists',
+    desc: "Pre-test technical checks, stability review, interaction QA, event logging design, instrumentation review. Protects the validity of your playtest evidence from runtime problems.",
+    tag: 'evidence', sessions: 'Pairs with Session 10', meta: '~25 min read'
+  },
+  {
+    num: '07', file: '07-additional-learning-resources.md',
+    kicker: 'Closing handout · Next-step pathways',
+    title: 'Additional Learning Resources Guide',
+    desc: "Curated external resources classified beginner / intermediate / advanced and mapped back to the 12-session arc. Pedagogy, accessibility, prototyping, Three.js, telemetry. Verified April 2026.",
+    tag: 'facilitation', sessions: 'Pairs with Session 12', meta: '~20 min read'
+  },
+  {
+    num: '08', file: '08-game-accessibility-playbook.md',
+    kicker: 'Audit handout · Inclusion',
+    title: 'Game Accessibility Playbook',
+    desc: "Game-specific accessibility: input complexity, timing pressure, readability under play, tutorial clarity, configurable difficulty, multi-sensory feedback. Goes beyond WCAG into where games break.",
+    tag: 'evidence', sessions: 'Pairs with Session 10', meta: '~20 min read'
+  },
+  {
+    num: '09', file: '09-udl-3-crosswalk.md',
+    kicker: 'Facilitator handout · Equity lens',
+    title: 'UDL 3.0 Crosswalk',
+    desc: "Translates CAST UDL Guidelines 3.0 into a crosswalk for this course. Engagement, representation, action/expression — mapped across course design, artifact design, and prototype design.",
+    tag: 'facilitation', sessions: 'Pairs with Session 02', meta: '~15 min read'
+  },
+  {
+    num: '10', file: '10-asset-licensing-and-attribution-pack.md',
+    kicker: 'Implementation handout · Rights &amp; credit',
+    title: 'Asset Licensing and Attribution Pack',
+    desc: "Licensing, attribution, reuse decisions, and tracking for images, audio, video, and 3D models. Five core principles, a decision flow, and the record-keeping student teams routinely skip.",
+    tag: 'implementation', sessions: 'Pairs with Session 08', meta: '~15 min read'
+  },
+  {
+    num: '11', file: '11-performance-and-device-test-pack.md',
+    kicker: 'Audit handout · Reliability',
+    title: 'Performance and Device Test Pack',
+    desc: "Load time, response latency, stability across real devices, input-mode coverage. Especially for browser-based and Three.js projects where performance contaminates learning evidence.",
+    tag: 'evidence', sessions: 'Pairs with Session 10', meta: '~20 min read'
+  },
+  {
+    num: '12', file: '12-codex-to-threejs-build-playbook.md',
+    kicker: 'Implementation handout · AI-assisted build',
+    title: 'Codex-To-Three.js Build Playbook',
+    desc: "A disciplined workflow for Codex + Three.js: translating design docs into bounded build tasks, structuring task packets, keeping debugging evidence visible, deciding what to build now vs. later.",
+    tag: 'implementation', sessions: 'Pairs with Sessions 08 &amp; 11', meta: '~20 min read'
+  },
+];
+
+function renderGrid(filter) {
+  const list = filter === 'all' ? RESOURCES : RESOURCES.filter(r => r.tag === filter);
+  const host = document.getElementById('library-grid');
+  host.innerHTML = list.map(r => `
+    <div class="resource" data-tag="${r.tag}">
+      <div class="resource__num">${r.num}</div>
+      <div class="resource__body">
+        <div class="resource__kicker">${r.kicker}</div>
+        <h3 class="resource__title">${r.title}</h3>
+        <p class="resource__desc">${r.desc}</p>
+        <p class="resource__why"><b>Course placement</b>
+          ${r.sessions}
+        </p>
+      </div>
+      <div class="resource__actions">
+        <a class="resource__btn resource__btn--solid" href="read.html?doc=${r.file}" target="_blank" rel="noopener">Read</a>
+        <a class="resource__btn" href="resources/${r.file}" download>Download</a>
+        <span class="resource__meta">MD · ${r.meta}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderGrid('all');
+
+document.querySelectorAll('.res-filter__btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.res-filter__btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    renderGrid(btn.dataset.filter);
+  });
+});
+</script>
+</body>
+</html>
