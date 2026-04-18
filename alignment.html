@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Alignment Matrix · Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  .align-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .align-stats__cell {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 18px 20px;
+    text-align: left;
+  }
+  .align-stats__num {
+    font-family: var(--font-display);
+    font-size: 40px;
+    line-height: 1;
+    color: var(--crimson);
+    font-weight: 700;
+  }
+  .align-stats__label {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: #525252;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .align-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 32px;
+    align-items: flex-start;
+    padding: 20px 24px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 16px;
+  }
+  .align-filter__group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .align-filter__label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: #525252;
+    text-transform: uppercase;
+  }
+  .align-filter__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 14px;
+    background: #f4f4f4;
+    font-size: 12.5px;
+    font-family: var(--font-sans);
+    color: #393939;
+    cursor: pointer;
+    border: 1px solid transparent;
+    user-select: none;
+  }
+  .chip:hover { background: #e8e8e8; }
+  .chip.is-active {
+    background: var(--crimson);
+    color: #fff;
+    border-color: var(--crimson);
+  }
+  .chip--iste { background: #edf5ff; color: #002d9c; }
+  .chip--udl { background: #defbe6; color: #0e6027; }
+  .chip--netp { background: #fff1f1; color: #a2191f; }
+
+  .align-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: 13.5px;
+    border: 1px solid #e0e0e0;
+  }
+  .align-tbl thead th {
+    background: #161616;
+    color: #fff;
+    text-align: left;
+    padding: 12px 14px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-right: 1px solid #393939;
+    white-space: nowrap;
+  }
+  .align-tbl thead th:last-child { border-right: none; }
+  .align-tbl tbody td {
+    padding: 12px 14px;
+    border-top: 1px solid #e8e8e8;
+    border-right: 1px solid #f4f4f4;
+    vertical-align: top;
+    line-height: 1.45;
+  }
+  .align-tbl tbody td:last-child { border-right: none; }
+  .align-tbl tbody tr:hover { background: #fafafa; }
+  .align-tbl .lo-code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--crimson);
+    white-space: nowrap;
+  }
+  .align-tbl .lo-text { color: #161616; }
+  .align-tbl .rubric-ref {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: #393939;
+    background: #f4f4f4;
+    padding: 2px 6px;
+  }
+  .align-tbl .deliv {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: #161616;
+  }
+  .align-tbl .deliv--support { color: #6f6f6f; font-weight: 400; }
+
+  .align-tbl a { color: var(--crimson); text-decoration: none; }
+  .align-tbl a:hover { text-decoration: underline; }
+
+  .frame-list { display: flex; flex-wrap: wrap; gap: 4px; }
+  .frame-list .chip { padding: 3px 8px; font-size: 11.5px; cursor: default; }
+
+  .align-empty {
+    padding: 60px 24px;
+    text-align: center;
+    font-size: 15px;
+    color: #525252;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-top: none;
+  }
+
+  @media (max-width: 900px) {
+    .align-stats { grid-template-columns: repeat(2, 1fr); }
+    .align-tbl { font-size: 12.5px; }
+    .align-tbl tbody td { padding: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right"><a href="#">myBama</a></div>
+</div>
+
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html">Overview</a>
+    <a href="index.html#sessions">Sessions</a>
+    <a href="index.html#deliverables">Deliverables</a>
+    <a href="rubrics.html">Rubrics</a>
+    <a href="alignment.html" class="is-active">Alignment</a>
+    <a href="credential.html">Credential</a>
+    <a href="resources.html">Resource Library</a>
+  </nav>
+</header>
+
+<section class="hero" style="padding-top: 56px; padding-bottom: 48px; min-height: 0;">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <div class="hero__eyebrow">Constructive Alignment · LO ↔ Session ↔ Deliverable ↔ Rubric ↔ Standards</div>
+    <h1 class="hero__title" style="font-size: 52px; line-height: 1.05; margin-bottom: 22px;">One matrix.<br/>Everything traceable.</h1>
+    <p class="hero__lede" style="max-width: 820px; margin-bottom: 0;">
+      Every learning outcome in this microcredential traces forward to a deliverable, a rubric criterion,
+      and at least one external standard. Every deliverable traces backward to the LOs it assesses. If a
+      row cannot be filled, the design has a gap — the matrix is how you find it.
+    </p>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<section class="section">
+  <span class="section__eyebrow">At a glance</span>
+  <h2 class="section__title">Coverage in numbers.</h2>
+  <p class="section__lede" style="max-width: 820px;">
+    The spine of the program at the top level — LOs defined, sessions, deliverables scored, rubric floor
+    criteria, and external frameworks aligned.
+  </p>
+  <div class="align-stats">
+    <div class="align-stats__cell"><span class="align-stats__num" id="stat-lo">—</span><span class="align-stats__label">Learning outcomes</span></div>
+    <div class="align-stats__cell"><span class="align-stats__num">12</span><span class="align-stats__label">Sessions</span></div>
+    <div class="align-stats__cell"><span class="align-stats__num">5</span><span class="align-stats__label">Deliverables</span></div>
+    <div class="align-stats__cell"><span class="align-stats__num">25</span><span class="align-stats__label">Rubric criteria</span></div>
+    <div class="align-stats__cell"><span class="align-stats__num">5</span><span class="align-stats__label">External standards</span></div>
+  </div>
+</section>
+
+<section class="section section--tint" style="padding-bottom: 72px;">
+  <span class="section__eyebrow">The matrix</span>
+  <h2 class="section__title">Filter by session, deliverable, or framework.</h2>
+  <p class="section__lede" style="max-width: 820px;">
+    Click any chip to filter. Rows show how each learning outcome traces to the activity that produces
+    evidence, the deliverable it feeds, the rubric criterion it maps to, and the external standards it
+    advances.
+  </p>
+
+  <div class="align-filters">
+    <div class="align-filter__group">
+      <span class="align-filter__label">Session</span>
+      <div class="align-filter__chips" data-filter-group="session">
+        <span class="chip is-active" data-val="all">All</span>
+        <span class="chip" data-val="1">S1</span><span class="chip" data-val="2">S2</span>
+        <span class="chip" data-val="3">S3</span><span class="chip" data-val="4">S4</span>
+        <span class="chip" data-val="5">S5</span><span class="chip" data-val="6">S6</span>
+        <span class="chip" data-val="7">S7</span><span class="chip" data-val="8">S8</span>
+        <span class="chip" data-val="9">S9</span><span class="chip" data-val="10">S10</span>
+        <span class="chip" data-val="11">S11</span><span class="chip" data-val="12">S12</span>
+      </div>
+    </div>
+    <div class="align-filter__group">
+      <span class="align-filter__label">Deliverable</span>
+      <div class="align-filter__chips" data-filter-group="deliv">
+        <span class="chip is-active" data-val="all">All</span>
+        <span class="chip" data-val="D1">D1</span>
+        <span class="chip" data-val="D2">D2</span>
+        <span class="chip" data-val="D3">D3</span>
+        <span class="chip" data-val="D4">D4</span>
+        <span class="chip" data-val="D5">D5</span>
+      </div>
+    </div>
+    <div class="align-filter__group">
+      <span class="align-filter__label">Framework</span>
+      <div class="align-filter__chips" data-filter-group="frame">
+        <span class="chip is-active" data-val="all">All</span>
+        <span class="chip" data-val="ISTE-5">ISTE 5 Designer</span>
+        <span class="chip" data-val="ISTE-6">ISTE 6 Facilitator</span>
+        <span class="chip" data-val="ISTE-7">ISTE 7 Analyst</span>
+        <span class="chip" data-val="UDL">UDL 3.0</span>
+        <span class="chip" data-val="NETP">NETP 2024</span>
+      </div>
+    </div>
+  </div>
+
+  <table class="align-tbl">
+    <thead>
+      <tr>
+        <th style="width: 70px;">LO</th>
+        <th>Learning outcome</th>
+        <th style="width: 60px;">Session</th>
+        <th style="width: 120px;">Activity</th>
+        <th style="width: 90px;">Deliverable</th>
+        <th style="width: 180px;">Rubric criterion</th>
+        <th style="width: 220px;">Frameworks</th>
+      </tr>
+    </thead>
+    <tbody id="align-body"></tbody>
+  </table>
+  <div class="align-empty" id="align-empty" hidden>No rows match the selected filters.</div>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <span class="site-footer__brand">Educational Game Design · v2 · 12 Sessions</span>
+    <span class="site-footer__meta">The University of Alabama · College of Education</span>
+  </div>
+</footer>
+
+<script>
+/* ─── Alignment data ─────────────────────────────────────────────
+   Deliverable form: "→ D1" direct (produces) / "⋯ D1" supporting.
+   Rubric ref: "D1.criterion_key" anchor on rubrics.html.
+   Frameworks: subset of ISTE-5, ISTE-6, ISTE-7, UDL, NETP.
+*/
+const ROWS = [
+  // S1 — Framing
+  { lo:"1.1", s:1, a:"Reading + discussion", d:"⋯ D1", r:"—",                        t:"Distinguish a learning game from three adjacent things.",                                    f:["ISTE-5"] },
+  { lo:"1.2", s:1, a:"Reading + lecture",    d:"⋯ D4", r:"D4.finding_taxonomy",       t:"Name the three failure modes of gamification.",                                             f:["ISTE-7"] },
+  { lo:"1.3", s:1, a:"Exit ticket",          d:"→ D1", r:"D1.measurable_shift",       t:"State the engagement–transfer problem your project must solve.",                            f:["ISTE-5"] },
+  { lo:"1.4", s:1, a:"Exit ticket",          d:"→ D1", r:"D1.evidence_of_problem",    t:"Commit to one of three stance questions as framing for capstone.",                          f:["NETP"] },
+
+  // S2 — Problem statement
+  { lo:"2.1", s:2, a:"Workshop",             d:"→ D1", r:"D1.learner_specificity",    t:"Write a learner description: population, capability, context.",                             f:["UDL","NETP"] },
+  { lo:"2.2", s:2, a:"Workshop",             d:"→ D1", r:"D1.measurable_shift",       t:"Articulate a measurable gap a colleague could verify.",                                      f:["ISTE-5","ISTE-7"] },
+  { lo:"2.3", s:2, a:"Workshop",             d:"→ D1", r:"D1.context_constraints",    t:"List the three most binding constraints of use.",                                           f:["UDL"] },
+  { lo:"2.4", s:2, a:"Peer critique",        d:"→ D1", r:"D1.all_criteria",           t:"Produce D1 and defend it through one round of peer critique.",                              f:["ISTE-5"] },
+  { lo:"2.5", s:2, a:"Revision + log",       d:"→ D1", r:"D1.revision_response",      t:"Revise D1 based on one specific piece of feedback; log what and why.",                      f:["ISTE-7"] },
+
+  // S3 — Crosswalk
+  { lo:"3.1", s:3, a:"Workshop",             d:"→ D2", r:"D2.objective_specificity",  t:"Classify objectives against the five-type taxonomy.",                                        f:["ISTE-5"] },
+  { lo:"3.2", s:3, a:"Workshop",             d:"→ D2", r:"D2.mechanic_rationale",     t:"Name the signature mechanic family that fits each objective type.",                         f:["ISTE-5"] },
+  { lo:"3.3", s:3, a:"Workshop",             d:"→ D2", r:"D2.all_criteria",           t:"Produce D2 — crosswalk of 2–4 objectives to mechanics with rationale.",                     f:["ISTE-5"] },
+  { lo:"3.4", s:3, a:"Peer review",          d:"→ D2", r:"D2.risk_identification",    t:"Defend one mechanic choice against a plausible alternative.",                               f:["ISTE-7"] },
+  { lo:"3.5", s:3, a:"Workshop",             d:"→ D2", r:"D2.declined_alternative",   t:"Mark at least one objective as out of scope — and say why.",                                f:["ISTE-5"] },
+
+  // S4 — Mechanics I
+  { lo:"4.1", s:4, a:"Workshop",             d:"⋯ D3", r:"D3.loop_fidelity",          t:"Locate target difficulty as a zone; name the adjustment knobs.",                            f:["UDL"] },
+  { lo:"4.2", s:4, a:"Reading + workshop",   d:"⋯ D5", r:"D5.event_feedback_map",     t:"Distinguish four kinds of feedback by timing and grain.",                                    f:["UDL"] },
+  { lo:"4.3", s:4, a:"Workshop",             d:"⋯ D3", r:"D3.loop_fidelity",          t:"Design a failure loop that teaches — or say when not to design one.",                       f:["UDL"] },
+  { lo:"4.4", s:4, a:"Revision",             d:"→ D2", r:"D2.risk_identification",    t:"Annotate D2 with the per-row challenge/feedback/failure risks.",                            f:["ISTE-7"] },
+
+  // S5 — Mechanics II
+  { lo:"5.1", s:5, a:"Workshop",             d:"⋯ D2", r:"D2.mechanic_rationale",     t:"Distinguish narrative-as-wrapper from narrative-as-mechanic.",                               f:["ISTE-5"] },
+  { lo:"5.2", s:5, a:"Workshop",             d:"→ D2", r:"D2.mechanic_rationale",     t:"Choose a role that lowers threshold to try objective behaviors.",                            f:["UDL"] },
+  { lo:"5.3", s:5, a:"Workshop",             d:"→ D2", r:"D2.traceability_to_D1",     t:"Pick a collaboration structure that fits objective type and D1 constraints.",               f:["ISTE-6"] },
+  { lo:"5.4", s:5, a:"Workshop",             d:"→ D2", r:"D2.mechanic_rationale",     t:"Write a half-page role brief a teammate could implement.",                                  f:["ISTE-6"] },
+
+  // S6 — Facilitator design
+  { lo:"6.1", s:6, a:"Reading",              d:"⋯ D3", r:"D3.facilitator_guide",      t:"State the three non-negotiable sections of a facilitator guide.",                           f:["ISTE-6"] },
+  { lo:"6.2", s:6, a:"Workshop",             d:"⋯ D3", r:"D3.facilitator_guide",      t:"Write opening, mid-play, and debrief scripts with specific words.",                         f:["ISTE-6"] },
+  { lo:"6.3", s:6, a:"Workshop",             d:"⋯ D3", r:"D3.facilitator_guide",      t:"Anticipate three facilitator failure modes; write recovery lines.",                         f:["ISTE-6"] },
+  { lo:"6.4", s:6, a:"Peer review",          d:"⋯ D3", r:"D3.playability",            t:"Pass a table-read: peer runs your guide without asking questions.",                         f:["ISTE-6"] },
+
+  // S7 — Low-fi prototyping
+  { lo:"7.1", s:7, a:"Studio",               d:"→ D3", r:"D3.loop_fidelity",          t:"Build a paper prototype of one loop from D2 in under 25 minutes.",                          f:["ISTE-5"] },
+  { lo:"7.2", s:7, a:"Studio",               d:"→ D3", r:"D3.iteration_log",          t:"Run a 5-minute playtest cycle with a peer-as-proxy; observe silently.",                     f:["ISTE-7"] },
+  { lo:"7.3", s:7, a:"Studio",               d:"→ D3", r:"D3.iteration_log",          t:"Revise in under 10 minutes based on one specific observation.",                             f:["ISTE-7"] },
+  { lo:"7.4", s:7, a:"Studio",               d:"→ D3", r:"D3.iteration_log",          t:"Repeat the build–play–revise cycle three times in a single session.",                       f:["ISTE-7"] },
+  { lo:"7.5", s:7, a:"Submission",           d:"→ D3", r:"D3.all_criteria",           t:"Submit D3: surviving version + facilitator guide v0.3 + what-I-cut note.",                  f:["ISTE-5"] },
+
+  // S8 — Interaction spec
+  { lo:"8.1", s:8, a:"Workshop",             d:"→ D5", r:"D5.state_machine",          t:"Draw the loop as an explicit state machine with entry, exit, transitions.",                 f:["ISTE-5"] },
+  { lo:"8.2", s:8, a:"Workshop",             d:"→ D5", r:"D5.event_feedback_map",     t:"Author an event→feedback map a developer can wire without interpretation.",                 f:["ISTE-5"] },
+  { lo:"8.3", s:8, a:"Workshop",             d:"→ D5", r:"D5.threejs_bridge",         t:"Spec the one scene where 3D matters: graph, camera, input.",                                f:["ISTE-5"] },
+  { lo:"8.4", s:8, a:"Workshop",             d:"→ D5", r:"D5.threejs_bridge",         t:"Say no to 3D in scenes where it adds nothing — explicitly, in the spec.",                   f:["NETP"] },
+
+  // S9 — Playtest design
+  { lo:"9.1", s:9, a:"Workshop",             d:"→ D4", r:"D4.protocol_design",        t:"Write a playtest protocol a stranger could run.",                                           f:["ISTE-7"] },
+  { lo:"9.2", s:9, a:"Workshop",             d:"→ D4", r:"D4.observation_vs_interp",  t:"State three hypotheses with falsifiable observables.",                                      f:["ISTE-7"] },
+  { lo:"9.3", s:9, a:"Pre-work",             d:"→ D4", r:"D4.protocol_design",        t:"Recruit 3+ target learners; state how they differ from your peers.",                        f:["UDL"] },
+  { lo:"9.4", s:9, a:"Workshop",             d:"⋯ D4", r:"D4.protocol_design",        t:"Run the protocol once end-to-end with a peer before real learners.",                        f:["ISTE-6"] },
+  { lo:"9.5", s:9, a:"Workshop",             d:"⋯ D4", r:"D4.revision_plan",          t:"Plan your revision budget in advance, not after results.",                                  f:["ISTE-5"] },
+
+  // S10 — Audit
+  { lo:"10.1", s:10, a:"Audit",              d:"⋯ D4", r:"D4.finding_taxonomy",       t:"Trace every reward to an LO; flag rewards motivating non-target behavior.",                 f:["ISTE-7"] },
+  { lo:"10.2", s:10, a:"Audit",              d:"⋯ D4", r:"D4.finding_taxonomy",       t:"Estimate cognitive load per scene; say where extraneous load crowds out learning.",         f:["UDL"] },
+  { lo:"10.3", s:10, a:"Audit",              d:"⋯ D4", r:"D4.finding_taxonomy",       t:"Name three excluded populations; decide which to accommodate.",                             f:["UDL","NETP"] },
+  { lo:"10.4", s:10, a:"Audit",              d:"⋯ D4", r:"D4.finding_taxonomy",       t:"Write a paragraph on the ethical risks and the mitigations.",                               f:["NETP"] },
+  { lo:"10.5", s:10, a:"Audit",              d:"⋯ D5", r:"D5.coherence_d1_d4",        t:"State what data the game collects, who sees it, how a player stops it.",                    f:["NETP"] },
+
+  // S11 — Revision studio
+  { lo:"11.1", s:11, a:"Triage",             d:"⋯ D5", r:"D4.revision_plan",          t:"Merge playtest and audit findings into one ranked backlog.",                                 f:["ISTE-7"] },
+  { lo:"11.2", s:11, a:"Triage",             d:"⋯ D5", r:"D4.revision_plan",          t:"Commit to the revision frontier; defend the cut line.",                                     f:["ISTE-5"] },
+  { lo:"11.3", s:11, a:"Studio",             d:"→ D5", r:"D5.coherence_d1_d4",        t:"Execute 3+ revisions in the studio period; log the diff.",                                  f:["ISTE-5"] },
+  { lo:"11.4", s:11, a:"Peer show-and-ask",  d:"⋯ D5", r:"D5.coherence_d1_d4",        t:"Present the revised loop in a 5-minute show-and-ask.",                                      f:["ISTE-6"] },
+
+  // S12 — Final presentation
+  { lo:"12.1", s:12, a:"Presentation",       d:"→ D5", r:"D5.coherence_d1_d4",        t:"Present D1→D5 in 8 slides and 8 minutes; every claim traceable.",                           f:["ISTE-5"] },
+  { lo:"12.2", s:12, a:"Presentation",       d:"→ D5", r:"D5.coherence_d1_d4",        t:"Run a 2-minute live demo of the highest-risk loop.",                                        f:["ISTE-5"] },
+  { lo:"12.3", s:12, a:"Presentation",       d:"→ D5", r:"D5.known_limits",           t:"Answer reviewer questions without defending — clarify, cite, acknowledge.",                 f:["ISTE-7"] },
+  { lo:"12.4", s:12, a:"Peer review",        d:"⋯ —",  r:"Rubric calibration",        t:"Reviewer-score two other teams using the rubric; write actionable feedback.",               f:["ISTE-7"] },
+  { lo:"12.5", s:12, a:"Submission",         d:"→ D5", r:"D5.all_criteria",           t:"Submit D5 — repo snapshot, one-pager, presentation deck — within 24h.",                    f:["ISTE-5"] },
+];
+
+document.getElementById('stat-lo').textContent = ROWS.length;
+
+const FRAME_CLS = { "ISTE-5":"chip--iste", "ISTE-6":"chip--iste", "ISTE-7":"chip--iste", "UDL":"chip--udl", "NETP":"chip--netp" };
+const FRAME_LABEL = { "ISTE-5":"ISTE 5 Designer", "ISTE-6":"ISTE 6 Facilitator", "ISTE-7":"ISTE 7 Analyst", "UDL":"UDL 3.0", "NETP":"NETP 2024" };
+
+const FILTER = { session:"all", deliv:"all", frame:"all" };
+
+function rubricHref(ref){
+  if (!ref || ref === "—" || ref === "Rubric calibration") return null;
+  const m = ref.match(/^D([1-5])\./);
+  return m ? `rubrics.html#d${m[1]}` : null;
+}
+
+function rowMatches(r){
+  if (FILTER.session !== "all" && String(r.s) !== FILTER.session) return false;
+  if (FILTER.deliv !== "all" && !r.d.includes(FILTER.deliv)) return false;
+  if (FILTER.frame !== "all" && !r.f.includes(FILTER.frame)) return false;
+  return true;
+}
+
+function render(){
+  const tbody = document.getElementById('align-body');
+  const empty = document.getElementById('align-empty');
+  const hits = ROWS.filter(rowMatches);
+  tbody.innerHTML = hits.map(r => {
+    const href = rubricHref(r.r);
+    const rubricCell = href
+      ? `<a href="${href}"><span class="rubric-ref">${r.r}</span></a>`
+      : `<span class="rubric-ref">${r.r}</span>`;
+    const delivCls = r.d.startsWith("→") ? "deliv" : "deliv deliv--support";
+    const frames = r.f.map(k => `<span class="chip ${FRAME_CLS[k]}">${FRAME_LABEL[k]}</span>`).join("");
+    return `
+      <tr>
+        <td class="lo-code">LO ${r.lo}</td>
+        <td class="lo-text">${r.t}</td>
+        <td><a href="session-${String(r.s).padStart(2,'0')}.html">S${r.s}</a></td>
+        <td>${r.a}</td>
+        <td class="${delivCls}">${r.d}</td>
+        <td>${rubricCell}</td>
+        <td><div class="frame-list">${frames}</div></td>
+      </tr>`;
+  }).join("");
+  empty.hidden = hits.length > 0;
+}
+
+document.querySelectorAll('[data-filter-group]').forEach(group => {
+  const key = group.dataset.filterGroup;
+  group.addEventListener('click', e => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    group.querySelectorAll('.chip').forEach(c => c.classList.remove('is-active'));
+    chip.classList.add('is-active');
+    FILTER[key] = chip.dataset.val;
+    render();
+  });
+});
+
+render();
+</script>
+
+</body>
+</html>
