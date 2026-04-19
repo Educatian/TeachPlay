@@ -1,0 +1,7 @@
+{
+  "@context": "https://w3id.org/security/multikey/v1",
+  "id": "did:web:teachplay.dev:endorsers:tcs#z6MkeY5TcJrDeQMn2nJ1LgiuevmQEWLf5qFoX288c6NYswT1",
+  "type": "Multikey",
+  "controller": "did:web:teachplay.dev:endorsers:tcs",
+  "publicKeyMultibase": "z6MkeY5TcJrDeQMn2nJ1LgiuevmQEWLf5qFoX288c6NYswT1"
+}

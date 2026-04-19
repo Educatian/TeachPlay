@@ -23,7 +23,8 @@
  * salt is the cohort id, matching the handbook's stated identity contract.
  */
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
+import { constants } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
@@ -38,6 +39,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const KEY_PATH = path.join(ROOT, 'tools', 'keys', 'issuer-ed25519.private.json');
 const TEMPLATE_PATH = path.join(ROOT, 'credential', 'assertion-example-v3.unsigned.json');
+const REGISTRY_PATH = path.join(ROOT, 'credential', 'status-list-registry.json');
 
 function parseArgs(argv) {
   const args = {};
@@ -72,12 +74,51 @@ function sha256(s) {
   return 'sha256$' + crypto.createHash('sha256').update(s, 'utf8').digest('hex');
 }
 
-function customize(template) {
+async function fileExists(p) {
+  try { await access(p, constants.F_OK); return true; } catch { return false; }
+}
+
+// Allocate or look up an index on the per-cohort status list. Returns null
+// if the status-list subsystem isn't wired yet (so issuance still works
+// without it). Passing --no-status skips allocation entirely.
+async function allocateStatusIndex(learnerId, listSlug) {
+  if (args['no-status']) return null;
+  if (!(await fileExists(REGISTRY_PATH))) {
+    console.warn(`  (!) status-list registry not found; skipping credentialStatus. Run 'node tools/status-list.mjs init --list ${listSlug}' first, or pass --no-status.`);
+    return null;
+  }
+  const registry = JSON.parse(await readFile(REGISTRY_PATH, 'utf8'));
+  const rec = registry.lists[listSlug];
+  if (!rec) {
+    console.warn(`  (!) status list '${listSlug}' not initialized; skipping credentialStatus.`);
+    return null;
+  }
+  if (rec.entries[learnerId] != null) return rec.entries[learnerId];
+  if (rec.next >= rec.size) throw new Error(`Status list '${listSlug}' is full (${rec.size} indices used).`);
+  const index = rec.next;
+  rec.entries[learnerId] = index;
+  rec.next = index + 1;
+  await writeFile(REGISTRY_PATH, JSON.stringify(registry, null, 2) + '\n');
+  return index;
+}
+
+function customize(template, statusIndex) {
   const c = JSON.parse(JSON.stringify(template));
   c.id = `https://teachplay.dev/credential/assertions-v3/${args.id}.json`;
   c.validFrom = validFrom;
   delete c.proof;
   delete c._proof_note;
+
+  if (statusIndex != null) {
+    const listUrl = `https://teachplay.dev/credential/status-list-${cohort}.json`;
+    c.credentialStatus = {
+      id: `${listUrl}#${statusIndex}`,
+      type: 'BitstringStatusListEntry',
+      statusPurpose: 'revocation',
+      statusListIndex: String(statusIndex),
+      statusListCredential: listUrl,
+    };
+  }
 
   const subj = c.credentialSubject;
   subj.id = `urn:uuid:${args.id}`;
@@ -121,7 +162,8 @@ async function loadKey() {
 
 async function main() {
   const template = JSON.parse(await readFile(TEMPLATE_PATH, 'utf8'));
-  const credential = customize(template);
+  const statusIndex = await allocateStatusIndex(args.id, cohort);
+  const credential = customize(template, statusIndex);
 
   const keyPair = await loadKey();
   const suite = new DataIntegrityProof({
@@ -141,6 +183,11 @@ async function main() {
   console.log(`  output  → ${path.relative(ROOT, outPath)}`);
   console.log(`  vm      → ${signed.proof.verificationMethod}`);
   console.log(`  suite   → ${signed.proof.cryptosuite}`);
+  if (statusIndex != null) {
+    console.log(`  status  → index ${statusIndex} on status-list-${cohort}`);
+  } else {
+    console.log(`  status  → (not set; no registry or --no-status)`);
+  }
 }
 
 main().catch((err) => { console.error(err); process.exit(1); });

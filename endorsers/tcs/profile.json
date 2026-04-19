@@ -1,0 +1,15 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json"
+  ],
+  "id": "did:web:teachplay.dev:endorsers:tcs",
+  "type": [
+    "Profile"
+  ],
+  "name": "Tuscaloosa City Schools — Office of Instructional Technology",
+  "url": "https://www.tusc.k12.al.us/",
+  "alsoKnownAs": [
+    "https://teachplay.dev/endorsers/tcs/profile.json"
+  ]
+}

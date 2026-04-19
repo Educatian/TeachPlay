@@ -122,11 +122,22 @@ The example credential has `validFrom: 2026-05-02` — after the cohort end date
 
 ## Revocation
 
-Out of scope for scaffold; must exist for production.
+Implemented in scaffold.
 
-- **StatusList2021** credential published at `https://teachplay.dev/credential/status-list-2026.json`. Each issued VC carries a `credentialStatus.statusListIndex` position.
-- A revoked credential is marked by flipping the bit at its index. The status list itself is a small VC that the verifier fetches once and caches.
+- **BitstringStatusList** credential (W3C VC Status List, the successor to StatusList2021) published at `https://teachplay.dev/credential/status-list-2026-spring.json`. The list itself is a signed `VerifiableCredential` + `BitstringStatusListCredential`; the bitstring is a 131,072-bit buffer, GZIP-compressed and base64url-encoded with a `u` multibase prefix.
+- Each issued VC carries `credentialStatus.type = "BitstringStatusListEntry"` with a `statusListIndex` allocated at issuance. Allocation is tracked in `credential/status-list-registry.json` (index, learner id, purpose) so revocation is idempotent and the same learner re-issued does not collide.
+- CLI: `node tools/status-list.mjs {init|allocate|revoke|reinstate|check|info}`. `issue-for-learner.mjs` calls `allocate` automatically unless `--no-status` is passed.
+- Verifiers: `verify-vc.mjs` decodes the bitstring and reports `valid` vs `REVOKED` alongside the cryptographic check. The browser verifier in `credential.html` does the same using `DecompressionStream('gzip')`.
 - Revocation happens when the credential engine / registrar explicitly requests it, not automatically. Renaming the cohort or changing the rubric does not revoke.
+
+## Endorsement layer
+
+Implemented in scaffold.
+
+- **OBv3 `EndorsementCredential`**: a separate third party signs an attestation that references our BadgeClass (or an individual learner's assertion). The endorser signs under their **own** DID — `did:web:teachplay.dev:endorsers:<slug>` — with a **separate Ed25519 keypair** from the issuer's. This is the whole point: a verifier can tell Tuscaloosa City Schools' claim apart from ours because the two signatures anchor to different DIDs.
+- Tooling: `tools/gen-endorser-key.mjs --slug <slug> --name "<Org>"` scaffolds the keypair, DID document, and OBv3 Profile. `tools/sign-endorsement.mjs --endorser <slug>` signs `credential/endorsement-template-v3.json` and writes to `credential/endorsements/<slug>-template-v3.json`.
+- `verify-vc.mjs`'s documentLoader resolves any path-based `did:web:teachplay.dev:endorsers:*` DID from the local filesystem, so endorsement credentials round-trip through the same verifier as issuer credentials without special-casing.
+- Demo artifact: `credential/endorsements/tcs-template-v3.json` (Tuscaloosa City Schools). Rendered live under `credential.html#endorsement`.
 
 ## Observability
 
@@ -149,10 +160,11 @@ Statements are queue-local in the scaffold; on the LRS in production.
 - ~~Signing pipeline~~: **done** — `npm run sign:example` / `npm run verify:example`.
 - ~~`did:web` migration~~: **done** — `.well-known/did.json` published, issuer rebound.
 - ~~Per-learner issuance (CLI)~~: **done** — `npm run issue:learner -- --id <id> --email <addr>` writes to `credential/assertions/`. Remaining: gated HTTP route + signing worker (~1.5 engineer-days).
+- ~~Revocation (BitstringStatusList)~~: **done** — `tools/status-list.mjs` + allocation in `issue-for-learner.mjs` + decode in both `verify-vc.mjs` and `credential.html`.
+- ~~Endorsement layer (OBv3)~~: **done** — `tools/gen-endorser-key.mjs` + `tools/sign-endorsement.mjs` + `credential/endorsements/tcs-template-v3.json`.
 - OID4VCI endpoint (P3 productionization): ~2 engineer-weeks.
-- Revocation (StatusList2021): ~3 engineer-days.
 
-Remaining work is roughly two and a half engineer-weeks. The hard part is not the code — it is walking one real learner through P1 end-to-end with a live wallet and watching what breaks.
+Remaining work is roughly two engineer-weeks. The hard part is not the code — it is walking one real learner through P1 end-to-end with a live wallet and watching what breaks.
 
 ---
 
