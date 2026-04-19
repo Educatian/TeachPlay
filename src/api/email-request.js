@@ -8,6 +8,8 @@
  * Response: { "ok": true, "message": "..." }
  */
 
+import { sendEmail } from '../lib/email.js';
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -16,6 +18,23 @@ function json(body, status = 200) {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+async function sendRequestAckEmail(env, { to, name }) {
+  const html = `
+  <h1 style="font-size:22px;margin:0 0 16px;line-height:1.3;">Request received.</h1>
+  <p style="font-size:16px;line-height:1.6;margin:0 0 16px;color:#333;">
+    Hi ${name}, we've received your request for the
+    <strong>AI-enhanced Educational Game Design</strong> microcredential.
+  </p>
+  <p style="font-size:15px;line-height:1.6;margin:0 0 16px;color:#555;">
+    Your instructor will review your completion and, once approved, send a
+    one-time link to claim your signed credential. You will receive a separate
+    email at that point — no further action is required from you right now.
+  </p>`;
+  try {
+    await sendEmail(env, { to, subject: 'Credential request received — under review', html });
+  } catch { /* fire-and-forget */ }
+}
 
 export async function handleEmailRequest(request, env) {
   if (request.method !== 'POST') return json({ error: 'POST required' }, 405);
@@ -47,6 +66,8 @@ export async function handleEmailRequest(request, env) {
 
   await env.DB.prepare('UPDATE learners SET cred_status = ? WHERE id = ?')
     .bind('pending', learner.id).run();
+
+  sendRequestAckEmail(env, { to: email, name });
 
   return json({ ok: true, message: 'Request received. Your instructor will review and send your credential link by email.' });
 }

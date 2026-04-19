@@ -12,6 +12,33 @@
  *   cohort  — optional; defaults to '2026-spring'; must match [a-z0-9-]{2,32}
  */
 import { sha256Hex } from '../lib/issue.js';
+import { sendEmail } from '../lib/email.js';
+
+async function sendWelcomeEmail(env, { to, name }) {
+  const html = `
+  <h1 style="font-size:24px;margin:0 0 16px;line-height:1.3;">Welcome, ${name}.</h1>
+  <p style="font-size:16px;line-height:1.6;margin:0 0 20px;color:#333;">
+    You are enrolled in <strong>AI-enhanced Educational Game Design</strong>, a
+    twelve-session microcredential from the University of Alabama College of
+    Education. Each session is ~3 hours of content plus homework; you can work
+    at your own pace and resume on any device.
+  </p>
+  <a href="https://teachplay.dev/session-01.html"
+     style="display:inline-block;background:#be1a2f;color:#fff;text-decoration:none;
+            padding:13px 26px;border-radius:6px;font-size:15px;font-weight:600;">
+    Begin Session 01 →
+  </a>
+  <p style="margin:24px 0 0;font-size:14px;color:#555;line-height:1.6;">
+    Track completion any time at
+    <a href="https://teachplay.dev/progress.html" style="color:#be1a2f;">
+      teachplay.dev/progress.html
+    </a>. After finishing all 12 sessions, you can request your signed
+    Open Badge 3.0 credential directly from the final session page.
+  </p>`;
+  try {
+    await sendEmail(env, { to, subject: 'Welcome to AI-enhanced Educational Game Design', html });
+  } catch { /* fire-and-forget — never block enrollment on mail failure */ }
+}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const COHORT_PATTERN = /^[a-z0-9-]{2,32}$/;
@@ -60,13 +87,18 @@ export async function handleEnroll(request, env) {
   try {
     const db = env.DB;
 
-    await db
+    const insertResult = await db
       .prepare(
         `INSERT OR IGNORE INTO learners (id, email, email_hash, name, cohort, enrolled_at)
          VALUES (?, ?, ?, ?, ?, datetime('now'))`,
       )
       .bind(id, email, email_hash, name, cohort)
       .run();
+
+    // meta.changes === 1 → row actually inserted (first-time enrolment).
+    // Fire welcome email only in that case so repeat /api/enroll hits
+    // (e.g. re-registration from another device) don't spam the user.
+    const isNewEnrollment = insertResult?.meta?.changes === 1;
 
     const row = await db
       .prepare(
@@ -78,6 +110,10 @@ export async function handleEnroll(request, env) {
 
     if (!row) {
       return json({ error: 'Enrolment failed: learner not found after insert' }, 500);
+    }
+
+    if (isNewEnrollment) {
+      sendWelcomeEmail(env, { to: email, name: row.name });
     }
 
     return json({

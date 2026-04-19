@@ -9,12 +9,60 @@
  *   { "ok": true, "signed": <VC>, "name": "Ada L.", "id": "<uuid>" }
  */
 import { issueCredential } from '../lib/issue.js';
+import { sendEmail } from '../lib/email.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
   });
+}
+
+function toBase64(str) {
+  // Workers-safe UTF-8 → base64: encode to bytes, map to Latin-1 string, btoa.
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+async function sendClaimReceiptEmail(env, { to, name, credentialId, signed }) {
+  const vcJson = JSON.stringify(signed, null, 2);
+  const attachment = toBase64(vcJson);
+
+  const html = `
+  <h1 style="font-size:22px;margin:0 0 16px;line-height:1.3;">Credential claimed.</h1>
+  <p style="font-size:16px;line-height:1.6;margin:0 0 16px;color:#333;">
+    Hi ${name}, your <strong>AI-enhanced Educational Game Design</strong>
+    credential has been issued and signed. A copy is attached to this email
+    as <code>teachplay-credential.json</code> — keep it somewhere safe.
+  </p>
+  <p style="font-size:15px;line-height:1.6;margin:0 0 16px;color:#555;">
+    Credential ID: <code>${credentialId}</code>
+  </p>
+  <p style="font-size:15px;line-height:1.6;margin:0 0 0;color:#555;">
+    When you need to show it — for a job, a transfer, or a transcript —
+    employers and institutions can verify its authenticity at
+    <a href="https://teachplay.dev/verifier.html" style="color:#be1a2f;">
+      teachplay.dev/verifier.html
+    </a>.
+  </p>`;
+
+  try {
+    // Resend supports inline base64 attachments via `attachments: [{ content, filename }]`.
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'TeachPlay Credentials <credentials@teachplay.dev>',
+        to: [to],
+        subject: 'Your signed credential (copy for your records)',
+        html,
+        attachments: [{ filename: 'teachplay-credential.json', content: attachment }],
+      }),
+    });
+    if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
+  } catch { /* fire-and-forget — user already got the VC in-browser */ }
 }
 
 export async function handleEmailVerify(request, env) {
@@ -54,6 +102,8 @@ export async function handleEmailVerify(request, env) {
   claim.issuedId = id;
   claim.issuedAt = new Date().toISOString();
   await env.CLAIMS_KV.put(`claim:${token}`, JSON.stringify(claim));
+
+  sendClaimReceiptEmail(env, { to: claim.email, name: claim.name, credentialId: id, signed });
 
   return json({ ok: true, signed, name: claim.name, id });
 }
