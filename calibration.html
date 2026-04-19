@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rubric Calibration Trainer · AI-enhanced Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  .cal-shell {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { .cal-shell { grid-template-columns: 1fr; } }
+
+  .cal-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 28px 32px;
+  }
+  .cal-card__crit {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--crimson);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .cal-card__q {
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.3;
+    color: #161616;
+    margin: 0 0 20px;
+  }
+  .cal-card__artifact {
+    background: #fafafa;
+    border-left: 3px solid #c6c6c6;
+    padding: 16px 20px;
+    font-family: var(--font-serif);
+    font-size: 15px;
+    line-height: 1.65;
+    color: #161616;
+    margin-bottom: 22px;
+  }
+  .cal-card__artifact p { margin: 0 0 10px; }
+  .cal-card__artifact p:last-child { margin: 0; }
+
+  .cal-levels {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .cal-lvl {
+    background: #fff;
+    border: 1px solid #c6c6c6;
+    padding: 12px 10px;
+    cursor: pointer;
+    text-align: center;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 14px;
+    color: #161616;
+    transition: all 0.12s;
+  }
+  .cal-lvl:hover { border-color: var(--crimson); background: #fff5f6; }
+  .cal-lvl.chosen { border-width: 2px; padding: 11px 9px; }
+  .cal-lvl.chosen[data-lvl="Emerging"]   { border-color: #a56eff; background: #f3ecff; }
+  .cal-lvl.chosen[data-lvl="Developing"] { border-color: #d2a106; background: #fff8e1; }
+  .cal-lvl.chosen[data-lvl="Proficient"] { border-color: #0e6027; background: #defbe6; }
+  .cal-lvl.chosen[data-lvl="Exemplary"]  { border-color: var(--crimson); background: #ffd7dc; }
+  .cal-lvl small {
+    display: block;
+    font-weight: 400;
+    color: #6f6f6f;
+    font-size: 11px;
+    margin-top: 3px;
+  }
+  .cal-lvl.is-key {
+    outline: 2px dashed #0e6027;
+    outline-offset: -4px;
+  }
+  .cal-lvl.is-mine {
+    outline: 2px solid #161616;
+    outline-offset: -4px;
+  }
+  .cal-lvl.is-key.is-mine { outline: 2px solid #0e6027; }
+
+  .cal-reveal {
+    background: #161616;
+    color: #f4f4f4;
+    padding: 22px 26px;
+    margin-top: 20px;
+  }
+  .cal-reveal h4 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #ffb3b8;
+    margin: 0 0 10px;
+  }
+  .cal-reveal__verdict {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: #f4f4f4;
+    margin: 0 0 12px;
+    line-height: 1.3;
+  }
+  .cal-reveal__rationale {
+    font-family: var(--font-serif);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #e0e0e0;
+    margin: 0 0 14px;
+  }
+  .cal-reveal__pointer {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #8df0b5;
+    padding-top: 10px;
+    border-top: 1px solid #393939;
+  }
+  .cal-reveal__btn {
+    background: #ffb3b8;
+    color: #161616;
+    border: 0;
+    padding: 10px 18px;
+    margin-top: 16px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .cal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #525252;
+  }
+  .cal-actions button {
+    background: #161616;
+    color: #fff;
+    border: 0;
+    padding: 8px 18px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .cal-actions button:disabled { background: #c6c6c6; cursor: not-allowed; }
+  .cal-actions button.ghost { background: transparent; color: #161616; border: 1px solid #c6c6c6; }
+
+  .cal-sidebar { position: sticky; top: 20px; }
+  .cal-side-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 20px 22px;
+    margin-bottom: 14px;
+  }
+  .cal-side-card h3 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #525252;
+    margin: 0 0 14px;
+  }
+  .cal-progress {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .cal-progress span {
+    display: inline-block;
+    width: 24px; height: 24px;
+    border: 1px solid #c6c6c6;
+    text-align: center;
+    line-height: 22px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #6f6f6f;
+  }
+  .cal-progress span.done.match { background: #defbe6; border-color: #42be65; color: #044317; font-weight: 700; }
+  .cal-progress span.done.miss { background: #ffd7dc; border-color: #da1e28; color: #750e13; font-weight: 700; }
+  .cal-progress span.done.off-by-1 { background: #fff8e1; border-color: #d2a106; color: #684e00; font-weight: 700; }
+  .cal-progress span.current { border-width: 2px; border-color: #161616; line-height: 20px; }
+
+  .cal-score {
+    font-family: var(--font-mono);
+    font-size: 30px;
+    color: var(--crimson);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .cal-score__sub { font-size: 11.5px; color: #525252; font-family: var(--font-mono); }
+
+  .cal-bias { font-family: var(--font-mono); font-size: 12px; color: #161616; line-height: 1.55; }
+  .cal-bias b.hot { color: #a2191f; }
+  .cal-bias b.cold { color: #0054d6; }
+
+  .cal-finish {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 32px 36px;
+    text-align: center;
+  }
+  .cal-finish h2 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    margin: 0 0 12px;
+  }
+  .cal-finish__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .cal-finish__stat {
+    background: #fafafa;
+    padding: 20px;
+  }
+  .cal-finish__stat .num { font-family: var(--font-mono); font-size: 32px; color: var(--crimson); line-height: 1; }
+  .cal-finish__stat .lbl { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: #525252; margin-top: 6px; text-transform: uppercase; }
+  .cal-finish__verdict {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1.6;
+    max-width: 620px;
+    margin: 0 auto 24px;
+    color: #333;
+  }
+  @media (max-width: 600px) {
+    .cal-finish__stats { grid-template-columns: repeat(2, 1fr); }
+    .cal-levels { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <span data-role-switch></span><a href="#">myBama</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">AI-enhanced Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html">Overview</a>
+    <a href="rubrics.html">Rubrics</a>
+    <a href="examples.html">Worked Examples</a>
+    <a href="alignment.html">Alignment</a>
+    <a href="credential.html">Credential</a>
+    <a href="facilitator.html" class="instructor-only">Facilitator</a>
+    <a href="calibration.html" class="is-active instructor-only">Calibration</a>
+    <a href="analytics.html" class="instructor-only">Analytics</a>
+    <a href="resources.html">Resource Library</a>
+  </nav>
+</header>
+
+<section class="hero" style="padding-bottom: 56px;">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <div class="hero__eyebrow">Instructor Calibration · 10-item set · ~15 min</div>
+    <h1 class="hero__title">Disagreement is data.<br/>Calibrate before you&nbsp;grade.</h1>
+    <p class="hero__lede">
+      Read an artifact snippet. Pick the level the rubric actually calls it. Compare against the
+      reference key. Before a grading session, a round of calibration closes the gap between what
+      raters think Proficient means and what the rubric says Proficient means.
+    </p>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<section class="section">
+  <div class="cal-shell">
+    <main>
+      <div id="cal-stage"></div>
+    </main>
+    <aside class="cal-sidebar">
+      <div class="cal-side-card">
+        <h3>Agreement score</h3>
+        <div class="cal-score" id="cal-score">—</div>
+        <div class="cal-score__sub" id="cal-score-sub">Exact-match rate · updated after each item</div>
+      </div>
+      <div class="cal-side-card">
+        <h3>Progress</h3>
+        <div class="cal-progress" id="cal-progress"></div>
+        <div class="cal-score__sub">
+          <span style="display:inline-block;width:10px;height:10px;background:#defbe6;border:1px solid #42be65;"></span> exact ·
+          <span style="display:inline-block;width:10px;height:10px;background:#fff8e1;border:1px solid #d2a106;"></span> off by 1 ·
+          <span style="display:inline-block;width:10px;height:10px;background:#ffd7dc;border:1px solid #da1e28;"></span> miss
+        </div>
+      </div>
+      <div class="cal-side-card">
+        <h3>Bias watch</h3>
+        <div class="cal-bias" id="cal-bias">
+          Bias emerges after ~5 items. Keep going.
+        </div>
+      </div>
+      <div class="cal-side-card">
+        <h3>About this set</h3>
+        <div class="cal-score__sub" style="line-height:1.55;">
+          10 items drawn from real D1–D5 artifacts. The reference key is the rubric-authors'
+          consensus, not one grader's opinion. Completing this set emits <code>reviewed</code>
+          xAPI statements with <code>rater</code> tagged — those feed the reliability panel on
+          Analytics.
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <span class="site-footer__brand">AI-enhanced Educational Game Design · v2 · 12 Sessions</span>
+    <span class="site-footer__meta">The University of Alabama · College of Education</span>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© 2026 The University of Alabama</span>
+    <span>Calibration · pre-grading protocol · Cohen's κ target ≥ 0.70</span>
+  </div>
+</footer>
+
+<script src="xapi.js"></script>
+<script src="role.js"></script>
+<script src="shell.js"></script>
+<script>
+(function () {
+  const LEVELS = ['Emerging','Developing','Proficient','Exemplary'];
+  const LEVEL_IDX = { Emerging:0, Developing:1, Proficient:2, Exemplary:3 };
+
+  const ITEMS = [
+    {
+      d: 'D1', crit: 'Measurable shift', critKey: 'measurable_shift',
+      q: 'How well does this statement specify the measurable shift?',
+      artifact: '<p>The game will help 7th-graders understand fractions better by the end of the 40-minute period.</p>',
+      key: 'Emerging',
+      rationale: '"Understand… better" has direction but no verb, no baseline, and no target. A reader cannot tell whether the shift occurred. That is Emerging: the criterion is named but not operationalized.',
+      pointer: 'Proficient example: "…from ~35% baseline to ≥70% on an isomorphic 10-item post-check."',
+    },
+    {
+      d: 'D1', crit: 'Learner specificity', critKey: 'learner_specificity',
+      q: 'How well is the target learner named?',
+      artifact: '<p>At West Middle School, ~30% of 7th-graders enter Unit 4 unable to reliably convert among 1/2, 1/4, 1/8, 1/3, 2/3 and their visual representations. The remaining ~70% have the equivalence foundation but stumble when the denominator is non-power-of-two.</p>',
+      key: 'Exemplary',
+      rationale: 'Names the institution (West Middle), grade (7th), unit context (Unit 4), AND decomposes the target into a specific band (~30%) with a structural explanation (non-power-of-2 denominators). Proficient would name the population specifically; Exemplary adds the decomposition that tells you where the teaching leverage actually is.',
+      pointer: 'Watch for the "structural why" — Exemplary doesn\'t just name the population, it explains the internal variation.',
+    },
+    {
+      d: 'D2', crit: 'Risk identification', critKey: 'risk_identification',
+      q: 'Does this risk column meet the Proficient floor?',
+      artifact: '<p>Risk: kids might not like card matching. Mitigation: add stickers for completion.</p>',
+      key: 'Emerging',
+      rationale: 'This is a taste risk, not a learning risk. The rubric asks for mitigation of a mechanism by which learning could fail — "pattern-matching substituting for reasoning" would be a learning risk. Stickers on top of a flawed loop don\'t save the loop.',
+      pointer: 'Proficient risk: surface-feature matching (color) → randomize colors per deal.',
+    },
+    {
+      d: 'D2', crit: 'Traceability to D1', critKey: 'traceability_to_D1',
+      q: 'Does this row demonstrate traceability to D1?',
+      artifact: '<p>Objective: convert 1/2, 1/4, 1/8 between numeric and visual. Mechanic: paired turn-taking deal. <strong>Why this:</strong> D1 specifies two students per Chromebook — an individual-score mechanic would leave one student idle.</p>',
+      key: 'Proficient',
+      rationale: 'Cites a specific D1 constraint (device ratio) and shows how it actively shaped the mechanic choice. That is the Proficient floor on this criterion. Exemplary would additionally show a first-choice mechanic being rejected because of the constraint.',
+      pointer: 'Exemplary adds: "Originally proposed single-player drag-and-drop; rejected because D1 device ratio would leave one student idle."',
+    },
+    {
+      d: 'D3', crit: 'Facilitator guide completeness', critKey: 'facilitator_guide',
+      q: 'Does the facilitator guide meet the Proficient floor?',
+      artifact: '<p>Setup (60s): deal 10 cards to each player. Rules: on your turn, draw, match, explain; feedback is flip-and-read. <em>[Edge cases section missing.]</em> Debrief: "what surprised you?"</p>',
+      key: 'Developing',
+      rationale: 'Three of the four mandatory sections are present. Edge cases are missing — at Proficient, you need named failure modes ("no pair possible," "disputed match," "stall") with how the facilitator handles each. One missing section drops this to Developing, regardless of quality elsewhere.',
+      pointer: 'Non-compensatory: Exemplary on three sections does not compensate for missing edge cases.',
+    },
+    {
+      d: 'D3', crit: 'Iteration log', critKey: 'iteration_log',
+      q: 'How well does this iteration log meet the floor?',
+      artifact: '<p>v1 (5/12, Sam\'s class, n=8): "blue-red confusing" → v2 reduced to 2 colors. v2 (5/14, peer run, n=4): "no-pair stall" → v3 added discard rule. v3 (5/16, target learners, n=6): 4/6 reached end in 7 min. Failed path: v2.5 tried timed mode — rejected, because speed was the exact risk D2 flagged.</p>',
+      key: 'Exemplary',
+      rationale: 'Three cycles with date, observer, n, change, and outcome (that\'s Proficient). PLUS a documented failed path — the v2.5 timed-mode experiment that was explicitly abandoned, and WHY it was abandoned (it contradicted a D2 risk). Failed-path documentation is the Exemplary signature move.',
+      pointer: 'Proficient without Exemplary: stop at the v3 line. Exemplary needs the failed-path entry.',
+    },
+    {
+      d: 'D4', crit: 'Observation vs. interpretation', critKey: 'obs_vs_interp',
+      q: 'Does this finding separate observation from interpretation?',
+      artifact: '<p>Finding: 3/4 pairs paused at 1/3 → 2/6 conversion. "Pair stared, asked each other" (observation). "1/3 is the only non-power-of-2 denominator — the visual heuristic breaks here" (interpretation).</p>',
+      key: 'Proficient',
+      rationale: 'The two are labeled explicitly. Observation is what you could film; interpretation is your inference about what it means. This is the Proficient discipline. Exemplary would additionally report a null finding ("we expected X to matter and it didn\'t").',
+      pointer: 'The labels — "(observation)" and "(interpretation)" — are the load-bearing move. Without them, this collapses to Developing.',
+    },
+    {
+      d: 'D4', crit: 'Protocol design', critKey: 'protocol_design',
+      q: 'Does the protocol meet the Proficient floor?',
+      artifact: '<p>Ran playtest with my roommate and my younger cousin. 20 minutes each. Took some notes.</p>',
+      key: 'Emerging',
+      rationale: 'Not target learners (roommate and cousin are not 7th-graders at West Middle). No consent, no recording, no structured notes. Proficient requires 3+ target-learner sessions with documented consent. This falls below the floor on every sub-criterion.',
+      pointer: 'Proficient protocol: ≥3 sessions with target learners, documented consent, capture method specified.',
+    },
+    {
+      d: 'D5', crit: 'Event → feedback map', critKey: 'event_feedback_map',
+      q: 'Does this event-feedback map meet the Proficient floor?',
+      artifact: '<p>(state × event) table has 14 cells. All 14 have feedback + next-state specified, including the "useless" ones like timeout-in-Title (→ no-op, remain in Title) and invalid-match (→ shake animation, retain card, remain in Match).</p>',
+      key: 'Proficient',
+      rationale: 'Every cell filled — including the trivial ones. The discipline of filling the trivial cells is what prevents runtime ambiguity downstream. Proficient floor met. Exemplary would additionally ship the map as a machine-readable CSV for the build tool.',
+      pointer: 'Exemplary moves: machine-readable fragments (CSV, JSON) a build pipeline can ingest directly.',
+    },
+    {
+      d: 'D5', crit: 'Three.js bridge', critKey: 'threejs_bridge',
+      q: 'How does this bridge section score?',
+      artifact: '<p>We will use Three.js to render the cards. The scene will show the cards and let you drag them. <em>[No scene graph specified. No poly/draw-call budget. No first-interactable target.]</em></p>',
+      key: 'Developing',
+      rationale: 'Scene purpose stated in the loosest possible form ("render the cards, let you drag"). Graph and budget are entirely absent. Proficient requires scene purpose + graph + explicit budget (poly count, draw calls, time-to-interactable). Two of three missing drops this to Developing.',
+      pointer: 'Proficient budget example: ≤2k tris, ≤20 draw calls, ≤150ms to first interactable.',
+    },
+  ];
+
+  // ── State ────────────────────────────────────────────────────
+  let idx = 0;
+  const responses = []; // [{ itemIdx, chosen, key, delta }]
+
+  const stage = document.getElementById('cal-stage');
+  const progressEl = document.getElementById('cal-progress');
+  const scoreEl = document.getElementById('cal-score');
+  const scoreSubEl = document.getElementById('cal-score-sub');
+  const biasEl = document.getElementById('cal-bias');
+
+  function renderItem() {
+    if (idx >= ITEMS.length) return renderFinish();
+    const it = ITEMS[idx];
+    stage.innerHTML = `
+      <div class="cal-card">
+        <div class="cal-card__crit">Item ${idx + 1} of ${ITEMS.length} · ${it.d} · ${it.crit}</div>
+        <h2 class="cal-card__q">${it.q}</h2>
+        <div class="cal-card__artifact">${it.artifact}</div>
+        <div class="cal-levels" id="cal-levels">
+          ${LEVELS.map(lvl => `
+            <button class="cal-lvl" data-lvl="${lvl}">
+              ${lvl}
+              <small>${lvlHint(lvl)}</small>
+            </button>
+          `).join('')}
+        </div>
+        <div id="cal-reveal-slot"></div>
+        <div class="cal-actions">
+          <span id="cal-breadcrumb">Pick the level the rubric calls this.</span>
+          <div>
+            <button class="ghost" id="cal-skip">Skip →</button>
+            <button id="cal-next" disabled>Next item →</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('cal-levels').addEventListener('click', onPick);
+    document.getElementById('cal-skip').addEventListener('click', () => {
+      responses.push({ itemIdx: idx, chosen: null, key: it.key, delta: null });
+      idx++; refreshSidebar(); renderItem();
+    });
+    document.getElementById('cal-next').addEventListener('click', () => {
+      idx++; refreshSidebar(); renderItem();
+    });
+
+    refreshSidebar();
+  }
+
+  function lvlHint(lvl) {
+    return { Emerging: 'Below floor', Developing: 'Near floor', Proficient: 'Meets floor', Exemplary: 'Above floor' }[lvl];
+  }
+
+  function onPick(e) {
+    const btn = e.target.closest('[data-lvl]');
+    if (!btn) return;
+    const chosen = btn.getAttribute('data-lvl');
+    const it = ITEMS[idx];
+
+    // Mark chosen + key
+    document.querySelectorAll('.cal-lvl').forEach(b => {
+      b.classList.remove('chosen','is-key','is-mine');
+      if (b.getAttribute('data-lvl') === chosen) b.classList.add('chosen','is-mine');
+      if (b.getAttribute('data-lvl') === it.key) b.classList.add('is-key');
+    });
+    // Disable further picking
+    document.querySelectorAll('.cal-lvl').forEach(b => b.onclick = null);
+    document.getElementById('cal-levels').replaceWith(document.getElementById('cal-levels').cloneNode(true));
+
+    const delta = LEVEL_IDX[chosen] - LEVEL_IDX[it.key];
+    responses.push({ itemIdx: idx, chosen, key: it.key, delta });
+
+    // xAPI: emit reviewed statement
+    if (window.xapi) {
+      const activity = window.xapi.activities.obj('rubric-criterion',
+        `${it.d}/${it.critKey}`, `${it.d} · ${it.critKey}`);
+      window.xapi.emit('reviewed', activity, {
+        contextExt: {
+          'https://teachplay.dev/ext/rater': 'calibration-self',
+          'https://teachplay.dev/ext/calibration-item': idx,
+          'https://teachplay.dev/ext/calibration-key': it.key,
+        },
+        result: { success: chosen === it.key, response: chosen },
+      });
+    }
+
+    // Reveal
+    const match = chosen === it.key;
+    const reveal = document.createElement('div');
+    reveal.className = 'cal-reveal';
+    reveal.innerHTML = `
+      <h4>Reference key</h4>
+      <div class="cal-reveal__verdict">
+        ${match
+          ? `You called it <b>${chosen}</b> — matches the key.`
+          : `You called it <b>${chosen}</b>; the rubric calls this <b>${it.key}</b>.`}
+      </div>
+      <p class="cal-reveal__rationale">${it.rationale}</p>
+      <div class="cal-reveal__pointer">→ ${it.pointer}</div>
+    `;
+    document.getElementById('cal-reveal-slot').appendChild(reveal);
+    document.getElementById('cal-next').disabled = false;
+    document.getElementById('cal-breadcrumb').textContent = match ? 'Match ✓' : `Off by ${Math.abs(delta)} level${Math.abs(delta) > 1 ? 's' : ''}.`;
+    refreshSidebar();
+  }
+
+  function refreshSidebar() {
+    // Progress squares
+    progressEl.innerHTML = ITEMS.map((_, i) => {
+      const r = responses.find(x => x.itemIdx === i);
+      let cls = '';
+      if (r) {
+        cls = 'done ' + (r.delta == null ? 'miss' : (r.delta === 0 ? 'match' : Math.abs(r.delta) === 1 ? 'off-by-1' : 'miss'));
+      }
+      if (i === idx) cls += ' current';
+      return `<span class="${cls.trim()}">${i + 1}</span>`;
+    }).join('');
+
+    // Score
+    const graded = responses.filter(r => r.delta != null);
+    const matches = graded.filter(r => r.delta === 0).length;
+    if (!graded.length) {
+      scoreEl.textContent = '—';
+      scoreSubEl.textContent = 'Exact-match rate · updated after each item';
+    } else {
+      scoreEl.textContent = Math.round((matches / graded.length) * 100) + '%';
+      scoreSubEl.textContent = `${matches} of ${graded.length} exact · target ≥ 70%`;
+    }
+
+    // Bias
+    if (graded.length < 5) {
+      biasEl.textContent = 'Bias emerges after ~5 items. Keep going.';
+    } else {
+      const meanDelta = graded.reduce((a, r) => a + r.delta, 0) / graded.length;
+      if (Math.abs(meanDelta) < 0.2) {
+        biasEl.innerHTML = 'Mean offset ≈ <b>0</b>. No systematic bias — you agree with the key on average.';
+      } else if (meanDelta > 0) {
+        biasEl.innerHTML = `Mean offset <b class="hot">+${meanDelta.toFixed(1)}</b>. You tend to rate <b class="hot">higher</b> than the key. Re-read the Developing → Proficient boundary carefully.`;
+      } else {
+        biasEl.innerHTML = `Mean offset <b class="cold">${meanDelta.toFixed(1)}</b>. You tend to rate <b class="cold">lower</b> than the key. Check whether you\'re penalizing Proficient for not being Exemplary.`;
+      }
+    }
+  }
+
+  function renderFinish() {
+    const graded = responses.filter(r => r.delta != null);
+    const matches = graded.filter(r => r.delta === 0).length;
+    const off1 = graded.filter(r => Math.abs(r.delta) === 1).length;
+    const off2plus = graded.filter(r => Math.abs(r.delta) >= 2).length;
+    const skipped = responses.filter(r => r.delta == null).length;
+    const exact = graded.length ? matches / graded.length : 0;
+    const meanDelta = graded.length ? graded.reduce((a, r) => a + r.delta, 0) / graded.length : 0;
+
+    const verdict = (() => {
+      if (!graded.length) return 'No items graded. Run the set again to get a calibration signal.';
+      if (exact >= 0.80 && Math.abs(meanDelta) < 0.2) return 'You are well-calibrated to the rubric. You can grade this cohort without re-training — just keep the rubric open next to you.';
+      if (exact >= 0.70) return 'You are close to calibrated. Re-read the two criteria where you missed, then you\'re ready to grade.';
+      if (exact >= 0.50) return 'Your readings are directionally right but inconsistent. Spend 20 minutes reading the rubrics page before grading — especially the Developing → Proficient boundary.';
+      return 'Calibration is off enough that you should not grade solo yet. Co-grade with a calibrated rater on your first three artifacts, then re-run this set.';
+    })();
+
+    stage.innerHTML = `
+      <div class="cal-finish">
+        <h2>Calibration complete.</h2>
+        <div class="cal-finish__stats">
+          <div class="cal-finish__stat">
+            <div class="num">${Math.round(exact * 100)}%</div>
+            <div class="lbl">Exact match</div>
+          </div>
+          <div class="cal-finish__stat">
+            <div class="num">${off1}</div>
+            <div class="lbl">Off by one</div>
+          </div>
+          <div class="cal-finish__stat">
+            <div class="num">${off2plus}</div>
+            <div class="lbl">Off by two+</div>
+          </div>
+          <div class="cal-finish__stat">
+            <div class="num">${meanDelta >= 0 ? '+' : ''}${meanDelta.toFixed(2)}</div>
+            <div class="lbl">Mean offset</div>
+          </div>
+        </div>
+        <p class="cal-finish__verdict">${verdict}</p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button class="btn" id="cal-restart">Run another round</button>
+          <a class="btn btn--outline" href="analytics.html">See reliability panel →</a>
+        </div>
+      </div>
+    `;
+    document.getElementById('cal-restart').addEventListener('click', () => {
+      idx = 0; responses.length = 0; renderItem();
+    });
+
+    // Emit summary xAPI
+    if (window.xapi) {
+      window.xapi.emit('completed', window.xapi.activities.obj('calibration-round', 'self', 'Calibration round (self)'), {
+        result: {
+          completion: true,
+          score: { scaled: exact, raw: matches, min: 0, max: graded.length },
+          extensions: {
+            'https://teachplay.dev/ext/calibration-off1': off1,
+            'https://teachplay.dev/ext/calibration-off2plus': off2plus,
+            'https://teachplay.dev/ext/calibration-mean-delta': meanDelta,
+            'https://teachplay.dev/ext/calibration-skipped': skipped,
+          },
+        },
+      });
+    }
+  }
+
+  renderItem();
+})();
+</script>
+</body>
+</html>

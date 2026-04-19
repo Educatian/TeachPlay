@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Portfolio · AI-enhanced Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  .pf-intro {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 40px;
+    align-items: start;
+    padding: 40px 0 24px;
+  }
+  .pf-intro h1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    line-height: 1.05;
+    margin: 0 0 16px;
+    color: #161616;
+  }
+  .pf-intro p { font-family: var(--font-serif); font-size: 17px; line-height: 1.6; color: #333; margin: 0 0 12px; }
+  .pf-id-card {
+    background: #161616;
+    color: #f4f4f4;
+    padding: 22px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  .pf-id-card h3 {
+    margin: 0 0 12px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #a0a0a0;
+    font-weight: 700;
+  }
+  .pf-id-card dl { display: grid; grid-template-columns: 90px 1fr; gap: 6px 14px; margin: 0; }
+  .pf-id-card dt { color: #8d8d8d; }
+  .pf-id-card dd { margin: 0; color: #f4f4f4; word-break: break-all; }
+  .pf-id-card input {
+    width: 100%;
+    background: #262626;
+    border: 1px solid #525252;
+    color: #f4f4f4;
+    padding: 4px 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .pf-id-card .pf-btn-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .pf-id-card button {
+    background: #f4f4f4; color: #161616;
+    border: 0; padding: 7px 12px;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+  .pf-id-card button.ghost {
+    background: transparent; color: #f4f4f4; border: 1px solid #525252;
+  }
+
+  .pf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+  }
+
+  .pf-slot {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+  }
+  .pf-slot__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .pf-slot__num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--crimson);
+    font-weight: 700;
+  }
+  .pf-slot__status {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    background: #f4f4f4;
+    color: #525252;
+    text-transform: uppercase;
+  }
+  .pf-slot__status.is-ok { background: #defbe6; color: #0e6027; }
+  .pf-slot__title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 1.2;
+    margin: 0;
+    color: #161616;
+  }
+  .pf-slot__session { font-size: 12.5px; color: #6f6f6f; font-family: var(--font-mono); }
+
+  .pf-drop {
+    border: 2px dashed #c6c6c6;
+    background: #fafafa;
+    padding: 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pf-drop:hover, .pf-drop.is-drag { border-color: var(--crimson); background: #fff0f2; }
+  .pf-drop p { margin: 0; font-size: 13px; color: #525252; }
+  .pf-drop strong { color: var(--crimson); }
+  .pf-drop input[type=file] { display: none; }
+
+  .pf-link-row { display: flex; gap: 6px; }
+  .pf-link-row input {
+    flex: 1;
+    border: 1px solid #c6c6c6;
+    padding: 6px 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .pf-link-row button {
+    background: #161616; color: #fff; border: 0;
+    padding: 6px 12px; font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: var(--font-sans);
+  }
+
+  .pf-record {
+    background: #161616;
+    color: #c6c6c6;
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    line-height: 1.6;
+  }
+  .pf-record dl { display: grid; grid-template-columns: 70px 1fr; gap: 4px 10px; margin: 0; }
+  .pf-record dt { color: #8d8d8d; }
+  .pf-record dd { margin: 0; word-break: break-all; }
+  .pf-record .hash { color: #8df0b5; }
+  .pf-record .actions { display: flex; gap: 8px; margin-top: 10px; }
+  .pf-record .actions button {
+    background: transparent; border: 1px solid #525252; color: #f4f4f4;
+    padding: 4px 10px; font-size: 11px; font-family: var(--font-sans); cursor: pointer;
+  }
+
+  .pf-note {
+    border: 1px solid #e0e0e0;
+    padding: 8px 10px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: #333;
+    background: #fff;
+    width: 100%;
+    resize: vertical;
+    min-height: 54px;
+    box-sizing: border-box;
+  }
+
+  .pf-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: #161616;
+    color: #fff;
+    margin: 28px 0;
+    flex-wrap: wrap;
+  }
+  .pf-toolbar__left { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; }
+  .pf-toolbar__left b { color: #ffb3b8; }
+  .pf-toolbar .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  pre.pf-manifest {
+    background: #161616;
+    color: #c6c6c6;
+    padding: 20px 24px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.55;
+    overflow-x: auto;
+    margin: 0;
+    border: 1px solid #393939;
+  }
+
+  @media (max-width: 820px) {
+    .pf-intro { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <span data-role-switch></span><a href="#">myBama</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">AI-enhanced Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html">Overview</a>
+    <a href="index.html#sessions">Sessions</a>
+    <a href="index.html#deliverables">Deliverables</a>
+    <a href="rubrics.html">Rubrics</a>
+    <a href="alignment.html">Alignment</a>
+    <a href="portfolio.html" class="is-active">Portfolio</a>
+    <a href="credential.html">Credential</a>
+    <a href="facilitator.html" class="instructor-only">Facilitator</a>
+    <a href="analytics.html" class="instructor-only">Analytics</a>
+    <a href="resources.html">Resource Library</a>
+  </nav>
+</header>
+
+<section class="section">
+  <div class="pf-intro">
+    <div>
+      <div class="section__eyebrow">Evidence Portfolio · D1–D5</div>
+      <h1>Your badge is a claim.<br/>Your portfolio is the proof.</h1>
+      <p>
+        Upload each deliverable as you finish it. The browser hashes the file (SHA-256) locally —
+        the hash is what gets stamped into your credential's <code>evidence[]</code> array, so the
+        assertion points to an artifact that provably existed at submission time.
+      </p>
+      <p>
+        Files never leave this browser tab. Export the manifest when you're ready to send it to a
+        facilitator or pin it to a permanent URL.
+      </p>
+    </div>
+    <aside class="pf-id-card">
+      <h3>Learner Identity</h3>
+      <dl>
+        <dt>Actor</dt><dd id="pf-actor">—</dd>
+        <dt>Cohort</dt><dd><input id="pf-cohort" placeholder="e.g. 2026-spring" /></dd>
+        <dt>Email</dt><dd><input id="pf-email" placeholder="you@school.edu" type="email" /></dd>
+      </dl>
+      <div class="pf-btn-row">
+        <button id="pf-save-identity">Save identity</button>
+        <button class="ghost" id="pf-reset">Reset portfolio</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <span class="section__eyebrow">The Five Slots</span>
+  <h2 class="section__title">One artifact per deliverable.</h2>
+  <p class="section__lede">
+    Drop a PDF, a zipped prototype folder, or paste a link. Each slot accepts exactly one artifact
+    per deliverable — re-uploading replaces the prior hash and records a new <code>submitted</code>
+    statement in the learning-analytics queue.
+  </p>
+
+  <div class="pf-grid" id="pf-grid"></div>
+
+  <div class="pf-toolbar">
+    <div class="pf-toolbar__left">
+      Filled: <b id="pf-count">0</b> / 5 · Manifest status:
+      <b id="pf-status">incomplete</b>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn--outline" id="pf-download-manifest">Download manifest.json</a>
+      <a class="btn btn--outline" id="pf-download-page">Download static page</a>
+      <a class="btn" href="credential.html#example">Preview in assertion →</a>
+    </div>
+  </div>
+
+  <details style="margin-top: 8px;">
+    <summary style="cursor: pointer; font-family: var(--font-mono); font-size: 12.5px; padding: 8px 0;">
+      View live manifest JSON
+    </summary>
+    <pre class="pf-manifest" id="pf-manifest-preview">{}</pre>
+  </details>
+</section>
+
+<section class="section">
+  <span class="section__eyebrow">How Hashing Works</span>
+  <h2 class="section__title">Three reasons to hash locally.</h2>
+  <div class="card-grid card-grid--3">
+    <div class="card">
+      <div class="card__label">Privacy</div>
+      <h3 class="card__title">Files never upload</h3>
+      <p>SHA-256 runs in your browser via <code>crypto.subtle.digest</code>. The handbook sees only the hex digest — never the bytes.</p>
+    </div>
+    <div class="card">
+      <div class="card__label">Integrity</div>
+      <h3 class="card__title">Evidence becomes verifiable</h3>
+      <p>The hash anchors each artifact to your assertion. A facilitator who re-hashes the file you send can confirm it's the same one you submitted.</p>
+    </div>
+    <div class="card">
+      <div class="card__label">Portability</div>
+      <h3 class="card__title">Move the hash, not the file</h3>
+      <p>Pin the artifact wherever you like — Drive, LMS, personal site. The credential refers to the content, not its location.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <span class="site-footer__brand">AI-enhanced Educational Game Design · v2 · 12 Sessions</span>
+    <span class="site-footer__meta">The University of Alabama · College of Education</span>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© 2026 The University of Alabama</span>
+    <span>Portfolio · local-first · SHA-256 · OBv3 evidence[]</span>
+  </div>
+</footer>
+
+<script src="xapi.js"></script>
+<script src="role.js"></script>
+<script src="shell.js"></script>
+<script>
+(function () {
+  const DELIVERABLES = [
+    { key: 'D1', title: 'Design Problem Statement', session: 'Session 02 · Week 2', accept: '.pdf,.md,.txt' },
+    { key: 'D2', title: 'Objective × Mechanic Crosswalk', session: 'Session 03 · Week 3', accept: '.csv,.xlsx,.pdf,.md' },
+    { key: 'D3', title: 'Paper Prototype + Facilitator Guide', session: 'Session 07 · Week 7', accept: '.zip,.pdf' },
+    { key: 'D4', title: 'Playtest Report', session: 'Session 09 · Week 9', accept: '.pdf,.md,.zip' },
+    { key: 'D5', title: 'Implementation Spec', session: 'Session 12 · Week 12', accept: '.zip,.pdf,.md' },
+  ];
+
+  const STORE_PREFIX = 'hb:portfolio:';
+  const IDENTITY_KEY = 'hb:portfolio:identity';
+
+  // ── Identity ────────────────────────────────────────────────
+  function loadIdentity() {
+    try { return JSON.parse(localStorage.getItem(IDENTITY_KEY) || '{}'); } catch { return {}; }
+  }
+  function saveIdentity(id) { localStorage.setItem(IDENTITY_KEY, JSON.stringify(id)); }
+
+  const actorEl = document.getElementById('pf-actor');
+  const cohortEl = document.getElementById('pf-cohort');
+  const emailEl = document.getElementById('pf-email');
+  actorEl.textContent = (window.xapi && window.xapi.getActorId()) || '—';
+
+  const ident = loadIdentity();
+  cohortEl.value = ident.cohort || (window.xapi && window.xapi.getCohort()) || '';
+  emailEl.value = ident.email || '';
+
+  document.getElementById('pf-save-identity').addEventListener('click', () => {
+    const id = { cohort: cohortEl.value.trim(), email: emailEl.value.trim() };
+    saveIdentity(id);
+    if (id.cohort && window.xapi) window.xapi.setCohort(id.cohort);
+    render();
+  });
+
+  document.getElementById('pf-reset').addEventListener('click', () => {
+    if (!confirm('Clear all five portfolio slots? Identity will be kept.')) return;
+    DELIVERABLES.forEach(d => localStorage.removeItem(STORE_PREFIX + d.key));
+    render();
+  });
+
+  // ── Record I/O ──────────────────────────────────────────────
+  function readRecord(key) {
+    try { return JSON.parse(localStorage.getItem(STORE_PREFIX + key) || 'null'); } catch { return null; }
+  }
+  function writeRecord(key, rec) {
+    localStorage.setItem(STORE_PREFIX + key, JSON.stringify(rec));
+  }
+
+  async function sha256(buf) {
+    const hash = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(hash))
+      .map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function ingestFile(key, file, note) {
+    const buf = await file.arrayBuffer();
+    const hex = await sha256(buf);
+    const rec = {
+      kind: 'file',
+      filename: file.name,
+      size: file.size,
+      mime: file.type || 'application/octet-stream',
+      hash: 'sha256:' + hex,
+      note: note || '',
+      submittedAt: new Date().toISOString(),
+    };
+    writeRecord(key, rec);
+    emitSubmitted(key, rec);
+    render();
+  }
+
+  async function ingestLink(key, url, note) {
+    const buf = new TextEncoder().encode(url);
+    const hex = await sha256(buf);
+    const rec = {
+      kind: 'link',
+      url,
+      hash: 'sha256:' + hex,
+      note: note || '',
+      submittedAt: new Date().toISOString(),
+    };
+    writeRecord(key, rec);
+    emitSubmitted(key, rec);
+    render();
+  }
+
+  function emitSubmitted(key, rec) {
+    if (!window.xapi) return;
+    window.xapi.emit('submitted', window.xapi.activities.deliverable(key), {
+      contextExt: {
+        'https://teachplay.dev/ext/artifact-hash': rec.hash,
+        'https://teachplay.dev/ext/artifact-kind': rec.kind,
+      },
+      result: {
+        response: rec.kind === 'file' ? rec.filename : rec.url,
+        extensions: {
+          'https://teachplay.dev/ext/bytes': rec.size || null,
+          'https://teachplay.dev/ext/mime': rec.mime || null,
+        },
+      },
+    });
+  }
+
+  // ── Slot rendering ──────────────────────────────────────────
+  function shortHash(h) { return h ? h.slice(7, 19) + '…' : ''; }
+
+  function slotHTML(d, rec) {
+    const statusClass = rec ? 'is-ok' : '';
+    const statusText = rec ? 'submitted' : 'empty';
+    const body = rec ? recordHTML(d, rec) : dropHTML(d);
+    return `
+      <article class="pf-slot">
+        <div class="pf-slot__head">
+          <span class="pf-slot__num">${d.key}</span>
+          <span class="pf-slot__status ${statusClass}">${statusText}</span>
+        </div>
+        <h3 class="pf-slot__title">${d.title}</h3>
+        <div class="pf-slot__session">${d.session}</div>
+        ${body}
+      </article>
+    `;
+  }
+
+  function dropHTML(d) {
+    return `
+      <label class="pf-drop" data-drop="${d.key}">
+        <input type="file" accept="${d.accept}" data-file-input="${d.key}" />
+        <p><strong>Click or drop</strong> a file here</p>
+        <p style="font-size: 11px; margin-top: 6px; color: #6f6f6f;">Accepted: ${d.accept}</p>
+      </label>
+      <div class="pf-link-row">
+        <input type="url" placeholder="…or paste a URL" data-link-input="${d.key}" />
+        <button data-link-submit="${d.key}">Attach link</button>
+      </div>
+      <textarea class="pf-note" placeholder="Optional note (one sentence on what this artifact shows)" data-note-input="${d.key}"></textarea>
+    `;
+  }
+
+  function recordHTML(d, rec) {
+    const idLine = rec.kind === 'file'
+      ? `<dt>File</dt><dd>${escapeHTML(rec.filename)} · ${(rec.size/1024).toFixed(1)} KB</dd>`
+      : `<dt>Link</dt><dd><a href="${escapeAttr(rec.url)}" target="_blank" rel="noopener" style="color:#8df0b5;">${escapeHTML(rec.url)}</a></dd>`;
+    return `
+      <div class="pf-record">
+        <dl>
+          ${idLine}
+          <dt>Hash</dt><dd class="hash">${rec.hash}</dd>
+          <dt>When</dt><dd>${rec.submittedAt}</dd>
+          ${rec.note ? `<dt>Note</dt><dd>${escapeHTML(rec.note)}</dd>` : ''}
+        </dl>
+        <div class="actions">
+          <button data-replace="${d.key}">Replace</button>
+          <button data-copy-hash="${d.key}">Copy hash</button>
+          <button data-clear="${d.key}">Clear</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function escapeHTML(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+  function escapeAttr(s) { return escapeHTML(s); }
+
+  // ── Delegation ──────────────────────────────────────────────
+  const grid = document.getElementById('pf-grid');
+
+  grid.addEventListener('change', async (e) => {
+    const fin = e.target.closest('[data-file-input]');
+    if (fin && fin.files && fin.files[0]) {
+      const key = fin.getAttribute('data-file-input');
+      const noteEl = grid.querySelector(`[data-note-input="${key}"]`);
+      const note = noteEl ? noteEl.value.trim() : '';
+      await ingestFile(key, fin.files[0], note);
+    }
+  });
+
+  grid.addEventListener('click', async (e) => {
+    const linkBtn = e.target.closest('[data-link-submit]');
+    if (linkBtn) {
+      const key = linkBtn.getAttribute('data-link-submit');
+      const urlEl = grid.querySelector(`[data-link-input="${key}"]`);
+      const noteEl = grid.querySelector(`[data-note-input="${key}"]`);
+      const url = urlEl.value.trim();
+      if (!url) return;
+      try { new URL(url); } catch { alert('That doesn\'t look like a valid URL.'); return; }
+      await ingestLink(key, url, noteEl ? noteEl.value.trim() : '');
+      return;
+    }
+    const replace = e.target.closest('[data-replace]');
+    if (replace) {
+      const key = replace.getAttribute('data-replace');
+      localStorage.removeItem(STORE_PREFIX + key);
+      render();
+      return;
+    }
+    const clear = e.target.closest('[data-clear]');
+    if (clear) {
+      const key = clear.getAttribute('data-clear');
+      localStorage.removeItem(STORE_PREFIX + key);
+      render();
+      return;
+    }
+    const copy = e.target.closest('[data-copy-hash]');
+    if (copy) {
+      const key = copy.getAttribute('data-copy-hash');
+      const rec = readRecord(key);
+      if (rec) navigator.clipboard.writeText(rec.hash);
+      copy.textContent = 'Copied ✓';
+      setTimeout(() => { copy.textContent = 'Copy hash'; }, 1200);
+    }
+  });
+
+  // Drag and drop
+  grid.addEventListener('dragover', (e) => {
+    const drop = e.target.closest('[data-drop]');
+    if (!drop) return;
+    e.preventDefault();
+    drop.classList.add('is-drag');
+  });
+  grid.addEventListener('dragleave', (e) => {
+    const drop = e.target.closest('[data-drop]');
+    if (drop) drop.classList.remove('is-drag');
+  });
+  grid.addEventListener('drop', async (e) => {
+    const drop = e.target.closest('[data-drop]');
+    if (!drop) return;
+    e.preventDefault();
+    drop.classList.remove('is-drag');
+    const key = drop.getAttribute('data-drop');
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!file) return;
+    const noteEl = grid.querySelector(`[data-note-input="${key}"]`);
+    await ingestFile(key, file, noteEl ? noteEl.value.trim() : '');
+  });
+
+  // ── Manifest build ──────────────────────────────────────────
+  function buildManifest() {
+    const id = loadIdentity();
+    const actorId = (window.xapi && window.xapi.getActorId()) || 'anonymous';
+    const evidence = DELIVERABLES.map(d => {
+      const rec = readRecord(d.key);
+      if (!rec) return null;
+      return {
+        id: rec.kind === 'file'
+          ? `urn:hash:${rec.hash};name=${encodeURIComponent(rec.filename)}`
+          : rec.url,
+        name: `${d.key} · ${d.title}`,
+        description: rec.note || undefined,
+        genre: d.key,
+        audience: 'facilitator',
+        'teachplay:hash': rec.hash,
+        'teachplay:kind': rec.kind,
+        'teachplay:submittedAt': rec.submittedAt,
+      };
+    }).filter(Boolean);
+
+    return {
+      '@context': [
+        'https://www.w3.org/ns/credentials/v2',
+        'https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json',
+      ],
+      type: ['PortfolioManifest'],
+      generatedAt: new Date().toISOString(),
+      learner: {
+        id: `urn:teachplay:actor:${actorId}`,
+        cohort: id.cohort || null,
+        emailHint: id.email ? `sha256:${id.email.length}-char-email-on-file` : null,
+      },
+      evidence,
+      credentialTarget: 'https://teachplay.dev/credential/badge-class-v3.json',
+      _note: 'Evidence IDs use urn:hash:<sha256> so the assertion binds to content, not location. Pin the underlying artifact anywhere and the hash stays valid.',
+    };
+  }
+
+  function render() {
+    grid.innerHTML = DELIVERABLES.map(d => slotHTML(d, readRecord(d.key))).join('');
+    const filled = DELIVERABLES.filter(d => readRecord(d.key)).length;
+    document.getElementById('pf-count').textContent = filled;
+    document.getElementById('pf-status').textContent = filled === 5 ? 'complete — submission-ready' : 'incomplete';
+    document.getElementById('pf-manifest-preview').textContent =
+      JSON.stringify(buildManifest(), null, 2);
+  }
+
+  // ── Downloads ───────────────────────────────────────────────
+  function download(filename, blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500);
+  }
+
+  document.getElementById('pf-download-manifest').addEventListener('click', (e) => {
+    e.preventDefault();
+    const blob = new Blob([JSON.stringify(buildManifest(), null, 2)], { type: 'application/json' });
+    download('portfolio-manifest.json', blob);
+  });
+
+  document.getElementById('pf-download-page').addEventListener('click', (e) => {
+    e.preventDefault();
+    const m = buildManifest();
+    const html = staticPage(m);
+    download(`portfolio-${(m.learner.id||'learner').split(':').pop()}.html`, new Blob([html], { type: 'text/html' }));
+  });
+
+  function staticPage(m) {
+    const rows = (m.evidence || []).map(e => `
+      <tr>
+        <td><b>${e.genre}</b></td>
+        <td>${e.name}</td>
+        <td><code>${e['teachplay:hash']}</code></td>
+        <td>${e['teachplay:submittedAt']}</td>
+      </tr>
+    `).join('');
+    return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" />
+<title>Portfolio · ${m.learner.id}</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:820px;margin:48px auto;padding:0 24px;color:#161616;}
+h1{font-size:30px;margin:0 0 8px;}
+.meta{color:#6f6f6f;font-size:13px;margin-bottom:28px;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #e0e0e0;vertical-align:top;}
+th{background:#f4f4f4;font-size:12px;letter-spacing:.08em;text-transform:uppercase;}
+code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f4f4f4;padding:2px 6px;word-break:break-all;}
+pre{background:#161616;color:#c6c6c6;padding:18px;font-size:12px;overflow-x:auto;}
+</style></head><body>
+<h1>AI-enhanced Educational Game Design — Portfolio</h1>
+<div class="meta">Learner: <code>${m.learner.id}</code> · Cohort: ${m.learner.cohort || '—'} · Generated ${m.generatedAt}</div>
+<table><thead><tr><th>Deliverable</th><th>Name</th><th>SHA-256</th><th>Submitted</th></tr></thead><tbody>${rows}</tbody></table>
+<h2 style="margin-top:40px;font-size:18px;">Manifest JSON</h2>
+<pre>${escapeHTML(JSON.stringify(m, null, 2))}</pre>
+</body></html>`;
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

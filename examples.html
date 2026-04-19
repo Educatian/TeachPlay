@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Worked Examples · AI-enhanced Educational Game Design</title>
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  .ex-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .ex-tab {
+    background: transparent;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    padding: 14px 20px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: #525252;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  .ex-tab.is-active {
+    color: var(--crimson);
+    border-bottom-color: var(--crimson);
+  }
+  .ex-tab small {
+    display: block;
+    font-weight: 400;
+    font-size: 11.5px;
+    color: #8d8d8d;
+    margin-top: 2px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .ex-levels {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+  .ex-level {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .ex-level:hover { border-color: var(--crimson); }
+  .ex-level.is-selected {
+    border-color: var(--crimson);
+    border-width: 2px;
+    padding: 17px 19px;
+  }
+  .ex-level__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .ex-level[data-lvl="Emerging"]    .ex-level__label { color: #a56eff; }
+  .ex-level[data-lvl="Developing"]  .ex-level__label { color: #d2a106; }
+  .ex-level[data-lvl="Proficient"]  .ex-level__label { color: #0e6027; }
+  .ex-level[data-lvl="Exemplary"]   .ex-level__label { color: var(--crimson); }
+
+  .ex-level__tag { font-size: 12px; color: #6f6f6f; }
+  .ex-level__snippet {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    line-height: 1.5;
+    color: #161616;
+    background: #fafafa;
+    border-left: 3px solid #e0e0e0;
+    padding: 10px 12px;
+    margin: 0;
+    font-style: italic;
+  }
+  .ex-level[data-lvl="Proficient"].is-selected .ex-level__snippet { border-left-color: #0e6027; }
+  .ex-level[data-lvl="Exemplary"].is-selected  .ex-level__snippet { border-left-color: var(--crimson); }
+
+  .ex-workbench {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 0;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 0;
+  }
+  @media (max-width: 900px) { .ex-workbench { grid-template-columns: 1fr; } }
+
+  .ex-workbench__artifact {
+    padding: 28px 32px;
+    border-right: 1px solid #e0e0e0;
+  }
+  @media (max-width: 900px) {
+    .ex-workbench__artifact { border-right: 0; border-bottom: 1px solid #e0e0e0; }
+  }
+  .ex-workbench__artifact h3 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #525252;
+    margin: 0 0 18px;
+  }
+  .ex-artifact-body {
+    font-family: var(--font-serif);
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: #161616;
+  }
+  .ex-artifact-body mark {
+    background: #ffeab1;
+    padding: 1px 3px;
+    cursor: help;
+    position: relative;
+    border-bottom: 2px solid #d2a106;
+  }
+  .ex-artifact-body mark[data-tone="good"] {
+    background: #caf5d0;
+    border-bottom-color: #0e6027;
+  }
+  .ex-artifact-body mark[data-tone="flag"] {
+    background: #ffd7dc;
+    border-bottom-color: var(--crimson);
+  }
+
+  .ex-workbench__annotations {
+    padding: 28px 32px;
+    background: #fafafa;
+  }
+  .ex-workbench__annotations h3 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #525252;
+    margin: 0 0 18px;
+  }
+  .ex-anno {
+    border-left: 3px solid #e0e0e0;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    background: #fff;
+  }
+  .ex-anno[data-tone="good"] { border-left-color: #0e6027; }
+  .ex-anno[data-tone="warn"] { border-left-color: #d2a106; }
+  .ex-anno[data-tone="flag"] { border-left-color: var(--crimson); }
+  .ex-anno__crit {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 13.5px;
+    color: #161616;
+    margin-bottom: 4px;
+  }
+  .ex-anno__body {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    line-height: 1.55;
+    color: #333;
+    margin: 0;
+  }
+
+  .ex-diff {
+    background: #161616;
+    color: #f4f4f4;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+  .ex-diff h3 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+    color: #ffb3b8;
+  }
+  .ex-diff dl {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 12px 24px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .ex-diff dt { font-family: var(--font-sans); font-weight: 600; color: #a0a0a0; }
+  .ex-diff dd { margin: 0; color: #f4f4f4; font-family: var(--font-serif); }
+  .ex-diff dd b { color: #8df0b5; }
+
+  .ex-meta {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding: 16px 24px;
+    background: #f4f4f4;
+    margin-bottom: 20px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+  .ex-meta b { color: var(--crimson); }
+
+  @media (max-width: 720px) {
+    .ex-levels { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <span data-role-switch></span><a href="#">myBama</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">AI-enhanced Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+  <nav class="primary-nav">
+    <a href="index.html">Overview</a>
+    <a href="index.html#sessions">Sessions</a>
+    <a href="rubrics.html">Rubrics</a>
+    <a href="examples.html" class="is-active">Worked Examples</a>
+    <a href="alignment.html">Alignment</a>
+    <a href="portfolio.html">Portfolio</a>
+    <a href="credential.html">Credential</a>
+    <a href="facilitator.html" class="instructor-only">Facilitator</a>
+    <a href="analytics.html" class="instructor-only">Analytics</a>
+    <a href="resources.html">Resource Library</a>
+  </nav>
+</header>
+
+<section class="hero" style="padding-bottom: 64px;">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <div class="hero__eyebrow">Worked Examples · Rubric-Annotated</div>
+    <h1 class="hero__title">See the four&nbsp;levels<br/>in&nbsp;real&nbsp;artifacts.</h1>
+    <p class="hero__lede">
+      Rubrics describe levels in words. This gallery shows them in artifacts — Emerging through
+      Exemplary, side by side, with annotations keyed to every criterion. Read it before you draft;
+      read it again before you revise.
+    </p>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<section class="section">
+  <span class="section__eyebrow">Browse</span>
+  <h2 class="section__title">Pick a deliverable.<br/>Pick a level.</h2>
+
+  <div class="ex-tabs" id="ex-tabs"></div>
+
+  <div class="ex-meta" id="ex-meta">
+    <span><b>Deliverable:</b> <span id="ex-meta-d">—</span></span>
+    <span><b>Viewing:</b> <span id="ex-meta-lvl">—</span></span>
+    <span><b>Criteria covered:</b> <span id="ex-meta-crit">0</span>/5</span>
+  </div>
+
+  <div class="ex-levels" id="ex-levels"></div>
+
+  <div class="ex-workbench">
+    <div class="ex-workbench__artifact">
+      <h3>The Artifact</h3>
+      <div class="ex-artifact-body" id="ex-artifact"></div>
+    </div>
+    <aside class="ex-workbench__annotations">
+      <h3>Rubric-Linked Annotations</h3>
+      <div id="ex-annotations"></div>
+    </aside>
+  </div>
+
+  <div class="ex-diff">
+    <h3>What Separates This Level from the Next</h3>
+    <dl id="ex-diff-dl"></dl>
+  </div>
+
+  <p class="section__lede" style="font-size: 14px; color: #525252; margin-top: 12px;">
+    <strong>Proficient is the floor for every criterion.</strong> Exemplary is generous but not required.
+    Developing on any one criterion means the deliverable does not yet meet the credential threshold —
+    revise, don't average.
+  </p>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <span class="site-footer__brand">AI-enhanced Educational Game Design · v2 · 12 Sessions</span>
+    <span class="site-footer__meta">The University of Alabama · College of Education</span>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© 2026 The University of Alabama</span>
+    <span>Worked examples · annotated against rubric · non-compensatory</span>
+  </div>
+</footer>
+
+<script src="xapi.js"></script>
+<script src="role.js"></script>
+<script src="shell.js"></script>
+<script>
+(function () {
+  const DATA = {
+    D1: {
+      title: 'Design Problem Statement',
+      tag: 'Session 02 · Week 2',
+      criteria: ['Learner specificity', 'Context constraints', 'Measurable shift', 'Evidence of the problem', 'Revision response'],
+      levels: {
+        Emerging: {
+          snippet: 'Students often get confused by fractions, so the game will teach fractions.',
+          artifact: `<p><mark data-tone="flag" data-anno="c1">Students</mark> often get confused by <mark data-tone="flag" data-anno="c3">fractions</mark>, so the game will <mark data-tone="flag" data-anno="c3">teach fractions</mark>.</p><p>The game will be fun and <mark data-tone="flag" data-anno="c2">engage the learners</mark>.</p><p><mark data-tone="flag" data-anno="c4">Research shows</mark> that games help learning.</p>`,
+          annotations: [
+            { crit: 'Learner specificity', tone: 'flag', body: '"Students" is the universal quantifier. Which students — grade, prior knowledge, language, time-of-day? Without this, no mechanic can be chosen well.' },
+            { crit: 'Context constraints', tone: 'flag', body: '"Engage the learners" is a hope, not a constraint. What is the device, the session length, the network, the teacher\'s role?' },
+            { crit: 'Measurable shift', tone: 'flag', body: '"Teach fractions" has no verb, baseline, or target. A reader cannot falsify whether it worked.' },
+            { crit: 'Evidence of the problem', tone: 'flag', body: '"Research shows" is not evidence. Cite a specific study, an observation, a pretest result, or a named instructor\'s report.' },
+            { crit: 'Revision response', tone: 'warn', body: 'No revision log yet — single-draft thinking. This will not survive Session 02 workshop.' },
+          ],
+          nextStep: {
+            'Name the learner': 'Replace "students" with "7th-graders at West Middle School, ~30% at or below grade level in number sense" — a specific, bounded population.',
+            'Turn hope into constraint': 'Replace "engage the learners" with a constraint: "40-minute session, one Chromebook per student, teacher facilitates."',
+            'Make the shift measurable': 'Replace "teach fractions" with "students can convert between 1/2, 1/4, 1/8, 1/3, 2/3 and equivalent visual representations, from ~35% baseline to ≥70% on an isomorphic post-check."',
+          },
+        },
+        Developing: {
+          snippet: '7th-graders at West Middle struggle with fraction equivalence. The game will help them get better at it during 40-minute class.',
+          artifact: `<p><mark data-tone="good" data-anno="c1">7th-graders at West Middle</mark> struggle with <mark data-tone="warn" data-anno="c3">fraction equivalence</mark>. The game will help them <mark data-tone="flag" data-anno="c3">get better at it</mark> during a <mark data-tone="good" data-anno="c2">40-minute class period</mark>.</p><p><mark data-tone="warn" data-anno="c4">Most students got fewer than half the equivalence items right</mark> on the last unit test.</p><p><mark data-tone="flag" data-anno="c5">We revised this statement after peer feedback.</mark></p>`,
+          annotations: [
+            { crit: 'Learner specificity', tone: 'good', body: 'Named population ("7th-graders at West Middle"). Still missing prior-knowledge band, but this is a floor-meeting move.' },
+            { crit: 'Context constraints', tone: 'warn', body: 'One constraint stated (40-minute class). Device, instructor role, and network are still absent — ask them explicitly in the Session 02 workshop.' },
+            { crit: 'Measurable shift', tone: 'flag', body: '"Get better at it" has direction but no magnitude. Needs baseline, target, and instrument.' },
+            { crit: 'Evidence of the problem', tone: 'warn', body: 'A data point ("fewer than half") is cited but not linked to the artifact. Show the item, n, and scoring rule.' },
+            { crit: 'Revision response', tone: 'flag', body: 'Claim of revision with no log. "We revised" ≠ evidence. Show the change and the rationale.' },
+          ],
+          nextStep: {
+            'Quantify the shift': 'Replace "get better at it" with "from ~35% baseline on equivalence items to ≥70% on an isomorphic post-check." Proficient requires a falsifiable target.',
+            'Surface the evidence': 'Attach the item, the n, and the scoring rubric. Reviewers can\'t cite what they can\'t see.',
+            'Show the revision log': 'A table with prior draft → peer comment → your change. One row is enough — but it must exist.',
+          },
+        },
+        Proficient: {
+          snippet: 'At West Middle School, ~30% of 7th-graders enter Unit 4 unable to reliably convert among 1/2, 1/4, 1/8, 1/3, 2/3 and equivalent visual representations. In a 40-minute session on shared Chromebooks, the game should move them from ~35% baseline to ≥70% on an isomorphic 10-item post-check.',
+          artifact: `<p>At West Middle School, <mark data-tone="good" data-anno="c1">~30% of 7th-graders enter Unit 4 unable to reliably convert among 1/2, 1/4, 1/8, 1/3, 2/3 and equivalent visual representations</mark>. <mark data-tone="good" data-anno="c4">(Unit-3 post-test items 7–12, n = 84, scored 0/1 per item; class mean 0.47.)</mark></p><p>In a <mark data-tone="good" data-anno="c2">40-minute session on shared Chromebooks (one per two students), with the teacher facilitating in-person</mark>, the game should move them from <mark data-tone="good" data-anno="c3">~35% baseline to ≥70% on an isomorphic 10-item post-check</mark>.</p><p><mark data-tone="good" data-anno="c5">Revision log: v1 said "teach fractions." After Session 02 workshop, Alex asked "which fraction skill?" v2 narrowed to equivalence. After peer review, Sam flagged that "~30%" needed a source; v3 adds the Unit-3 data.</mark></p>`,
+          annotations: [
+            { crit: 'Learner specificity', tone: 'good', body: 'Population, grade, and prior-knowledge band all named — a reader can identify the target learner without asking follow-ups.' },
+            { crit: 'Context constraints', tone: 'good', body: 'Session length, device ratio, and instructor role all stated. These are the three constraints that most shape mechanic choice.' },
+            { crit: 'Measurable shift', tone: 'good', body: 'Baseline (35%), target (≥70%), instrument (isomorphic 10-item post-check). A reviewer can falsify success.' },
+            { crit: 'Evidence of the problem', tone: 'good', body: 'Source (Unit-3 post-test), items (7–12), n (84), and scoring rule all cited. Not "research shows" — specific evidence.' },
+            { crit: 'Revision response', tone: 'good', body: 'Three versioned changes with named reviewers and the comment that triggered each. This is the bar.' },
+          ],
+          nextStep: {
+            'Reject an alternative': 'Exemplary shows the path not taken. "We considered teaching multiplication instead but rejected it because the unit test data points at equivalence, not multiplication."',
+            'Name a counter-hypothesis': 'Exemplary acknowledges what would count as evidence against this problem statement. "If the baseline is actually 50%+ in a replication, the urgency claim collapses."',
+            'Link to a downstream constraint': 'Exemplary shows how one D1 constraint will disqualify a whole class of mechanics in D2.',
+          },
+        },
+        Exemplary: {
+          snippet: 'Proficient + a rejected alternative ("we considered procedural fluency on addition of fractions — rejected, unit data points at equivalence") and a counter-hypothesis ("if baseline is ≥50% in a replication class, the urgency claim collapses and this problem moves down the queue").',
+          artifact: `<p>At West Middle School, ~30% of 7th-graders enter Unit 4 unable to reliably convert among 1/2, 1/4, 1/8, 1/3, 2/3 and equivalent visual representations. (Unit-3 post-test items 7–12, n = 84, mean 0.47.) In a 40-minute session on shared Chromebooks (one per two students), with the teacher facilitating, the game should move them from ~35% baseline to ≥70% on an isomorphic 10-item post-check.</p><p><mark data-tone="good" data-anno="x1">Rejected alternative:</mark> we considered targeting procedural fluency on <em>addition</em> of fractions. Rejected because the Unit-3 data points at equivalence, not addition — and because addition is already the focus of the textbook's Unit 5 intervention.</p><p><mark data-tone="good" data-anno="x2">Counter-hypothesis:</mark> if a replication class posts ≥50% on the equivalence items, the urgency claim collapses and this problem moves down the project queue.</p><p><mark data-tone="good" data-anno="x3">Downstream constraint:</mark> the two-students-per-Chromebook ratio disqualifies any mechanic that assumes individual agency over a shared state — collaborative turn-taking must be in D2.</p>`,
+          annotations: [
+            { crit: 'Rejected alternative', tone: 'good', body: 'Names the path not taken and why, with evidence ("unit data points at equivalence, not addition"). This is the honesty column.' },
+            { crit: 'Counter-hypothesis', tone: 'good', body: 'Acknowledges what evidence would defeat the problem claim. "If baseline is ≥50%, urgency collapses." Makes the claim falsifiable in the Popperian sense.' },
+            { crit: 'Downstream bite', tone: 'good', body: 'Shows how a D1 constraint actively disqualifies a mechanic family in D2. The crosswalk writes itself from this line.' },
+            { crit: 'All five Proficient criteria', tone: 'good', body: 'Every Proficient floor is held. Exemplary does not substitute for the floor — it adds to it.' },
+          ],
+          nextStep: {
+            'This is the ceiling': 'There is no "better than Exemplary." The gains from here are not in the rubric — they are in how quickly this D1 survives contact with the D2 crosswalk.',
+            'Use this as a template': 'Trainee facilitators should be able to write a Proficient D1 after reading this one. If they can\'t, the Session 02 scaffolding needs strengthening.',
+          },
+        },
+      },
+    },
+    D2: {
+      title: 'Objective × Mechanic Crosswalk',
+      tag: 'Session 03 · Week 3',
+      criteria: ['Objective specificity', 'Mechanic rationale', 'Risk identification', 'Declined alternative', 'Traceability to D1'],
+      levels: {
+        Emerging: {
+          snippet: 'Objective: learn fractions. Mechanic: a fun matching game. Why: it will be engaging.',
+          artifact: `<table style="width:100%;border-collapse:collapse;font-size:14px;"><thead><tr><th style="border-bottom:1px solid #e0e0e0;text-align:left;padding:8px;">Objective</th><th style="border-bottom:1px solid #e0e0e0;text-align:left;padding:8px;">Mechanic</th><th style="border-bottom:1px solid #e0e0e0;text-align:left;padding:8px;">Why</th></tr></thead><tbody><tr><td style="padding:8px;"><mark data-tone="flag">Learn fractions</mark></td><td style="padding:8px;"><mark data-tone="flag">A fun matching game</mark></td><td style="padding:8px;"><mark data-tone="flag">It will be engaging</mark></td></tr></tbody></table>`,
+          annotations: [
+            { crit: 'Objective specificity', tone: 'flag', body: '"Learn fractions" is not an objective — it is a topic. A Proficient row has a verb, a condition, and a criterion.' },
+            { crit: 'Mechanic rationale', tone: 'flag', body: '"Fun matching game" is a genre, not a mechanic. What does the player do in each turn? What is the state and what changes?' },
+            { crit: 'Risk identification', tone: 'flag', body: 'No risk column. Every mechanic has a failure mode; naming it is half the defense.' },
+            { crit: 'Declined alternative', tone: 'flag', body: 'No rejected option. Single-choice crosswalks signal the author didn\'t actually consider alternatives.' },
+            { crit: 'Traceability to D1', tone: 'flag', body: 'No citation of D1. If D1 had specified "two students per Chromebook," this mechanic would need to justify itself against that.' },
+          ],
+          nextStep: {
+            'Write a real objective': 'Verb + condition + criterion: "Given a set of 1/2, 1/4, 1/8 representations, convert between numeric and visual forms with ≥80% accuracy."',
+            'Describe the mechanic in four words': 'What does the player do each turn? "Drag card to equivalent bucket." Specificity is free.',
+            'Add a risk column': 'For each row, name the failure mode. "If the matching pool is too small, pattern-matching substitutes for reasoning."',
+          },
+        },
+        Developing: {
+          snippet: 'Objective: convert 1/2, 1/4, 1/8 between numeric and visual forms. Mechanic: card-matching game. Why: visual card matching helps with equivalence.',
+          artifact: `<table style="width:100%;border-collapse:collapse;font-size:13.5px;"><thead><tr><th style="border-bottom:1px solid #e0e0e0;text-align:left;padding:8px;">Obj</th><th style="border-bottom:1px solid #e0e0e0;text-align:left;padding:8px;">Mechanic</th><th style="border-bottom:1px solid #e0e0e0;text-align:left;padding:8px;">Risk</th><th style="border-bottom:1px solid #e0e0e0;text-align:left;padding:8px;">Cites D1?</th></tr></thead><tbody><tr><td style="padding:8px;"><mark data-tone="good">Convert 1/2, 1/4, 1/8 between numeric and visual</mark></td><td style="padding:8px;"><mark data-tone="warn">Card-matching game</mark></td><td style="padding:8px;"><mark data-tone="flag">Kids might not like it</mark></td><td style="padding:8px;"><mark data-tone="flag">—</mark></td></tr></tbody></table>`,
+          annotations: [
+            { crit: 'Objective specificity', tone: 'good', body: 'Verb (convert), domain (1/2, 1/4, 1/8), and direction (numeric ↔ visual). Missing the criterion — how accurate is good enough?' },
+            { crit: 'Mechanic rationale', tone: 'warn', body: '"Card-matching game" is closer, but still genre-level. Describe the turn: what does the player select, from what pool, against what feedback?' },
+            { crit: 'Risk identification', tone: 'flag', body: '"Kids might not like it" is a taste risk, not a learning risk. The real risk is pattern-matching substituting for reasoning.' },
+            { crit: 'Declined alternative', tone: 'flag', body: 'Still missing — this is the honesty column of D2 and is mandatory at Proficient.' },
+            { crit: 'Traceability to D1', tone: 'flag', body: 'D1 row empty. Proficient requires every row to cite at least one D1 context constraint that shaped the choice.' },
+          ],
+          nextStep: {
+            'Add a criterion': '"…with ≥80% accuracy on ten isomorphic items." Without a criterion, this objective cannot fail.',
+            'Name a learning risk, not a taste risk': '"Player may match by surface feature (color of segments) rather than proportion. Mitigation: randomize colors across cards."',
+            'Add a Declined column': 'For each row, one rejected mechanic and why. A single row like "Timed arcade — rejected, rewards speed over reasoning" is enough to cross the bar.',
+          },
+        },
+        Proficient: {
+          snippet: 'Every row: verb+condition+criterion objective, a turn-level mechanic description, a named learning risk with mitigation, a rejected alternative with reason, and a specific D1 constraint citation.',
+          artifact: `<table style="width:100%;border-collapse:collapse;font-size:13.5px;"><thead><tr><th style="border-bottom:1px solid #161616;text-align:left;padding:8px;">Objective</th><th style="border-bottom:1px solid #161616;text-align:left;padding:8px;">Mechanic (turn-level)</th><th style="border-bottom:1px solid #161616;text-align:left;padding:8px;">Risk & Mitigation</th><th style="border-bottom:1px solid #161616;text-align:left;padding:8px;">Declined</th><th style="border-bottom:1px solid #161616;text-align:left;padding:8px;">D1 Constraint</th></tr></thead><tbody><tr><td style="padding:8px;border-bottom:1px solid #e0e0e0;"><mark data-tone="good">Given 1/2, 1/4, 1/8 visual cards, convert to numeric form with ≥80% across 10 items.</mark></td><td style="padding:8px;border-bottom:1px solid #e0e0e0;"><mark data-tone="good">Per turn: draw 1 visual card, drag into 1 of 4 numeric buckets; feedback flashes correctness + shows equivalent visual variant.</mark></td><td style="padding:8px;border-bottom:1px solid #e0e0e0;"><mark data-tone="good">Surface-feature matching (color) → randomize color per deal.</mark></td><td style="padding:8px;border-bottom:1px solid #e0e0e0;"><mark data-tone="good">Timed arcade — rewards speed over reasoning.</mark></td><td style="padding:8px;border-bottom:1px solid #e0e0e0;"><mark data-tone="good">Two students/Chromebook → turn-taking built into deal.</mark></td></tr></tbody></table>`,
+          annotations: [
+            { crit: 'Objective specificity', tone: 'good', body: 'Verb (convert), condition (given cards), criterion (≥80% across 10). A reader can tell if this objective is met.' },
+            { crit: 'Mechanic rationale', tone: 'good', body: 'Turn-level description: what is drawn, what is dragged, what feedback. Not a genre — a loop.' },
+            { crit: 'Risk identification', tone: 'good', body: 'Learning risk (surface-feature matching), not taste risk. Paired with a concrete mitigation.' },
+            { crit: 'Declined alternative', tone: 'good', body: 'Rejected option ("timed arcade") with a reason tied to the objective, not to personal preference.' },
+            { crit: 'Traceability to D1', tone: 'good', body: 'Cites a specific D1 constraint (two-per-Chromebook) that actively shaped the mechanic (turn-taking in the deal).' },
+          ],
+          nextStep: {
+            'Show the constraint forcing rejection': 'Exemplary has at least one row where a D1 constraint forced the author to reject their first mechanic choice. That row is the proof D1 is load-bearing.',
+            'Add a post-playtest annotation': 'After D4, revisit this row. Did the risk materialize? Was the mitigation enough?',
+          },
+        },
+        Exemplary: {
+          snippet: 'Proficient + at least one row where a D1 constraint forced rejection of the author\'s first choice.',
+          artifact: `<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th style="border-bottom:1px solid #161616;text-align:left;padding:8px;">Obj</th><th style="border-bottom:1px solid #161616;text-align:left;padding:8px;">Mechanic</th><th style="border-bottom:1px solid #161616;text-align:left;padding:8px;">First choice & why rejected</th><th style="border-bottom:1px solid #161616;text-align:left;padding:8px;">D1 bite</th></tr></thead><tbody><tr><td style="padding:8px;border-bottom:1px solid #e0e0e0;">Convert 1/2, 1/4, 1/8 visual → numeric, ≥80%/10.</td><td style="padding:8px;border-bottom:1px solid #e0e0e0;">Turn-taking paired deal with shared board.</td><td style="padding:8px;border-bottom:1px solid #e0e0e0;"><mark data-tone="good">Originally: single-player drag-and-drop with individual score. Rejected — D1 specifies 2 students per Chromebook; individual-score mechanic would either leave one student idle or force two players to fight for a single input.</mark></td><td style="padding:8px;border-bottom:1px solid #e0e0e0;">D1 device ratio forced rejection.</td></tr></tbody></table>`,
+          annotations: [
+            { crit: 'Forced rejection', tone: 'good', body: 'The clearest possible proof that D1 is load-bearing: a first choice that D1 actively disqualified. "Individual-score" mechanic → rejected because D1 said two-per-device.' },
+            { crit: 'All Proficient criteria', tone: 'good', body: 'Floor is held across all five criteria. Exemplary adds; it never replaces.' },
+          ],
+          nextStep: {
+            'This is the ceiling': 'Strong D2s with a forced-rejection row almost always produce strong D4 playtests — the discipline of listening to D1 transfers.',
+          },
+        },
+      },
+    },
+    D3: {
+      title: 'Paper Prototype + Facilitator Guide',
+      tag: 'Session 07 · Week 7',
+      criteria: ['Playability', 'Loop fidelity', 'Facilitator guide completeness', 'Artifact quality', 'Iteration log'],
+      levels: {
+        Emerging: { snippet: 'A pile of hand-drawn cards and a verbal explanation. Nobody else can run it.',
+          artifact: `<p><mark data-tone="flag">Here are some cards. You match the ones that are equivalent. I\'ll explain as you play.</mark></p><p><mark data-tone="flag">No facilitator guide.</mark></p><p><mark data-tone="flag">No iteration log — this is v1.</mark></p>`,
+          annotations: [
+            { crit: 'Playability', tone: 'flag', body: 'A colleague cannot run this without the author in the room. That is the Proficient floor and it is missed.' },
+            { crit: 'Loop fidelity', tone: 'flag', body: 'The activity barely resembles the D2 mechanic — cards exist but the turn, feedback, and end-state are absent.' },
+            { crit: 'Facilitator guide completeness', tone: 'flag', body: 'Missing entirely. Setup, rules, edge cases, debrief — all four are mandatory at Proficient.' },
+            { crit: 'Artifact quality', tone: 'flag', body: 'Placeholder play — "figure it out" text substituting for actual cards.' },
+            { crit: 'Iteration log', tone: 'flag', body: 'Single-version artifacts fail Proficient. The rubric requires 3+ cycles.' },
+          ],
+          nextStep: {
+            'Playable-at-table in 5 minutes': 'A colleague picks up the envelope, reads one page, and starts running. That is the bar.',
+            'Write the guide as four sections': 'Setup · Rules · Edge cases · Debrief questions. Each section is a paragraph, not a dissertation.',
+            'Iterate three times, logged': 'Three named sessions with three named changes. Date, change, reason, outcome.',
+          },
+        },
+        Developing: { snippet: 'Cards and a one-page rules sheet; a colleague can start but stalls at edge cases. Iteration log has one entry.',
+          artifact: `<p><mark data-tone="good">Envelope contains 30 cards (3 colors × 10 representations) and a rules sheet.</mark></p><p><mark data-tone="warn">Rules: deal 10 to each player. On your turn, match two. First to 5 pairs wins.</mark></p><p><mark data-tone="flag">Edge case: what if no pair is possible? [unspecified]</mark></p><p><mark data-tone="warn">Iteration log: one session noted "students confused by blue cards." Changed to two colors.</mark></p>`,
+          annotations: [
+            { crit: 'Playability', tone: 'good', body: 'A colleague can start. Playability meets the floor.' },
+            { crit: 'Loop fidelity', tone: 'warn', body: 'Basic loop matches D2, but feedback timing is implicit. Proficient wants the loop visibly traceable to the D2 row.' },
+            { crit: 'Facilitator guide completeness', tone: 'flag', body: 'Three of four sections present (setup, rules, debrief implied). Edge cases absent — "what if no pair is possible" is not yet answered.' },
+            { crit: 'Artifact quality', tone: 'good', body: 'Physical cards, bounded count. No placeholder play.' },
+            { crit: 'Iteration log', tone: 'flag', body: 'One cycle logged. Proficient floor is 3+.' },
+          ],
+          nextStep: {
+            'Enumerate edge cases': 'List the three most likely break points. "No pair possible" → "player discards one, draws one."',
+            'Iterate twice more': 'Two more sessions, each with a named change. Change without a target audience is not iteration.',
+          },
+        },
+        Proficient: { snippet: 'Envelope playable in 5 minutes by a colleague. Guide covers setup, rules, three edge cases, and a debrief protocol. Iteration log shows three cycles with change, reason, and outcome.',
+          artifact: `<p><mark data-tone="good">Envelope: 30 cards (2 colors × 15 representations), 1 turn-tracker, 1 rules sheet.</mark></p><p><mark data-tone="good">Guide: setup (60s), rules (1 minute — turn = draw, match, explain; feedback = flip-and-read), 3 edge cases (no pair → discard-draw; disputed match → facilitator coin-toss; stall → 30-sec timer), debrief (2 questions: "which match surprised you?" "which rule felt unfair?").</mark></p><p><mark data-tone="good">Iteration log: v1 (5/12, Sam's class, n=8) — "blue-red confusing" → v2 dropped to 2 colors. v2 (5/14, peer run) — "no-pair stall" → v3 added discard rule. v3 (5/16, target learners n=6) — 4/6 reached end in 7 min.</mark></p>`,
+          annotations: [
+            { crit: 'Playability', tone: 'good', body: '5-minute pickup by a colleague is demonstrable: Sam ran v3 without the author in the room.' },
+            { crit: 'Loop fidelity', tone: 'good', body: 'Turn = draw, match, explain. Feedback = flip-and-read. Cleanly traceable to the D2 row.' },
+            { crit: 'Facilitator guide completeness', tone: 'good', body: 'All four sections present, each bounded to the minimum necessary. No dissertation; no placeholders.' },
+            { crit: 'Artifact quality', tone: 'good', body: 'Bounded component count, real materials, no "figure it out later."' },
+            { crit: 'Iteration log', tone: 'good', body: 'Three cycles, each with date, observer, n, named change, and outcome. This is the bar.' },
+          ],
+          nextStep: {
+            'Add a failure mode': 'Exemplary documents a path that failed. "v2 tried a timed mode — rejected, because speed was the very risk D2 flagged."',
+          },
+        },
+        Exemplary: { snippet: 'Proficient + at least one documented failed path and evidence of how it was abandoned.',
+          artifact: `<p>v2.5 (5/15): tried timed mode — rejected after one run because <mark data-tone="good">speed was the exact risk D2 flagged</mark>. Failed path is kept in the log as a warning for future revisers.</p>`,
+          annotations: [
+            { crit: 'Failed path documentation', tone: 'good', body: 'Not every iteration succeeds. Exemplary artifacts log the failures too — future revisers learn what not to repeat.' },
+            { crit: 'All Proficient criteria', tone: 'good', body: 'Floor held. Exemplary extends the log, not replaces the rubric.' },
+          ],
+          nextStep: { 'This is the ceiling': 'A D3 with a failed-path entry almost always produces a D4 playtest that is interesting even when it fails.' },
+        },
+      },
+    },
+    D4: {
+      title: 'Playtest Report',
+      tag: 'Session 09 · Week 9',
+      criteria: ['Protocol design', 'Evidence base', 'Observation vs. interpretation', 'Finding taxonomy', 'Revision plan'],
+      levels: {
+        Emerging: { snippet: '"My roommate played it and liked it." No protocol, no evidence, no plan.',
+          artifact: `<p><mark data-tone="flag">My roommate played it for 10 minutes and said it was fun. No consent form. No recording.</mark></p><p><mark data-tone="flag">I think I should make it prettier.</mark></p>`,
+          annotations: [
+            { crit: 'Protocol design', tone: 'flag', body: 'No protocol, no consent, no target-learner sessions. Floor is three target-learner sessions minimum.' },
+            { crit: 'Evidence base', tone: 'flag', body: 'No capture, no traceability. "Liked it" is not a finding.' },
+            { crit: 'Observation vs. interpretation', tone: 'flag', body: '"I think I should make it prettier" is pure interpretation with no observation behind it.' },
+            { crit: 'Finding taxonomy', tone: 'flag', body: 'No taxonomy at all. Proficient needs severity × domain labels on each finding.' },
+            { crit: 'Revision plan', tone: 'flag', body: 'No plan — no impact×effort, no cut line.' },
+          ],
+          nextStep: {
+            'Recruit target learners': 'Roommates are not 7th-graders at West Middle. Protocol begins with a target-learner roster.',
+            'Split observation from interpretation': 'Two-column notes: what you saw | what you think it means. Never collapse them.',
+          },
+        },
+        Developing: { snippet: 'Two target-learner sessions, loose notes, one revision idea ranked by "feels important."',
+          artifact: `<p><mark data-tone="good">Ran with 2 target learners (7th-graders, recruited via teacher).</mark></p><p><mark data-tone="warn">Notes: "they got stuck on the 1/3 card"; "they liked the colors."</mark></p><p><mark data-tone="flag">Plan: make the 1/3 card clearer. (Feels important.)</mark></p>`,
+          annotations: [
+            { crit: 'Protocol design', tone: 'warn', body: 'Target-learner recruitment ✓, but n=2 is below the Proficient floor of 3+.' },
+            { crit: 'Evidence base', tone: 'warn', body: 'Some capture; traceability weak — which finding came from which session?' },
+            { crit: 'Observation vs. interpretation', tone: 'warn', body: '"Got stuck" is observation; "liked the colors" blurs the two (did they say it, or did you infer it?).' },
+            { crit: 'Finding taxonomy', tone: 'flag', body: 'No severity × domain labels. "Make the card clearer" could be a visual issue or a conceptual one.' },
+            { crit: 'Revision plan', tone: 'flag', body: 'No impact × effort ranking, no cut line. "Feels important" is not a decision rule.' },
+          ],
+          nextStep: {
+            'Run one more target-learner session': 'n=3 is the Proficient floor. It\'s hard, but the rubric is non-compensatory.',
+            'Tag every finding severity × domain': '(Blocker | Friction | Polish) × (Conceptual | Interface | Social). Now the plan is sortable.',
+          },
+        },
+        Proficient: { snippet: '3+ target-learner sessions, consent logged, observation/interpretation split, every finding tagged severity × domain, revision plan ranked by impact × effort with a cut line.',
+          artifact: `<p><mark data-tone="good">Protocol: 4 sessions, 2 learners each, 30 min, written consent from guardians via teacher liaison, recorded (audio only).</mark></p><p><mark data-tone="good">Finding 3 (severity: Friction, domain: Conceptual): 3/4 pairs paused at 1/3 → 2/6 conversion. Observation: "pair stared, asked each other"; interpretation: "1/3 is the only non-power-of-2 denominator — the visual heuristic breaks."</mark></p><p><mark data-tone="good">Revision plan: Blockers first (add explicit 1/3 scaffold card, effort: M, impact: H — in). Polish later (color palette tweak, effort: L, impact: L — below cut line).</mark></p>`,
+          annotations: [
+            { crit: 'Protocol design', tone: 'good', body: '4 sessions, 8 total learners, consent documented, recording specified. Exceeds the n=3 floor cleanly.' },
+            { crit: 'Evidence base', tone: 'good', body: 'Findings cite specific sessions; "3/4 pairs paused at 1/3 → 2/6." Traceable.' },
+            { crit: 'Observation vs. interpretation', tone: 'good', body: 'Labeled explicitly in the finding. "Stared, asked each other" is observation; "1/3 is the only non-power-of-2 denominator" is interpretation. This is the discipline.' },
+            { crit: 'Finding taxonomy', tone: 'good', body: 'Severity × domain tagged per finding. Sortable, prioritizable, defensible.' },
+            { crit: 'Revision plan', tone: 'good', body: 'Impact × effort, explicit cut line. Blockers in, polish out. Decision rule, not taste.' },
+          ],
+          nextStep: {
+            'Add a null finding': 'Exemplary reports show what did NOT move — "color palette did not correlate with stall rate." Absence is evidence.',
+          },
+        },
+        Exemplary: { snippet: 'Proficient + at least one reported null finding (something you expected to matter that didn\'t).',
+          artifact: `<p><mark data-tone="good">Null finding: we expected the color palette to correlate with stall rate. Across 4 sessions, it did not (stall rates 2/6, 2/6, 3/6, 2/6 across palettes A/A/B/B). We are not changing the palette.</mark></p>`,
+          annotations: [
+            { crit: 'Null finding', tone: 'good', body: 'The discipline of reporting what did NOT move separates playtest from confirmation bias. This is the exemplary move.' },
+            { crit: 'All Proficient criteria', tone: 'good', body: 'Floor held. Null finding extends — does not replace — the Proficient evidence base.' },
+          ],
+          nextStep: { 'This is the ceiling': 'D4s with null findings produce D5 specs that are tighter because less effort is spent on polish that won\'t move outcomes.' },
+        },
+      },
+    },
+    D5: {
+      title: 'Implementation Spec',
+      tag: 'Session 12 · Week 12',
+      criteria: ['State machine', 'Event → feedback map', 'Three.js bridge', 'Coherence with D1–D4', 'Known limits'],
+      levels: {
+        Emerging: { snippet: '"A developer will figure it out from my sketches." No state machine. No event map.',
+          artifact: `<p><mark data-tone="flag">See attached notebook photos. The dev team can figure out the rest.</mark></p>`,
+          annotations: [
+            { crit: 'State machine', tone: 'flag', body: 'Missing. A one-page guarded state machine is mandatory at Proficient.' },
+            { crit: 'Event → feedback map', tone: 'flag', body: 'Missing. Every cell specified is the Proficient floor.' },
+            { crit: 'Three.js bridge', tone: 'flag', body: 'Missing. Scene purpose, scene graph, and budget are all required.' },
+            { crit: 'Coherence with D1–D4', tone: 'flag', body: 'No citations to D1–D4 anywhere. D5 is not a fresh start; it is a landing.' },
+            { crit: 'Known limits', tone: 'flag', body: '"Figure it out" is the opposite of the above-the-line honesty this criterion asks for.' },
+          ],
+          nextStep: { 'Start with the state machine': 'Five states max. Every transition guarded. One page.' },
+        },
+        Developing: { snippet: 'State diagram and event map present but partial; scene graph rough; coherence to D4 implicit.',
+          artifact: `<p><mark data-tone="good">State machine (5 states): Title → Deal → Match → Feedback → End.</mark></p><p><mark data-tone="warn">Event map partial — no explicit feedback for "invalid match" or "timeout."</mark></p><p><mark data-tone="warn">Three.js scene described but no budget (poly count? draw calls?).</mark></p><p><mark data-tone="flag">No explicit D4 findings citation.</mark></p>`,
+          annotations: [
+            { crit: 'State machine', tone: 'good', body: 'Five states, readable. Meets floor.' },
+            { crit: 'Event → feedback map', tone: 'warn', body: 'Partial. "Invalid match" and "timeout" not specified. Proficient = every cell.' },
+            { crit: 'Three.js bridge', tone: 'warn', body: 'Purpose and graph present, budget absent.' },
+            { crit: 'Coherence with D1–D4', tone: 'flag', body: 'No explicit citation. Reviewer cannot tell if the spec addresses D4 findings.' },
+            { crit: 'Known limits', tone: 'flag', body: 'Honesty column absent.' },
+          ],
+          nextStep: { 'Fill every cell': 'Invalid match → shake + retain card. Timeout → nudge prompt at 20s. No cell left implicit.' },
+        },
+        Proficient: { snippet: 'One-page state machine fully guarded. Event map with every cell specified. Three.js: scene purpose + graph + poly/draw-call budget. D4 findings cited. Known limits listed above the line.',
+          artifact: `<p><mark data-tone="good">State machine: 5 states, 9 transitions, every transition has a guard condition; invalid states unreachable.</mark></p><p><mark data-tone="good">Event map (14 cells): every (state × event) pair has feedback + next-state specified. Yes, even "timeout in Title."</mark></p><p><mark data-tone="good">Three.js: scene purpose = "reveal equivalence visually." Graph: root → ui-layer + card-layer + feedback-layer. Budget: ≤ 2k tris, ≤ 20 draw calls, ≤ 150ms to first interactable.</mark></p><p><mark data-tone="good">D4 linkage: scaffold card (D4 blocker finding) → Match state has explicit "scaffold" sub-state for 1/3 family.</mark></p><p><mark data-tone="good">Known limits: audio not specified (out of scope for this cohort); offline play requires caching strategy not yet designed.</mark></p>`,
+          annotations: [
+            { crit: 'State machine', tone: 'good', body: 'Guarded, bounded, unambiguous. A developer reads it once and starts coding.' },
+            { crit: 'Event → feedback map', tone: 'good', body: 'Every cell filled, including the "useless" ones like timeout-in-Title. Completeness prevents runtime ambiguity.' },
+            { crit: 'Three.js bridge', tone: 'good', body: 'Purpose, graph, and budget. Budget is the part novices skip — it is the criterion that separates spec from wish.' },
+            { crit: 'Coherence with D1–D4', tone: 'good', body: 'D4 finding is load-bearing in the state machine, not just cited in a footnote. Scaffold sub-state exists because playtest said so.' },
+            { crit: 'Known limits', tone: 'good', body: 'Audio, offline — both flagged above the line. Honest about what this spec does not cover.' },
+          ],
+          nextStep: { 'Hand it to a developer': 'If they can scaffold a day-one build from this, you are done. If they come back with more than three clarifying questions, revise.' },
+        },
+        Exemplary: { snippet: 'Proficient + an appendix of machine-readable fragments (state-machine JSON, event-map CSV) a build tool could ingest directly.',
+          artifact: `<p><mark data-tone="good">Appendix A: state-machine as JSON (importable by xstate).</mark></p><p><mark data-tone="good">Appendix B: event-map as CSV (one row per cell, columns: state,event,feedback,nextState,asset).</mark></p><p><mark data-tone="good">Appendix C: Three.js scene-graph as a Codex-ready prompt with the budget encoded as a rubric for the AI.</mark></p>`,
+          annotations: [
+            { crit: 'Machine-readable fragments', tone: 'good', body: 'Spec that a build tool can ingest directly closes the gap between design doc and code. JSON + CSV + Codex prompt is the modern-day trio.' },
+            { crit: 'All Proficient criteria', tone: 'good', body: 'Floor held.' },
+          ],
+          nextStep: { 'This is the ceiling': 'An Exemplary D5 is what separates "microcredential-complete" from "professional-ready."' },
+        },
+      },
+    },
+  };
+
+  const order = ['D1','D2','D3','D4','D5'];
+  const levels = ['Emerging','Developing','Proficient','Exemplary'];
+
+  let currentD = 'D1';
+  let currentLvl = 'Proficient';
+
+  // ── Render tabs
+  const tabs = document.getElementById('ex-tabs');
+  tabs.innerHTML = order.map(k => `
+    <button class="ex-tab" data-d="${k}">
+      ${k}
+      <small>${DATA[k].title}</small>
+    </button>
+  `).join('');
+  tabs.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-d]');
+    if (!btn) return;
+    currentD = btn.getAttribute('data-d');
+    currentLvl = 'Proficient';
+    render();
+  });
+
+  // ── Render level cards
+  const levelsEl = document.getElementById('ex-levels');
+  levelsEl.addEventListener('click', (e) => {
+    const card = e.target.closest('[data-lvl]');
+    if (!card) return;
+    currentLvl = card.getAttribute('data-lvl');
+    render();
+    if (window.xapi) {
+      window.xapi.emit('experienced',
+        window.xapi.activities.obj('worked-example', `${currentD}/${currentLvl}`, `${currentD} · ${currentLvl}`));
+    }
+  });
+
+  function render() {
+    // Tabs
+    tabs.querySelectorAll('[data-d]').forEach(b => {
+      b.classList.toggle('is-active', b.getAttribute('data-d') === currentD);
+    });
+    const d = DATA[currentD];
+    // Meta
+    document.getElementById('ex-meta-d').textContent = `${currentD} · ${d.title} · ${d.tag}`;
+    document.getElementById('ex-meta-lvl').textContent = currentLvl;
+    document.getElementById('ex-meta-crit').textContent = d.criteria.length;
+
+    // Level cards
+    levelsEl.innerHTML = levels.map(lvl => {
+      const lv = d.levels[lvl];
+      const sel = lvl === currentLvl ? 'is-selected' : '';
+      return `
+        <div class="ex-level ${sel}" data-lvl="${lvl}">
+          <div class="ex-level__label">${lvl}</div>
+          <div class="ex-level__tag">${currentD} · ${d.tag}</div>
+          <p class="ex-level__snippet">${lv.snippet}</p>
+        </div>
+      `;
+    }).join('');
+
+    // Artifact + annotations
+    const lv = d.levels[currentLvl];
+    document.getElementById('ex-artifact').innerHTML = lv.artifact;
+    document.getElementById('ex-annotations').innerHTML = lv.annotations.map(a => `
+      <div class="ex-anno" data-tone="${a.tone}">
+        <div class="ex-anno__crit">${a.crit}</div>
+        <p class="ex-anno__body">${a.body}</p>
+      </div>
+    `).join('');
+
+    // Diff
+    const dl = document.getElementById('ex-diff-dl');
+    dl.innerHTML = Object.entries(lv.nextStep).map(([k, v]) => `
+      <dt>${k}</dt><dd>${v}</dd>
+    `).join('');
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

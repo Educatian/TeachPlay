@@ -191,6 +191,131 @@
     .an-sa-row { grid-template-columns: 1fr; gap: 6px; }
     .an-sa-delta { text-align: left; }
   }
+
+  /* Cohort compare */
+  .an-compare {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 20px 24px;
+  }
+  .an-compare__row {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .an-compare__row label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #525252;
+  }
+  .an-compare__row select, .an-compare__row input {
+    border: 1px solid #c6c6c6;
+    padding: 6px 10px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background: #fafafa;
+    min-width: 180px;
+  }
+  .an-compare__row button {
+    background: #161616;
+    color: #f4f4f4;
+    border: 0;
+    padding: 7px 14px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+  .an-compare__row button.ghost {
+    background: transparent;
+    color: #161616;
+    border: 1px solid #c6c6c6;
+  }
+  .an-compare__row button:hover { background: var(--crimson); color: #fff; border-color: var(--crimson); }
+
+  .an-compare__snaplist {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #525252;
+    margin: 0 0 14px;
+  }
+  .an-compare__snaplist .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f4f4f4;
+    padding: 4px 10px;
+    margin: 2px 4px 2px 0;
+    border: 1px solid #e0e0e0;
+  }
+  .an-compare__snaplist .pill button {
+    background: transparent;
+    border: 0;
+    color: #8d8d8d;
+    cursor: pointer;
+    font-size: 11px;
+    padding: 0 2px;
+  }
+  .an-compare__snaplist .pill button:hover { color: var(--crimson); }
+
+  .an-cmp-tbl {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12.5px;
+    margin-top: 12px;
+  }
+  .an-cmp-tbl th, .an-cmp-tbl td {
+    padding: 7px 10px;
+    text-align: center;
+    border-bottom: 1px solid #e8e8e8;
+    font-family: var(--font-mono);
+  }
+  .an-cmp-tbl th {
+    background: #161616;
+    color: #f4f4f4;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-align: left;
+  }
+  .an-cmp-tbl tbody th {
+    background: #fafafa;
+    color: #161616;
+    text-align: left;
+    padding: 8px 14px;
+    min-width: 240px;
+    font-weight: 500;
+  }
+  .an-cmp-tbl tbody th small { display: block; font-size: 10.5px; color: #6f6f6f; font-weight: 400; margin-top: 2px; }
+  .an-cmp-delta--pos { color: #0e6027; font-weight: 600; }
+  .an-cmp-delta--neg { color: #a2191f; font-weight: 600; }
+  .an-cmp-delta--flat { color: #8d8d8d; }
+  .an-cmp-delta--nd { color: #c6c6c6; }
+
+  .an-cmp-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .an-cmp-summary__cell {
+    background: #fafafa;
+    padding: 12px 14px;
+    border-left: 3px solid #161616;
+  }
+  .an-cmp-summary__cell.pos { border-left-color: #0e6027; }
+  .an-cmp-summary__cell.neg { border-left-color: #a2191f; }
+  .an-cmp-summary__num { font-family: var(--font-mono); font-size: 22px; color: #161616; line-height: 1; }
+  .an-cmp-summary__lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252; margin-top: 6px; }
+  .an-compare__hint {
+    font-size: 13px;
+    color: #525252;
+    font-style: italic;
+    margin: 0 0 12px;
+  }
 </style>
 </head>
 <body>
@@ -271,6 +396,36 @@
       <span class="an-section__sub">Proficient-floor pass rate per criterion. &lt;70% cohort-wide signals a session gap, not a learner gap.</span>
     </div>
     <div class="an-heat"><div id="heatmap"></div></div>
+  </div>
+
+  <!-- Cohort-over-cohort comparison -->
+  <div class="an-section">
+    <div class="an-section__head">
+      <h2>Cohort-over-cohort comparison</h2>
+      <span class="an-section__sub">Snapshot the current cohort, then diff it against a prior one. Per-criterion deltas show where the program is gaining and where it's losing ground.</span>
+    </div>
+    <div class="an-compare">
+      <p class="an-compare__hint">Take a snapshot at the end of each cohort — it freezes the criterion pass-rates, funnel, and skills-growth into an immutable record. Diffs surface only when you have two snapshots (or one + live).</p>
+
+      <div class="an-compare__row">
+        <label>Snapshot name</label>
+        <input id="cmp-snap-name" placeholder="e.g. fall-2025" />
+        <button id="cmp-snap-take">Snapshot current cohort</button>
+        <button id="cmp-snap-clear" class="ghost">Clear all snapshots</button>
+      </div>
+
+      <div class="an-compare__snaplist" id="cmp-snap-list">No snapshots yet.</div>
+
+      <div class="an-compare__row">
+        <label>Baseline</label>
+        <select id="cmp-sel-a"><option value="">— select —</option></select>
+        <label>Comparison</label>
+        <select id="cmp-sel-b"><option value="__live__">Current (live)</option></select>
+        <button id="cmp-run" class="ghost">Diff →</button>
+      </div>
+
+      <div id="cmp-result"></div>
+    </div>
   </div>
 
   <!-- Session funnel -->
@@ -660,6 +815,217 @@
     host.innerHTML = rows || '<div class="an-stream__empty">No self-assessment responses yet. Visit S1 or S12 and rate the eight skills.</div>';
   }
 
+  // ── Cohort snapshots & comparison ───────────────────────────────
+  const SNAPSHOT_KEY = 'hb:cohort-snapshots';
+
+  function readSnapshots() {
+    try { return JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '{}'); }
+    catch { return {}; }
+  }
+  function writeSnapshots(s) {
+    localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(s));
+  }
+
+  function computeSnapshot() {
+    const q = xapi.readQueue();
+    const stats = computeStats(q);
+    const cohortSize = stats.actors.size || 0;
+
+    // Per-criterion pass rate
+    const byKey = {};
+    for (const s of stats.rubric) {
+      const m = s.object.id.match(/rubric-criterion\/(D\d+)\/([^?]+)/);
+      if (!m) continue;
+      const key = `${m[1]}|${m[2]}`;
+      const pass = s.result && s.result.success === true;
+      (byKey[key] = byKey[key] || []).push({ actor: actorId(s), pass });
+    }
+    const criteria = {};
+    CRITERIA.forEach(([d, k]) => {
+      const key = `${d}|${k}`;
+      const obs = byKey[key] || [];
+      const byActor = {};
+      obs.forEach(o => { byActor[o.actor] = o.pass || byActor[o.actor]; });
+      const passers = Object.values(byActor).filter(v => v).length;
+      criteria[key] = {
+        rate: cohortSize ? passers / cohortSize : null,
+        passers, events: obs.length,
+      };
+    });
+
+    // Session funnel
+    const perSession = {};
+    for (const s of stats.sessions) {
+      const m = s.object.id.match(/session\/s(\d+)/);
+      if (!m) continue;
+      const n = parseInt(m[1], 10);
+      (perSession[n] = perSession[n] || new Set()).add(actorId(s));
+    }
+    const funnel = {};
+    for (let n = 1; n <= 12; n++) {
+      const c = (perSession[n] || new Set()).size;
+      funnel[n] = cohortSize ? c / cohortSize : 0;
+    }
+
+    return {
+      cohortId: xapi.getCohort(),
+      cohortSize,
+      capturedAt: new Date().toISOString(),
+      criteria,
+      funnel,
+      totals: {
+        sessions: stats.sessions.length,
+        rubric: stats.rubric.length,
+        tickets: stats.tickets.length,
+        checks: stats.checks.length,
+      },
+    };
+  }
+
+  function renderSnapList() {
+    const snaps = readSnapshots();
+    const keys = Object.keys(snaps);
+    const list = document.getElementById('cmp-snap-list');
+    const selA = document.getElementById('cmp-sel-a');
+    const selB = document.getElementById('cmp-sel-b');
+    if (!keys.length) {
+      list.innerHTML = 'No snapshots yet. Seed a cohort and snapshot it to create a baseline.';
+    } else {
+      list.innerHTML = keys.map(k => {
+        const sn = snaps[k];
+        const when = new Date(sn.capturedAt).toLocaleDateString();
+        return `<span class="pill">${esc(k)} · n=${sn.cohortSize} · ${when} <button data-del="${esc(k)}" title="Delete">✕</button></span>`;
+      }).join(' ');
+    }
+    // Rebuild selects, preserving value if possible
+    const prevA = selA.value, prevB = selB.value;
+    const optsA = ['<option value="">— select baseline —</option>']
+      .concat(keys.map(k => `<option value="${esc(k)}">${esc(k)}</option>`)).join('');
+    const optsB = ['<option value="__live__">Current (live)</option>']
+      .concat(keys.map(k => `<option value="${esc(k)}">${esc(k)}</option>`)).join('');
+    selA.innerHTML = optsA;
+    selB.innerHTML = optsB;
+    if (keys.includes(prevA)) selA.value = prevA; else selA.value = '';
+    if (prevB && (prevB === '__live__' || keys.includes(prevB))) selB.value = prevB;
+    else selB.value = '__live__';
+  }
+
+  function runCompare() {
+    const selA = document.getElementById('cmp-sel-a').value;
+    const selB = document.getElementById('cmp-sel-b').value;
+    const host = document.getElementById('cmp-result');
+    if (!selA) { host.innerHTML = '<p class="an-compare__hint">Pick a baseline snapshot to diff against.</p>'; return; }
+    const snaps = readSnapshots();
+    const A = snaps[selA];
+    const B = selB === '__live__' ? computeSnapshot() : snaps[selB];
+    if (!A || !B) { host.innerHTML = '<p class="an-compare__hint">Snapshot not found.</p>'; return; }
+
+    // Summary deltas
+    const rateDeltas = [];
+    CRITERIA.forEach(([d, k]) => {
+      const key = `${d}|${k}`;
+      const a = A.criteria[key] && A.criteria[key].rate;
+      const b = B.criteria[key] && B.criteria[key].rate;
+      if (a != null && b != null) rateDeltas.push({ d, k, a, b, delta: b - a });
+    });
+    const improved = rateDeltas.filter(x => x.delta >= 0.05).length;
+    const regressed = rateDeltas.filter(x => x.delta <= -0.05).length;
+    const flat = rateDeltas.length - improved - regressed;
+
+    // Criterion rows
+    const rows = CRITERIA.map(([d, k, label]) => {
+      const key = `${d}|${k}`;
+      const a = A.criteria[key] && A.criteria[key].rate;
+      const b = B.criteria[key] && B.criteria[key].rate;
+      const aTxt = a == null ? '—' : Math.round(a * 100) + '%';
+      const bTxt = b == null ? '—' : Math.round(b * 100) + '%';
+      let delta = '—', cls = 'an-cmp-delta--nd';
+      if (a != null && b != null) {
+        const d_ = b - a;
+        const arrow = d_ > 0.01 ? '▲' : d_ < -0.01 ? '▼' : '→';
+        cls = d_ >= 0.05 ? 'an-cmp-delta--pos' : d_ <= -0.05 ? 'an-cmp-delta--neg' : 'an-cmp-delta--flat';
+        delta = `${arrow} ${d_ >= 0 ? '+' : ''}${Math.round(d_ * 100)} pp`;
+      }
+      return `<tr>
+        <th scope="row">${d} · ${label}<small>${k}</small></th>
+        <td>${aTxt}</td>
+        <td>${bTxt}</td>
+        <td class="${cls}">${delta}</td>
+      </tr>`;
+    }).join('');
+
+    // Funnel diff (final session)
+    const aFin = (A.funnel && A.funnel[12]) || 0;
+    const bFin = (B.funnel && B.funnel[12]) || 0;
+    const completionDelta = bFin - aFin;
+
+    host.innerHTML = `
+      <div class="an-cmp-summary">
+        <div class="an-cmp-summary__cell pos">
+          <div class="an-cmp-summary__num">${improved}</div>
+          <div class="an-cmp-summary__lbl">Criteria improved (≥ +5 pp)</div>
+        </div>
+        <div class="an-cmp-summary__cell">
+          <div class="an-cmp-summary__num">${flat}</div>
+          <div class="an-cmp-summary__lbl">Flat (within ±5 pp)</div>
+        </div>
+        <div class="an-cmp-summary__cell neg">
+          <div class="an-cmp-summary__num">${regressed}</div>
+          <div class="an-cmp-summary__lbl">Regressed (≤ −5 pp)</div>
+        </div>
+        <div class="an-cmp-summary__cell ${completionDelta >= 0 ? 'pos' : 'neg'}">
+          <div class="an-cmp-summary__num">${completionDelta >= 0 ? '+' : ''}${Math.round(completionDelta * 100)} pp</div>
+          <div class="an-cmp-summary__lbl">S12 completion delta</div>
+        </div>
+      </div>
+      <p class="an-compare__hint">
+        <b>${esc(selA)}</b> (n=${A.cohortSize}, ${new Date(A.capturedAt).toLocaleDateString()}) →
+        <b>${selB === '__live__' ? 'Current live' : esc(selB)}</b> (n=${B.cohortSize}).
+        Read regressions as curricular signals, not student failure — a criterion that fell ≥5 pp usually means the scaffolding around it changed or eroded.
+      </p>
+      <table class="an-cmp-tbl">
+        <thead><tr>
+          <th style="min-width:240px;">Criterion</th>
+          <th style="width:90px;">Baseline</th>
+          <th style="width:90px;">Comparison</th>
+          <th style="width:120px;">Δ (pp)</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
+  function wireCompare() {
+    document.getElementById('cmp-snap-take').addEventListener('click', () => {
+      const nameInput = document.getElementById('cmp-snap-name');
+      const raw = nameInput.value.trim();
+      if (!raw) { alert('Give the snapshot a name (e.g. "fall-2025").'); return; }
+      const key = raw.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 40);
+      const snaps = readSnapshots();
+      if (snaps[key] && !confirm(`Overwrite existing snapshot "${key}"?`)) return;
+      snaps[key] = computeSnapshot();
+      writeSnapshots(snaps);
+      nameInput.value = '';
+      renderSnapList();
+    });
+    document.getElementById('cmp-snap-clear').addEventListener('click', () => {
+      if (!confirm('Delete all cohort snapshots?')) return;
+      writeSnapshots({});
+      renderSnapList();
+      document.getElementById('cmp-result').innerHTML = '';
+    });
+    document.getElementById('cmp-snap-list').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-del]');
+      if (!b) return;
+      const key = b.getAttribute('data-del');
+      const snaps = readSnapshots();
+      delete snaps[key];
+      writeSnapshots(snaps);
+      renderSnapList();
+    });
+    document.getElementById('cmp-run').addEventListener('click', runCompare);
+  }
+
   // ── Render all ──────────────────────────────────────────────────
   function renderAll() {
     const q = xapi.readQueue();
@@ -672,6 +1038,7 @@
     renderGrowth(q);
     renderReliability(stats);
     renderStream(q);
+    renderSnapList();
   }
 
   // ── Synthetic cohort seed ───────────────────────────────────────
@@ -818,6 +1185,7 @@
     }
   });
 
+  wireCompare();
   renderAll();
   setInterval(renderAll, 5000); // auto-refresh
 })();
