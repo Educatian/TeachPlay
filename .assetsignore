@@ -1,0 +1,48 @@
+# Files NOT uploaded as public static assets by the teachplay Worker.
+# Syntax follows .gitignore. Anything matched here stays server-side only
+# (or purely in-repo) — it is not served from env.ASSETS.fetch().
+
+# Node dependencies: bundled into the Worker script by wrangler, never
+# served. Without this exclusion, node_modules/workerd/bin/workerd (118 MiB)
+# blows past Cloudflare's 25 MiB per-asset limit and fails the deploy.
+node_modules/
+
+# Server code — imported by the Worker via `main` in wrangler.toml.
+# Must never be served raw or learners could read the signing pipeline.
+src/
+
+# Dev + build tooling (key generators, signing CLIs). Scripts reference
+# the gitignored private key on disk; irrelevant to visitors.
+tools/
+
+# Hosting configs and lockfiles.
+wrangler.toml
+wrangler.jsonc
+.wrangler/
+package.json
+package-lock.json
+.gitignore
+.assetsignore
+
+# Design docs are for repo readers, not the public site. If we ever want
+# them rendered publicly, we'll promote specific files out of docs/.
+docs/
+
+# Hidden working directories.
+.git/
+.claude/
+.vscode/
+.idea/
+
+# OS / editor noise.
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+*.log
+*.tmp
+.cache/
+
+# Repo-level docs that don't need to be browsable on the live domain.
+README.md

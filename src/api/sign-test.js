@@ -1,35 +1,34 @@
 /**
- * Cloudflare Pages Function — signing compatibility smoketest.
+ * GET /api/sign-test — signing compatibility smoketest.
  *
- * The question this endpoint answers: does @digitalbazaar/vc actually run
- * inside a Workers runtime (V8 isolate with nodejs_compat), or do we need
- * to drop to a thinner primitive (e.g. @noble/ed25519 + manual RDFC)?
+ * Answers the single question we need answered before promoting any real
+ * endpoint: does @digitalbazaar/vc (with its jsonld / data-integrity /
+ * ed25519-multikey dep chain) actually run inside a Workers V8 isolate
+ * with nodejs_compat, or do we need to drop to @noble/ed25519 + a manual
+ * RDFC canonicalizer?
  *
- * It signs a minimal hardcoded VerifiableCredential under the issuer key
- * held in the ISSUER_PRIVATE_KEY_JSON secret, using the same suite as the
- * CLI tools (eddsa-rdfc-2022). If this returns a signed VC, the whole
- * signing stack works on Pages Functions and we can build real endpoints
- * (issue-for-learner, revoke) on top.
- *
- * Route: POST /api/sign-test   (GET also accepted for convenience)
+ * Signs a fixed minimal credential under the issuer key loaded from the
+ * ISSUER_PRIVATE_KEY_JSON secret. The subject is a placeholder, so the
+ * endpoint is safe to leave public during the smoketest phase.
  *
  * Requires:
- *   - Pages compatibility flag `nodejs_compat` (Dashboard → Settings →
- *     Functions → Compatibility flags, or wrangler.toml).
- *   - Secret `ISSUER_PRIVATE_KEY_JSON` — the JSON contents of
- *     tools/keys/issuer-ed25519.private.json, pasted as one string.
+ *   - wrangler.toml compatibility_flags includes "nodejs_compat".
+ *   - Dashboard / `wrangler secret put` has set ISSUER_PRIVATE_KEY_JSON
+ *     to the full JSON of tools/keys/issuer-ed25519.private.json.
  */
 import * as Ed25519Multikey from '@digitalbazaar/ed25519-multikey';
 import { cryptosuite as eddsaRdfc2022 } from '@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
 import { DataIntegrityProof } from '@digitalbazaar/data-integrity';
 import * as vc from '@digitalbazaar/vc';
 
-// Workers have no filesystem, so we resolve every @context / DID over
-// fetch. www.w3.org and w3id.org are CDN-cached, so latency is fine for
-// a smoketest; production endpoints should embed the small set of static
-// contexts we use to avoid the network hop.
+// Workers have no filesystem. We resolve @context / DID documents over
+// fetch for the smoketest; the real endpoints should embed the fixed set
+// of contexts we use (W3C VC v2, OBv3 3.0.3, Multikey v1) to avoid the
+// per-request network hop.
 const documentLoader = async (url) => {
-  const res = await fetch(url, { headers: { accept: 'application/ld+json, application/json' } });
+  const res = await fetch(url, {
+    headers: { accept: 'application/ld+json, application/json' },
+  });
   if (!res.ok) throw new Error(`documentLoader: ${url} → HTTP ${res.status}`);
   const document = await res.json();
   return { documentUrl: url, document, contextUrl: null };
@@ -45,9 +44,9 @@ function json(body, status = 200) {
   });
 }
 
-export const onRequest = async (context) => {
-  const raw = context.env.ISSUER_PRIVATE_KEY_JSON;
-  if (!raw) return json({ error: 'ISSUER_PRIVATE_KEY_JSON not set on this Pages deployment' }, 500);
+export async function handleSignTest(request, env, ctx) {
+  const raw = env.ISSUER_PRIVATE_KEY_JSON;
+  if (!raw) return json({ error: 'ISSUER_PRIVATE_KEY_JSON not set on this Worker deployment' }, 500);
 
   let keyPair;
   try {
@@ -62,7 +61,7 @@ export const onRequest = async (context) => {
     type: ['VerifiableCredential'],
     issuer: { id: 'did:web:teachplay.dev' },
     validFrom: new Date().toISOString(),
-    credentialSubject: { id: 'did:example:pages-functions-smoketest' },
+    credentialSubject: { id: 'did:example:worker-smoketest' },
   };
 
   try {
@@ -78,4 +77,4 @@ export const onRequest = async (context) => {
       stack: e.stack?.split('\n').slice(0, 8).join('\n'),
     }, 500);
   }
-};
+}

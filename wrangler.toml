@@ -1,0 +1,22 @@
+# Cloudflare Workers config for the `teachplay` Worker.
+#
+# Shape: Worker-with-Assets. The Worker script in src/index.js handles
+# every request first; it dispatches /api/* to handlers in src/api/ and
+# falls through to env.ASSETS.fetch() for the bound static bucket.
+#
+# The asset bucket is the repo root, but almost everything non-public
+# (node_modules, tools/, src/, docs/, wrangler.toml itself, …) is
+# excluded via .assetsignore. Without that file, wrangler tries to
+# upload node_modules/workerd/bin/workerd (~118 MiB) and fails the
+# 25 MiB per-asset limit.
+name = "teachplay"
+main = "src/index.js"
+compatibility_date = "2026-04-19"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+
+[assets]
+directory = "./"
+binding = "ASSETS"
