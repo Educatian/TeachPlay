@@ -316,19 +316,69 @@
 
   // ── Entry point ──────────────────────────────────────────────────────────────
 
-  function wireRegisterLink() {
-    var link = document.getElementById('register-link');
-    if (!link) return;
-    if (localStorage.getItem(LEARNER_KEY)) {
-      link.textContent = 'My Progress';
-      link.setAttribute('href', 'progress.html');
+  // ── Context-aware primary CTA ────────────────────────────────────────────
+  // The nav exposes <a id="primary-cta"> in every page. We set its label
+  // and behavior based on learner state:
+  //   - no learner_id           → "Register →"      (opens enrollment modal)
+  //   - learner, credential     → "View Credential →"  (→ progress.html)
+  //   - learner, no credential  → "Resume Session NN →" (→ next incomplete)
+  // Falls back to "Begin Session 01" if we don't know progress.
+  function highestCompleteSession() {
+    for (var i = 12; i >= 1; i--) {
+      if (localStorage.getItem('hb:session_complete:s' + String(i).padStart(2, '0')) === 'true') {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  function nextSessionHref() {
+    var completed = highestCompleteSession();
+    var next = Math.min(12, completed + 1);
+    return 'session-' + String(next).padStart(2, '0') + '.html';
+  }
+
+  function hasCredential() {
+    // credential.html persists a signed VC under either of these keys after issuance.
+    return !!(localStorage.getItem('hb:credential_signed') || localStorage.getItem('hb:credential'));
+  }
+
+  function wirePrimaryCta() {
+    // New mega-nav uses id="primary-cta"; fall back to legacy "register-link"
+    // (kept so pages still on the old nav don't break before sync-nav runs).
+    var cta = document.getElementById('primary-cta') || document.getElementById('register-link');
+    if (!cta) return;
+
+    var enrolled = !!localStorage.getItem(LEARNER_KEY);
+
+    if (!enrolled) {
+      cta.textContent = 'Register \u2192';
+      cta.setAttribute('href', '#');
+      cta.addEventListener('click', function (e) {
+        e.preventDefault();
+        showModal();
+      });
       return;
     }
-    link.setAttribute('href', '#');
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      showModal();
-    });
+
+    if (hasCredential()) {
+      cta.textContent = 'View Credential \u2192';
+      cta.setAttribute('href', 'progress.html');
+      return;
+    }
+
+    var completed = highestCompleteSession();
+    if (completed === 0) {
+      cta.textContent = 'Begin Session 01 \u2192';
+      cta.setAttribute('href', 'session-01.html');
+    } else if (completed >= 12) {
+      cta.textContent = 'Claim Credential \u2192';
+      cta.setAttribute('href', 'progress.html');
+    } else {
+      var next = Math.min(12, completed + 1);
+      cta.textContent = 'Resume Session ' + String(next).padStart(2, '0') + ' \u2192';
+      cta.setAttribute('href', nextSessionHref());
+    }
   }
 
   function init() {
@@ -344,7 +394,7 @@
       show: showModal,
       enrolled: function () { return !!localStorage.getItem(LEARNER_KEY); },
     };
-    wireRegisterLink();
+    wirePrimaryCta();
   }
 
   // Run after DOM is interactive

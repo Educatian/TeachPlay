@@ -14,6 +14,45 @@
     <span data-role-switch></span><a href="index.html">All sessions</a></div>
 </div>
 
+<div class="handbook-topbar">
+  <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
+        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
+        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Resources <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Non-compensatory criteria</span></a>
+        <a href="examples.html" role="menuitem">Worked Examples<span class="sub">Annotated exemplars</span></a>
+        <a href="alignment.html" role="menuitem">Alignment<span class="sub">Standards crosswalk</span></a>
+        <a href="resources.html" role="menuitem">Resource Library<span class="sub">Companion handouts</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Credential <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="credential.html" role="menuitem">About the Credential<span class="sub">Open Badges 3.0 / VC</span></a>
+        <a href="portfolio.html" role="menuitem">Portfolio<span class="sub">Your five deliverables</span></a>
+        <a href="verifier.html" role="menuitem">Verify a Credential<span class="sub">For employers & registrars</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group instructor-only" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Instructor <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="facilitator.html" role="menuitem">Facilitator Guide<span class="sub">Run each session</span></a>
+        <a href="calibration.html" role="menuitem">Calibration<span class="sub">Norm your rubric scores</span></a>
+        <a href="analytics.html" role="menuitem">Analytics<span class="sub">Cohort dashboards</span></a>
+      </div>
+    </div>
+    <a href="#" class="primary-nav__cta" id="primary-cta" data-primary-cta>Register →</a>
+  </nav>
+</div>
+
 <div class="shell">
   <aside class="sidebar" data-sidebar></aside>
 
@@ -387,5 +426,6 @@ triggered, and a one-line rewrite as a script line.</span></pre>
 <script src="questions.js"></script>
 <script src="quiz.js"></script>
 <script>Quiz.mount(document.getElementById('s06-quiz'), S06_QUESTIONS, { shuffle: true, gate: 'attempt' });</script>
+<script src="nav.js"></script>
 </body>
 </html>
