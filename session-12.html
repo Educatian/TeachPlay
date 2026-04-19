@@ -292,6 +292,80 @@
         </div>
       </section>
 
+      <!-- ─── Section: Claim credential ────────────────── -->
+      <section class="block" id="claim-credential">
+        <div class="block__kicker">10 · Your digital credential</div>
+        <h2 class="block__title">Claim your signed credential.</h2>
+        <p class="block__subtitle">
+          Enter your name and UA email. We'll send you a one-time link (valid 48 hours) to
+          download your signed Open Badge 3.0 credential.
+        </p>
+
+        <form id="claim-form" style="max-width:420px;margin:0 auto;">
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;" for="claim-name">Full name (as it should appear on the credential)</label>
+            <input id="claim-name" type="text" placeholder="Ada Lovelace"
+              style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:6px;font-size:15px;box-sizing:border-box;"/>
+          </div>
+          <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;" for="claim-email">UA email address</label>
+            <input id="claim-email" type="email" placeholder="ada@ua.edu"
+              style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:6px;font-size:15px;box-sizing:border-box;"/>
+          </div>
+          <button id="claim-submit" type="submit"
+            style="background:#be1a2f;color:#fff;border:none;padding:14px 28px;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer;width:100%;">
+            Send me the link →
+          </button>
+          <p id="claim-msg" style="margin-top:16px;font-size:14px;line-height:1.5;display:none;"></p>
+        </form>
+
+        <script>
+        (function() {
+          var form = document.getElementById('claim-form');
+          var btn  = document.getElementById('claim-submit');
+          var msg  = document.getElementById('claim-msg');
+
+          form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            var name  = document.getElementById('claim-name').value.trim();
+            var email = document.getElementById('claim-email').value.trim();
+            if (!name || !email) { showMsg('Please fill in both fields.', '#c00'); return; }
+
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+            msg.style.display = 'none';
+
+            try {
+              var res  = await fetch('/api/email-request', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ name: name, email: email, cohort: '2026-spring' }),
+              });
+              var data = await res.json();
+              if (res.ok && data.ok) {
+                showMsg('✓ ' + data.message, '#1a6e2e');
+                form.style.display = 'none';
+              } else {
+                showMsg(data.error || 'Something went wrong. Please try again.', '#c00');
+                btn.disabled = false;
+                btn.textContent = 'Send me the link →';
+              }
+            } catch (err) {
+              showMsg('Network error. Please try again.', '#c00');
+              btn.disabled = false;
+              btn.textContent = 'Send me the link →';
+            }
+          });
+
+          function showMsg(text, color) {
+            msg.textContent = text;
+            msg.style.color = color || '#333';
+            msg.style.display = 'block';
+          }
+        })();
+        </script>
+      </section>
+
     </div>
 
     <nav class="session-nav">

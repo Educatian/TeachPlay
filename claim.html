@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Claim your credential · TeachPlay</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Georgia, serif;
+      background: #f8f7f4;
+      color: #111;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e4e0d8;
+      border-radius: 10px;
+      padding: 48px 40px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+    }
+    .card__kicker {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 20px;
+    }
+    .card__title { font-size: 24px; line-height: 1.25; margin-bottom: 12px; }
+    .card__body  { font-size: 15px; color: #444; line-height: 1.65; margin-bottom: 32px; }
+    .spinner {
+      display: inline-block;
+      width: 32px; height: 32px;
+      border: 3px solid #e4e0d8;
+      border-top-color: #be1a2f;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .vc-box {
+      background: #f3f2ef;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: left;
+      font-size: 12px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 24px;
+    }
+    .btn {
+      display: inline-block;
+      background: #be1a2f;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      padding: 13px 28px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 4px;
+    }
+    .btn--outline {
+      background: transparent;
+      color: #be1a2f;
+      border: 1.5px solid #be1a2f;
+    }
+    .badge-name { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .badge-sub  { font-size: 14px; color: #666; margin-bottom: 28px; line-height: 1.5; }
+    .ua-mark    { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #aaa; margin-top: 40px; }
+  </style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="card__kicker">The University of Alabama · College of Education</div>
+  <div class="spinner" id="spinner"></div>
+  <p class="card__body" id="status-msg">Verifying your link…</p>
+</div>
+
+<script>
+(async function () {
+  var card      = document.getElementById('card');
+  var spinner   = document.getElementById('spinner');
+  var statusMsg = document.getElementById('status-msg');
+
+  var params = new URLSearchParams(location.search);
+  var token  = params.get('t');
+
+  if (!token) { showError('No token found.', 'This link appears to be incomplete. Please check the email and click the full link.'); return; }
+
+  var data;
+  try {
+    var res = await fetch('/api/email-verify?t=' + encodeURIComponent(token));
+    data = await res.json();
+    if (!res.ok || !data.ok) {
+      if (res.status === 409) showError('Already claimed.', 'This link has already been used. Each link can only be redeemed once. Contact your instructor if you need another copy.');
+      else if (res.status === 404) showError('Link expired or not found.', 'This link may have expired (links are valid 48 hours). Contact your instructor to request a new one.');
+      else showError('Something went wrong.', data.error || 'Unknown error.');
+      return;
+    }
+  } catch (err) {
+    showError('Network error.', 'Could not reach the server. Please check your connection and try again.');
+    return;
+  }
+
+  spinner.style.display = 'none';
+  statusMsg.style.display = 'none';
+
+  var vcJson  = JSON.stringify(data.signed, null, 2);
+  var blob    = new Blob([vcJson], { type: 'application/json' });
+  var blobUrl = URL.createObjectURL(blob);
+
+  card.innerHTML =
+    '<div class="card__kicker">The University of Alabama · College of Education</div>' +
+    '<div class="badge-name">' + esc(data.name) + '</div>' +
+    '<p class="badge-sub">You have successfully claimed your signed credential for<br/><strong>AI-enhanced Educational Game Design</strong>.</p>' +
+    '<p style="font-size:13px;color:#555;margin-bottom:12px;text-align:left;">Your signed Verifiable Credential (Open Badges 3.0 / W3C VC):</p>' +
+    '<div class="vc-box">' + esc(vcJson) + '</div>' +
+    '<a class="btn" href="' + blobUrl + '" download="credential-' + esc(data.id) + '.json">Download credential JSON</a> ' +
+    '<a class="btn btn--outline" href="index.html">Back to handbook</a>' +
+    '<p class="ua-mark">University of Alabama · teachplay.dev</p>';
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+
+function showError(title, detail) {
+  document.getElementById('card').innerHTML =
+    '<div style="font-size:36px;margin-bottom:16px;">⚠</div>' +
+    '<h2 class="card__title">' + title + '</h2>' +
+    '<p class="card__body">' + detail + '</p>' +
+    '<a class="btn btn--outline" href="session-12.html">Back to Session 12</a>';
+}
+</script>
+</body>
+</html>

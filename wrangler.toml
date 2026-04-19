@@ -44,3 +44,8 @@ id = "40b0de3caa6d43f2addec25ff7d9b774"
 [[kv_namespaces]]
 binding = "CLAIM_CODES"
 id = "034fef756e8c47598262a721f214d68f"
+
+# CLAIMS_KV — one-time email claim tokens (48 h TTL) + per-IP rate-limit keys.
+[[kv_namespaces]]
+binding = "CLAIMS_KV"
+id = "35d14ddef4714d6e996a3c17251e264b"
