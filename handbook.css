@@ -823,6 +823,10 @@ p strong { color: #111; font-weight: 600; }
 .callout--warn .callout__icon { background: #c03a18; }
 .callout--warn .callout__title { color: #8a2810; }
 
+.callout--instructor { background: #eef2f6; border-left-color: #435a72; }
+.callout--instructor .callout__icon { background: #435a72; }
+.callout--instructor .callout__title { color: #2a3948; letter-spacing: .02em; }
+
 /* ─── Tables ─────────────────────────────────────────────────── */
 .tbl {
   width: 100%;

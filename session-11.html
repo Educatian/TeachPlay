@@ -106,6 +106,30 @@
             </p>
           </div>
         </div>
+
+        <div class="worked">
+          <div class="worked__tag">Worked example · <em>The On-Call</em> week-11 backlog</div>
+          <h3 class="worked__title">Seven findings, one cut line, three declines</h3>
+          <table class="tbl">
+            <thead>
+              <tr><th style="width:7%;">ID</th><th style="width:9%;">Src</th><th>Finding</th><th style="width:7%;">I</th><th style="width:7%;">E</th><th style="width:9%;">Flag</th><th style="width:16%;">Decision</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>AU-01</td><td>Audit</td><td>Pager-interrupt uses red-only palette; fails color-contrast test for deuteranopia.</td><td>5</td><td>1</td><td style="color:#c03a18;font-weight:600;">Stopper</td><td>Do · top of list</td></tr>
+              <tr><td>PT-03</td><td>Playtest</td><td>Three of four target learners mis-read the escalation step as a routine pick.</td><td>5</td><td>3</td><td>—</td><td>Do · above line</td></tr>
+              <tr><td>PT-07</td><td>Playtest</td><td>Two learners asked for the patient history to stay visible during the pager phase.</td><td>4</td><td>2</td><td>—</td><td>Do · above line</td></tr>
+              <tr><td>AU-04</td><td>Audit</td><td>Feedback for a correct pick arrives one state later than for an incorrect pick.</td><td>4</td><td>3</td><td>—</td><td>Do · above line</td></tr>
+              <tr><td>PT-05</td><td>Playtest</td><td>One learner said the scoring screen felt "punitive" after a second wrong pick.</td><td>3</td><td>4</td><td>—</td><td><em>Defer</em> · needs a rewrite, not a tweak; re-run D4 before shipping.</td></tr>
+              <tr><td>OWN-02</td><td>Self</td><td>Add a narrative branch where a senior nurse can be consulted.</td><td>3</td><td>5</td><td>—</td><td><em>Decline</em> · high effort, uncertain objective lift. v2 candidate.</td></tr>
+              <tr><td>PT-09</td><td>Playtest</td><td>One playtester wanted a leaderboard.</td><td>1</td><td>3</td><td>—</td><td><em>Decline</em> · competing with the judgment objective; out of scope on purpose.</td></tr>
+            </tbody>
+          </table>
+          <p class="block__subtitle" style="margin-top:8px;">
+            Cut line sits after AU-04. Four items above, three below. PT-05 is a defer (real, but bigger than
+            this session); OWN-02 and PT-09 are declines with reasons. The reasons are the design; the items
+            themselves are almost secondary.
+          </p>
+        </div>
       </section>
 
       <section class="block" id="triage">
@@ -147,6 +171,23 @@
             <p>
               Today you will think of a great new feature. Write it below the line. You are not building it.
               This is the last revision week; what is not on the list is not in the game.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout callout--instructor instructor-only">
+          <div class="callout__icon">F</div>
+          <div class="callout__body">
+            <div class="callout__title">Facilitator · Running a 120-minute studio</div>
+            <p>
+              Three patterns break studio time: <strong>the backlog fight</strong> (a team re-argues rankings
+              instead of building), <strong>the rabbit hole</strong> (the top item takes 90 minutes because the
+              learner keeps expanding its scope), and <strong>the stopper freeze</strong> (a red-flag item
+              paralyzes the team because they feel they cannot ship without fixing it). Cues in order:
+              at 30 min, interrupt any team still on rankings — "execute the top two even if you'd reorder
+              them later." At 60 min, flag any team on one item — "what is the 80% version?" At 90 min,
+              name stopper freezes aloud; stoppers that cannot land in this session become explicit
+              Known-Limits entries in D5, not the reason a team ships nothing.
             </p>
           </div>
         </div>
