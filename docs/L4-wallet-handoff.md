@@ -2,7 +2,7 @@
 
 Design-only. This document specifies how a learner's verified `OpenBadgeCredential` (OBv3 / VC 2.0) leaves `teachplay.dev` and lands inside a wallet the learner controls — a DCC Learner Credential Wallet (LCW), a generic OID4VCI-conformant wallet, or a plain file on disk for fallback. It is written so that (a) a production engineer can wire the signing pipeline without re-deriving the protocol choices, and (b) a reviewer can see which parts of the scaffold are load-bearing and which are placeholders.
 
-Status: **scaffold shipped, signing pipeline and OID4VCI endpoint to build**. Three handoff paths are live on `credential.html#wallet`. Each emits an `experienced` xAPI statement so uptake is measurable. The signed VC in `credential/assertion-example-v3.json` contains a placeholder proof; production deployments swap it for a real Ed25519 signature over the canonicalized credential.
+Status: **signing pipeline live; per-learner issuance endpoint and OID4VCI issuer endpoint remain to build**. Three handoff paths are live on `credential.html#wallet`, each emitting an `experienced` xAPI statement so uptake is measurable. The example VC at `credential/assertion-example-v3.json` is now signed with a real Ed25519 Data Integrity proof (`eddsa-rdfc-2022`) bound to `did:web:teachplay.dev`, and verifies end-to-end via `npm run verify:example`. The unsigned template is kept alongside it at `credential/assertion-example-v3.unsigned.json` for re-signing.
 
 ---
 
@@ -74,27 +74,42 @@ This is the largest build of the three. Recommended for cohort 2 once P1 + P2 ha
 
 In all three paths, the verifier needs to resolve the issuer's public key without contacting us. Two bindings are possible:
 
-- **HTTPS Profile (today).** Issuer identity = `https://teachplay.dev/credential/issuer-v3.json`. Public key at a well-known path. Fine for classroom-demo verifiers; brittle if `teachplay.dev` goes offline.
-- **`did:web` (production).** Issuer identity = `did:web:teachplay.dev`. The DID document at `/.well-known/did.json` lists verification methods. Cache-friendly; verifier can keep the public key after one fetch; survives issuer-domain churn better than bare HTTPS.
+- **HTTPS Profile (legacy).** Issuer identity = `https://teachplay.dev/credential/issuer-v3.json`. Public key at a well-known path. Fine for classroom-demo verifiers; brittle if `teachplay.dev` goes offline.
+- **`did:web` (current).** Issuer identity = `did:web:teachplay.dev`. The DID document at `.well-known/did.json` lists the `Multikey` verification method (Ed25519 public key, multibase-encoded). Cache-friendly; verifier can keep the public key after one fetch; survives issuer-domain churn better than bare HTTPS.
 
-We ship HTTPS Profile in the scaffold; `did:web` is the target for production. The migration is: add `/.well-known/did.json`, update `issuer.id` in `issuer-v3.json` from the HTTPS URL to `did:web:teachplay.dev`, add a `keyAgreement` section, reissue credentials.
+We ship `did:web` as of this revision. `issuer.id` in both `issuer-v3.json` and the assertion example has been updated from the HTTPS URL to `did:web:teachplay.dev`; the HTTPS URL is retained on the issuer profile as `alsoKnownAs` for cache-warm verifiers. Migration checklist:
+
+- [x] Generate keypair (`tools/gen-keypair.mjs`).
+- [x] Publish DID document at `.well-known/did.json`.
+- [x] Update `issuer.id` → `did:web:teachplay.dev`.
+- [x] Re-sign the example credential.
+- [ ] Add `keyAgreement` section when we adopt encryption-at-rest for learner VCs (out of scope for scaffold).
 
 ## Signing pipeline
 
-The placeholder proof in `assertion-example-v3.json` has a shape but is not a valid signature. Production wiring:
+The example VC is signed end-to-end. The wiring:
 
-1. **Keypair.** Ed25519 keypair held by the issuer. Public key published in the issuer profile (or the DID document). Private key kept in a secret store (AWS KMS / GCP Secret Manager / a hardware token on the signing box).
-2. **Canonicalization.** URDNA2015 (the JSON-LD canonical form) over the credential minus the `proof` field.
-3. **Signing.** `eddsa-rdfc-2022` cryptosuite over the canonical form. Output an attached Data Integrity proof.
-4. **Verification test.** Re-canonicalize on the verifier side, re-check signature. Use the DCC test vectors to validate the pipeline before first issuance.
+1. **Keypair.** Ed25519 keypair at `tools/keys/issuer-ed25519.{private,public}.json`. The private key is gitignored (`tools/keys/*.private.json`); in production it moves to a secret store (AWS KMS / GCP Secret Manager / a hardware token on the signing box) and never touches the filesystem of a web-accessible host.
+2. **DID document.** `.well-known/did.json` publishes the issuer's verification method as a `Multikey` entry under `did:web:teachplay.dev`. Verifiers resolve the DID (`https://teachplay.dev/.well-known/did.json`), match `verificationMethod`, and check the signature without contacting any teachplay.dev application endpoint.
+3. **Canonicalization.** URDNA2015 (JSON-LD canonical form) over the credential minus the `proof` field. The `@digitalbazaar/eddsa-rdfc-2022-cryptosuite` implementation handles canonicalization and hashing.
+4. **Signing.** Ed25519 signature over the hashed canonical form; the `DataIntegrityProof` is attached with `proofPurpose: assertionMethod`.
+5. **Verification test.** `npm run verify:example` re-canonicalizes and re-checks on every run; a red build means the proof, the DID binding, or the context set drifted.
 
-Reference implementations:
+Operational commands:
 
-- `@digitalcredentials/vc` (Node) — signs and verifies in our stack.
-- `jsonld-signatures` (Node, older) — lower-level, useful for debugging canonicalization.
-- `didkit` (Rust) — reference check when suites don't interoperate.
+```
+npm run keygen          # regenerate the issuer keypair (--force to overwrite)
+npm run sign:example    # sign the unsigned template → assertion-example-v3.json
+npm run verify:example  # round-trip verify the signed example
+```
 
-The signing step lives in a background worker, not in the request path — signing takes ~200ms and must not block the portfolio upload flow.
+Library versions in `package.json`: `@digitalbazaar/vc`, `@digitalbazaar/ed25519-multikey`, `@digitalbazaar/eddsa-rdfc-2022-cryptosuite`, `@digitalbazaar/data-integrity`, `jsonld`. DCC's `@digitalcredentials/vc` is a drop-in alternative; `didkit` (Rust) is the interop reference when verifiers disagree.
+
+The signing step runs in a background worker in production, not in the request path — signing takes ~200ms on a single credential and must not block the portfolio upload flow.
+
+### Note on `validFrom`
+
+The example credential has `validFrom: 2026-05-02` — after the cohort end date — so a naive verifier run before that date will (correctly) report the credential not-yet-valid. The `verify-vc.mjs` helper short-circuits this for pre-flight testing by clocking verification against the credential's own `validFrom`; pass `--now=<ISO>` to override. Production verifiers will use real wall-clock time.
 
 ## Revocation
 
@@ -116,18 +131,19 @@ Statements are queue-local in the scaffold; on the LRS in production.
 
 ## Honest limits
 
-- **The scaffold is not a valid credential.** The placeholder proof makes the example cryptographically meaningless. Any verifier running a real check will (correctly) reject it. Do not present the scaffolded VC as evidence of anything.
+- **The example is a demonstration, not an issued credential.** The signed example at `credential/assertion-example-v3.json` has a real signature, but the subject `did:example:learner-0001` is a placeholder. Any verifier running a real check will confirm the signature and issuer — but should not treat the subject as a real person. The production issuance endpoint binds each VC to a learner-controlled subject identifier before signing.
 - **Cross-wallet interop is not uniform.** Even with OID4VCI in play, wallets disagree on how to display multi-achievement credentials, how to surface evidence URLs, and whether ESCO/Lightcast alignments are readable in-wallet. This is where the ecosystem pain currently lives.
 - **`did:web` is not a real decentralized identifier.** It inherits DNS trust; if `teachplay.dev` is compromised, the DID is compromised. It is a pragmatic choice for institutional issuers, not an ideological one.
 
 ## Estimate
 
-- Signing pipeline + per-learner endpoint: ~1 engineer-week.
+- ~~Signing pipeline~~: **done** — `npm run sign:example` / `npm run verify:example`.
+- ~~`did:web` migration~~: **done** — `.well-known/did.json` published, issuer rebound.
+- Per-learner issuance endpoint (auth + signing worker): ~3 engineer-days.
 - OID4VCI endpoint (P3 productionization): ~2 engineer-weeks.
-- `did:web` migration: ~2 engineer-days plus legal/IT signoff.
 - Revocation (StatusList2021): ~3 engineer-days.
 
-Call it a bounded month. The hard part is not the code — it is walking one real learner through P1 end-to-end with a live wallet and watching what breaks.
+Remaining work is roughly two and a half engineer-weeks. The hard part is not the code — it is walking one real learner through P1 end-to-end with a live wallet and watching what breaks.
 
 ---
 

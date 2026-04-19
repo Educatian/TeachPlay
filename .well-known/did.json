@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/multikey/v1"
+  ],
+  "id": "did:web:teachplay.dev",
+  "verificationMethod": [
+    {
+      "id": "did:web:teachplay.dev#z6MkqQhD7h6TgwSN2mFEHpnr3irB1ygY7bs7vT2tgayBzDsQ",
+      "type": "Multikey",
+      "controller": "did:web:teachplay.dev",
+      "publicKeyMultibase": "z6MkqQhD7h6TgwSN2mFEHpnr3irB1ygY7bs7vT2tgayBzDsQ"
+    }
+  ],
+  "assertionMethod": [
+    "did:web:teachplay.dev#z6MkqQhD7h6TgwSN2mFEHpnr3irB1ygY7bs7vT2tgayBzDsQ"
+  ],
+  "authentication": [
+    "did:web:teachplay.dev#z6MkqQhD7h6TgwSN2mFEHpnr3irB1ygY7bs7vT2tgayBzDsQ"
+  ]
+}

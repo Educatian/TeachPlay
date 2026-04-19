@@ -22,3 +22,6 @@ yarn-error.log*
 *.log
 *.tmp
 .cache/
+
+# Signing keys (never commit private material)
+tools/keys/*.private.json

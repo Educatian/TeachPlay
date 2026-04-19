@@ -1,0 +1,34 @@
+{
+  "name": "microcredential",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">   <a href=\"https://teachplay.dev/\">     <img src=\"og-image.png\" alt=\"AI-enhanced Educational Game Design — a twelve-session microcredential handbook from The University of Alabama, College of Education.\" width=\"880\" />   </a> </p>",
+  "main": "clr.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "keygen": "node tools/gen-keypair.mjs",
+    "sign:example": "node tools/sign-vc.mjs credential/assertion-example-v3.unsigned.json credential/assertion-example-v3.json",
+    "verify:example": "node tools/verify-vc.mjs credential/assertion-example-v3.json",
+    "test": "npm run verify:example"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Educatian/TeachPlay.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Educatian/TeachPlay/issues"
+  },
+  "homepage": "https://github.com/Educatian/TeachPlay#readme",
+  "dependencies": {
+    "@digitalbazaar/data-integrity": "^2.5.0",
+    "@digitalbazaar/ed25519-multikey": "^1.3.1",
+    "@digitalbazaar/eddsa-rdfc-2022-cryptosuite": "^1.3.0",
+    "@digitalbazaar/vc": "^7.3.0",
+    "jsonld": "^9.0.0"
+  }
+}
