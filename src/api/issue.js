@@ -1,11 +1,12 @@
 /**
  * POST /api/issue — sign a real per-learner credential.
  *
- * Supersedes /api/sign-test. Accepts a learner payload, loads the
- * canonical unsigned template from the bound static assets, customizes
- * the subject / evidence / identity-hash fields (parity with
- * tools/issue-for-learner.mjs), and signs under the issuer key held in
- * the ISSUER_PRIVATE_KEY_JSON secret.
+ * Accepts a learner payload, loads the canonical unsigned template from
+ * the bound static assets, customizes the subject / evidence / identity-
+ * hash fields (parity with tools/issue-for-learner.mjs), allocates a
+ * fresh index in the cohort's BitstringStatusList (KV), injects a
+ * credentialStatus entry, and signs under the issuer key held in
+ * ISSUER_PRIVATE_KEY_JSON.
  *
  * Auth: `Authorization: Bearer <ISSUER_API_KEY>` (or `X-API-Key` header).
  *       The comparison is length-checked then constant-time.
@@ -16,42 +17,31 @@
  *     "email":    "learner@example.edu",  // optional → hashed into identifier
  *     "name":     "Ada L.",               // optional → shown as subject.name
  *     "cohort":   "2026-spring",          // optional, default "2026-spring"
- *     "validFrom":"2026-05-02T00:00:00Z"  // optional, default now()
+ *     "validFrom":"2026-05-02T00:00:00Z", // optional, default now()
+ *     "noStatus": false                   // optional, true skips credentialStatus
  *   }
  *
  * Response (200):
- *   { "ok": true, "signed": <signed VC> }
+ *   { "ok": true, "signed": <signed VC>, "statusIndex": 0 }
  *
- * What this *does not* yet do (deferred to the next layers):
- *   - credentialStatus (BitstringStatusList). Allocating an index from
- *     the Worker requires writable persistence (Cloudflare KV); until
- *     then, issued credentials carry no revocation hook. Revocation
- *     still works for credentials issued via the CLI pipeline.
- *   - Idempotency. Calling /api/issue twice for the same learner id
- *     produces two distinct signatures. Real production flow should
- *     dedupe or version per-learner issuances.
+ * Known limits:
+ *   - Status index allocation is a KV read + write, not atomic. Two
+ *     simultaneous issuances can read the same "next" and collide on
+ *     one index. See src/lib/status-list.js. Production needs a
+ *     Durable Object or D1 row-level update.
+ *   - No idempotency. Calling /api/issue twice for the same learner id
+ *     produces two distinct signatures and burns two status indexes.
  */
-import * as Ed25519Multikey from '@digitalbazaar/ed25519-multikey';
-import { cryptosuite as eddsaRdfc2022 } from '@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
-import { DataIntegrityProof } from '@digitalbazaar/data-integrity';
-import * as vc from '@digitalbazaar/vc';
-import { contexts as vcContexts } from '@digitalbazaar/credentials-context';
+import { signCredential } from '../lib/sign.js';
+import {
+  allocateIndex,
+  buildStatusEntry,
+  DEFAULT_BITSTRING_SIZE,
+} from '../lib/status-list.js';
 
 const ID_PATTERN = /^[a-zA-Z0-9_-]{2,64}$/;
 const COHORT_PATTERN = /^[a-z0-9-]{2,32}$/;
 const TEMPLATE_PATH = '/credential/assertion-example-v3.unsigned.json';
-
-const embeddedContexts = new Map(vcContexts);
-
-const documentLoader = async (url) => {
-  if (embeddedContexts.has(url)) {
-    return { documentUrl: url, document: embeddedContexts.get(url), contextUrl: null };
-  }
-  const res = await fetch(url, { headers: { accept: 'application/ld+json, application/json' } });
-  if (!res.ok) throw new Error(`documentLoader: ${url} → HTTP ${res.status}`);
-  const document = await res.json();
-  return { documentUrl: url, document, contextUrl: null };
-};
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body, null, 2), {
@@ -63,9 +53,6 @@ function json(body, status = 200) {
   });
 }
 
-// Constant-time string compare over the shorter-of-two lengths, with a
-// final length check. Prevents the early-exit timing channel that a naive
-// `a === b` would expose.
 function timingSafeEqualStr(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string') return false;
   if (a.length !== b.length) return false;
@@ -101,12 +88,15 @@ async function fetchTemplate(request, env) {
   return res.json();
 }
 
-function customize(template, { id, name, cohort, validFrom }, identityHash) {
+function customize(template, { id, name, cohort, validFrom, statusEntry }, identityHash) {
   const c = JSON.parse(JSON.stringify(template));
   c.id = `https://teachplay.dev/credential/assertions-v3/${id}.json`;
   c.validFrom = validFrom;
   delete c.proof;
   delete c._proof_note;
+
+  if (statusEntry) c.credentialStatus = statusEntry;
+  else delete c.credentialStatus;
 
   const subj = c.credentialSubject;
   subj.id = `urn:uuid:${id}`;
@@ -141,16 +131,12 @@ export async function handleIssue(request, env, ctx) {
   if (request.method !== 'POST') {
     return json({
       error: 'Method Not Allowed',
-      hint: 'POST JSON: {id, email?, name?, cohort?, validFrom?} with Authorization: Bearer <ISSUER_API_KEY>',
+      hint: 'POST JSON: {id, email?, name?, cohort?, validFrom?, noStatus?} with Authorization: Bearer <ISSUER_API_KEY>',
     }, 405);
   }
 
   const auth = checkAuth(request, env);
   if (!auth.ok) return json(auth.body, auth.code);
-
-  if (!env.ISSUER_PRIVATE_KEY_JSON) {
-    return json({ error: 'ISSUER_PRIVATE_KEY_JSON not set on this Worker' }, 500);
-  }
 
   let body;
   try { body = await request.json(); }
@@ -167,12 +153,17 @@ export async function handleIssue(request, env, ctx) {
   const name = body.name ? String(body.name) : null;
   const email = body.email ? String(body.email).trim().toLowerCase() : null;
   const validFrom = body.validFrom || new Date().toISOString();
+  const noStatus = !!body.noStatus;
 
-  let keyPair;
-  try {
-    keyPair = await Ed25519Multikey.from(JSON.parse(env.ISSUER_PRIVATE_KEY_JSON));
-  } catch (e) {
-    return json({ error: 'Failed to load issuer key', message: e.message }, 500);
+  let statusIndex = null;
+  let statusEntry = null;
+  if (!noStatus) {
+    try {
+      statusIndex = await allocateIndex(env, cohort, DEFAULT_BITSTRING_SIZE);
+      statusEntry = buildStatusEntry(cohort, statusIndex);
+    } catch (e) {
+      return json({ error: 'Status index allocation failed', message: e.message }, 500);
+    }
   }
 
   let template;
@@ -180,12 +171,15 @@ export async function handleIssue(request, env, ctx) {
   catch (e) { return json({ error: 'Failed to load template', message: e.message }, 500); }
 
   const identityHash = email ? await sha256Hex(cohort + email) : null;
-  const credential = customize(template, { id, name, cohort, validFrom }, identityHash);
+  const credential = customize(
+    template,
+    { id, name, cohort, validFrom, statusEntry },
+    identityHash
+  );
 
   try {
-    const suite = new DataIntegrityProof({ signer: keyPair.signer(), cryptosuite: eddsaRdfc2022 });
-    const signed = await vc.issue({ credential, suite, documentLoader });
-    return json({ ok: true, signed });
+    const signed = await signCredential(credential, env);
+    return json({ ok: true, signed, statusIndex });
   } catch (e) {
     return json({
       ok: false,

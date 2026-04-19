@@ -20,3 +20,18 @@ enabled = true
 [assets]
 directory = "./"
 binding = "ASSETS"
+
+# KV for per-cohort BitstringStatusList state.
+# STATUS_BITS   — key = cohort slug, value = raw bitstring bytes (size/8 bytes).
+# STATUS_INDEX  — key = cohort slug, value = decimal ASCII of the next free
+#                 index. Incremented on every /api/issue call. Workers KV has
+#                 no compare-and-swap, so simultaneous issuances may collide
+#                 on the same index; for a demo-scale Worker this is
+#                 acceptable — production should use a Durable Object or D1.
+[[kv_namespaces]]
+binding = "STATUS_BITS"
+id = "3b37b02eed3d45139759460ce7b32819"
+
+[[kv_namespaces]]
+binding = "STATUS_INDEX"
+id = "40b0de3caa6d43f2addec25ff7d9b774"

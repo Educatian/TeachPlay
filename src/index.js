@@ -13,15 +13,24 @@
  */
 import { handleHealth } from './api/health.js';
 import { handleIssue } from './api/issue.js';
+import { handleRevoke } from './api/revoke.js';
+import { handleStatusList } from './api/status-list.js';
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const p = url.pathname;
 
-    // API routes — exact paths only; Cloudflare handles method restrictions
-    // inside each handler.
-    if (url.pathname === '/api/health') return handleHealth(request, env, ctx);
-    if (url.pathname === '/api/issue') return handleIssue(request, env, ctx);
+    if (p === '/api/health') return handleHealth(request, env, ctx);
+    if (p === '/api/issue')  return handleIssue(request, env, ctx);
+    if (p === '/api/revoke') return handleRevoke(request, env, ctx);
+
+    // /api/status-list/<cohort> — cohort is a path segment so the URL
+    // is stable enough to embed in `credentialStatus.statusListCredential`.
+    if (p.startsWith('/api/status-list/')) {
+      const cohort = p.slice('/api/status-list/'.length);
+      return handleStatusList(request, env, ctx, cohort);
+    }
 
     // Anything else: fall through to static assets.
     return env.ASSETS.fetch(request);
