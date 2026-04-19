@@ -52,10 +52,10 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-  <nav class="primary-nav">
+    <nav class="primary-nav">
     <a href="index.html" class="is-active">Overview</a>
-    <a href="#sessions">Sessions</a>
-    <a href="#deliverables">Deliverables</a>
+    <a href="#sessions" class="is-active">Sessions</a>
+    <a href="#deliverables" class="is-active">Deliverables</a>
     <a href="rubrics.html">Rubrics</a>
     <a href="examples.html">Worked Examples</a>
     <a href="alignment.html">Alignment</a>
@@ -223,30 +223,5 @@
 <script src="role.js"></script>
 <script src="shell.js"></script>
 <script src="enroll.js"></script>
-<script>
-  // Swap the "Register / My progress" nav entry based on enrollment state.
-  (function () {
-    function wire() {
-      var link = document.getElementById('register-link');
-      if (!link || !window.hbEnroll) return;
-      if (window.hbEnroll.enrolled()) {
-        link.textContent = 'My Progress';
-        link.href = 'progress.html';
-      } else {
-        link.textContent = 'Register';
-        link.href = '#';
-        link.addEventListener('click', function (e) {
-          e.preventDefault();
-          window.hbEnroll.show();
-        });
-      }
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', wire);
-    } else {
-      wire();
-    }
-  })();
-</script>
 </body>
 </html>

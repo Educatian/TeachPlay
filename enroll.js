@@ -316,6 +316,21 @@
 
   // ── Entry point ──────────────────────────────────────────────────────────────
 
+  function wireRegisterLink() {
+    var link = document.getElementById('register-link');
+    if (!link) return;
+    if (localStorage.getItem(LEARNER_KEY)) {
+      link.textContent = 'My Progress';
+      link.setAttribute('href', 'progress.html');
+      return;
+    }
+    link.setAttribute('href', '#');
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      showModal();
+    });
+  }
+
   function init() {
     var learnerId = localStorage.getItem(LEARNER_KEY);
     if (learnerId) {
@@ -329,6 +344,7 @@
       show: showModal,
       enrolled: function () { return !!localStorage.getItem(LEARNER_KEY); },
     };
+    wireRegisterLink();
   }
 
   // Run after DOM is interactive
