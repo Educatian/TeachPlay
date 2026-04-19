@@ -320,9 +320,15 @@
     var learnerId = localStorage.getItem(LEARNER_KEY);
     if (learnerId) {
       startTracking(learnerId);
-    } else {
+    } else if (sessionId()) {
+      // Auto-show only on session pages — elsewhere, callers trigger manually
+      // via window.hbEnroll.show().
       showModal();
     }
+    window.hbEnroll = {
+      show: showModal,
+      enrolled: function () { return !!localStorage.getItem(LEARNER_KEY); },
+    };
   }
 
   // Run after DOM is interactive
