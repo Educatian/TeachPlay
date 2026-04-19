@@ -20,12 +20,24 @@ import * as Ed25519Multikey from '@digitalbazaar/ed25519-multikey';
 import { cryptosuite as eddsaRdfc2022 } from '@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
 import { DataIntegrityProof } from '@digitalbazaar/data-integrity';
 import * as vc from '@digitalbazaar/vc';
+import { contexts as vcContexts } from '@digitalbazaar/credentials-context';
 
-// Workers have no filesystem. We resolve @context / DID documents over
-// fetch for the smoketest; the real endpoints should embed the fixed set
-// of contexts we use (W3C VC v2, OBv3 3.0.3, Multikey v1) to avoid the
-// per-request network hop.
+// Workers have no filesystem and no jsonld doc cache. We resolve @context
+// locally whenever we can (W3C VC v1/v2, undefined-terms-v2 — all
+// bundled with @digitalbazaar/credentials-context) and fall back to
+// fetch only for contexts we haven't embedded. Fetching www.w3.org at
+// sign time is also fragile: content negotiation sometimes returns HTML
+// which fails jsonld.InvalidUrl, so the local map is the safer path.
+const embeddedContexts = new Map(vcContexts);
+
 const documentLoader = async (url) => {
+  if (embeddedContexts.has(url)) {
+    return {
+      documentUrl: url,
+      document: embeddedContexts.get(url),
+      contextUrl: null,
+    };
+  }
   const res = await fetch(url, {
     headers: { accept: 'application/ld+json, application/json' },
   });
