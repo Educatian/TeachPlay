@@ -279,6 +279,6 @@ Keep total output under 20 lines."></div>
 <script src="ai.js"></script>
 <script src="questions-s07-s12.js"></script>
 <script src="quiz.js"></script>
-<script>Quiz.mount(document.getElementById('s07-quiz'), S07_QUESTIONS);</script>
+<script>Quiz.mount(document.getElementById('s07-quiz'), S07_QUESTIONS, { shuffle: true, gate: 'attempt' });</script>
 </body>
 </html>

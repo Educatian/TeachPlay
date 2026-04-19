@@ -608,6 +608,6 @@
 <script src="shell.js"></script>
 <script src="questions.js"></script>
 <script src="quiz.js"></script>
-<script>Quiz.mount(document.getElementById('s01-quiz'), S01_QUESTIONS);</script>
+<script>Quiz.mount(document.getElementById('s01-quiz'), S01_QUESTIONS, { shuffle: true, gate: 'attempt' });</script>
 </body>
 </html>
