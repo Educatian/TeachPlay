@@ -552,6 +552,6 @@ Rules:
 <script src="ai.js"></script>
 <script src="questions.js"></script>
 <script src="quiz.js"></script>
-<script>Quiz.mount(document.getElementById('s04-quiz'), S04_QUESTIONS);</script>
+<script>Quiz.mount(document.getElementById('s04-quiz'), S04_QUESTIONS, { shuffle: true, gate: 'attempt' });</script>
 </body>
 </html>

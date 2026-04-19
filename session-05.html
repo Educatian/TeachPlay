@@ -382,6 +382,6 @@ One line per register (A, B, C).</span></pre>
 <script src="ai.js"></script>
 <script src="questions.js"></script>
 <script src="quiz.js"></script>
-<script>Quiz.mount(document.getElementById('s05-quiz'), S05_QUESTIONS);</script>
+<script>Quiz.mount(document.getElementById('s05-quiz'), S05_QUESTIONS, { shuffle: true, gate: 'attempt' });</script>
 </body>
 </html>

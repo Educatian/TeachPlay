@@ -385,6 +385,6 @@ triggered, and a one-line rewrite as a script line.</span></pre>
 <script src="shell.js"></script>
 <script src="questions.js"></script>
 <script src="quiz.js"></script>
-<script>Quiz.mount(document.getElementById('s06-quiz'), S06_QUESTIONS);</script>
+<script>Quiz.mount(document.getElementById('s06-quiz'), S06_QUESTIONS, { shuffle: true, gate: 'attempt' });</script>
 </body>
 </html>

@@ -1,11 +1,10 @@
 // quiz.js — elaborative-feedback MCQ renderer for the TeachPlay handbook.
 //
-// API: Quiz.mount(containerEl, questions)
+// API: Quiz.mount(containerEl, questions, options?)
 // questions: Array of { lo, q, opts: [A,B,C,D], ans: 0-3, feedback: [4 strings] }
-//
-// Choices lock on first click (formative only). Correct answer is revealed when
-// a wrong choice is made. xAPI 'answered' verb is emitted per item; 'scored' is
-// emitted when all items are answered.
+// options:
+//   shuffle: true  — Fisher-Yates shuffle per question (opts+feedback in sync, ans recalculated)
+//   gate: 'attempt' — disables [data-mark-done] and .session-nav__next until all questions answered
 
 const Quiz = (() => {
   'use strict';
@@ -42,11 +41,34 @@ const Quiz = (() => {
 .quiz__summary.is-visible { display: block; }
 .quiz__summary--pass { background: #f0fff4; border: 1px solid #2f855a; color: #22543d; }
 .quiz__summary--fail { background: #fff5f5; border: 1px solid var(--crimson, #be1a2f); color: #742a2a; }
+.quiz__gate-notice { margin-top: 10px; font-size: 12px; color: var(--gray-40, #888); text-align: center; font-family: var(--font-sans, inherit); }
+.quiz-gated { opacity: 0.3; pointer-events: none; user-select: none; }
+.quiz-gated-btn { opacity: 0.3; pointer-events: none; cursor: not-allowed; }
 `;
     document.head.appendChild(el);
   }
 
   const LETTERS = ['A', 'B', 'C', 'D'];
+
+  // Fisher-Yates in-place shuffle
+  function _shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+  }
+
+  // Returns a new question object with opts+feedback shuffled and ans recalculated
+  function _shuffleQuestion(question) {
+    const correctText = question.opts[question.ans];
+    // build index pairs [0,1,2,3] and shuffle them
+    const indices = _shuffle([0, 1, 2, 3]);
+    const newOpts = indices.map(function (i) { return question.opts[i]; });
+    const newFeedback = indices.map(function (i) { return question.feedback[i]; });
+    const newAns = newOpts.indexOf(correctText);
+    return Object.assign({}, question, { opts: newOpts, feedback: newFeedback, ans: newAns });
+  }
 
   function _buildItem(question, index, onAnswered) {
     const { lo, q, opts, ans, feedback } = question;
@@ -139,31 +161,79 @@ const Quiz = (() => {
     return item;
   }
 
-  function mount(containerEl, questions) {
+  function _applyGate(gatedEls) {
+    gatedEls.forEach(function (el) {
+      if (el.tagName === 'BUTTON') {
+        el.classList.add('quiz-gated-btn');
+      } else {
+        el.classList.add('quiz-gated');
+      }
+    });
+  }
+
+  function _releaseGate(gatedEls) {
+    gatedEls.forEach(function (el) {
+      el.classList.remove('quiz-gated', 'quiz-gated-btn');
+    });
+  }
+
+  function mount(containerEl, questions, options) {
     if (!containerEl || !questions || !questions.length) return;
+    options = options || {};
     _injectStyles();
+
+    // apply shuffle if requested
+    var processedQuestions = questions.map(function (q) {
+      return options.shuffle ? _shuffleQuestion(q) : q;
+    });
 
     const quizEl = document.createElement('div');
     quizEl.className = 'quiz';
 
     let answeredCount = 0;
     let correctCount = 0;
-    const total = questions.length;
+    const total = processedQuestions.length;
 
     const summaryEl = document.createElement('div');
     summaryEl.className = 'quiz__summary';
 
-    questions.forEach(function (question, index) {
+    // gate: 'attempt' — lock next-nav and mark-done until all answered
+    var gatedEls = [];
+    if (options.gate === 'attempt') {
+      var markDoneBtn = document.querySelector('[data-mark-done]');
+      var nextNavLink = document.querySelector('.session-nav__next');
+      if (markDoneBtn) gatedEls.push(markDoneBtn);
+      if (nextNavLink) gatedEls.push(nextNavLink);
+      _applyGate(gatedEls);
+
+      var noticeEl = document.createElement('p');
+      noticeEl.className = 'quiz__gate-notice';
+      noticeEl.textContent = '네 문항을 모두 풀면 다음 세션으로 이동할 수 있습니다.';
+      summaryEl.appendChild(noticeEl);
+    }
+
+    processedQuestions.forEach(function (question, index) {
       const item = _buildItem(question, index, function (isCorrect) {
         answeredCount++;
         if (isCorrect) correctCount++;
 
         if (answeredCount === total) {
           const allCorrect = (correctCount === total);
-          summaryEl.className = 'quiz__summary is-visible ' + (allCorrect ? 'quiz__summary--pass' : 'quiz__summary--fail');
-          summaryEl.innerHTML = allCorrect
+          var cls = 'quiz__summary is-visible ' + (allCorrect ? 'quiz__summary--pass' : 'quiz__summary--fail');
+          summaryEl.className = cls;
+
+          var msg = document.createElement('span');
+          msg.innerHTML = allCorrect
             ? '<strong>All correct.</strong> You are ready to move on.'
             : '<strong>' + correctCount + ' of ' + total + ' correct.</strong> Review the highlighted answers before continuing.';
+          summaryEl.insertBefore(msg, summaryEl.firstChild);
+
+          // release gate on all-answered
+          if (options.gate === 'attempt') {
+            _releaseGate(gatedEls);
+            var notice = summaryEl.querySelector('.quiz__gate-notice');
+            if (notice) notice.remove();
+          }
 
           // xAPI session-level score
           if (window.xapi) {
