@@ -70,14 +70,17 @@ export async function handleAdminAnalytics(request, env) {
           LIMIT 20
         `),
 
-        // Query 4 — self-assessment pre/post averages per skill
+        // Query 4 — self-assessment pre/post averages per skill.
+        // D1's instr() only supports 2 args, so we strip the known prefixes
+        // with replace() instead of hunting for the second '/'.
         db.prepare(`
-          SELECT activity_id,
-            AVG(CASE WHEN activity_id LIKE 'self-assessment/pre/%' THEN score_raw END) AS pre_avg,
+          SELECT
+            replace(replace(activity_id, 'self-assessment/pre/', ''), 'self-assessment/post/', '') AS skill,
+            AVG(CASE WHEN activity_id LIKE 'self-assessment/pre/%'  THEN score_raw END) AS pre_avg,
             AVG(CASE WHEN activity_id LIKE 'self-assessment/post/%' THEN score_raw END) AS post_avg
           FROM xapi_events
           WHERE verb = 'answered' AND activity_type = 'self-assessment'
-          GROUP BY substr(activity_id, instr(activity_id, '/', instr(activity_id, '/')+1)+1)
+          GROUP BY skill
         `),
       ]);
 
