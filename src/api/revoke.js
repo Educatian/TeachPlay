@@ -23,6 +23,7 @@
  * Does NOT touch STATUS_INDEX (revocation does not allocate an index).
  */
 import { readBits, writeBits, getBit, setBit, DEFAULT_BITSTRING_SIZE } from '../lib/status-list.js';
+import { checkAdminAuth } from '../lib/auth.js';
 
 const COHORT_PATTERN = /^[a-z0-9-]{2,32}$/;
 
@@ -36,26 +37,6 @@ function json(body, status = 200) {
   });
 }
 
-function timingSafeEqualStr(a, b) {
-  if (typeof a !== 'string' || typeof b !== 'string') return false;
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
-
-function checkAuth(request, env) {
-  const expected = env.ISSUER_API_KEY;
-  if (!expected) return { ok: false, code: 500, body: { error: 'ISSUER_API_KEY not set on this Worker' } };
-  const header = request.headers.get('authorization') || '';
-  const match = header.match(/^Bearer\s+(.+)$/i);
-  const provided = match ? match[1] : (request.headers.get('x-api-key') || '');
-  if (!timingSafeEqualStr(provided, expected)) {
-    return { ok: false, code: 401, body: { error: 'Unauthorized' } };
-  }
-  return { ok: true };
-}
-
 export async function handleRevoke(request, env, ctx) {
   if (request.method !== 'POST') {
     return json({
@@ -64,7 +45,7 @@ export async function handleRevoke(request, env, ctx) {
     }, 405);
   }
 
-  const auth = checkAuth(request, env);
+  const auth = checkAdminAuth(request, env);
   if (!auth.ok) return json(auth.body, auth.code);
 
   let body;

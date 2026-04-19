@@ -2,7 +2,7 @@
 
 Design-only. This document specifies how a learner's verified `OpenBadgeCredential` (OBv3 / VC 2.0) leaves `teachplay.dev` and lands inside a wallet the learner controls — a DCC Learner Credential Wallet (LCW), a generic OID4VCI-conformant wallet, or a plain file on disk for fallback. It is written so that (a) a production engineer can wire the signing pipeline without re-deriving the protocol choices, and (b) a reviewer can see which parts of the scaffold are load-bearing and which are placeholders.
 
-Status: **signing pipeline live; per-learner issuance endpoint and OID4VCI issuer endpoint remain to build**. Three handoff paths are live on `credential.html#wallet`, each emitting an `experienced` xAPI statement so uptake is measurable. The example VC at `credential/assertion-example-v3.json` is now signed with a real Ed25519 Data Integrity proof (`eddsa-rdfc-2022`) bound to `did:web:teachplay.dev`, and verifies end-to-end via `npm run verify:example`. The unsigned template is kept alongside it at `credential/assertion-example-v3.unsigned.json` for re-signing.
+Status: **signing pipeline live; per-learner issuance wired through a one-time claim-code; OID4VCI issuer endpoints still to build**. Three handoff paths are live on `credential.html#wallet` (static scaffold) and now also at `/claim?code=<code>` (code-bound, per-learner). The example VC at `credential/assertion-example-v3.json` is signed with a real Ed25519 Data Integrity proof (`eddsa-rdfc-2022`) bound to `did:web:teachplay.dev`, and verifies end-to-end via `npm run verify:example`. The Worker endpoint `/api/claim` re-signs a per-learner VC on redemption, so the learner-facing path never serves a static file.
 
 ---
 
@@ -44,16 +44,16 @@ The wallet fetches `vc_request_url`, verifies the Data Integrity proof against t
 
 **To productionize P1:**
 
-1. ~~Stand up a per-learner endpoint at `/credential/assertions/{learner-uuid}.json` that returns the VC for the authenticated learner only.~~ **Done (file-level).** `tools/issue-for-learner.mjs` writes signed per-learner VCs to `credential/assertions/{id}.json`. Serving each file from a learner-gated route is the remaining production step (2 below).
-2. ~~Sign each VC with the issuer's Ed25519 key using `eddsa-rdfc-2022` over URDNA2015-canonicalized credential.~~ **Done.** Both `sign-vc.mjs` and `issue-for-learner.mjs` sign with the same pipeline; `npm test` verifies the example round-trips.
-3. Update `vc_request_url` to point at the per-learner path rather than the static example. *(Wire once the gated route exists.)*
-4. Add `auth_type=code` flow: redirect back through an OAuth code exchange so we don't serve the VC to anyone with the URL. *(Remaining auth work — the static files in `credential/assertions/` are gitignored so they do not leak through the public repo.)*
+1. ~~Stand up a per-learner endpoint at `/credential/assertions/{learner-uuid}.json`.~~ **Done** — replaced by the claim-code flow (see "Claim-code flow" below). `vc_request_url` is now `https://teachplay.dev/api/claim?code=<code>`, which returns a freshly-signed VC on first redemption and 404s thereafter.
+2. ~~Sign each VC with the issuer's Ed25519 key using `eddsa-rdfc-2022` over URDNA2015-canonicalized credential.~~ **Done.** Worker uses the same `@digitalbazaar/vc` pipeline as the CLI.
+3. ~~Update `vc_request_url` to point at the per-learner path.~~ **Done** — the `/claim` page constructs the deep link with the live code.
+4. ~~Add `auth_type=code` flow.~~ **Done via claim code** — the code itself is the authn, single-use and TTL-bounded. Swapping for real OAuth is still open but no longer blocking P1.
 
 ### P2 — VC 2.0 JSON download
 
 The lowest-friction path. Works with any wallet that supports "add credential from file." The learner saves the JSON and imports it manually. Not elegant, but it removes the "we only work with LCW" failure mode.
 
-**To productionize P2:** sign the per-learner VC and serve it behind the same auth gate as P1.
+**To productionize P2:** ~~sign the per-learner VC and serve it behind the same auth gate as P1.~~ **Done** — the Download button on `/claim?code=<code>` does a GET to `/api/claim?code=<code>` which returns the signed VC with `Content-Disposition: attachment`.
 
 ### P3 — OID4VCI offer
 
@@ -66,9 +66,29 @@ OID4VCI (OpenID for Verifiable Credential Issuance) is the emerging interop stan
 
 1. Expose `/.well-known/openid-credential-issuer` at `https://teachplay.dev/` with the issuer metadata (supported credential configurations, cryptographic suites, authorization endpoints).
 2. Implement `/oid4vci/token` (pre-authorized code grant) and `/oid4vci/credential` (returns the signed VC).
-3. Store pre-authorized codes with a short TTL (5 min) and one-time semantics.
+3. ~~Store pre-authorized codes with a short TTL (5 min) and one-time semantics.~~ **Done** — the claim-code flow (CLAIM_CODES KV, `expirationTtl` + `delete`-on-redemption) is already the pre-authorized-code store. The `/claim` page embeds the code into an `openid-credential-offer://` URL today; only the `/oid4vci/token` ↔ `/oid4vci/credential` exchange remains.
 
-This is the largest build of the three. Recommended for cohort 2 once P1 + P2 have absorbed the first cohort.
+This is the largest remaining build of the three. Recommended for cohort 2 once P1 + P2 have absorbed the first cohort.
+
+## Claim-code flow
+
+The bridge between "we issued a signed credential" and "the learner holds it in their wallet." Three endpoints on the Worker:
+
+- `POST /api/claim-code` — admin-only (shares `ISSUER_API_KEY` with `/api/issue` and `/api/revoke`). Body is the same learner payload `/api/issue` takes, plus an optional `ttlSeconds`. Returns `{code, claimUrl, expiresAt}`. The code is `cl_` + 64 hex chars from `crypto.getRandomValues`. State lives in the `CLAIM_CODES` KV with `expirationTtl` so expired codes self-clean.
+- `GET /claim?code=<code>` — public HTML landing page. Renders three handoff buttons with the code baked into each URL (`dccrequest://...`, `/api/claim?code=...`, `openid-credential-offer://...`). Rendering does **not** redeem the code — it can be opened as many times as needed until redemption or TTL.
+- `GET|POST /api/claim` — public. Accepts the code in query, JSON body, or `Authorization: Bearer`. On success: `delete` from KV (one-shot independent of TTL), issue the VC through the same `src/lib/issue.js` path `/api/issue` uses, and return the signed VC as `application/ld+json` with a download-friendly `Content-Disposition`. On reuse / expired / unknown: 404 with no leaky detail.
+
+Why bother instead of just exposing `/api/issue` to learners:
+
+- **The issuer API key never touches a learner device.** A claim code is scoped to one learner payload and expires; leaking it burns one issuance, not the whole signer.
+- **Distribution channel independence.** The admin can hand the code to the learner through any channel (LMS message, email, printed QR). Rotating channels does not touch the signer.
+- **One-shot semantics** map onto OID4VCI's pre-authorized-code grant directly, so the same KV store becomes P3's code registry when `/oid4vci/token` is wired.
+
+Known limits (documented; not blockers for P1/P2 but real):
+
+- **No learner-DID binding yet.** `credentialSubject.id` is still `urn:uuid:<learner-id>`, not a wallet-provided DID. A wallet that expects the credential bound to *its* key material will accept it but lose the holder-binding property. Adding a DID-Auth step on redemption is the next refinement.
+- **Claim-code mint still requires the admin key.** Real flow is LMS → Worker: an LTI 1.3 launch proves the learner's identity, the Worker mints a code bound to that learner, returns the `claimUrl` for the learner to visit. That replaces "admin curls `/api/claim-code`" with a verified flow.
+- **Codes are opaque to observability.** The xAPI "wallet-handoff" statement fires on redemption, not mint, so mint-without-redeem (dropped links, wrong email) is invisible until we log mints separately.
 
 ## Issuer identity
 

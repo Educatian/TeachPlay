@@ -35,3 +35,12 @@ id = "3b37b02eed3d45139759460ce7b32819"
 [[kv_namespaces]]
 binding = "STATUS_INDEX"
 id = "40b0de3caa6d43f2addec25ff7d9b774"
+
+# CLAIM_CODES — one-time claim codes for wallet handoff.
+# key = "cl_<hex>", value = JSON payload for /api/issue.
+# Uses KV's native TTL (expiration_ttl) so expired codes self-clean; the
+# claim handler additionally `delete`s the key on successful redemption
+# so a code is strictly one-shot even if its TTL hasn't fired.
+[[kv_namespaces]]
+binding = "CLAIM_CODES"
+id = "034fef756e8c47598262a721f214d68f"
