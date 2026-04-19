@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Credential Verifier · TeachPlay</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: #f8f7f4; color: #111; padding: 40px 16px; }
+    .wrap { max-width: 680px; margin: 0 auto; }
+    .kicker { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 16px; }
+    h1 { font-size: 28px; line-height: 1.2; margin-bottom: 10px; }
+    .sub { font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 32px; }
+    .input-card { background: #fff; border: 1px solid #e4e0d8; border-radius: 10px; padding: 28px; margin-bottom: 24px; }
+    .input-card label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+    textarea {
+      width: 100%; height: 220px; font-family: monospace; font-size: 12px;
+      border: 1px solid #ccc; border-radius: 6px; padding: 12px;
+      resize: vertical; line-height: 1.5;
+    }
+    .file-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+    .file-label {
+      display: inline-block; background: #f0ede8; border: 1px solid #ccc;
+      padding: 7px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
+    }
+    .file-label:hover { background: #e8e4de; }
+    .file-name { font-size: 13px; color: #666; }
+    input[type="file"] { display: none; }
+    .btn {
+      display: inline-block; background: #be1a2f; color: #fff; border: none;
+      padding: 13px 32px; border-radius: 6px; font-size: 15px; font-weight: 600;
+      cursor: pointer; width: 100%; margin-top: 16px;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Result card */
+    .result { display: none; background: #fff; border: 1px solid #e4e0d8; border-radius: 10px; overflow: hidden; margin-bottom: 32px; }
+    .result__banner { padding: 20px 28px; font-size: 17px; font-weight: 700; }
+    .result__banner--valid   { background: #e6f4ea; color: #1a6e2e; }
+    .result__banner--invalid { background: #fdecea; color: #a50000; }
+    .result__body { padding: 24px 28px; }
+    .checks { list-style: none; margin-bottom: 24px; }
+    .checks li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #f0ede8; font-size: 14px; line-height: 1.4; }
+    .checks li:last-child { border-bottom: none; }
+    .check-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; margin-top: 1px; }
+    .check-icon--ok  { background: #1a6e2e; }
+    .check-icon--err { background: #a50000; }
+    .check-name  { font-weight: 600; text-transform: capitalize; }
+    .check-detail { color: #555; }
+    .cred-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .cred-table td { padding: 7px 0; vertical-align: top; }
+    .cred-table td:first-child { color: #888; width: 110px; padding-right: 16px; white-space: nowrap; }
+    .cred-table tr { border-bottom: 1px solid #f0ede8; }
+    .cred-table tr:last-child td { border-bottom: none; }
+    .section-title { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-bottom: 12px; }
+
+    .footer { text-align: center; font-size: 12px; color: #aaa; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 40px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">The University of Alabama · College of Education</p>
+  <h1>Credential Verifier</h1>
+  <p class="sub">
+    Paste a signed Open Badge 3.0 / W3C Verifiable Credential JSON below to verify its
+    signature, revocation status, and validity window.
+  </p>
+
+  <div class="input-card">
+    <label for="vc-input">Paste credential JSON</label>
+    <textarea id="vc-input" placeholder='{ "@context": [...], "type": ["VerifiableCredential", ...], "proof": { ... } }'></textarea>
+    <div class="file-row">
+      <label class="file-label" for="vc-file">Upload .json file</label>
+      <input type="file" id="vc-file" accept=".json,application/json"/>
+      <span class="file-name" id="file-name">No file chosen</span>
+    </div>
+    <button class="btn" id="verify-btn">Verify credential</button>
+  </div>
+
+  <div class="result" id="result">
+    <div class="result__banner" id="result-banner"></div>
+    <div class="result__body">
+      <p class="section-title">Checks</p>
+      <ul class="checks" id="checks-list"></ul>
+      <p class="section-title" style="margin-top:20px;">Credential details</p>
+      <table class="cred-table" id="cred-table"></table>
+    </div>
+  </div>
+
+  <p class="footer">teachplay.dev · did:web:teachplay.dev</p>
+</div>
+
+<script>
+(function () {
+  var textarea  = document.getElementById('vc-input');
+  var fileInput = document.getElementById('vc-file');
+  var fileName  = document.getElementById('file-name');
+  var verifyBtn = document.getElementById('verify-btn');
+  var resultEl  = document.getElementById('result');
+  var bannerEl  = document.getElementById('result-banner');
+  var checksList = document.getElementById('checks-list');
+  var credTable  = document.getElementById('cred-table');
+
+  fileInput.addEventListener('change', function () {
+    var file = fileInput.files[0];
+    if (!file) return;
+    fileName.textContent = file.name;
+    var reader = new FileReader();
+    reader.onload = function (e) { textarea.value = e.target.result; };
+    reader.readAsText(file);
+  });
+
+  verifyBtn.addEventListener('click', async function () {
+    var raw = textarea.value.trim();
+    if (!raw) { alert('Paste a credential JSON first.'); return; }
+
+    var credential;
+    try { credential = JSON.parse(raw); }
+    catch (e) { alert('Invalid JSON: ' + e.message); return; }
+
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = 'Verifying…';
+    resultEl.style.display = 'none';
+
+    try {
+      var res  = await fetch('/api/verify-credential', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(credential),
+      });
+      var data = await res.json();
+
+      if (!res.ok && !data.checks) {
+        alert('Server error: ' + (data.error || res.status));
+        return;
+      }
+
+      renderResult(data);
+    } catch (err) {
+      alert('Network error: ' + err.message);
+    } finally {
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = 'Verify credential';
+    }
+  });
+
+  var CHECK_LABELS = { signature: 'Signature', revocation: 'Revocation', validity: 'Validity' };
+
+  function renderResult(data) {
+    var valid = data.valid;
+    bannerEl.textContent = valid ? '✓ Credential is valid' : '✗ Credential verification failed';
+    bannerEl.className   = 'result__banner ' + (valid ? 'result__banner--valid' : 'result__banner--invalid');
+
+    checksList.innerHTML = '';
+    (data.checks || []).forEach(function (c) {
+      var li = document.createElement('li');
+      li.innerHTML =
+        '<span class="check-icon check-icon--' + (c.ok ? 'ok' : 'err') + '">' + (c.ok ? '✓' : '✗') + '</span>' +
+        '<span><span class="check-name">' + esc(CHECK_LABELS[c.name] || c.name) + '</span>' +
+        ' &nbsp;<span class="check-detail">' + esc(c.detail || '') + '</span></span>';
+      checksList.appendChild(li);
+    });
+
+    var cred = data.credential || {};
+    var rows = [
+      ['Name',        cred.name],
+      ['Achievement', cred.achievement],
+      ['Issuer',      cred.issuer],
+      ['Valid from',  cred.validFrom ? cred.validFrom.slice(0, 10) : null],
+      ['Credential',  cred.id],
+    ].filter(function (r) { return r[1]; });
+
+    credTable.innerHTML = rows.map(function (r) {
+      return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>';
+    }).join('');
+
+    resultEl.style.display = '';
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+</script>
+</body>
+</html>

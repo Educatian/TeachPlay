@@ -21,6 +21,7 @@ import { handleClaimPage } from './api/claim-page.js';
 import { handleCertificate } from './api/certificate.js';
 import { handleEmailRequest } from './api/email-request.js';
 import { handleEmailVerify } from './api/email-verify.js';
+import { handleVerifyCredential } from './api/verify-credential.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -34,8 +35,9 @@ export default {
     if (p === '/api/claim')      return handleClaim(request, env, ctx);
     if (p === '/claim')          return handleClaimPage(request, env, ctx);
     if (p === '/certificate')       return handleCertificate(request, env, ctx);
-    if (p === '/api/email-request') return handleEmailRequest(request, env, ctx);
-    if (p === '/api/email-verify')  return handleEmailVerify(request, env, ctx);
+    if (p === '/api/email-request')      return handleEmailRequest(request, env, ctx);
+    if (p === '/api/email-verify')       return handleEmailVerify(request, env, ctx);
+    if (p === '/api/verify-credential')  return handleVerifyCredential(request, env, ctx);
 
     // /api/status-list/<cohort> — cohort is a path segment so the URL
     // is stable enough to embed in `credentialStatus.statusListCredential`.
