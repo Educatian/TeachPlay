@@ -7,6 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "postinstall": "patch-package",
     "keygen": "node tools/gen-keypair.mjs",
     "sign:example": "node tools/sign-vc.mjs credential/assertion-example-v3.unsigned.json credential/assertion-example-v3.json",
     "issue:learner": "node tools/issue-for-learner.mjs",
@@ -31,5 +32,8 @@
     "@digitalbazaar/eddsa-rdfc-2022-cryptosuite": "^1.3.0",
     "@digitalbazaar/vc": "^7.3.0",
     "jsonld": "^9.0.0"
+  },
+  "devDependencies": {
+    "patch-package": "^8.0.1"
   }
 }
