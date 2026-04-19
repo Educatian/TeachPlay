@@ -343,6 +343,26 @@ output:
 
 Don't propose fixes. Just list the gaps so I can decide each.</span></pre>
           </div>
+
+          <div
+            data-ai-touchpoint
+            data-ai-session="s08-event-map-lint"
+            data-ai-lo="LO 8.3"
+            data-ai-placeholder="Paste your event→feedback map as a markdown table. Columns usually: event | response kind | payload | world-state change."
+            data-ai-prompt-system="You are auditing an event→feedback map for coverage gaps. Input is a markdown table the learner pastes.
+
+Output these four sections in order, each a short list. Use verbatim event names from the input:
+
+1. BLANKS — Events with no response at all.
+2. KIND DRIFT — Events whose response kind does not appear in the S4 feedback taxonomy (immediate / diagnostic / consequence / meta). Name the event and the stray kind.
+3. MISSING CONSEQUENCE — Events that emit consequence feedback but do not specify what world state changes.
+4. PARALLEL DIVERGENCE — Pairs of events that look parallel by name or by role but whose response schemas differ (one has a telemetry cell, the sibling doesn't; one payload is structured, the sibling is prose).
+
+Rules:
+- Do not propose fixes. The designer decides.
+- If a section has zero findings, print: (none).
+- If the input is not a table, refuse and name the first ambiguity.
+- Total output under 20 lines."></div>
         </div>
       </section>
 
@@ -472,5 +492,6 @@ Don't propose fixes. Just list the gaps so I can decide each.</span></pre>
 <script src="xapi.js"></script>
 <script src="role.js"></script>
 <script src="shell.js"></script>
+<script src="ai.js"></script>
 </body>
 </html>

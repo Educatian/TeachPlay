@@ -392,6 +392,30 @@ H3. No player will report that the time pressure felt "arbitrary" on
 
 [Transcript of playtest #3 pasted below, 1,800 lines.]</span></pre>
 
+            <div
+              data-ai-touchpoint
+              data-ai-session="s09-hypothesis-falsifiability"
+              data-ai-lo="LO 9.1"
+              data-ai-placeholder="Paste 1–3 draft hypotheses, one per line. These should be statements you expect to be true after the playtest."
+              data-ai-prompt-system="You are critiquing pre-registered playtest hypotheses for FALSIFIABILITY before the playtest runs. The learner will use these hypotheses to tag transcripts later; a hypothesis that cannot be falsified produces useless tagging.
+
+For each hypothesis, output:
+  H# — [FALSIFIABLE | NOT FALSIFIABLE] — <one sentence: what observable data would DISPROVE it>.
+
+Rules for FALSIFIABLE:
+- Names a specific observable behavior, artifact, utterance, or measurable outcome.
+- Specifies quantity or threshold ('at least 3 of 5', '>60 seconds', 'zero players').
+- The designer could plausibly observe the disproving case during a playtest.
+
+Rules for NOT FALSIFIABLE (flag these):
+- Uses engagement/fun/enjoyment words without an operational measure.
+- Says 'will help', 'will improve', 'will be better' without a comparison baseline.
+- Predicts internal states that cannot be observed from the outside.
+
+For any NOT FALSIFIABLE hypothesis, append one REWRITE line with a falsifiable version that preserves the learner's design intent.
+
+No preamble. Keep each hypothesis block under 4 lines total."></div>
+
             <div class="callout">
               <div class="callout__icon">i</div>
               <div class="callout__body">
@@ -521,5 +545,6 @@ Constraints:
 <script src="xapi.js"></script>
 <script src="role.js"></script>
 <script src="shell.js"></script>
+<script src="ai.js"></script>
 </body>
 </html>

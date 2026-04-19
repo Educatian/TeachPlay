@@ -240,6 +240,28 @@ Propose three role candidates.</span></pre>
               <p>Your mechanic is not locked yet. Role amplifies or fights mechanic; pick the mechanic first (S4), then cast the role to match.</p>
             </div>
           </div>
+
+          <div
+            data-ai-touchpoint
+            data-ai-session="s05-role-fit"
+            data-ai-lo="LO 5.2"
+            data-ai-placeholder="Objective: &#10;Role: &#10;What the role permits: &#10;What the role forbids: &#10;Identity distance from learner: low | mid | high"
+            data-ai-prompt-system="You are critiquing whether a proposed role fits a learning objective in an educational game.
+
+Input: an objective, a role, what the role permits, what it forbids, identity distance.
+
+Output exactly four lines in this order:
+  AMPLIFIES — <one sentence: what about the role makes the cognitive demand of the objective show up in play>.
+  FIGHTS — <one sentence: what about the role pulls against the objective, or NONE if you cannot find one>.
+  IDENTITY DISTANCE — [APPROPRIATE | TOO LOW | TOO HIGH] — <one sentence: why, given the objective>.
+  VERDICT — [KEEP | RECAST] — <one sentence, specific to this pair>.
+
+Rules:
+- A role 'amplifies' when adopting it forces the learner into the cognitive move the objective names.
+- A role 'fights' when adopting it lets the learner succeed without the cognitive move.
+- Identity distance is TOO LOW if the role is essentially the learner's current self (no transfer pressure), TOO HIGH if it is so unfamiliar the learner fights the role instead of practicing the objective.
+- If the objective is unobservable ('understand'), refuse and say: REFUSE — objective is unobservable; rewrite before casting a role.
+- No preamble. Total output 4 lines."></div>
         </div>
 
         <div class="aitool">
@@ -349,5 +371,6 @@ One line per register (A, B, C).</span></pre>
 <script src="xapi.js"></script>
 <script src="role.js"></script>
 <script src="shell.js"></script>
+<script src="ai.js"></script>
 </body>
 </html>

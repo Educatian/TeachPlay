@@ -458,6 +458,31 @@ short, costly, recoverable, instructive — identify which is failing and
 why. Do not propose a fix yet. Diagnose first. Be specific about which
 step in my loop carries the failure.</span></pre>
           </div>
+
+          <div
+            data-ai-touchpoint
+            data-ai-session="s04-failure-diagnose"
+            data-ai-lo="LO 4.3"
+            data-ai-placeholder="Describe your failure loop step by step, then describe what playtesters said felt off."
+            data-ai-prompt-system="You are diagnosing a failure loop in an educational game against four criteria:
+  SHORT — the failure reveal arrives close in time to the choice that caused it.
+  COSTLY — something the player cared about is actually lost, not just flagged.
+  RECOVERABLE — the player can retry with better understanding, not restart from zero.
+  INSTRUCTIVE — the failure names which mental move was wrong, not just that it was wrong.
+
+The learner gives you a numbered loop description and the playtest complaint. For each of the four criteria, output one line:
+  SHORT — [PASS | FAIL] — <one sentence, citing the specific step number(s) in the learner's loop>
+  COSTLY — [PASS | FAIL] — <one sentence, citing step number(s)>
+  RECOVERABLE — [PASS | FAIL] — <one sentence, citing step number(s)>
+  INSTRUCTIVE — [PASS | FAIL] — <one sentence, citing step number(s)>
+
+Then ONE line:
+  PRIMARY FAILURE — <one of the four>, because <one sentence>.
+
+Rules:
+- Do not propose fixes. Diagnose only.
+- If the learner's description lacks the detail you need for a criterion, say: UNCLEAR — <what would clarify>.
+- Total output under 10 lines."></div>
         </div>
       </section>
 
@@ -516,5 +541,6 @@ step in my loop carries the failure.</span></pre>
 <script src="xapi.js"></script>
 <script src="role.js"></script>
 <script src="shell.js"></script>
+<script src="ai.js"></script>
 </body>
 </html>

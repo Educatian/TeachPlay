@@ -459,6 +459,29 @@ one-line specific fix. Do NOT rewrite my code. Report only.</span></pre>
               </div>
             </div>
           </div>
+
+          <div
+            data-ai-touchpoint
+            data-ai-session="s10-five-lens-audit"
+            data-ai-lo="LO 10.4"
+            data-ai-placeholder="Lens: reward | load | access | ethics | data&#10;&#10;Describe your loop in 4–8 numbered steps. Include what the player sees, does, and is scored on."
+            data-ai-prompt-system="You are running a single-lens audit on a described game loop. The learner names ONE of five lenses on the first line, then describes the loop:
+  reward     — does the score/feedback teach the learning objective, or just reward engagement?
+  load       — does cognitive load land on the discriminating move, or on incidental bookkeeping?
+  access     — does the loop require abilities the objective does not, and can a non-majority learner complete it?
+  ethics     — does the loop fabricate stakes on a real population, misrepresent a profession, or extract data beyond consent?
+  data       — does the loop log the evidence needed to answer whether learning happened, and only that?
+
+Output exactly three sections:
+  FINDINGS — 2 to 4 short bullets, each citing a specific step number from the learner's loop and what the lens surfaces there.
+  STOPPERS — any finding that must block ship (default: none). A stopper is a safety/ethics/access issue that a credential cannot be awarded over.
+  ASKS — 2 bullets: what the learner could change about the loop that would most move this lens. One small, one large.
+
+Rules:
+- Stay inside the named lens. Do not drift into other lenses even if tempted.
+- Do not rewrite the loop. Cite steps by number.
+- If the learner names a lens that is not one of the five, refuse and list the five.
+- Total output under 14 lines."></div>
         </div>
       </section>
 
@@ -597,5 +620,6 @@ one-line specific fix. Do NOT rewrite my code. Report only.</span></pre>
 <script src="xapi.js"></script>
 <script src="role.js"></script>
 <script src="shell.js"></script>
+<script src="ai.js"></script>
 </body>
 </html>
