@@ -25,6 +25,9 @@ import { handleVerifyCredential } from './api/verify-credential.js';
 import { handleEnroll } from './api/enroll.js';
 import { handleXapiCollect } from './api/xapi-collect.js';
 import { handleAdminAnalytics } from './api/admin-analytics.js';
+import { handleAdminApprove } from './api/admin-approve.js';
+import { handleCompletionCheck } from './api/completion-check.js';
+import { handleProgress } from './api/progress.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -44,6 +47,9 @@ export default {
     if (p === '/api/enroll')             return handleEnroll(request, env, ctx);
     if (p === '/api/xapi')               return handleXapiCollect(request, env, ctx);
     if (p === '/api/admin/analytics')    return handleAdminAnalytics(request, env, ctx);
+    if (p === '/api/admin/approve')      return handleAdminApprove(request, env, ctx);
+    if (p === '/api/completion-check')   return handleCompletionCheck(request, env, ctx);
+    if (p === '/api/progress')           return handleProgress(request, env, ctx);
 
     // /api/status-list/<cohort> — cohort is a path segment so the URL
     // is stable enough to embed in `credentialStatus.statusListCredential`.

@@ -339,22 +339,50 @@
             'Audit', 'Revision studio', 'Final presentations'
           ];
 
-          var done    = JSON.parse(localStorage.getItem('hb:done') || '[]');
-          var doneSet = new Set(done.map(Number));
-          var missing = [];
-          for (var i = 1; i <= 12; i++) if (!doneSet.has(i)) missing.push(i);
-
-          if (missing.length === 0) {
-            document.getElementById('claim-ready').style.display = '';
-          } else {
+          function showGate(missingSessions) {
             document.getElementById('claim-gate').style.display = '';
             var list = document.getElementById('claim-gate-list');
-            missing.forEach(function(n) {
+            missingSessions.forEach(function(n) {
               var li = document.createElement('li');
               var num = n < 10 ? '0' + n : '' + n;
               li.innerHTML = '○ &nbsp;<a href="session-' + num + '.html" style="color:#be1a2f;">Session ' + num + ' · ' + SESSION_NAMES[n] + '</a>';
               list.appendChild(li);
             });
+          }
+
+          function showForm() {
+            document.getElementById('claim-ready').style.display = '';
+          }
+
+          // Server-side check (enrolled learners) — authoritative
+          var learnerId = localStorage.getItem('hb:learner_id');
+          if (learnerId) {
+            fetch('/api/completion-check?learner_id=' + encodeURIComponent(learnerId))
+              .then(function(r) { return r.json(); })
+              .then(function(data) {
+                if (!data.ok) { fallbackToLocalStorage(); return; }
+                if (data.complete) {
+                  showForm();
+                } else {
+                  var doneSessions = new Set((data.sessions || []).map(function(s) {
+                    var m = s.match(/s0?(\d+)$/); return m ? parseInt(m[1], 10) : null;
+                  }).filter(Boolean));
+                  var missing = [];
+                  for (var i = 1; i <= 12; i++) if (!doneSessions.has(i)) missing.push(i);
+                  showGate(missing);
+                }
+              })
+              .catch(function() { fallbackToLocalStorage(); });
+          } else {
+            fallbackToLocalStorage();
+          }
+
+          function fallbackToLocalStorage() {
+            var done    = JSON.parse(localStorage.getItem('hb:done') || '[]');
+            var doneSet = new Set(done.map(Number));
+            var missing = [];
+            for (var i = 1; i <= 12; i++) if (!doneSet.has(i)) missing.push(i);
+            if (missing.length === 0) showForm(); else showGate(missing);
           }
 
           var form = document.getElementById('claim-form');

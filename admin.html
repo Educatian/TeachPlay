@@ -268,7 +268,7 @@
       for (var i = 1; i <= 12; i++) bars += '<span class="' + (l.sessions_done >= i ? 'done' : '') + '"></span>';
       var statusBadge = '<span class="badge badge--' + (l.cred_status || 'none') + '">' + (l.cred_status || 'none') + '</span>';
       var quizAvg = l.quiz_avg != null ? parseFloat(l.quiz_avg).toFixed(1) : '—';
-      var action = l.cred_status === 'none' && l.sessions_done >= 12
+      var action = (l.cred_status === 'pending' || (l.cred_status === 'none' && l.sessions_done >= 12))
         ? '<button class="btn btn--sm btn--outline" onclick="approveCredential(\'' + esc(l.id) + '\',\'' + esc(l.name) + '\',\'' + esc(l.email) + '\',\'' + esc(l.cohort) + '\',this)">Issue credential</button>'
         : '';
       return '<tr>' +
@@ -289,21 +289,16 @@
     btn.disabled = true;
     btn.textContent = 'Issuing…';
     try {
-      var res = await fetch('/api/claim-code', {
+      var res = await fetch('/api/admin/approve', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + apiKey,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: learnerId,
-          name: name,
-          email: email,
-          cohort: cohort || '2026-spring',
-        }),
+        body: JSON.stringify({ learner_id: learnerId }),
       });
       var data = await res.json();
-      if (res.ok && (data.ok || data.code)) {
+      if (res.ok && data.ok) {
         btn.textContent = '✓ Sent';
         btn.style.color = '#1a6e2e';
         btn.style.borderColor = '#1a6e2e';

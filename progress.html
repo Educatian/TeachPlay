@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>My Progress · TeachPlay</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: #f8f7f4; color: #111; min-height: 100vh; padding: 40px 16px; }
+    .wrap { max-width: 560px; margin: 0 auto; }
+    .kicker { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 16px; }
+    h1 { font-size: 26px; margin-bottom: 10px; }
+    .sub { font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 32px; }
+    .card { background: #fff; border: 1px solid #e4e0d8; border-radius: 10px; padding: 28px; margin-bottom: 20px; }
+    .card h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #888; margin-bottom: 16px; }
+    input[type="email"] { width: 100%; padding: 11px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; font-family: Georgia, serif; margin-bottom: 12px; }
+    .btn { background: #be1a2f; color: #fff; border: none; padding: 12px 28px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; }
+    .btn:disabled { opacity: 0.5; }
+    .error { color: #a50000; font-size: 14px; margin-top: 8px; }
+
+    /* Session grid */
+    .session-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+    .session-cell { aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: #f0ede8; color: #aaa; border: 2px solid transparent; }
+    .session-cell.done { background: #be1a2f; color: #fff; border-color: #8f1422; }
+    .session-label { font-size: 12px; color: #888; margin-bottom: 16px; }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 0; }
+    .stat { text-align: center; padding: 14px; background: #f8f7f4; border-radius: 8px; }
+    .stat__val { font-size: 26px; font-weight: 700; color: #be1a2f; }
+    .stat__label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: #888; margin-top: 2px; }
+
+    /* Credential status */
+    .cred-banner { padding: 16px 20px; border-radius: 8px; font-size: 14px; line-height: 1.5; }
+    .cred-banner--none    { background: #f8f7f4; color: #555; }
+    .cred-banner--pending { background: #fff8e1; color: #7a5800; border: 1px solid #f0c040; }
+    .cred-banner--issued  { background: #e6f4ea; color: #1a5c2e; border: 1px solid #a8d5b5; }
+
+    #lookup-section { display: none; }
+    #progress-section { display: none; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">The University of Alabama · College of Education</p>
+  <h1>My Progress</h1>
+  <p class="sub">Track your completion across devices. Your progress is saved to your account.</p>
+
+  <!-- Email lookup (shown if no learner_id in localStorage) -->
+  <div id="lookup-section">
+    <div class="card">
+      <h2>Find your account</h2>
+      <p style="font-size:14px;color:#555;margin-bottom:16px;">Enter the email you used to enroll and we'll retrieve your progress.</p>
+      <input type="email" id="email-input" placeholder="ada@ua.edu"/>
+      <button class="btn" id="lookup-btn">Look up my progress →</button>
+      <p class="error" id="lookup-error" style="display:none;"></p>
+    </div>
+  </div>
+
+  <!-- Progress display -->
+  <div id="progress-section">
+    <div class="card">
+      <h2>Session completion</h2>
+      <div class="session-grid" id="session-grid"></div>
+      <p class="session-label" id="session-label"></p>
+      <div class="stats-row">
+        <div class="stat"><div class="stat__val" id="stat-sessions">—</div><div class="stat__label">Sessions done</div></div>
+        <div class="stat"><div class="stat__val" id="stat-quiz">—</div><div class="stat__label">Quiz correct</div></div>
+        <div class="stat"><div class="stat__val" id="stat-enrolled">—</div><div class="stat__label">Days enrolled</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Credential status</h2>
+      <div class="cred-banner" id="cred-banner"></div>
+    </div>
+
+    <p style="font-size:13px;color:#aaa;text-align:center;margin-top:8px;">
+      <a href="index.html" style="color:#be1a2f;">← Back to handbook</a>
+    </p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var SESSION_NAMES = ['','Framing','Learner & context','Objectives & crosswalk',
+    'Mechanics I','Mechanics II','Facilitator design','Paper prototyping',
+    'Interaction spec','Playtest design','Audit','Revision studio','Final presentations'];
+
+  var learnerId = localStorage.getItem('hb:learner_id');
+
+  if (learnerId) {
+    loadProgress('GET', null, learnerId);
+  } else {
+    document.getElementById('lookup-section').style.display = '';
+    document.getElementById('lookup-btn').addEventListener('click', function () {
+      var email = document.getElementById('email-input').value.trim();
+      if (!email) return;
+      document.getElementById('lookup-btn').disabled = true;
+      document.getElementById('lookup-btn').textContent = 'Looking up…';
+      document.getElementById('lookup-error').style.display = 'none';
+      loadProgress('POST', email, null);
+    });
+    document.getElementById('email-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') document.getElementById('lookup-btn').click();
+    });
+  }
+
+  async function loadProgress(method, email, id) {
+    try {
+      var res, data;
+      if (method === 'GET') {
+        res  = await fetch('/api/progress?learner_id=' + encodeURIComponent(id));
+        data = await res.json();
+      } else {
+        res  = await fetch('/api/progress', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email }) });
+        data = await res.json();
+        if (res.ok && data.ok) localStorage.setItem('hb:learner_id', data.learner.id);
+      }
+
+      if (!res.ok || !data.ok) {
+        document.getElementById('lookup-error').textContent = data.error || 'Not found. Check your email address.';
+        document.getElementById('lookup-error').style.display = '';
+        document.getElementById('lookup-btn').disabled = false;
+        document.getElementById('lookup-btn').textContent = 'Look up my progress →';
+        return;
+      }
+
+      render(data);
+    } catch (e) {
+      document.getElementById('lookup-error').textContent = 'Network error: ' + e.message;
+      document.getElementById('lookup-error').style.display = '';
+      document.getElementById('lookup-btn').disabled = false;
+      document.getElementById('lookup-btn').textContent = 'Look up my progress →';
+    }
+  }
+
+  function render(data) {
+    document.getElementById('lookup-section').style.display = 'none';
+    document.getElementById('progress-section').style.display = '';
+
+    var doneSessions = new Set((data.completion.sessions || []).map(function (s) {
+      var m = s.match(/s(\d+)$/);
+      return m ? parseInt(m[1], 10) : null;
+    }).filter(Boolean));
+
+    // Session grid
+    var grid = document.getElementById('session-grid');
+    grid.innerHTML = '';
+    for (var i = 1; i <= 12; i++) {
+      var cell = document.createElement('div');
+      cell.className = 'session-cell' + (doneSessions.has(i) ? ' done' : '');
+      cell.title = 'S' + (i < 10 ? '0' + i : i) + ' · ' + SESSION_NAMES[i];
+      cell.textContent = i < 10 ? '0' + i : '' + i;
+      grid.appendChild(cell);
+    }
+    document.getElementById('session-label').textContent =
+      data.completion.count + ' of 12 sessions completed' +
+      (data.completion.complete ? ' — all done!' : '');
+
+    // Stats
+    document.getElementById('stat-sessions').textContent = data.completion.count + '/12';
+    var qPct = data.quiz.attempts > 0 ? Math.round((data.quiz.correct / data.quiz.attempts) * 100) + '%' : '—';
+    document.getElementById('stat-quiz').textContent = qPct;
+    var days = data.learner.enrolled_at
+      ? Math.floor((Date.now() - new Date(data.learner.enrolled_at).getTime()) / 86400000)
+      : '—';
+    document.getElementById('stat-enrolled').textContent = days;
+
+    // Credential status
+    var banner = document.getElementById('cred-banner');
+    var status = data.learner.cred_status;
+    banner.className = 'cred-banner cred-banner--' + (status || 'none');
+    var messages = {
+      none:    data.completion.complete
+        ? 'You\'ve completed all sessions. Go to <a href="session-12.html#claim-credential">Session 12</a> to request your credential.'
+        : 'Complete all 12 sessions to request your credential.',
+      pending: 'Your credential request is pending instructor review. You\'ll receive an email once approved.',
+      issued:  '✓ Your credential has been issued. Check your email for the claim link.',
+    };
+    banner.innerHTML = messages[status] || messages.none;
+  }
+})();
+</script>
+</body>
+</html>
