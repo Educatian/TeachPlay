@@ -46,3 +46,6 @@ desktop.ini
 
 # Repo-level docs that don't need to be browsable on the live domain.
 README.md
+
+# D1 migration SQL — not a public asset.
+migrations/
