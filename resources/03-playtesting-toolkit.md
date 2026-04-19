@@ -432,6 +432,86 @@ Before moving from concept to a more polished prototype, teams should be able to
 - one or more major confusion points have already been identified
 - the team has written at least one concrete revision decision
 
+---
+
+## [RISK] Minimum Sample Size — How Many Testers Is Enough?
+
+The most common playtesting mistake in this course is treating "we tested with 3 people" as equivalent to "we have evidence." Sample size depends on what kind of question you are trying to answer, not on a single universal number. Use the decision table below.
+
+### Per-Phase Sample Size Guidance
+
+| Phase | Question being answered | Minimum n | Maximum useful n | Why that range |
+|---|---|---|---|---|
+| Cycle 1 — Can they understand? | Does the core mechanic communicate itself? | 2–3 | 5 | Usability problems are not statistical — you will find 80% of major problems with 5 testers. More testers at this stage generate redundant data before you have revised the mechanic. |
+| Cycle 2 — Does the loop feel meaningful? | Is there evidence of engagement with the intended decision? | 3–5 | 8 | You need enough variability to distinguish tester-specific confusion from design-level confusion. |
+| Cycle 3 — Does the loop support the learning target? | Is there a measurable difference in learner behavior that aligns with your LO? | 5–8 target users | 12 | You need target users, not proxy users, and enough data points to distinguish signal from noise. |
+| Cycle 4 — Can this run in context? | Does the full protocol survive a real delivery setting? | 1 full session, real cohort | 1 session is usually sufficient | Context fidelity matters more than repetition here. |
+
+### The n=1 Trap
+
+**"We tested it, and she got it on the first try."** One tester who succeeds is not evidence — it may be evidence that your best-case learner succeeds. You need the edge of the distribution, not the center. Deliberately recruit testers who represent your hardest case: the learner with the least prior knowledge, the least gaming literacy, the least time to engage. If your game works for the difficult case, it almost certainly works for the easy case.
+
+### The n=25 Trap
+
+**"We'll test with the whole class before we revise."** Testing at scale before revision is expensive and produces a large volume of data pointing at a version of the prototype that will not exist after the next revision. Test small, revise, test small again. Only scale up when you have resolved all major usability and engagement issues.
+
+### Confidence Threshold for Advancing
+
+Before advancing from one cycle to the next, you need to be able to complete the following sentence with specific evidence:
+
+> "We are confident that [specific design question] has been answered because [N testers] showed [specific behavior], and we have not yet seen [known alternative explanation for that behavior] in our data."
+
+If you cannot complete that sentence, you are not ready to advance — regardless of how many testers you have run.
+
+---
+
+## [RISK] Playtest Trauma Protocol — When Teams Get Defensive
+
+Negative playtest findings are emotionally difficult. Teams that have invested significant time in a design prototype will experience a session where testers cannot complete the core loop as a personal failure, not a design signal. This is not unusual — it happens to professional designers. The facilitator's job is to move the team from emotional response to analytical response within the same session.
+
+### Stage 1: Normalize (2 min)
+
+Before the team processes their findings, name what just happened:
+
+> "What you just saw is what playtest data looks like. It is not a verdict on the design — it is the first iteration of a signal. Every professional designer has sat in this chair. The goal of the next thirty minutes is not to defend what you built; it is to figure out what the data is pointing at."
+
+Do not ask the team how they feel. Do not ask them to be positive. Ask them to be specific.
+
+### Stage 2: Separate observation from interpretation (10 min)
+
+Ask the team to list every specific thing a tester did — not what they thought about it, not why they did it, just what was observable:
+
+- Tester paused at the instruction card for 40 seconds
+- Tester chose Option B when the design assumed they would choose Option A
+- Tester laughed at [moment X] — note: this is observation, not interpretation
+
+Then, separately, ask them to list interpretations:
+
+- We think the pause happened because the instruction card uses technical language
+- We think Option B was chosen because the visual affordance on Option A was unclear
+
+Forcing the separation reduces blame-the-tester reasoning ("she didn't read the instructions") and opens design-level analysis.
+
+### Stage 3: Find the one revision (5 min)
+
+Ask the team to answer one question only: "If we could only change one thing before the next playtest, what would produce the most useful new data?" This is not the same as "what would fix it" — it is "what would teach us the most." Teams that are emotionally defensive tend to propose large rewrites. Push back: the smallest revision that generates new signal is always more valuable than the largest revision that might work.
+
+### Stage 4: Commit in writing (2 min)
+
+Before the session ends, the team writes one sentence: "Before our next playtest, we will change [specific element] because [specific observation suggested it]. We will know the change worked if [specific observable behavior] appears in the next session."
+
+Writing this in the room prevents the common pattern of emotional processing leading to a different revision decision 48 hours later.
+
+### When the Team is Stuck
+
+If a team cannot move past the emotional response and generate analytical output within the session, use this prompt:
+
+> "Imagine you received this data about someone else's game — a colleague's prototype, not yours. What would you tell them to change? Write that down."
+
+This depersonalizes the data and almost always unlocks analytical thinking. After they have written their response, ask: "Would you give yourself the same advice?"
+
+---
+
 ## [LINKS] Recommended Companion Files
 
 - [01-teacher-digital-curriculum-guide.md](C:/Users/jewoo/Documents/Playground/educational-game-design-resource-pack-en/01-teacher-digital-curriculum-guide.md)

@@ -219,6 +219,71 @@ For any forward-looking build curriculum, it is more durable to teach `Responses
 | bug fixing turns chaotic | isolate one bug at a time with reproduction steps |
 | teams want to add polished assets too early | keep placeholder assets until the interaction loop is validated |
 
+## [RISK] Pedagogical Code Review — Reviewing for Educational Correctness, Not Runtime Correctness
+
+Codex and similar tools produce code that runs. Running code is not the same as code that teaches what it is supposed to teach. This protocol gives teams a structured way to review generated code for educational correctness — a step that is systematically skipped in most game development workflows because most developers do not have a learning objective to check against.
+
+### The Two-Pass Review
+
+**Pass 1 — Runtime review (standard).** Does the code run without errors? Does the interaction feel responsive? Do the right things happen when the player does the right things? This is the review most teams already do.
+
+**Pass 2 — Pedagogical review (often skipped).** Does the interaction produce the cognitive act the learning objective requires? This review requires that the reviewer have the D1 and D2 documents open while reading the code.
+
+### Pedagogical Review Checklist
+
+For each interactive element in the generated code, ask:
+
+**1. Does the correct answer require the cognitive act, or just the correct click?**
+
+Example of the failure: A game about identifying infectious disease transmission routes presents four images and asks the learner to click the one that shows airborne transmission. The correct image is visually distinct from the others (it shows a cloud of particles; the others show direct contact). The learner never needs to apply the concept — they need only detect the visual outlier. The code is correct; the pedagogy is broken.
+
+*Review question:* Can a learner who does NOT know the correct answer still choose it by visual pattern, elimination, or luck with meaningful probability? If yes, the mechanic does not require the cognitive act.
+
+**2. Does the feedback name the discriminating feature — or just confirm the answer?**
+
+Example of the failure: Player selects the correct test in a medical simulation. The feedback text reads: "Correct! The patient is stabilizing." The world state changes (patient health indicator improves), but no text or signal names *why* that test was the right choice — what specific feature of the case warranted it.
+
+*Review question:* After reading the feedback text in the code, can you write a sentence beginning "The feedback tells the learner that..." If that sentence contains the discriminating feature from your D2 crosswalk, the feedback is pedagogically adequate. If the sentence only contains "they were right" or "the outcome was good," the feedback is incomplete.
+
+**3. Does the state machine allow a path where the learner never encounters the learning objective?**
+
+Example of the failure: A branching scenario about patient consent has three branches. Branch 1 and Branch 2 reach the consent decision; Branch 3 reaches the same outcome through a different clinical path that bypasses the consent dialogue entirely. A learner who consistently takes Branch 3 will complete the game, receive a passing score, and never have been asked to reason about consent.
+
+*Review question:* Trace every complete path through the state machine in the code. For each path, identify whether the learning objective was required to advance. If any path reaches the end state without requiring the objective, flag it.
+
+**4. Is the difficulty calibration built into the code — or hardcoded?**
+
+Example of the failure: The distractor similarity is set in a single constant (e.g., `distractorSimilarity: 0.3`). There is no mechanism for this to change based on learner performance. Every learner who has already mastered the discrimination gets the same distractors as a learner encountering it for the first time.
+
+*Review question:* Search the generated code for values that represent difficulty parameters (timer duration, distractor count, score threshold). Are any of these adaptive — do they change based on learner behavior? If none of them are adaptive, the game has no knob. Flag this for the revision backlog.
+
+**5. Does the code log what you actually need to know?**
+
+Example of the failure: The analytics code logs `correct: true/false` on each item. The D4 playtest report requires evidence about *which* distractors were chosen on incorrect attempts, because that is the discriminating information (did the learner confuse concept A with B, or with C?). The logged data cannot answer the D4 hypothesis.
+
+*Review question:* For each hypothesis in your D4 document, identify what learner behavior would confirm or falsify it. Then search the analytics logging code for the event that captures that behavior. If the event is not logged, add it before the next playtest — you cannot recover missing data after the session.
+
+### How to Annotate the Code
+
+Add a comment block above each interactive function using this format:
+
+```js
+/*
+ * PEDAGOGICAL ANNOTATION
+ * LO: [paste LO number and text from D2]
+ * Cognitive act required: [what the learner must think, not click]
+ * Discriminating feature: [what separates correct from incorrect]
+ * Feedback names feature: [yes / no / partially]
+ * Path analysis: [all paths require LO / path X bypasses LO]
+ * Logged event: [event name in analytics log]
+ * Review status: [pass / flag — add date]
+ */
+```
+
+This annotation makes the pedagogical review visible in the codebase and is the document you attach to D5 as implementation evidence.
+
+---
+
 ## [CHECK] Critical Thinking Prompts
 
 - What is the smallest build step that would actually reduce uncertainty right now?

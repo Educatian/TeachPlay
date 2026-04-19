@@ -189,6 +189,48 @@ Do not run a formal or high-stakes playtest until the prototype can answer `yes`
 | large scenes delay meaning | load a simpler starter scene or placeholder state first |
 | teams say “it works on my laptop” | require evidence from the minimum test matrix |
 
+## [MAP] Concrete Performance Benchmarks for Educational Game Contexts
+
+These benchmarks are specific to educational games — they differ from commercial game standards because the learner's goal is not entertainment but task completion under time constraints. Latency that is acceptable in a consumer game (2–3 seconds is "dramatic pause") is a UX failure in a learning context (2–3 seconds is lost attention).
+
+### Loading Benchmarks
+
+| Metric | Target | Acceptable | Fail |
+|---|---|---|---|
+| First Contentful Paint (FCP) | < 1.5 s | 1.5–3 s | > 3 s |
+| Time to Interactive (TTI) | < 2.5 s | 2.5–4 s | > 4 s |
+| First meaningful interaction (FMI) — learner can start play | < 4 s on school WiFi | 4–7 s | > 7 s |
+| Scene transition (room to room, level to level) | < 500 ms | 500 ms–1.5 s | > 1.5 s |
+
+**Why school WiFi matters.** The FMI benchmark is measured on a 5 Mbps connection, which is the median speed on school district WiFi in the United States (FCC 2023 data). Your laptop on a university connection is not the test condition. If you cannot simulate school WiFi, disable WiFi and use your phone as a 5G hotspot — then throttle to 5 Mbps in browser DevTools Network panel.
+
+### Interaction Benchmarks
+
+| Interaction type | Target response | Fail |
+|---|---|---|
+| Button tap / click (recognition response) | < 100 ms visual change | > 200 ms |
+| Drag / slider (continuous input) | < 16 ms repaint (60 fps) | < 30 fps (visible stutter) |
+| Feedback text appears after choice | < 300 ms | > 600 ms |
+| Animation plays after event | < 100 ms start | > 300 ms start |
+| Text loads in reading area | < 200 ms | > 400 ms |
+
+**Why 100 ms matters.** Research on human motor-perceptual coupling (Card, Moran, Newell, 1983; Nielsen, 1993) established that responses faster than 100 ms feel instantaneous; responses between 100–300 ms feel slightly slow but acceptable; responses between 300 ms–1 s feel like a noticeable delay; responses over 1 s break the sense of causality between action and effect. In educational games, the learner must trace cause from their decision to the game's response — a response delay > 300 ms systematically degrades this tracing.
+
+### Severity Decision Rules
+
+Use these rules to determine whether to stop, flag, or proceed.
+
+| Severity | Condition | Decision |
+|---|---|---|
+| **STOPPER** | FMI > 7 s on test connection, or any critical interaction (answer submit, core mechanic trigger) > 600 ms | Stop playtest. Fix before proceeding. |
+| **HIGH** | FCP > 3 s, or scene transition > 1.5 s, or feedback text > 600 ms | Fix before the next planned playtest cycle. Do not let a HIGH issue persist across two revisions. |
+| **MEDIUM** | Any interaction in the 200–600 ms range, visible layout shift, < 30 fps during active play | Log in revision backlog with effort estimate. Fix when HIGH issues are resolved. |
+| **LOW** | Cosmetic delay (loading spinner not appearing, animation stutter on low-end device not in test matrix) | Log. Address if time permits. Do not block playtest. |
+
+**Rule for STOPPER classification:** A STOPPER is any performance failure that would cause a target learner to stop engaging — not a performance failure that would bother a developer. Before classifying as STOPPER, ask: "Would a typical learner in the target context close the tab or put down the device because of this?" If yes: STOPPER. If no: HIGH or MEDIUM.
+
+---
+
 ## [CHECK] Critical Thinking Prompts
 
 - What learner behavior in our playtest could actually be a performance artifact?

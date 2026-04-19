@@ -323,31 +323,279 @@
 
       <section class="block" id="videos">
         <div class="block__kicker">06 · Analysis — 60 min</div>
-        <h2 class="block__title">Three clips, three verdicts</h2>
+        <h2 class="block__title">Three cases, three verdicts</h2>
         <p class="block__subtitle">
-          Watch each clip in triads. Log challenge, feedback, and failure design choices; judge whether each
-          one fits the game's apparent objective. Deliverables: one-paragraph verdict per clip.
+          Read each case in triads (10 min each). Fill in the analysis grid for challenge, feedback, and failure
+          design. Agree on a one-paragraph verdict: does each mechanic match the stated objective? Deliverable:
+          three completed grids, plus a 30-second oral report to the room.
         </p>
 
-        <div class="video-slot">
-          <div class="video-slot__frame" style="background: #111; display:flex; align-items:center; justify-content:center; color:#888; font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.14em;">CLIP A · PLACEHOLDER (6 MIN)</div>
-          <div class="video-slot__caption">
-            <span>Clip A · Timed discrimination · commercial release</span>
-            <a href="#">Open worksheet →</a>
+        <!-- ── CASE A ──────────────────────────────────────────── -->
+        <div class="case-study" id="case-a">
+          <div class="case-study__header">
+            <span class="case-study__tag">Case A · Timed discrimination · commercial release</span>
+            <h3 class="case-study__title">Duolingo — the timed practice round</h3>
+          </div>
+          <div class="case-study__body">
+            <p>
+              Duolingo's timed practice mode presents a sequence of translation and word-matching items under
+              a countdown clock. Each correct answer adds a few seconds; each incorrect answer subtracts none
+              but resets the streak. The core mechanic is discrimination: given a target word, identify the
+              correct translation from among four options that share surface features (same grammatical
+              category, similar morphology, related semantic field). The timer is the only difficulty knob
+              the learner cannot adjust.
+            </p>
+            <p>
+              <strong>What's actually happening mechanically.</strong> The timer forces lexical retrieval from
+              long-term memory rather than a slow comparison process. Without time pressure, a learner can
+              eliminate wrong answers by logic without ever knowing the right one — the timer closes that
+              escape route. Duolingo calibrates distractor similarity to the learner's current error history:
+              items where a phonological neighbor was chosen recently get phonologically-similar distractors
+              next time. This is Knob C (distractor similarity) adapting behind the scenes.
+            </p>
+            <p>
+              <strong>Feedback:</strong> Immediate, verification-grain on correctness + a one-line elaborative
+              note that names the grammatical rule or phonological distinction that separates right from wrong.
+              Consequence is the streak counter and the time bank — both update visually the moment you answer.
+              There is no reflection prompt.
+            </p>
+            <p>
+              <strong>Failure loop:</strong> On a wrong answer, Duolingo plays a short red flash (cost ≈ visual
+              embarrassment + 0 seconds), immediately presents the next item (recoverability = instant), and
+              the elaborative note stays on screen for 3 seconds (instructive = moderate). Loop length from
+              decision to next decision is ≈ 6 seconds.
+            </p>
+
+            <table class="tbl tbl--compact">
+              <thead>
+                <tr><th>Dimension</th><th>What Duolingo does</th><th>Judgment</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Challenge knob</td><td>Time pressure (A) + adaptive distractor similarity (C)</td><td>Well-matched to discrimination objective</td></tr>
+                <tr><td>Feedback kind</td><td>Verification + thin elaborative + consequence (streak)</td><td>Verification is appropriate; elaborative note is thin — names rule but rarely the discriminating feature</td></tr>
+                <tr><td>Failure loop</td><td>Short ✔ · Low cost (by design) · Instant recovery ✔ · Moderate instruction ⚠</td><td>Productive for retrieval; marginal for discrimination because cost is too low to force attention</td></tr>
+                <tr><td>Stated objective</td><td>Vocabulary and grammar discrimination</td><td>Partial match: retrieval is served; higher-order discrimination (morphosyntax) is under-served by the thin elaborative</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout--warn" style="margin-top: 20px;">
+              <div class="callout__icon">⚑</div>
+              <div class="callout__body">
+                <div class="callout__title">Discussion question for your triad</div>
+                <p>
+                  Duolingo added the timer to <em>increase engagement</em>, not primarily to serve the discrimination
+                  objective. Does that matter? Argue both sides: (1) engagement and learning are not separable, so
+                  a mechanic that raises one raises both; (2) the timer changes <em>what the player attends to</em>
+                  and therefore changes what is learned, regardless of whether retention scores look similar.
+                  Which position is more defensible for your own D2 context?
+                </p>
+              </div>
+            </div>
+
+            <details class="case-study__worksheet">
+              <summary>Open analysis worksheet for your game →</summary>
+              <div class="worksheet">
+                <p class="worksheet__instr">Fill this in for your own D2 row with the highest challenge-design risk.</p>
+                <table class="tbl tbl--form">
+                  <tbody>
+                    <tr><td>Objective type</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Challenge knob(s) you plan to use</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Knob you are <em>not</em> using and why</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Feedback kind</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Timing of feedback</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Loop length (seconds)</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Cost of failure (what the player loses)</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Recoverability (immediate / 1 step / multi-step)</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Instruction in failure state (what cue is visible)</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Your verdict (one sentence)</td><td><div class="fill-line fill-line--tall"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </details>
           </div>
         </div>
-        <div class="video-slot">
-          <div class="video-slot__frame" style="background: #111; display:flex; align-items:center; justify-content:center; color:#888; font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.14em;">CLIP B · PLACEHOLDER (8 MIN)</div>
-          <div class="video-slot__caption">
-            <span>Clip B · Branching scenario · high-stakes domain</span>
-            <a href="#">Open worksheet →</a>
+
+        <!-- ── CASE B ──────────────────────────────────────────── -->
+        <div class="case-study" id="case-b" style="margin-top: 40px;">
+          <div class="case-study__header">
+            <span class="case-study__tag">Case B · Branching scenario · high-stakes domain</span>
+            <h3 class="case-study__title">Papers, Please — entry-processing decisions under time and moral pressure</h3>
+          </div>
+          <div class="case-study__body">
+            <p>
+              <em>Papers, Please</em> (Lucas Pope, 2013) puts the player in the role of a border checkpoint
+              inspector in a fictional Soviet-adjacent state. Each working day is a discrete session: a queue of
+              travelers arrives, the player must verify documents against an evolving ruleset, approve or deny
+              entry, and earn enough credits to keep their family alive. The ruleset changes daily — new
+              regulations arrive, exceptions appear, forgeries become more sophisticated.
+            </p>
+            <p>
+              <strong>What's actually happening mechanically.</strong> The game teaches procedural fluency (apply
+              the current rule correctly) inside a judgment envelope (the rule conflicts with an obvious human
+              need). The core loop is: read documents → apply ruleset → approve/deny → receive consequence →
+              apply next. Information completeness is the primary difficulty knob: early days give you few rules
+              and obvious violations; later days give you a 30-page rulebook, ambiguous passports, and travelers
+              whose stories create moral counterarguments to the rules.
+            </p>
+            <p>
+              <strong>Feedback:</strong> All consequence-grain. There is no "correct" screen. Errors surface
+              one to three days later as citations from supervisors, loss of pay, or — in some branches — arrest
+              of the player character. This delay is intentional: in real border processing, feedback is delayed
+              by reporting cycles. The game teaches that you cannot know if you were right today.
+            </p>
+            <p>
+              <strong>Failure loop:</strong> A working day is ≈ 10–20 minutes (long). Cost is severe —
+              accumulated errors can trigger a branch that leads to an unwinnable state days later. Recoverability
+              varies: mild citation = low cost, but a late-branch consequence from an early error is nearly
+              irrecoverable. Instruction density is low: you rarely learn which specific decision was wrong,
+              only that a class of errors was made. This is deliberately low — the game wants you to reconstruct
+              causality yourself.
+            </p>
+
+            <table class="tbl tbl--compact">
+              <thead>
+                <tr><th>Dimension</th><th>What Papers, Please does</th><th>Judgment</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Challenge knob</td><td>Information completeness (B) + stake (D), both ramping</td><td>Excellent for judgment under uncertainty; dangerous if learner objective is procedural fluency only</td></tr>
+                <tr><td>Feedback kind</td><td>Pure consequence — delayed, world-state only</td><td>Correct for the objective stated; wrong if you need a learner to trace cause and correct a specific error</td></tr>
+                <tr><td>Failure loop</td><td>Long ⚠ · Very high cost ⚠ · Low-variable recoverability ⚠ · Low instruction ⚠</td><td>All four criteria are at risky values — but the game is not trying to produce a productive-failure loop; it is simulating a domain where failure IS the lesson</td></tr>
+                <tr><td>Stated objective</td><td>Not stated (entertainment game). Apparent: judgment under moral uncertainty + procedural fluency</td><td>Strong match for judgment; weak match for procedural fluency — the low-instruction design means errors do not teach correctives</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout--warn" style="margin-top: 20px;">
+              <div class="callout__icon">⚑</div>
+              <div class="callout__body">
+                <div class="callout__title">Discussion question for your triad</div>
+                <p>
+                  Papers, Please has low instruction density because tracing causality is part of the learning.
+                  But it is a consumer game with no stated outcome standard. In your D2 context, you have a
+                  specific LO — the learner must be able to demonstrate X by rubric. Does the "reconstruct
+                  causality yourself" design transfer to your context? When does low instruction density serve
+                  learning and when does it just produce confusion? Name one D2 row where it would serve you
+                  and one where it would not.
+                </p>
+              </div>
+            </div>
+
+            <details class="case-study__worksheet">
+              <summary>Open analysis worksheet for your game →</summary>
+              <div class="worksheet">
+                <p class="worksheet__instr">Fill this in for your D2 row with the highest feedback-design risk.</p>
+                <table class="tbl tbl--form">
+                  <tbody>
+                    <tr><td>Objective type</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Feedback kind you plan to use</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Timing (immediate / end-of-round / delayed)</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>What changes in world state to signal the consequence</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>When can the player trace cause? (immediately / next round / never)</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Is low traceability intentional here, or a design gap?</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Your verdict (one sentence)</td><td><div class="fill-line fill-line--tall"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </details>
           </div>
         </div>
-        <div class="video-slot">
-          <div class="video-slot__frame" style="background: #111; display:flex; align-items:center; justify-content:center; color:#888; font-family: var(--font-sans); font-size: 13px; letter-spacing: 0.14em;">CLIP C · PLACEHOLDER (5 MIN)</div>
-          <div class="video-slot__caption">
-            <span>Clip C · Roguelite failure loop · consumer hit</span>
-            <a href="#">Open worksheet →</a>
+
+        <!-- ── CASE C ──────────────────────────────────────────── -->
+        <div class="case-study" id="case-c" style="margin-top: 40px;">
+          <div class="case-study__header">
+            <span class="case-study__tag">Case C · Roguelite failure loop · consumer hit</span>
+            <h3 class="case-study__title">Hades — death as the tutorial</h3>
+          </div>
+          <div class="case-study__body">
+            <p>
+              <em>Hades</em> (Supergiant Games, 2020) is a dungeon-crawler in which the player character dies
+              repeatedly and returns to the starting chamber each time. Death is not a punishment — it is the
+              primary delivery mechanism for story, character relationship, and incremental power gain. Each
+              run teaches you something the previous run could not, because each death unlocks new dialogue,
+              new room layouts, and new boon combinations.
+            </p>
+            <p>
+              <strong>What's actually happening mechanically.</strong> The game's failure loop is extraordinarily
+              well-calibrated. A run from start to failure averages 8–35 minutes (variable by player skill, not
+              by designer fiat). The cost of failure is total — you lose all boons and resources earned during
+              the run — but you keep permanent currency (Darkness, Gems) earned during the run. This is the
+              "costly but not catastrophic" design: you feel the loss, but nothing you did was wasted.
+              Recoverability is instant: the death screen shows you three choices of starter boon, and you
+              begin again in ≈ 15 seconds.
+            </p>
+            <p>
+              <strong>Instruction density is the design masterpiece.</strong> On every death, the game tells
+              you exactly what killed you (boss name, specific attack type), shows your final stats (rooms
+              cleared, damage dealt), and immediately surfaces a story beat that reframes the death as story
+              progress, not failure. The instruction in failure is not "here is what you did wrong" — it is
+              "here is what the world looks like because of what happened." The player reconstructs the
+              corrective themselves, which is why Hades produces transfer while most tutorial-then-practice
+              games do not.
+            </p>
+            <p>
+              <strong>The lesson for educational game designers:</strong> Hades separates three things that
+              most educational games bundle: (1) the loss event (you died), (2) the record (what happened),
+              and (3) the interpretation (why it matters). Most educational games collapse all three into
+              immediate verification feedback. Hades delays interpretation by design.
+            </p>
+
+            <table class="tbl tbl--compact">
+              <thead>
+                <tr><th>Dimension</th><th>What Hades does</th><th>Judgment</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Challenge knob</td><td>Multiple: stake (D) + time pressure (A) + information completeness (B, boss telegraphing)</td><td>Layered; each knob targets a different moment of the run — elegant</td></tr>
+                <tr><td>Feedback kind</td><td>Consequence (world state) + thin verification (you died) + deferred reflection (dialogue)</td><td>Consequence is primary; reflection is structurally embedded, not bolted on — rare design achievement</td></tr>
+                <tr><td>Failure loop</td><td>Short-to-medium ✔ · High cost but bounded ✔ · Instant recovery ✔ · High instruction ✔</td><td>All four criteria met; textbook productive failure loop at commercial scale</td></tr>
+                <tr><td>Stated objective</td><td>Consumer entertainment — implicit: mastery of character + boss patterns</td><td>Mastery-objective match is excellent; would need explicit reflection prompts to meet a formal learning outcome standard</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout--warn" style="margin-top: 20px;">
+              <div class="callout__icon">⚑</div>
+              <div class="callout__body">
+                <div class="callout__title">Discussion question for your triad</div>
+                <p>
+                  Hades separates the loss event from the interpretation — the story beat on the death screen
+                  is not "here is the corrective," it is "here is the world." Most educational games cannot
+                  afford this design because they need to demonstrate that a specific LO was targeted. Can you
+                  design a failure state for your D2 that separates loss from interpretation, even partially?
+                  What would the "story beat" analog look like in your domain — and who would write it?
+                </p>
+              </div>
+            </div>
+
+            <details class="case-study__worksheet">
+              <summary>Open analysis worksheet for your game →</summary>
+              <div class="worksheet">
+                <p class="worksheet__instr">Fill this in for your D2 row with the highest failure-loop design risk.</p>
+                <table class="tbl tbl--form">
+                  <tbody>
+                    <tr><td>Objective type</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Loop length (seconds, your game)</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>What the player loses on failure</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>How quickly can they retry?</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>What instruction is visible at the failure moment?</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Is interpretation separated from loss, or collapsed?</td><td><div class="fill-line"></div></td></tr>
+                    <tr><td>Productive-failure verdict (using §04 criteria)</td><td><div class="fill-line fill-line--tall"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top: 32px;">
+          <div class="callout__icon">↑</div>
+          <div class="callout__body">
+            <div class="callout__title">Whole-group debrief (15 min)</div>
+            <p>
+              Each triad reports in 30 seconds per case: one sentence on whether the mechanic matched the
+              objective, and one thing they would change. Facilitator listens for: (1) anyone conflating
+              engagement with transfer — push back; (2) anyone claiming a long loop is fine "because the domain
+              requires it" without justifying the instruction density — push back; (3) anyone treating Hades as
+              impossible to adapt to education — ask them where the deferred-interpretation move would fit
+              their D2.
+            </p>
           </div>
         </div>
       </section>

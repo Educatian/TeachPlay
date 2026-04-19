@@ -565,6 +565,66 @@ Use this template in class.
 
 `[What should change first]`
 
+---
+
+## [RISK] When NOT to Use Game-Based Design — and What to Do Instead
+
+The six cases above share a structural condition: the learning problem requires the learner to *act under conditions that matter*, and a text-based explanation cannot produce that condition. Game-based design is not the right choice when that condition is absent. The following patterns disqualify a context — or at minimum require that the game mechanic be replaced with a different approach.
+
+### Pattern 1: The objective is purely declarative and high-volume
+
+**Example:** "Name the 14 bones of the wrist in order."
+
+Declarative lists do not benefit from interactivity unless the game creates conditions that force retrieval. A flashcard system with spaced repetition beats a game because the marginal cost of a new card is zero; the marginal cost of a new mechanic is high. If your D1 says "learners will *know* the 23 steps of X," consider whether a structured retrieval tool is more honest than a game wrapper. Forcing a game here produces *trivia engagement* — the learner is curious about the game, not the content.
+
+**Red flag phrase:** "We'll make it a quiz game." If the entirety of the game mechanic is answering questions, it is not a game — it is a quiz with visual chrome. This is the most common category error in the course.
+
+### Pattern 2: The domain requires silence, not interaction
+
+**Example:** Medical domains where modeling a diagnostic miss might encode the error pattern rather than the corrective.
+
+This is not hypothetical: instructional research on surgical simulation has documented cases where learners who practiced under incorrect conditions retained the incorrect motor pattern more reliably than controls. If your D1 context involves a high-stakes domain where the failure mode is irreversible (clinical, aviation, emergency response), the productive-failure loop design must be reviewed by a domain expert before implementation. The design question becomes: *what is the minimum fidelity of the failure that teaches the corrective without encoding the error?*
+
+**What to do instead:** Consequence feedback without a failure loop. The learner sees what would have happened, without the error being practiced to fluency.
+
+### Pattern 3: The social context makes participation performance, not thinking
+
+**Example:** A team-based game in a hierarchical workplace where junior members will defer to seniors regardless of game mechanic.
+
+If the learning objective requires individual judgment (e.g., "the pharmacist identifies the contraindication"), but the social structure of the group creates strong norms for deference, the game will measure social compliance, not competence. The session's data will look like success; the individual will not have rehearsed the cognitive act at all.
+
+**Red flag phrase:** "We'll use teams." Ask: can a junior team member safely contradict a senior one inside the game mechanic? If the mechanic does not structurally separate players or anonymize choices, team games in hierarchical organizations produce social performance data, not learning evidence.
+
+**What to do instead:** Individual-first play, then team debrief. Or role-based mechanics that assign the decision to a specific player role, not the group.
+
+### Pattern 4: The learning problem is relational, not procedural
+
+**Example:** "Teachers will build stronger relationships with reluctant learners."
+
+Relationship-building cannot be looped in a game without reducing it to a set of conversational moves — which may teach scripted interaction rather than genuine responsiveness. If D1 says the learner needs to *feel* something, *notice* something about themselves, or *change a disposition*, game mechanics are almost certainly the wrong modality. The correct modality is structured reflection, dialogue, or video-based perspective-taking.
+
+**What to do instead:** Structured reflection paired with real-world observation. If you want to use a game frame, it should surface the emotional data (e.g., a role-play that reveals what the learner does under pressure), then immediately pair with a facilitated debrief that processes the data — not a scoring mechanic that pretends the data is performance.
+
+### Pattern 5: The problem is resource, not competence
+
+**Example:** "ER nurses make triage errors because they are exhausted, not because they do not know triage criteria."
+
+If the root cause analysis of a performance gap reveals that the gap is driven by environmental factors (understaffing, systemic pressure, tool failure), a game that builds individual competence will not close the gap — and can give the impression that it has when post-test scores improve. This is the *ethical* category error: game-based training that allows an organization to declare a problem solved without addressing its structural cause.
+
+**How to identify this pattern:** Ask the question "If a learner completes this program and performs correctly in the game, what must be true in the workplace for that performance to transfer?" If the answer includes environmental conditions that the learner does not control, your D1 needs a stakeholder constraint section.
+
+### Summary Decision Table
+
+| Pattern | Signal in D1 | Better modality |
+|---|---|---|
+| Purely declarative, high-volume | "know the 23 steps / name the 14…" | Spaced retrieval tool |
+| Domain encodes errors on practice | High-stakes, irreversible failure mode | Consequence feedback without loop |
+| Social context prevents individual reasoning | Team game, hierarchical organization | Individual-first, structured role assignment |
+| Relational / dispositional objective | "will build rapport / will notice…" | Structured reflection + debrief |
+| Environmental, not competence, gap | Performance gap is resource-driven | Stakeholder change, not training |
+
+---
+
 ## [LINKS] Recommended Companion Files
 
 - [01-teacher-digital-curriculum-guide.md](C:/Users/jewoo/Documents/Playground/educational-game-design-resource-pack-en/01-teacher-digital-curriculum-guide.md)

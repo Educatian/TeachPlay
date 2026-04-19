@@ -857,6 +857,67 @@ p strong { color: #111; font-weight: 600; }
 .tbl td strong { color: #111; font-weight: 600; }
 .tbl tbody tr:nth-child(even) { background: var(--gray-05); }
 
+/* ── Case study ────────────────────────────────────────── */
+.case-study {
+  border: 1px solid var(--gray-80);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.case-study__header {
+  background: var(--gray-05);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--gray-80);
+}
+.case-study__tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  margin-bottom: 6px;
+}
+.case-study__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #111;
+}
+.case-study__body {
+  padding: 20px 24px;
+}
+.case-study__body p { margin-bottom: 14px; line-height: 1.65; }
+.case-study__body p:last-child { margin-bottom: 0; }
+
+/* worksheet inside details */
+.case-study__worksheet {
+  margin-top: 20px;
+  border: 1px solid var(--gray-80);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.case-study__worksheet summary {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--crimson);
+  background: var(--gray-05);
+  user-select: none;
+}
+.case-study__worksheet summary:hover { background: #f0f0f0; }
+.worksheet { padding: 16px 20px; }
+.worksheet__instr { font-size: 13px; color: var(--capstone-gray); margin-bottom: 12px; }
+.fill-line {
+  min-height: 28px;
+  border-bottom: 1px solid #bbb;
+  width: 100%;
+}
+.fill-line--tall { min-height: 56px; }
+.tbl--compact td, .tbl--compact th { padding: 7px 10px; font-size: 13px; }
+.tbl--form td:first-child { width: 42%; font-size: 13px; color: var(--capstone-gray); }
+.tbl--form td:last-child { width: 58%; }
+
 .tbl--timeplan td:first-child {
   font-family: var(--font-display);
   font-size: 14px;
