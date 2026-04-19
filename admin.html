@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin · TeachPlay Analytics</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f3f0; color: #111; min-height: 100vh; }
+
+    /* Auth gate */
+    #auth-gate { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+    .auth-card { background: #fff; border: 1px solid #e0ddd8; border-radius: 10px; padding: 40px; max-width: 400px; width: 100%; }
+    .auth-card h1 { font-size: 20px; margin-bottom: 8px; }
+    .auth-card p  { font-size: 14px; color: #666; margin-bottom: 24px; }
+    .auth-card input { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; margin-bottom: 12px; font-family: monospace; }
+    .btn { background: #be1a2f; color: #fff; border: none; padding: 11px 24px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn:disabled { opacity: 0.5; }
+    .btn--sm { padding: 6px 14px; font-size: 12px; }
+    .btn--outline { background: transparent; color: #be1a2f; border: 1.5px solid #be1a2f; }
+
+    /* Dashboard */
+    #dashboard { display: none; }
+    .topbar { background: #be1a2f; color: #fff; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.02em; }
+    .topbar span { font-size: 12px; opacity: 0.8; }
+    .content { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+    /* KPI row */
+    .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .kpi { background: #fff; border: 1px solid #e0ddd8; border-radius: 8px; padding: 20px; }
+    .kpi__val { font-size: 32px; font-weight: 700; color: #be1a2f; line-height: 1; }
+    .kpi__label { font-size: 12px; color: #888; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* Cards */
+    .card { background: #fff; border: 1px solid #e0ddd8; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    .card h2 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #555; margin-bottom: 16px; }
+
+    /* Funnel bars */
+    .funnel-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 13px; }
+    .funnel-bar__label { width: 72px; color: #555; flex-shrink: 0; }
+    .funnel-bar__track { flex: 1; background: #f0ede8; border-radius: 4px; height: 18px; overflow: hidden; }
+    .funnel-bar__fill { height: 100%; background: #be1a2f; border-radius: 4px; transition: width 0.4s ease; }
+    .funnel-bar__count { width: 40px; text-align: right; color: #333; font-weight: 600; }
+
+    /* Skills growth */
+    .skill-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+    .skill-row__name { width: 160px; flex-shrink: 0; }
+    .skill-row__bars { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .skill-bar { height: 10px; border-radius: 3px; transition: width 0.4s ease; }
+    .skill-bar--pre  { background: #c8c6c4; }
+    .skill-bar--post { background: #be1a2f; }
+    .skill-row__delta { width: 48px; text-align: right; font-weight: 600; font-size: 13px; }
+    .delta--pos { color: #1a6e2e; }
+    .delta--neg { color: #a50000; }
+    .delta--flat { color: #888; }
+
+    /* Learner table */
+    .learner-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .learner-table th { text-align: left; padding: 8px 10px; border-bottom: 2px solid #e0ddd8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #888; white-space: nowrap; }
+    .learner-table td { padding: 9px 10px; border-bottom: 1px solid #f0ede8; vertical-align: middle; }
+    .learner-table tr:hover td { background: #faf9f7; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+    .badge--none    { background: #f0ede8; color: #888; }
+    .badge--pending { background: #fff3cd; color: #856404; }
+    .badge--issued  { background: #d1e7dd; color: #0a3622; }
+    .completion-bar { display: inline-flex; gap: 2px; }
+    .completion-bar span { width: 8px; height: 12px; border-radius: 2px; background: #e0ddd8; display: inline-block; }
+    .completion-bar span.done { background: #be1a2f; }
+
+    /* Hard questions */
+    .q-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 13px; }
+    .q-row__id { color: #888; width: 180px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .q-row__track { flex: 1; background: #f0ede8; border-radius: 4px; height: 14px; overflow: hidden; }
+    .q-row__fill { height: 100%; border-radius: 4px; }
+    .q-row__pct { width: 44px; text-align: right; font-weight: 600; }
+
+    .error { color: #a50000; font-size: 14px; margin-top: 8px; }
+    .loading { color: #888; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+<!-- Auth gate -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <h1>TeachPlay Admin</h1>
+    <p>Enter your issuer API key to view analytics.</p>
+    <input type="password" id="api-key-input" placeholder="ISSUER_API_KEY" autocomplete="off"/>
+    <button class="btn" id="auth-btn" style="width:100%;">Sign in →</button>
+    <p class="error" id="auth-error" style="display:none;"></p>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard">
+  <div class="topbar">
+    <h1>TeachPlay · Learning Analytics</h1>
+    <span id="cohort-label"></span>
+  </div>
+  <div class="content">
+    <p class="loading" id="loading">Loading data…</p>
+
+    <!-- KPI row -->
+    <div class="kpi-row" id="kpi-row" style="display:none;">
+      <div class="kpi"><div class="kpi__val" id="kpi-learners">—</div><div class="kpi__label">Enrolled</div></div>
+      <div class="kpi"><div class="kpi__val" id="kpi-complete">—</div><div class="kpi__label">Completed all 12</div></div>
+      <div class="kpi"><div class="kpi__val" id="kpi-pending">—</div><div class="kpi__label">Credential pending</div></div>
+      <div class="kpi"><div class="kpi__val" id="kpi-issued">—</div><div class="kpi__label">Credentials issued</div></div>
+    </div>
+
+    <!-- Completion funnel -->
+    <div class="card" id="card-funnel" style="display:none;">
+      <h2>Session completion funnel</h2>
+      <div id="funnel-bars"></div>
+    </div>
+
+    <!-- Skills growth -->
+    <div class="card" id="card-skills" style="display:none;">
+      <h2>Skills growth · pre (grey) vs post (crimson) · cohort average</h2>
+      <div id="skills-rows"></div>
+    </div>
+
+    <!-- Hardest questions -->
+    <div class="card" id="card-questions" style="display:none;">
+      <h2>Hardest quiz questions (lowest correct rate)</h2>
+      <div id="questions-rows"></div>
+    </div>
+
+    <!-- Learner table -->
+    <div class="card" id="card-learners" style="display:none;">
+      <h2>Learners</h2>
+      <div style="overflow-x:auto;">
+        <table class="learner-table">
+          <thead><tr>
+            <th>Name</th><th>Email</th><th>Enrolled</th>
+            <th>Sessions</th><th>Quiz avg</th><th>Status</th><th>Action</th>
+          </tr></thead>
+          <tbody id="learner-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var apiKey = '';
+
+  /* ── Auth ── */
+  document.getElementById('auth-btn').addEventListener('click', function () {
+    var key = document.getElementById('api-key-input').value.trim();
+    if (!key) return;
+    apiKey = key;
+    document.getElementById('auth-gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = '';
+    loadData();
+  });
+  document.getElementById('api-key-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('auth-btn').click();
+  });
+
+  /* ── Data load ── */
+  async function loadData() {
+    try {
+      var res = await fetch('/api/admin/analytics', {
+        headers: { 'Authorization': 'Bearer ' + apiKey }
+      });
+      if (res.status === 401) {
+        document.getElementById('auth-gate').style.display = '';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('auth-error').textContent = 'Invalid API key.';
+        document.getElementById('auth-error').style.display = '';
+        return;
+      }
+      var data = await res.json();
+      document.getElementById('loading').style.display = 'none';
+      renderAll(data);
+    } catch (e) {
+      document.getElementById('loading').textContent = 'Error: ' + e.message;
+    }
+  }
+
+  /* ── Render ── */
+  function renderAll(data) {
+    var learners = data.learners || [];
+    var funnel   = data.funnel   || [];
+    var hq       = data.hardest_questions || [];
+    var skills   = data.skills_growth || [];
+
+    var complete = learners.filter(function (l) { return l.sessions_done >= 12; }).length;
+    var pending  = learners.filter(function (l) { return l.cred_status === 'pending'; }).length;
+    var issued   = learners.filter(function (l) { return l.cred_status === 'issued';  }).length;
+
+    document.getElementById('kpi-learners').textContent = data.total_learners || learners.length;
+    document.getElementById('kpi-complete').textContent = complete;
+    document.getElementById('kpi-pending').textContent  = pending;
+    document.getElementById('kpi-issued').textContent   = issued;
+    document.getElementById('kpi-row').style.display = '';
+
+    renderFunnel(funnel, learners.length);
+    renderSkills(skills);
+    renderQuestions(hq);
+    renderLearners(learners);
+  }
+
+  function renderFunnel(funnel, total) {
+    if (!funnel.length) return;
+    var max = Math.max.apply(null, funnel.map(function (f) { return f.completions; }));
+    var html = funnel.map(function (f) {
+      var pct = max ? Math.round((f.completions / max) * 100) : 0;
+      var label = (f.activity_id || '').replace('session/', 'S').replace('s0', 'S0').replace('s', 'S').toUpperCase();
+      return '<div class="funnel-bar">' +
+        '<span class="funnel-bar__label">' + esc(label) + '</span>' +
+        '<div class="funnel-bar__track"><div class="funnel-bar__fill" style="width:' + pct + '%"></div></div>' +
+        '<span class="funnel-bar__count">' + f.completions + '</span></div>';
+    }).join('');
+    document.getElementById('funnel-bars').innerHTML = html;
+    document.getElementById('card-funnel').style.display = '';
+  }
+
+  var SKILL_LABELS = {
+    LXD: 'Learning Experience Design', ASSESS: 'Assessment Design',
+    PROTO: 'Rapid Prototyping', RESEARCH: 'Learner Research',
+    SPEC: 'Specification Writing', ACCESS: 'Accessibility Design',
+    ITERATE: 'Iterative Improvement', ANALYTICS: 'Learning Analytics',
+  };
+  function renderSkills(skills) {
+    if (!skills.length) return;
+    var html = skills.map(function (s) {
+      var skill = (s.skill || s.activity_id || '').replace(/.*\//, '');
+      var pre   = parseFloat(s.pre_avg)  || 0;
+      var post  = parseFloat(s.post_avg) || 0;
+      var delta = post - pre;
+      var preW  = Math.round((pre / 4) * 100);
+      var postW = Math.round((post / 4) * 100);
+      var dc    = delta > 0.3 ? 'pos' : delta < -0.1 ? 'neg' : 'flat';
+      return '<div class="skill-row">' +
+        '<div class="skill-row__name">' + esc(SKILL_LABELS[skill] || skill) + '</div>' +
+        '<div class="skill-row__bars">' +
+          '<div class="skill-bar skill-bar--pre"  style="width:' + preW  + '%"></div>' +
+          '<div class="skill-bar skill-bar--post" style="width:' + postW + '%"></div>' +
+        '</div>' +
+        '<div class="skill-row__delta delta--' + dc + '">' + (delta >= 0 ? '+' : '') + delta.toFixed(2) + '</div></div>';
+    }).join('');
+    document.getElementById('skills-rows').innerHTML = html || '<p style="color:#888;font-size:13px;">No self-assessment data yet.</p>';
+    document.getElementById('card-skills').style.display = '';
+  }
+
+  function renderQuestions(hq) {
+    if (!hq.length) return;
+    var html = hq.map(function (q) {
+      var rate = q.attempts > 0 ? Math.round((q.correct / q.attempts) * 100) : 0;
+      var color = rate < 50 ? '#be1a2f' : rate < 70 ? '#e8853a' : '#1a6e2e';
+      return '<div class="q-row">' +
+        '<span class="q-row__id" title="' + esc(q.activity_id) + '">' + esc(q.activity_id) + '</span>' +
+        '<div class="q-row__track"><div class="q-row__fill" style="width:' + rate + '%;background:' + color + '"></div></div>' +
+        '<span class="q-row__pct" style="color:' + color + '">' + rate + '%</span></div>';
+    }).join('');
+    document.getElementById('questions-rows').innerHTML = html;
+    document.getElementById('card-questions').style.display = '';
+  }
+
+  function renderLearners(learners) {
+    var tbody = document.getElementById('learner-tbody');
+    tbody.innerHTML = learners.map(function (l) {
+      var bars = '';
+      for (var i = 1; i <= 12; i++) bars += '<span class="' + (l.sessions_done >= i ? 'done' : '') + '"></span>';
+      var statusBadge = '<span class="badge badge--' + (l.cred_status || 'none') + '">' + (l.cred_status || 'none') + '</span>';
+      var quizAvg = l.quiz_avg != null ? parseFloat(l.quiz_avg).toFixed(1) : '—';
+      var action = l.cred_status === 'none' && l.sessions_done >= 12
+        ? '<button class="btn btn--sm btn--outline" onclick="approveCredential(\'' + esc(l.id) + '\',\'' + esc(l.name) + '\',\'' + esc(l.email) + '\',\'' + esc(l.cohort) + '\',this)">Issue credential</button>'
+        : '';
+      return '<tr>' +
+        '<td>' + esc(l.name || '—') + '</td>' +
+        '<td style="color:#555;">' + esc(l.email) + '</td>' +
+        '<td style="color:#888;">' + (l.enrolled_at || '').slice(0, 10) + '</td>' +
+        '<td><div class="completion-bar">' + bars + '</div> <span style="font-size:11px;color:#888;">' + (l.sessions_done || 0) + '/12</span></td>' +
+        '<td>' + quizAvg + '</td>' +
+        '<td>' + statusBadge + '</td>' +
+        '<td>' + action + '</td></tr>';
+    }).join('') || '<tr><td colspan="7" style="color:#888;text-align:center;padding:24px;">No learners enrolled yet.</td></tr>';
+    document.getElementById('card-learners').style.display = '';
+  }
+
+  /* ── Credential approval ── */
+  window.approveCredential = async function (learnerId, name, email, cohort, btn) {
+    if (!confirm('Issue credential to ' + name + ' (' + email + ')?')) return;
+    btn.disabled = true;
+    btn.textContent = 'Issuing…';
+    try {
+      var res = await fetch('/api/claim-code', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: learnerId,
+          name: name,
+          email: email,
+          cohort: cohort || '2026-spring',
+        }),
+      });
+      var data = await res.json();
+      if (res.ok && (data.ok || data.code)) {
+        btn.textContent = '✓ Sent';
+        btn.style.color = '#1a6e2e';
+        btn.style.borderColor = '#1a6e2e';
+      } else {
+        btn.textContent = 'Error';
+        btn.disabled = false;
+        alert(data.error || 'Failed to issue credential.');
+      }
+    } catch (e) {
+      btn.textContent = 'Error';
+      btn.disabled = false;
+      alert(e.message);
+    }
+  };
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+})();
+</script>
+</body>
+</html>

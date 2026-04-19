@@ -14,7 +14,7 @@
   const COHORT_KEY = 'hb:xapi:cohort';
 
   const CONFIG = Object.assign({
-    endpoint: null,             // e.g. "https://lrs.example.edu/xapi/statements"
+    endpoint: '/api/xapi',      // default: collect to the platform's own LRS endpoint
     authHeader: null,           // "Basic ..." or "Bearer ..."
     flushIntervalMs: 15000,     // 15s batch flush to LRS
     platform: 'eduu-game-design-handbook',
@@ -142,7 +142,8 @@
       const resp = await fetch(CONFIG.endpoint, {
         method: 'POST',
         headers: Object.assign(
-          { 'Content-Type': 'application/json', 'X-Experience-API-Version': '1.0.3' },
+          { 'Content-Type': 'application/json', 'X-Experience-API-Version': '1.0.3',
+            'X-Learner-ID': localStorage.getItem('hb:learner_id') || '' },
           CONFIG.authHeader ? { Authorization: CONFIG.authHeader } : {},
         ),
         body: JSON.stringify(q),
@@ -153,7 +154,7 @@
     }
   }
   function startAutoFlush() {
-    if (flushTimer || !CONFIG.endpoint) return;
+    if (flushTimer) return;
     flushTimer = setInterval(flush, CONFIG.flushIntervalMs);
   }
 

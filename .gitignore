@@ -21,7 +21,11 @@ yarn-error.log*
 # Temp
 *.log
 *.tmp
+.tmp-*
 .cache/
+
+# Claude Code worktrees (agent scratch)
+.claude/worktrees/
 
 # Signing keys (never commit private material)
 tools/keys/*.private.json

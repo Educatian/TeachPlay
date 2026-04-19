@@ -49,3 +49,9 @@ id = "034fef756e8c47598262a721f214d68f"
 [[kv_namespaces]]
 binding = "CLAIMS_KV"
 id = "35d14ddef4714d6e996a3c17251e264b"
+
+# D1 — Learning Record Store (learners + xAPI events)
+[[d1_databases]]
+binding = "DB"
+database_name = "teachplay-lrs"
+database_id = "c2749430-248b-4c85-b224-e9e24424e8aa"
