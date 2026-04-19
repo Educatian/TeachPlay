@@ -28,49 +28,56 @@ src/
   index.js             — single fetch handler; dispatches /api/* then ASSETS
   api/
     health.js          — runtime / env smoketest (no crypto)
-    sign-test.js       — @digitalbazaar/vc signing smoketest
+    issue.js           — POST /api/issue — per-learner VC signing (auth-gated)
 ```
 
 `.assetsignore` exists because without it, wrangler's asset uploader tries to push `node_modules/workerd/bin/workerd` (~118 MiB) as a public file and fails the 25 MiB per-asset limit. Every non-public directory is listed.
 
-## What's deployed (smoketest phase)
+## What's deployed
 
-Two endpoints, intentionally minimal:
+Two endpoints:
 
-- `GET /api/health` — reports runtime + whether `ISSUER_PRIVATE_KEY_JSON` is bound. No crypto, no deps. If this 200s but `/api/sign-test` does not, the issue is library compatibility, not Worker setup.
-- `GET /api/sign-test` — signs a hardcoded minimal `VerifiableCredential` using the issuer key loaded from the secret. If this returns a signed VC and `tools/verify-vc.mjs` verifies it, the whole `@digitalbazaar/vc` stack runs on the Workers runtime and we can promote `issue-for-learner` and `revoke` to real endpoints.
+- `GET /api/health` — reports runtime + whether `ISSUER_PRIVATE_KEY_JSON` is bound. No crypto, no deps. Used to isolate "Worker is up" from "signing stack works."
+- `POST /api/issue` — per-learner VC signing, auth-gated. Accepts a learner payload, loads the canonical template (`/credential/assertion-example-v3.unsigned.json`) from the ASSETS binding, customizes subject/evidence/identifier to match `tools/issue-for-learner.mjs`, and signs with the `eddsa-rdfc-2022` cryptosuite under the key held in `ISSUER_PRIVATE_KEY_JSON`.
 
-These are **smoketests** and will be deleted once the real issuance route exists. They are safe to leave public: they sign only a fixed placeholder subject, not a learner.
-
-## One-time setup
-
-Two pieces live outside the repo. The first is already done; the second is what's blocking `/api/sign-test`.
-
-1. **Compatibility flag** — `nodejs_compat` on the Worker (confirmed set). `compatibility_date` is 2026-04-19, which is recent enough.
-2. **Issuer key secret** — `ISSUER_PRIVATE_KEY_JSON` must be set on the Worker as an **encrypted** environment variable. **Do not** paste the private key into any AI assistant chat or public tool. The two safe paths:
-   - **Dashboard**: Worker → Settings → Variables and Secrets → Add → Type: *Secret* → Name `ISSUER_PRIVATE_KEY_JSON` → paste the full JSON from `tools/keys/issuer-ed25519.private.json` → Save.
-   - **CLI** (preferred): from a terminal that has the private key file, run `wrangler secret put ISSUER_PRIVATE_KEY_JSON` and paste the JSON when prompted. The value never leaves your machine except to Cloudflare.
-
-The private key file is gitignored (`tools/keys/*.private.json`). The Cloudflare secret is the only production copy.
-
-## Verifying after deploy
+Request shape:
 
 ```bash
-curl https://teachplay.dev/api/health
-# → {"ok":true, "env":{"ISSUER_PRIVATE_KEY_JSON":"set"}, ...}
+curl -sS -X POST https://teachplay.dev/api/issue \
+  -H "Authorization: Bearer $ISSUER_API_KEY" \
+  -H "content-type: application/json" \
+  -d '{
+    "id":        "worker-test-01",
+    "email":     "test@ua.edu",
+    "name":      "Worker Test",
+    "cohort":    "2026-spring",
+    "validFrom": "2026-05-02T00:00:00Z"
+  }' \
+  | jq .signed > /tmp/issue.json
 
-curl https://teachplay.dev/api/sign-test | jq .signed > /tmp/smoketest.json
-node tools/verify-vc.mjs /tmp/smoketest.json
+node tools/verify-vc.mjs /tmp/issue.json
 # → ✓ VERIFIED
 ```
 
-If `verify-vc.mjs` passes on an artifact signed inside a Cloudflare Worker by the key held only in a Cloudflare secret, the server runtime is real.
+`id` is required (`[a-zA-Z0-9_-]{2,64}`). `cohort` is optional (defaults to `2026-spring`, must match `[a-z0-9-]{2,32}`). `email` is optional; when present it is hashed with the cohort as salt (SHA-256, hex) and placed in `credentialSubject.identifier` as an `IdentityObject` — never stored plaintext. `validFrom` defaults to issuance time.
+
+Auth: the `Authorization: Bearer <token>` (or `X-API-Key`) header is compared against the `ISSUER_API_KEY` secret with a constant-time check. No auth = 401, no subject leak, no crypto work.
+
+## One-time setup
+
+Three pieces live outside the repo, all on the Worker:
+
+1. **Compatibility flag** — `nodejs_compat` on the Worker. `compatibility_date` is 2026-04-19.
+2. **Issuer key secret** — `ISSUER_PRIVATE_KEY_JSON` = the full JSON of `tools/keys/issuer-ed25519.private.json`. **Do not** paste the private key into any AI assistant chat or public tool. Use either:
+   - **Dashboard**: Worker → Settings → Variables and Secrets → Add → Type: *Secret* → Name `ISSUER_PRIVATE_KEY_JSON` → paste the full JSON → Save.
+   - **CLI** (preferred): `npx wrangler secret put ISSUER_PRIVATE_KEY_JSON` from a terminal that has the private key file. The value never leaves your machine except to Cloudflare.
+3. **API key secret** — `ISSUER_API_KEY` = any strong random string (e.g. `openssl rand -hex 32`). Same two paths (`wrangler secret put ISSUER_API_KEY` is simplest). Without this the endpoint returns 500; with it set but not passed by the caller the endpoint returns 401.
+
+The private key file is gitignored (`tools/keys/*.private.json`). The Cloudflare secrets are the only production copies.
 
 ## What this does *not* yet do
 
-- **No auth gate.** Anyone on the public internet can hit `/api/sign-test`. That's acceptable because it signs a fixed placeholder subject. The real `/api/issue` endpoint must reject unauthenticated callers.
-- **No persistence.** The status-list bitstring and `credential/status-list-registry.json` still live in Git. A real revocation endpoint needs Cloudflare KV (or D1) so a bit flip doesn't require a commit and redeploy.
-- **No rate limit.** Workers has a default CPU budget per request but no per-IP limits; a production endpoint needs Cloudflare's rate-limiting rules.
-- **Contexts are fetched, not cached.** The Workers documentLoader hits `www.w3.org` on every sign. Real endpoints should embed the small set of JSON-LD contexts we use (W3C VC v2, OBv3 3.0.3, Multikey v1) as static imports.
-
-Those are the next layers. This one is just: *can we sign on Cloudflare at all*.
+- **No credentialStatus.** `/api/issue`-minted credentials carry no BitstringStatusList entry, so they cannot be revoked. Allocating a status index from the Worker requires writable persistence (Cloudflare KV / D1); that is the next layer. Credentials issued via the `tools/issue-for-learner.mjs` CLI pipeline still get a status entry and can be revoked.
+- **No idempotency.** Two POSTs with the same `id` produce two distinct signatures. Production flow should dedupe or version per-learner issuances (KV again).
+- **No rate limit.** Workers has a default CPU budget per request but no per-IP limits; a production endpoint needs Cloudflare's rate-limiting rules in front of `/api/issue`.
+- **No LMS SSO.** Auth is a single shared bearer token. Real flow is LTI 1.3 (L2) → issue on behalf of an authenticated learner — that plugs in at `checkAuth`.

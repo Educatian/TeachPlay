@@ -12,7 +12,7 @@
  * are listed in .assetsignore so they are not uploaded as assets.
  */
 import { handleHealth } from './api/health.js';
-import { handleSignTest } from './api/sign-test.js';
+import { handleIssue } from './api/issue.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -21,7 +21,7 @@ export default {
     // API routes — exact paths only; Cloudflare handles method restrictions
     // inside each handler.
     if (url.pathname === '/api/health') return handleHealth(request, env, ctx);
-    if (url.pathname === '/api/sign-test') return handleSignTest(request, env, ctx);
+    if (url.pathname === '/api/issue') return handleIssue(request, env, ctx);
 
     // Anything else: fall through to static assets.
     return env.ASSETS.fetch(request);
