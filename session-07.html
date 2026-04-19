@@ -193,6 +193,39 @@
         </div>
       </section>
 
+      <section class="block" id="tools">
+        <div class="block__kicker">06 · AI touchpoint — observation critique</div>
+        <h2 class="block__title">Did you write observations, or interpretations?</h2>
+        <p>
+          The silent-observation discipline collapses the moment you interpret. This tool reads your
+          Did / Said / Stuck notes and flags any row that editorialized — usually by importing a
+          feeling, a cause, or a fix — instead of capturing the observable action. It is offered
+          after a cycle, not during. Use it to calibrate your notes before the next play.
+        </p>
+
+        <div
+          data-ai-touchpoint
+          data-ai-session="s07-observation-critique"
+          data-ai-lo="LO 7.2"
+          data-ai-placeholder="Paste your observation table (Time · Did · Said · Stuck). One row per line; columns separated by |  is fine."
+          data-ai-prompt-system="You are a senior playtest observer critiquing a novice observer's notes. Your job is to flag rows that have crossed from observation into interpretation.
+
+Input format: a list of observation rows, each with some combination of Time, Did, Said, Stuck (Y/N). Columns may be separated by | or tabs.
+
+For each row, output on a single line:
+  ROW N — [OK | FLAG] — <brief reason>
+
+A row is OK if: the Did column names a concrete action; the Said column is a verbatim quote or fragment (even a single word); the Stuck column is only Y or N.
+
+A row is FLAG if ANY of: the Did column names an internal state ('got frustrated', 'was confused'), imports a cause ('because the rules were unclear'), or proposes a fix ('should have been reminded'); the Said column paraphrases instead of quoting; the Stuck column contains anything other than Y/N.
+
+After the per-row lines, output ONE line of the form:
+  SUMMARY — <count OK>/<total> clean; biggest pattern: <one-sentence note on the most common flag>.
+
+Do not rewrite the rows. Do not add suggestions. The learner fixes the notes themselves in cycle 2.
+Keep total output under 20 lines."></div>
+      </section>
+
       <!-- ─── Section: Minigame ──────────────────── -->
       <div id="minigame-mount" data-minigame="s07"></div>
 
@@ -235,5 +268,6 @@
 <script src="xapi.js"></script>
 <script src="role.js"></script>
 <script src="shell.js"></script>
+<script src="ai.js"></script>
 </body>
 </html>

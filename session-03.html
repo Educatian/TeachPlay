@@ -287,6 +287,30 @@ Rules:
               <p>You have not written your D1 yet. A type is meaningless without a learner — AI will classify "students will understand fractions" in isolation, and you will build a crosswalk grounded in nothing.</p>
             </div>
           </div>
+
+          <div
+            data-ai-touchpoint
+            data-ai-session="s03-classify"
+            data-ai-lo="LO 3.2"
+            data-ai-placeholder="Paste 2–4 candidate objectives, one per line."
+            data-ai-prompt-system="You are classifying learning objectives for an educational game designer. Use ONLY these five types:
+1. Retrieval
+2. Discrimination
+3. Procedural fluency
+4. Conceptual reasoning
+5. Judgment under uncertainty
+
+For each objective the learner gives you, output on its own line block:
+  Objective: [verbatim]
+  Type: [one of the five, exactly]
+  Confidence: low | mid | high
+  Why: one sentence citing the verb + cognitive demand.
+  If it splits: say SPLIT and propose two separate objectives, each a single type.
+
+Rules:
+- No hyphenated types. No 'it depends.' Force a call.
+- If the objective is unobservable ('understand', 'appreciate', 'know'), flag it and suggest an observable rewrite. Do not classify it until rewritten.
+- Keep each block under 6 lines; no preamble or summary."></div>
         </div>
 
         <div class="aitool">
@@ -461,5 +485,6 @@ defended, so I can choose.</span></pre>
 <script src="xapi.js"></script>
 <script src="role.js"></script>
 <script src="shell.js"></script>
+<script src="ai.js"></script>
 </body>
 </html>
