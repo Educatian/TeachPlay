@@ -814,10 +814,11 @@ p strong { color: #111; font-weight: 600; }
   text-transform: uppercase;
   color: var(--crimson-dark);
   letter-spacing: 0.02em;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
 }
-.callout__body p { color: #333; margin-bottom: 8px; }
+.callout__body p { color: #333; margin-bottom: 8px; line-height: 1.65; }
 .callout__body p:last-child { margin-bottom: 0; }
+.callout__body:only-child { grid-column: 1 / -1; }
 .callout--warn { background: #fdf0ec; border-left-color: #c03a18; }
 .callout--warn .callout__icon { background: #c03a18; }
 .callout--warn .callout__title { color: #8a2810; }
