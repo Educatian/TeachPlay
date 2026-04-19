@@ -58,6 +58,7 @@
     submitted:   { id: 'http://activitystrea.ms/submit',             display: { 'en-US': 'submitted' } },
     scored:      { id: 'http://id.tincanapi.com/verb/scored',        display: { 'en-US': 'scored' } },
     reviewed:    { id: 'http://id.tincanapi.com/verb/reviewed',      display: { 'en-US': 'reviewed' } },
+    verified:    { id: 'https://teachplay.dev/verbs/verified',       display: { 'en-US': 'verified' } },
   };
 
   // ── Activity object builder ─────────────────────────────────

@@ -44,10 +44,10 @@ The wallet fetches `vc_request_url`, verifies the Data Integrity proof against t
 
 **To productionize P1:**
 
-1. Stand up a per-learner endpoint at `/credential/assertions/{learner-uuid}.json` that returns the VC for the authenticated learner only.
-2. Sign each VC with the issuer's Ed25519 key using `eddsa-rdfc-2022` over URDNA2015-canonicalized credential.
-3. Update `vc_request_url` to point at the per-learner path rather than the static example.
-4. Add `auth_type=code` flow: redirect back through an OAuth code exchange so we don't serve the VC to anyone with the URL.
+1. ~~Stand up a per-learner endpoint at `/credential/assertions/{learner-uuid}.json` that returns the VC for the authenticated learner only.~~ **Done (file-level).** `tools/issue-for-learner.mjs` writes signed per-learner VCs to `credential/assertions/{id}.json`. Serving each file from a learner-gated route is the remaining production step (2 below).
+2. ~~Sign each VC with the issuer's Ed25519 key using `eddsa-rdfc-2022` over URDNA2015-canonicalized credential.~~ **Done.** Both `sign-vc.mjs` and `issue-for-learner.mjs` sign with the same pipeline; `npm test` verifies the example round-trips.
+3. Update `vc_request_url` to point at the per-learner path rather than the static example. *(Wire once the gated route exists.)*
+4. Add `auth_type=code` flow: redirect back through an OAuth code exchange so we don't serve the VC to anyone with the URL. *(Remaining auth work — the static files in `credential/assertions/` are gitignored so they do not leak through the public repo.)*
 
 ### P2 — VC 2.0 JSON download
 
@@ -98,10 +98,19 @@ The example VC is signed end-to-end. The wiring:
 Operational commands:
 
 ```
-npm run keygen          # regenerate the issuer keypair (--force to overwrite)
-npm run sign:example    # sign the unsigned template → assertion-example-v3.json
-npm run verify:example  # round-trip verify the signed example
+npm run keygen              # regenerate the issuer keypair (--force to overwrite)
+npm run sign:example        # sign the unsigned template → assertion-example-v3.json
+npm run verify:example      # round-trip verify the signed example
+npm run issue:learner -- \
+  --id <learner-id> \
+  [--email <addr>]  \
+  [--name "Display Name"] \
+  [--cohort 2026-spring] \
+  [--valid-from 2026-05-02T00:00:00Z]
+                            # issue a signed per-learner VC into credential/assertions/<id>.json
 ```
+
+The per-learner issuance step reuses the same signing suite as the example and writes to `credential/assertions/`, which is gitignored — real learner credentials never land in the public repo. A browser-side structural verifier (`credential.html#verify`) checks issuer, validity window, vm-in-DID-doc, and OBv3 type membership; the cryptographic check (eddsa-rdfc-2022 over URDNA2015) still runs in the wallet or via `tools/verify-vc.mjs` because the canonicalization libraries are too heavy to ship to the browser.
 
 Library versions in `package.json`: `@digitalbazaar/vc`, `@digitalbazaar/ed25519-multikey`, `@digitalbazaar/eddsa-rdfc-2022-cryptosuite`, `@digitalbazaar/data-integrity`, `jsonld`. DCC's `@digitalcredentials/vc` is a drop-in alternative; `didkit` (Rust) is the interop reference when verifiers disagree.
 
@@ -139,7 +148,7 @@ Statements are queue-local in the scaffold; on the LRS in production.
 
 - ~~Signing pipeline~~: **done** — `npm run sign:example` / `npm run verify:example`.
 - ~~`did:web` migration~~: **done** — `.well-known/did.json` published, issuer rebound.
-- Per-learner issuance endpoint (auth + signing worker): ~3 engineer-days.
+- ~~Per-learner issuance (CLI)~~: **done** — `npm run issue:learner -- --id <id> --email <addr>` writes to `credential/assertions/`. Remaining: gated HTTP route + signing worker (~1.5 engineer-days).
 - OID4VCI endpoint (P3 productionization): ~2 engineer-weeks.
 - Revocation (StatusList2021): ~3 engineer-days.
 

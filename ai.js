@@ -151,22 +151,23 @@
 
   function emitXapi({ sessionId, loId, inputLen, outputLen, ms, ok, err }) {
     try {
-      if (!global.xapi || typeof global.xapi.send !== 'function') return;
-      global.xapi.send({
-        verb: 'responded',
-        object: {
-          id: `https://teachplay.dev/ai/touchpoint/${sessionId || 'unknown'}`,
-          definition: { name: { 'en-US': `AI touchpoint · ${sessionId || 'unknown'}` } }
+      if (!global.xapi || typeof global.xapi.emit !== 'function') return;
+      const activity = global.xapi.activities.obj(
+        'ai-touchpoint',
+        sessionId || 'unknown',
+        `AI touchpoint · ${sessionId || 'unknown'}`
+      );
+      global.xapi.emit('responded', activity, {
+        result: {
+          success: !!ok,
+          duration: ms ? `PT${(ms / 1000).toFixed(1)}S` : undefined
         },
-        result: { success: !!ok, duration: ms ? `PT${(ms / 1000).toFixed(1)}S` : undefined },
-        context: {
-          extensions: {
-            'https://teachplay.dev/ext/ai-model': DEFAULT_MODEL,
-            'https://teachplay.dev/ext/ai-input-len': inputLen,
-            'https://teachplay.dev/ext/ai-output-len': outputLen,
-            'https://teachplay.dev/ext/ai-lo': loId || null,
-            'https://teachplay.dev/ext/ai-error': err || null
-          }
+        contextExt: {
+          'https://teachplay.dev/ext/ai-model': DEFAULT_MODEL,
+          'https://teachplay.dev/ext/ai-input-len': inputLen,
+          'https://teachplay.dev/ext/ai-output-len': outputLen,
+          'https://teachplay.dev/ext/ai-lo': loId || null,
+          'https://teachplay.dev/ext/ai-error': err || null
         }
       });
     } catch {}

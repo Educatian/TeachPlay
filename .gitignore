@@ -25,3 +25,8 @@ yarn-error.log*
 
 # Signing keys (never commit private material)
 tools/keys/*.private.json
+
+# Per-learner issued credentials contain hashed PII — keep out of public repo.
+# The example assertion (assertion-example-v3.json) is fine to ship; real
+# cohort issuances land in credential/assertions/ and are gitignored.
+credential/assertions/

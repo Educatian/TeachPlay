@@ -387,6 +387,7 @@
     <div class="an-stat"><div class="an-stat__num" id="stat-checks">0</div><div class="an-stat__lbl">Checklist events</div></div>
     <div class="an-stat"><div class="an-stat__num" id="stat-tickets">0</div><div class="an-stat__lbl">Exit-ticket events</div></div>
     <div class="an-stat"><div class="an-stat__num" id="stat-rubric">0</div><div class="an-stat__lbl">Rubric assessments</div></div>
+    <div class="an-stat"><div class="an-stat__num" id="stat-ai">0</div><div class="an-stat__lbl">AI touchpoint calls</div></div>
   </div>
 
   <!-- Rubric criterion heatmap -->
@@ -444,6 +445,15 @@
       <span class="an-section__sub">Green = cohort has produced evidence against this LO this week. Gaps here flag evaluation-plan triggers.</span>
     </div>
     <div id="lo-coverage"></div>
+  </div>
+
+  <!-- AI touchpoint uptake -->
+  <div class="an-section">
+    <div class="an-section__head">
+      <h2>AI touchpoint uptake</h2>
+      <span class="an-section__sub">BYOK Gemini calls — per-session usage, success rate, average latency. No institutional budget; each learner runs on their own key, so low uptake is a scaffolding signal, not a cost signal.</span>
+    </div>
+    <div id="ai-uptake" class="an-compare"></div>
   </div>
 
   <!-- Skills growth (pre/post self-assessment) -->
@@ -562,7 +572,7 @@
   function actorId(s) { return s.actor && s.actor.account && s.actor.account.name; }
 
   function computeStats(q) {
-    const actors = new Set(), checks = [], tickets = [], sessions = [], rubric = [];
+    const actors = new Set(), checks = [], tickets = [], sessions = [], rubric = [], ai = [];
     for (const s of q) {
       actors.add(actorId(s));
       const k = objKind(s);
@@ -570,8 +580,9 @@
       else if (k === 'ticket') tickets.push(s);
       else if (k === 'session' && isVerb(s, 'completed')) sessions.push(s);
       else if (k === 'rubric-criterion') rubric.push(s);
+      if (isAiCall(s)) ai.push(s);
     }
-    return { actors, checks, tickets, sessions, rubric };
+    return { actors, checks, tickets, sessions, rubric, ai };
   }
 
   function renderStats(stats) {
@@ -580,6 +591,33 @@
     $('#stat-checks').textContent = stats.checks.length;
     $('#stat-tickets').textContent = stats.tickets.length;
     $('#stat-rubric').textContent = stats.rubric.length;
+    $('#stat-ai').textContent = stats.ai.length;
+  }
+
+  // ── AI touchpoints ──────────────────────────────────────────────
+  const AI_TOUCHPOINTS = {
+    's03-classify':                  { lo: 'LO 3.2',  label: 'S03 · Five-type taxonomy' },
+    's04-failure-diagnose':          { lo: 'LO 4.3',  label: 'S04 · Failure diagnosis' },
+    's05-role-fit':                  { lo: 'LO 5.2',  label: 'S05 · Role fit / identity distance' },
+    's07-observation-critique':      { lo: 'LO 7.2',  label: 'S07 · Observation critique' },
+    's08-event-map-lint':            { lo: 'LO 8.3',  label: 'S08 · Event-map lint' },
+    's09-hypothesis-falsifiability': { lo: 'LO 9.1',  label: 'S09 · Falsifiability pre-flight' },
+    's10-five-lens-audit':           { lo: 'LO 10.4', label: 'S10 · Five-lens audit' },
+  };
+
+  function isAiCall(s) {
+    if (!s.verb || s.verb.id !== xapi.V.responded.id) return false;
+    const ext = (s.context && s.context.extensions) || {};
+    return !!ext['https://teachplay.dev/ext/ai-model'];
+  }
+  function aiSessionId(s) {
+    const m = s.object && s.object.id && s.object.id.match(/ai-touchpoint\/([^/?]+)/);
+    return m ? m[1] : null;
+  }
+  function parseDur(ptS) {
+    if (!ptS) return null;
+    const m = String(ptS).match(/PT([\d.]+)S/);
+    return m ? parseFloat(m[1]) : null;
   }
 
   // ── Heatmap ─────────────────────────────────────────────────────
@@ -815,6 +853,90 @@
     host.innerHTML = rows || '<div class="an-stream__empty">No self-assessment responses yet. Visit S1 or S12 and rate the eight skills.</div>';
   }
 
+  // ── AI uptake render ────────────────────────────────────────────
+  function renderAiUptake(q, stats) {
+    const host = $('#ai-uptake');
+    const calls = stats.ai;
+    if (!calls.length) {
+      host.innerHTML = `<p class="an-compare__hint">No AI touchpoint calls yet. Visit S03, S04, S05, S07, S08, S09, or S10 and run a prompt with your own Gemini key.</p>`;
+      return;
+    }
+    const totalCalls = calls.length;
+    const successCalls = calls.filter(s => s.result && s.result.success).length;
+    const successRate = Math.round((successCalls / totalCalls) * 100);
+    const callers = new Set(calls.map(actorId));
+    const durs = calls.map(s => parseDur(s.result && s.result.duration)).filter(v => v != null && v > 0);
+    const avgDur = durs.length ? (durs.reduce((a,b)=>a+b,0) / durs.length) : 0;
+
+    const perSess = {};
+    for (const s of calls) {
+      const sid = aiSessionId(s) || 'unknown';
+      const row = (perSess[sid] = perSess[sid] || { calls: 0, successes: 0, actors: new Set(), durs: [] });
+      row.calls++;
+      if (s.result && s.result.success) row.successes++;
+      row.actors.add(actorId(s));
+      const d = parseDur(s.result && s.result.duration);
+      if (d != null && d > 0) row.durs.push(d);
+    }
+    const sessKeys = Object.keys(perSess).sort();
+    const rows = sessKeys.map(sid => {
+      const r = perSess[sid];
+      const meta = AI_TOUCHPOINTS[sid] || { lo: '—', label: sid };
+      const sr = Math.round((r.successes / r.calls) * 100);
+      const avg = r.durs.length ? (r.durs.reduce((a,b)=>a+b,0) / r.durs.length) : 0;
+      const cls = sr >= 90 ? 'an-cmp-delta--pos' : sr >= 70 ? 'an-cmp-delta--flat' : 'an-cmp-delta--neg';
+      return `<tr>
+        <th scope="row">${esc(meta.label)}<small>${esc(meta.lo)} · ${esc(sid)}</small></th>
+        <td>${r.calls}</td>
+        <td>${r.actors.size}</td>
+        <td class="${cls}">${sr}%</td>
+        <td>${avg ? avg.toFixed(1) + ' s' : '—'}</td>
+      </tr>`;
+    }).join('');
+
+    const nonAdopters = [...stats.actors].filter(a => a && !callers.has(a)).length;
+
+    host.innerHTML = `
+      <div class="an-cmp-summary">
+        <div class="an-cmp-summary__cell">
+          <div class="an-cmp-summary__num">${totalCalls}</div>
+          <div class="an-cmp-summary__lbl">Total AI calls</div>
+        </div>
+        <div class="an-cmp-summary__cell">
+          <div class="an-cmp-summary__num">${callers.size}</div>
+          <div class="an-cmp-summary__lbl">Learners who called</div>
+        </div>
+        <div class="an-cmp-summary__cell ${successRate >= 90 ? 'pos' : successRate < 70 ? 'neg' : ''}">
+          <div class="an-cmp-summary__num">${successRate}%</div>
+          <div class="an-cmp-summary__lbl">Success rate</div>
+        </div>
+        <div class="an-cmp-summary__cell">
+          <div class="an-cmp-summary__num">${avgDur ? avgDur.toFixed(1) + ' s' : '—'}</div>
+          <div class="an-cmp-summary__lbl">Avg latency</div>
+        </div>
+        <div class="an-cmp-summary__cell ${nonAdopters > 0 ? 'neg' : 'pos'}">
+          <div class="an-cmp-summary__num">${nonAdopters}</div>
+          <div class="an-cmp-summary__lbl">Non-adopters (0 AI calls)</div>
+        </div>
+      </div>
+      <p class="an-compare__hint">
+        Low success rate usually means a quota or key-shape problem on the learner's side, not a prompt problem.
+        A high non-adopter count alongside high session completion is the signal that the AI scaffolding isn't
+        landing — revisit the framing, not the prompt text.
+      </p>
+      <table class="an-cmp-tbl">
+        <thead><tr>
+          <th style="min-width:260px;">Touchpoint</th>
+          <th style="width:70px;">Calls</th>
+          <th style="width:90px;">Learners</th>
+          <th style="width:90px;">Success</th>
+          <th style="width:100px;">Avg latency</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }
+
   // ── Cohort snapshots & comparison ───────────────────────────────
   const SNAPSHOT_KEY = 'hb:cohort-snapshots';
 
@@ -1036,6 +1158,7 @@
     renderFunnel(stats);
     renderLoCoverage(stats);
     renderGrowth(q);
+    renderAiUptake(q, stats);
     renderReliability(stats);
     renderStream(q);
     renderSnapList();
@@ -1109,6 +1232,41 @@
               }}));
         }
       });
+
+      // AI touchpoint calls — BYOK, so uptake is skill-correlated (learners who
+      // are further along tend to actually run the prompts rather than skipping them).
+      const aiSessions = [
+        ['s03-classify', 3, 'LO 3.2'],
+        ['s04-failure-diagnose', 4, 'LO 4.3'],
+        ['s05-role-fit', 5, 'LO 5.2'],
+        ['s07-observation-critique', 7, 'LO 7.2'],
+        ['s08-event-map-lint', 8, 'LO 8.3'],
+        ['s09-hypothesis-falsifiability', 9, 'LO 9.1'],
+        ['s10-five-lens-audit', 10, 'LO 10.4'],
+      ];
+      for (const [sid, sNum, lo] of aiSessions) {
+        if (sessionsDone < sNum) continue;
+        // adoption probability scales with skill
+        if (Math.random() > skill * 0.85) continue;
+        const nCalls = 1 + Math.floor(Math.random() * 3);
+        const tBase = now - (12 - sNum) * 86400_000;
+        for (let c = 0; c < nCalls; c++) {
+          const ok = Math.random() < 0.92; // most calls succeed; some key/quota failures
+          const ms = ok ? (900 + Math.random() * 3200) : 0;
+          const inLen = 40 + Math.floor(Math.random() * 180);
+          const outLen = ok ? (200 + Math.floor(Math.random() * 600)) : 0;
+          q.push(makeStmt(learnerId, 'responded',
+            { id:`https://teachplay.dev/activities/ai-touchpoint/${sid}`,
+              definition:{ name:{'en-US':`AI touchpoint · ${sid}`}, type:'http://adlnet.gov/expapi/activities/ai-touchpoint'} },
+            tBase + c * 600_000,
+            { success: ok, duration: ok ? `PT${(ms/1000).toFixed(1)}S` : undefined },
+            { 'ai-model': 'gemini-2.5-flash',
+              'ai-input-len': inLen,
+              'ai-output-len': outLen,
+              'ai-lo': lo,
+              'ai-error': ok ? null : 'Gemini API 429 — quota exceeded' }));
+        }
+      }
 
       // Rubric assessments with two raters
       CRITERIA.forEach(([d, k]) => {

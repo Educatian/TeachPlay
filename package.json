@@ -9,6 +9,7 @@
   "scripts": {
     "keygen": "node tools/gen-keypair.mjs",
     "sign:example": "node tools/sign-vc.mjs credential/assertion-example-v3.unsigned.json credential/assertion-example-v3.json",
+    "issue:learner": "node tools/issue-for-learner.mjs",
     "verify:example": "node tools/verify-vc.mjs credential/assertion-example-v3.json",
     "test": "npm run verify:example"
   },
