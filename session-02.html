@@ -316,6 +316,14 @@ to hear the worst version of the feedback now, not in workshop.</span></pre>
       <!-- ─── Section: Minigame ──────────────────── -->
       <div id="minigame-mount" data-minigame="s02"></div>
 
+      <!-- ─── Section: Comprehension check ─────────────── -->
+      <section class="block" id="quiz">
+        <div class="block__kicker">08 · Comprehension check — 10 min</div>
+        <h2 class="block__title">Before you move on…</h2>
+        <p class="block__subtitle">Four questions on this session's concepts. Choices lock on first click — formative only.</p>
+        <div id="s02-quiz"></div>
+      </section>
+
       <section class="block" id="ticket">
         <div class="block__kicker">09 · Exit ticket</div>
         <h2 class="block__title">Paste your revised gap statement</h2>
@@ -350,5 +358,8 @@ to hear the worst version of the feedback now, not in workshop.</span></pre>
 <script src="xapi.js"></script>
 <script src="role.js"></script>
 <script src="shell.js"></script>
+<script src="questions.js"></script>
+<script src="quiz.js"></script>
+<script>Quiz.mount(document.getElementById('s02-quiz'), S02_QUESTIONS);</script>
 </body>
 </html>
