@@ -551,6 +551,14 @@
         </div>
       </section>
 
+      <!-- ─── Section: Comprehension check ─────────────── -->
+      <section class="block" id="quiz">
+        <div class="block__kicker">08c · Comprehension check — 10 min</div>
+        <h2 class="block__title">Before you move on…</h2>
+        <p class="block__subtitle">Four questions on this session's concepts. Choices lock on first click — formative only.</p>
+        <div id="s01-quiz"></div>
+      </section>
+
       <!-- ─── Section: Exit ticket ───────────────────────── -->
       <section class="block" id="ticket">
         <div class="block__kicker">09 · Exit ticket</div>
@@ -598,5 +606,8 @@
 <script src="xapi.js"></script>
 <script src="role.js"></script>
 <script src="shell.js"></script>
+<script src="questions.js"></script>
+<script src="quiz.js"></script>
+<script>Quiz.mount(document.getElementById('s01-quiz'), S01_QUESTIONS);</script>
 </body>
 </html>

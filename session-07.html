@@ -239,6 +239,14 @@ Keep total output under 20 lines."></div>
         </ul>
       </section>
 
+      <!-- ─── Section: Comprehension check ─────────────── -->
+      <section class="block" id="quiz">
+        <div class="block__kicker">07 · Comprehension check — 10 min</div>
+        <h2 class="block__title">Before you move on…</h2>
+        <p class="block__subtitle">Four questions on this session's concepts. Choices lock on first click — formative only.</p>
+        <div id="s07-quiz"></div>
+      </section>
+
       <section class="block" id="ticket">
         <div class="block__kicker">08 · Exit ticket</div>
         <h2 class="block__title">One cut you were afraid to make</h2>
@@ -269,5 +277,8 @@ Keep total output under 20 lines."></div>
 <script src="role.js"></script>
 <script src="shell.js"></script>
 <script src="ai.js"></script>
+<script src="questions-s07-s12.js"></script>
+<script src="quiz.js"></script>
+<script>Quiz.mount(document.getElementById('s07-quiz'), S07_QUESTIONS);</script>
 </body>
 </html>

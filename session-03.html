@@ -453,6 +453,14 @@ defended, so I can choose.</span></pre>
         </ul>
       </section>
 
+      <!-- ─── Section: Comprehension check ─────────────── -->
+      <section class="block" id="quiz">
+        <div class="block__kicker">07 · Comprehension check — 10 min</div>
+        <h2 class="block__title">Before you move on…</h2>
+        <p class="block__subtitle">Four questions on this session's concepts. Choices lock on first click — formative only.</p>
+        <div id="s03-quiz"></div>
+      </section>
+
       <section class="block" id="ticket">
         <div class="block__kicker">08 · Exit ticket</div>
         <h2 class="block__title">Defend one mechanic choice</h2>
@@ -486,5 +494,8 @@ defended, so I can choose.</span></pre>
 <script src="role.js"></script>
 <script src="shell.js"></script>
 <script src="ai.js"></script>
+<script src="questions.js"></script>
+<script src="quiz.js"></script>
+<script>Quiz.mount(document.getElementById('s03-quiz'), S03_QUESTIONS);</script>
 </body>
 </html>
