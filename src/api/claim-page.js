@@ -89,6 +89,12 @@ function renderPage({ code, claimUrl, lcwUrl, oid4vciUrl }) {
     <code class="codebox">${escapeHtml(oid4vciUrl)}</code>
   </section>
 
+  <section>
+    <h2>Paper certificate</h2>
+    <p>Prefer a framable version? A printable certificate with a QR code for later verification. Printing does not consume your claim code — you can still import into a wallet afterward.</p>
+    <a class="btn secondary" href="/certificate?code=${escapeAttr(code)}" target="_blank" rel="noopener">Open printable certificate</a>
+  </section>
+
   <footer>
     <p>Claim code <code>${codeAttr}</code> — single-use. Once redeemed it cannot be reused; load this page as many times as you need until then.</p>
   </footer>
