@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>The Engagement Trap - 45s</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TeachPlay module video</title>
 <link rel="stylesheet" href="carbon.css" />
 <style>
   html, body { margin: 0; padding: 0; height: 100%; background: #0a0a0a; }
@@ -20,10 +21,12 @@
 <script type="text/babel" src="talk_scenes.jsx"></script>
 
 <script type="text/babel">
+  const params = new URLSearchParams(window.location.search);
+  const moduleNumber = Math.max(1, Math.min(12, parseInt(params.get('m') || '1', 10) || 1));
   const root = ReactDOM.createRoot(document.getElementById('root'));
   root.render(
-    <Stage width={1920} height={1080} duration={45} background="#ffffff" persistKey="trap-v2">
-      <TrapVideo />
+    <Stage width={1920} height={1080} duration={45} background="#ffffff" persistKey={`module-video-${moduleNumber}`}>
+      <ModuleVideo module={moduleNumber} />
     </Stage>
   );
 </script>

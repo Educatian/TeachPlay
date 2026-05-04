@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>The Crosswalk — 30s</title>
+<title>The Crosswalk - 45s</title>
 <link rel="stylesheet" href="carbon.css" />
 <style>
   html, body { margin: 0; padding: 0; height: 100%; background: #0a0a0a; }
@@ -17,12 +17,12 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <script type="text/babel" src="animations.jsx"></script>
-<script type="text/babel" src="scenes.jsx"></script>
+<script type="text/babel" src="talk_scenes.jsx"></script>
 
 <script type="text/babel">
   const root = ReactDOM.createRoot(document.getElementById('root'));
   root.render(
-    <Stage width={1920} height={1080} duration={30} background="#ffffff" persistKey="crosswalk-v1">
+    <Stage width={1920} height={1080} duration={45} background="#ffffff" persistKey="crosswalk-v2">
       <CrosswalkVideo />
     </Stage>
   );

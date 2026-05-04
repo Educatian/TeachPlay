@@ -318,6 +318,36 @@
     render();
   }
 
+  function wireModuleVideo() {
+    const n = currentSession();
+    if (!n) return;
+    if (document.querySelector('.video-slot[data-module-video]')) return;
+    if (document.querySelector('#video .video-slot')) return;
+
+    const current = SESSIONS[n - 1];
+    const outcomes = document.querySelector('.content > section.block#outcomes');
+    if (!outcomes || !current) return;
+
+    const section = document.createElement('section');
+    section.className = 'block';
+    section.id = 'video';
+    section.innerHTML = `
+      <div class="block__kicker">02 · Two-host primer</div>
+      <h2 class="block__title">${current.title} in 45 seconds</h2>
+      <p class="block__subtitle">
+        A short dialogue primer for the session's core design move. Watch it once before the activity, then use the same language when you critique your own project.
+      </p>
+      <div class="video-slot" data-module-video>
+        <iframe class="video-slot__frame" src="module-video.html?m=${n}" title="Session ${String(n).padStart(2, '0')} two-host primer"></iframe>
+        <div class="video-slot__caption">
+          <span>Video · 00:45 · Session ${String(n).padStart(2, '0')}</span>
+          <a href="module-video.html?m=${n}" target="_blank" rel="noopener">Open full →</a>
+        </div>
+      </div>
+    `;
+    outcomes.insertAdjacentElement('afterend', section);
+  }
+
   // ── Boot ────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     const sb = document.querySelector('[data-sidebar]');
@@ -328,6 +358,7 @@
     wirePrint();
     wireMarkDone();
     wireCrosswalk();
+    wireModuleVideo();
 
     // Index page renderer (if present)
     const landingGrid = document.querySelector('[data-session-grid]');
