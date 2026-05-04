@@ -33,7 +33,7 @@
   }
 
   function currentSession() {
-    const m = location.pathname.match(/session-(\d+)\.html/);
+    const m = location.pathname.match(/session-(\d+)(?:\.html)?\/?$/);
     return m ? parseInt(m[1], 10) : null;
   }
 
