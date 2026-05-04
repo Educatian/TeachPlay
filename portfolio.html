@@ -282,9 +282,9 @@
   <span class="section__eyebrow">The Five Slots</span>
   <h2 class="section__title">One artifact per deliverable.</h2>
   <p class="section__lede">
-    Drop a PDF, a zipped prototype folder, or paste a link. Each slot accepts exactly one artifact
-    per deliverable — re-uploading replaces the prior hash and records a new <code>submitted</code>
-    statement in the learning-analytics queue.
+    Drop a PDF, a zipped prototype folder, a short recording, or paste a link. Each slot accepts
+    exactly one artifact per deliverable — re-uploading replaces the prior hash and records a new
+    <code>submitted</code> statement in the learning-analytics queue.
   </p>
 
   <div class="pf-grid" id="pf-grid"></div>
@@ -351,9 +351,9 @@
   const DELIVERABLES = [
     { key: 'D1', title: 'Design Problem Statement', session: 'Session 02 · Week 2', accept: '.pdf,.md,.txt' },
     { key: 'D2', title: 'Objective × Mechanic Crosswalk', session: 'Session 03 · Week 3', accept: '.csv,.xlsx,.pdf,.md' },
-    { key: 'D3', title: 'Paper Prototype + Facilitator Guide', session: 'Session 07 · Week 7', accept: '.zip,.pdf' },
-    { key: 'D4', title: 'Playtest Report', session: 'Session 09 · Week 9', accept: '.pdf,.md,.zip' },
-    { key: 'D5', title: 'Implementation Spec', session: 'Session 12 · Week 12', accept: '.zip,.pdf,.md' },
+    { key: 'D3', title: 'Paper Prototype + Facilitator Guide', session: 'Session 07 · Week 7', accept: '.zip,.pdf,.md,.png,.jpg,.jpeg,.webp,.gif' },
+    { key: 'D4', title: 'Playtest Report + recording', session: 'Session 09 · Week 9', accept: '.pdf,.md,.zip,.png,.jpg,.jpeg,.webp,.gif,.mp4,.webm,.mov,.m4v' },
+    { key: 'D5', title: 'Implementation Spec', session: 'Session 12 · Week 12', accept: '.zip,.pdf,.md,.png,.jpg,.jpeg,.svg,.webp,.mp4,.webm,.mov,.m4v' },
   ];
 
   const STORE_PREFIX = 'hb:portfolio:';

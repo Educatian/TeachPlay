@@ -1437,6 +1437,43 @@ pre.prompt .tag { color: #ffd580; }
 }
 .video-slot__caption a { color: var(--crimson); }
 
+/* ─── Asset figures ───────────────────────────────────────────── */
+.asset-grid {
+  display: grid;
+  gap: 24px;
+  margin: 24px 0;
+}
+.asset-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.asset-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.asset-figure {
+  margin: 0;
+  border: 1px solid var(--gray-20);
+  background: var(--white);
+  overflow: hidden;
+}
+.asset-figure__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.asset-figure__cap {
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--gray-20);
+  background: var(--gray-05);
+  color: var(--capstone-gray);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.asset-figure__cap strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #222;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 /* ─── Worked example ─────────────────────────────────────────── */
 .worked {
   background: var(--gray-05);
@@ -2253,6 +2290,7 @@ a.deliverable:hover {
   .shell { grid-template-columns: 1fr; }
   .sidebar { position: relative; height: auto; max-height: 50vh; }
   .session-card-grid, .card-grid--2, .card-grid--3 { grid-template-columns: 1fr; }
+  .asset-grid--2, .asset-grid--3 { grid-template-columns: 1fr; }
   .deliverables { grid-template-columns: 1fr; }
   .session-meta { grid-template-columns: repeat(2, 1fr); }
   .content, .session-header, .section, .hero, .utility, .site-header, .site-footer { padding-left: 20px !important; padding-right: 20px !important; }
