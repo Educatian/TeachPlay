@@ -6,8 +6,12 @@
 
 import { test, expect } from '@playwright/test';
 import { readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
 
 const BASE = 'http://127.0.0.1:8765';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = resolve(__dirname, '..');
 
 // Public, navigable pages — derived dynamically. Excludes utility / build files.
 const SKIP_PAGES = new Set([
@@ -22,8 +26,7 @@ const SKIP_PAGES = new Set([
   'The Crosswalk.html', 'The Engagement Trap.html', // legacy two-host primer pages
 ]);
 
-const repoRoot = 'C:/Users/jewoo/Desktop/_projects/TeachPlay';
-const HTML_PAGES = readdirSync(repoRoot)
+const HTML_PAGES = readdirSync(REPO_ROOT)
   .filter(f => f.endsWith('.html'))
   .filter(f => !SKIP_PAGES.has(f))
   .sort();

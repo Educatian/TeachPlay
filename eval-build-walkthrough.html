@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#be1a2f" />
-<title>Qualtrics Survey via API — Build Walkthrough</title>
+<title>퀄트릭스 서베이를 클코에 시켜서 만들기</title>
 <style>
   :root {
     --crimson: #9E1B32;
@@ -14,48 +14,46 @@
     --muted: #6e6967;
     --line: #ebe5e0;
     --bg: #fefcfa;
-    --code-bg: #1f1d1c;
-    --code-fg: #f5efe9;
-    --code-comment: #8a8278;
-    --code-key: #e8b27d;
-    --code-str: #c2d6a8;
     --prompt-bg: #fdf8f5;
     --response-bg: #f5f2ef;
-    --result-bg: #1a1816;
-    --result-fg: #c8e6a0;
+    --result-bg: #f4faec;
+    --result-border: #b9d28f;
+    --result-fg: #3e6326;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
     background: var(--bg);
     color: var(--ink);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    line-height: 1.6;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    line-height: 1.65;
     font-size: 16px;
   }
-  code, pre, .mono { font-family: 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace; }
+  code { font-family: 'SF Mono', Menlo, Consolas, monospace;
+         background: rgba(0,0,0,0.04); padding: 1px 5px; border-radius: 3px;
+         font-size: 0.92em; }
 
   /* HERO */
   .hero {
     background: linear-gradient(135deg, #1a0a0d 0%, #4a0d18 60%, var(--crimson) 100%);
-    color: #fefcfa; padding: 64px 8% 80px; border-bottom: 6px solid var(--crimson);
+    color: #fefcfa; padding: 56px 8% 70px; border-bottom: 6px solid var(--crimson);
   }
   .hero .kicker { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-                  color: #f3c8d0; font-weight: 700; margin-bottom: 16px; }
-  .hero h1 { font-size: 44px; line-height: 1.1; margin: 0 0 14px; font-weight: 800; max-width: 820px; }
-  .hero .lede { font-size: 18px; color: #f3e8ea; max-width: 720px; line-height: 1.5; }
-  .hero .meta { margin-top: 28px; font-size: 12px; letter-spacing: 0.04em; color: #d8b6bd; }
+                  color: #f3c8d0; font-weight: 700; margin-bottom: 14px; }
+  .hero h1 { font-size: 38px; line-height: 1.2; margin: 0 0 14px; font-weight: 800; max-width: 820px; }
+  .hero .lede { font-size: 17px; color: #f3e8ea; max-width: 720px; line-height: 1.55; }
+  .hero .meta { margin-top: 24px; font-size: 12px; letter-spacing: 0.04em; color: #d8b6bd; }
   .hero .meta b { color: #f9e8eb; font-weight: 600; }
 
   /* LAYOUT */
-  .wrap { display: grid; grid-template-columns: 240px 1fr; max-width: 1200px;
+  .wrap { display: grid; grid-template-columns: 230px 1fr; max-width: 1180px;
           margin: 0 auto; gap: 36px; padding: 36px 24px 96px; }
   @media (max-width: 880px) { .wrap { grid-template-columns: 1fr; } }
 
   /* TOC */
   nav.toc { position: sticky; top: 24px; align-self: start;
             border-left: 3px solid var(--crimson); padding: 4px 0 4px 14px;
-            font-size: 13px; line-height: 1.4; }
+            font-size: 13px; line-height: 1.45; }
   nav.toc .toc-h { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
                    color: var(--crimson); font-weight: 700; margin: 0 0 10px; }
   nav.toc .toc-part { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
@@ -74,87 +72,77 @@
   /* MAIN */
   main { min-width: 0; }
   main .part-divider {
-    border-top: 2px solid var(--crimson); margin: 64px 0 0; padding-top: 18px;
+    border-top: 2px solid var(--crimson); margin: 56px 0 0; padding-top: 18px;
   }
   main .part-divider:first-child { margin-top: 0; }
   main .part-kicker {
     font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
     color: var(--crimson); font-weight: 800; margin: 0;
   }
-  main .part-title { font-size: 32px; font-weight: 800; margin: 6px 0 0; line-height: 1.1; }
+  main .part-title { font-size: 30px; font-weight: 800; margin: 6px 0 0; line-height: 1.2; }
   main .part-lede { font-size: 15px; color: var(--muted); margin: 8px 0 0; max-width: 680px; }
 
   main h2 {
-    font-size: 26px; line-height: 1.2; margin: 48px 0 6px;
-    border-top: 1px solid var(--line); padding-top: 32px;
+    font-size: 24px; line-height: 1.3; margin: 44px 0 6px;
+    border-top: 1px solid var(--line); padding-top: 30px;
   }
-  main h2.first-in-part { border-top: none; padding-top: 24px; margin-top: 24px; }
+  main h2.first-in-part { border-top: none; padding-top: 24px; }
   main h2 .step-no {
     display: inline-block; color: var(--crimson); font-weight: 800;
-    font-size: 13px; letter-spacing: 0.1em; margin-right: 10px;
+    font-size: 12px; letter-spacing: 0.1em; margin-right: 10px;
     vertical-align: middle; text-transform: uppercase;
   }
   main h2 .label {
-    display: inline-block; font-size: 13px; font-weight: 600;
-    color: var(--muted); letter-spacing: 0.04em; margin-left: 8px;
+    display: inline-block; font-size: 13px; font-weight: 500;
+    color: var(--muted); letter-spacing: 0.02em; margin-left: 8px;
     vertical-align: middle;
   }
-  main h3 { font-size: 16px; margin: 22px 0 8px; color: var(--ink); }
   main p { margin: 8px 0 14px; }
-  main ul, main ol { padding-left: 22px; }
-  main li { margin: 4px 0; }
 
-  main img.bleed {
-    width: 100%; border-radius: 8px; margin: 18px 0 6px;
-    box-shadow: 0 6px 24px rgba(28,16,18,0.10);
+  /* PROMPT/RESPONSE/RESULT BOXES */
+  .turn {
+    border-radius: 10px; padding: 16px 20px; margin: 12px 0;
     border: 1px solid var(--line);
   }
-  main figure { margin: 18px 0; }
-  main figure figcaption {
-    font-size: 12px; color: var(--muted); margin-top: 6px; font-style: italic;
+  .turn .who {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.16em;
+    text-transform: uppercase; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .turn .who .glyph {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    font-size: 12px; font-weight: 800;
   }
 
-  /* EXCHANGE BLOCKS (used in case study) */
-  .turn { border-radius: 8px; padding: 14px 18px 4px; margin: 14px 0; border: 1px solid var(--line); }
-  .turn .who { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px; }
   .turn.user-q { background: var(--prompt-bg); border-left: 4px solid var(--crimson); }
   .turn.user-q .who { color: var(--crimson); }
+  .turn.user-q .who .glyph { background: var(--crimson); color: #fff; }
+  .turn.user-q .body {
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 14px; line-height: 1.55; color: #2c2a29;
+    background: #fff; border: 1px solid var(--line);
+    padding: 12px 14px; border-radius: 6px;
+    white-space: pre-wrap;
+  }
+
   .turn.cc-a { background: var(--response-bg); border-left: 4px solid #4a6b78; }
   .turn.cc-a .who { color: #4a6b78; }
-  .turn .body p:first-child { margin-top: 4px; }
-  .turn .body p:last-child { margin-bottom: 12px; }
-  .turn .body code { font-size: 13px; background: rgba(0,0,0,0.04); padding: 1px 5px; border-radius: 3px; }
+  .turn.cc-a .who .glyph { background: #4a6b78; color: #fff; }
+  .turn.cc-a .body { font-size: 14.5px; }
+  .turn.cc-a .body p:first-child { margin-top: 4px; }
+  .turn.cc-a .body p:last-child { margin-bottom: 4px; }
+  .turn.cc-a .body ul { padding-left: 22px; margin: 6px 0; }
+  .turn.cc-a .body li { margin: 3px 0; }
 
-  /* CODE */
-  pre.code {
-    background: var(--code-bg); color: var(--code-fg);
-    padding: 14px 18px; border-radius: 8px; overflow-x: auto;
-    font-size: 13px; line-height: 1.55; margin: 12px 0; border: 1px solid #2c2826;
+  .turn.result {
+    background: var(--result-bg); border-left: 4px solid var(--result-border);
   }
-  pre.code .lab {
-    display: block; font-size: 9px; letter-spacing: 0.16em;
-    text-transform: uppercase; color: var(--code-comment);
-    margin-bottom: 8px; font-weight: 700;
-  }
-  pre.result {
-    background: var(--result-bg); color: var(--result-fg);
-    padding: 14px 18px; border-radius: 8px; overflow-x: auto;
-    font-size: 12px; line-height: 1.55; margin: 12px 0;
-    border-left: 3px solid #5a7a3a;
-  }
-  pre.result .lab {
-    display: block; font-size: 9px; letter-spacing: 0.16em;
-    text-transform: uppercase; color: #6a8a4a;
-    margin-bottom: 8px; font-weight: 700;
-  }
-
-  /* TABLES */
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
-  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { background: var(--crimson-tint); color: var(--ink); font-weight: 600;
-       font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
-  td.tight { white-space: nowrap; font-family: 'SF Mono', Menlo, Consolas, monospace;
-             font-size: 12px; color: var(--muted); }
+  .turn.result .who { color: var(--result-fg); }
+  .turn.result .who .glyph { background: var(--result-border); color: var(--result-fg); }
+  .turn.result .body { font-size: 14px; }
+  .turn.result .body ul { padding-left: 22px; margin: 6px 0; }
+  .turn.result .body li { margin: 3px 0; }
 
   /* CALLOUT */
   .callout {
@@ -162,6 +150,23 @@
     padding: 12px 16px; border-radius: 4px; margin: 18px 0; font-size: 14px;
   }
   .callout b { color: var(--crimson); }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--crimson-tint); color: var(--ink); font-weight: 600;
+       font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  /* IMAGES */
+  main figure { margin: 18px 0; }
+  main img.bleed {
+    width: 100%; border-radius: 8px; margin: 8px 0 6px;
+    box-shadow: 0 6px 24px rgba(28,16,18,0.10);
+    border: 1px solid var(--line);
+  }
+  main figure figcaption {
+    font-size: 12px; color: var(--muted); margin-top: 6px; font-style: italic;
+  }
 
   footer {
     border-top: 1px solid var(--line); padding: 28px 8%;
@@ -172,609 +177,497 @@
 <body>
 
 <header class="hero">
-  <div class="kicker">Operator Walkthrough</div>
-  <h1>Building Qualtrics surveys via the v3 REST API</h1>
+  <div class="kicker">사용자 가이드</div>
+  <h1>퀄트릭스 서베이를 클코에 시켜서 만들기</h1>
   <p class="lede">
-    A general build pattern &mdash; token, helper, blocks, questions, flow,
-    theme, distribution, export. Reusable across any UA Qualtrics project.
-    Closes with one case study: a perception &times; efficacy survey for the
-    TeachPlay microcredential.
+    Claude Code (또는 Codex CLI)에 그대로 붙여넣을 8개 프롬프트로
+    토큰 연결부터 응답 수집까지. 코드 한 줄 안 쓰고 따라할 수 있게 정리했고,
+    마지막에 한 케이스 (TeachPlay 사전·사후 설문)를 붙였습니다.
   </p>
   <div class="meta">
-    <b>Stack:</b> Python &middot; Qualtrics v3 REST &middot; <code>X-API-TOKEN</code> auth
-    &nbsp;&middot;&nbsp; <b>Reusable across:</b> any institution-tier Qualtrics brand
-    &nbsp;&middot;&nbsp; <b>Output:</b> programmatic survey shells, themed, ready for activation
+    <b>준비물:</b> 퀄트릭스 API 토큰 한 줄 + 데이터센터 ID
+    &nbsp;·&nbsp; <b>도구:</b> Claude Code 또는 Codex CLI
+    &nbsp;·&nbsp; <b>걸리는 시간:</b> 처음 한번 30~40분, 이후 5분이면 신규 설문 한 건
   </div>
 </header>
 
 <div class="wrap">
 
 <nav class="toc">
-  <div class="toc-h">Contents</div>
+  <div class="toc-h">목차</div>
 
-  <div class="toc-part">Part 1 — General build pattern</div>
+  <div class="toc-part">Part 1 — 따라하기 8단계</div>
   <ol>
-    <li><a href="#s1">Auth &amp; capability</a></li>
-    <li><a href="#s2">Reusable helper module</a></li>
-    <li><a href="#s3">Create empty survey</a></li>
-    <li><a href="#s4">Add blocks &amp; questions</a></li>
-    <li><a href="#s5">Survey flow &amp; EmbeddedData</a></li>
-    <li><a href="#s6">Theme &amp; options</a></li>
-    <li><a href="#s7">Activate, distribute, export</a></li>
+    <li><a href="#s1">토큰 연결</a></li>
+    <li><a href="#s2">빈 서베이 만들기</a></li>
+    <li><a href="#s3">문항 넣기</a></li>
+    <li><a href="#s4">블록 나누기</a></li>
+    <li><a href="#s5">코호트 태그</a></li>
+    <li><a href="#s6">브랜드 테마</a></li>
+    <li><a href="#s7">활성화 · 배포</a></li>
+    <li><a href="#s8">응답 export</a></li>
   </ol>
 
-  <div class="toc-part">Part 2 — Case study: TeachPlay</div>
-  <ol style="counter-reset: tn 7;">
-    <li><a href="#c1">Project recon</a></li>
-    <li><a href="#c2">Field-gap → constructs</a></li>
-    <li><a href="#c3">22-item budget under reliability</a></li>
-    <li><a href="#c4">Demographics &amp; IRB</a></li>
-    <li><a href="#c5">Outcome &amp; handoff</a></li>
+  <div class="toc-part">Part 2 — 케이스</div>
+  <ol style="counter-reset: tn 8;">
+    <li><a href="#c1">TeachPlay 사전·사후</a></li>
   </ol>
 </nav>
 
 <main>
 
 <!-- ============================================================ -->
-<!-- ============   PART 1 — GENERAL BUILD PATTERN   ============ -->
+<!-- ============   PART 1 — 따라하기 8단계               ======== -->
 <!-- ============================================================ -->
 
 <div class="part-divider">
   <p class="part-kicker">Part 1</p>
-  <h1 class="part-title">General build pattern</h1>
+  <h1 class="part-title">따라하기 8단계</h1>
   <p class="part-lede">
-    Seven steps that work for any Qualtrics project on any institution-tier
-    brand. The Python helper is project-agnostic; only wording and block
-    composition change between projects.
+    각 단계마다 <b>당신이 넣을 프롬프트</b>(빨간 박스), <b>클코가 답하는 모양</b>(파란 박스),
+    <b>결과로 보이는 것</b>(초록 박스)을 함께 보여줍니다. 위에서 아래로 그대로 따라가면 됩니다.
   </p>
 </div>
 
 <!-- ============== STEP 1 ============== -->
-<h2 id="s1" class="first-in-part"><span class="step-no">Step 01</span> Auth &amp; capability <span class="label">prerequisite</span></h2>
+<h2 id="s1" class="first-in-part"><span class="step-no">Step 01</span> 토큰 연결 <span class="label">처음 한 번만</span></h2>
 
-<p>The Qualtrics v3 REST API exposes everything a research pipeline needs:
-survey-definition CRUD, blocks, questions, flow, options, distributions,
-response export. Auth is a single header.</p>
-
-<h3>Where to get the token</h3>
-<ol>
-  <li>Log in to your institution's Qualtrics &rarr; <i>Account Settings &rarr; Qualtrics IDs</i>.</li>
-  <li>Copy the <b>API token</b> (40-char string) and the <b>Datacenter ID</b> (e.g. <code>pdx1</code>, <code>iad1</code>, <code>fra1</code>, <code>ca1</code>, <code>az1</code>).</li>
-  <li>Save the token to a local file outside any version-controlled directory.</li>
-</ol>
-
-<h3>Verify before doing anything destructive</h3>
-<pre class="code"><span class="lab">PowerShell · whoami probe</span>$token = "&lt;your 40-char token&gt;"
-$dc    = "pdx1"   # your datacenter
-
-Invoke-RestMethod `
-  -Uri "https://$dc.qualtrics.com/API/v3/whoami" `
-  -Headers @{"X-API-TOKEN" = $token}
-</pre>
-
-<pre class="result"><span class="lab">Result</span>brandId     : your-brand
-userId      : UR_xxxxxxxxxxxxxxx
-userName    : your-username#your-brand
-firstName   : ...
-datacenter  : ...
-</pre>
+<p>본인 퀄트릭스 계정에서 API 토큰을 받아와 텍스트 파일로 저장한 뒤,
+클코에게 그 파일 경로만 알려주면 됩니다. 토큰 자체를 채팅창에 붙이지 마세요.</p>
 
 <div class="callout">
-  <b>Note.</b> The IDs page may list one datacenter (e.g. <code>pdx1</code>);
-  <code>whoami</code> may return another (<code>az1</code>). Both route. Use
-  the IDs-page value for consistency.
+  <b>토큰 받는 법.</b> 퀄트릭스 로그인 → <i>Account Settings → Qualtrics IDs</i> →
+  API 섹션에서 <b>Token</b>(40자)과 <b>Datacenter ID</b>(예: <code>pdx1</code>) 확인
+  → 본인 컴퓨터 어딘가의 <code>.txt</code> 파일에 저장.
 </div>
 
-<!-- ============== STEP 2 ============== -->
-<h2 id="s2"><span class="step-no">Step 02</span> Reusable helper module <span class="label">DRY</span></h2>
-
-<p>Wrap the API in a small Python class so every project shares the same
-auth, error handling, and payload shape. The same helper drives every
-subsequent step.</p>
-
-<pre class="code"><span class="lab">qualtrics_helper.py · core class</span>import json, requests
-from pathlib import Path
-
-class Qualtrics:
-    def __init__(self, token, datacenter="pdx1"):
-        self.token = token
-        self.base  = f"https://{datacenter}.qualtrics.com/API/v3"
-        self.headers = {"X-API-TOKEN": token, "Content-Type": "application/json"}
-
-    def _req(self, method, path, **kw):
-        r = requests.request(method, f"{self.base}{path}",
-                             headers=self.headers, timeout=30, **kw)
-        data = r.json()
-        if r.status_code &gt;= 400:
-            raise RuntimeError(f"{method} {path} -&gt; {r.status_code}: "
-                               f"{json.dumps(data)[:600]}")
-        return data
-
-    def whoami(self):
-        return self._req("GET", "/whoami")["result"]
-
-    def create_survey(self, name, language="EN", category="CORE"):
-        body = {"SurveyName": name, "Language": language,
-                "ProjectCategory": category}
-        return self._req("POST", "/survey-definitions", json=body)["result"]
-
-    def add_block(self, survey_id, description, block_type="Standard"):
-        body = {"Type": block_type, "Description": description, "BlockElements": []}
-        return self._req("POST", f"/survey-definitions/{survey_id}/blocks",
-                         json=body)["result"]["BlockID"]
-
-    def add_question(self, survey_id, payload, block_id=None):
-        params = {"blockId": block_id} if block_id else None
-        return self._req("POST", f"/survey-definitions/{survey_id}/questions",
-                         params=params, json=payload)["result"]["QuestionID"]
-
-    def get_survey(self, survey_id):
-        return self._req("GET", f"/survey-definitions/{survey_id}")["result"]
-
-    def set_flow(self, survey_id, flow):
-        return self._req("PUT", f"/survey-definitions/{survey_id}/flow",
-                         json=flow)
-
-    def set_active(self, survey_id, active):
-        return self._req("PUT", f"/surveys/{survey_id}",
-                         json={"isActive": active})
-</pre>
-
-<p>One file, one class, every endpoint that matters. Add payload builders
-(<code>likert_agree</code>, <code>mc_single</code>, <code>text_entry</code>,
-&hellip;) as separate top-level functions so wording lives away from the
-HTTP plumbing.</p>
-
-<!-- ============== STEP 3 ============== -->
-<h2 id="s3"><span class="step-no">Step 03</span> Create an empty survey shell <span class="label">first POST</span></h2>
-
-<p>Every survey starts the same way: a single POST that returns the
-<code>SurveyID</code> and a <code>DefaultBlockID</code>. Save both &mdash;
-they thread through every subsequent call.</p>
-
-<pre class="code"><span class="lab">Python</span>c = Qualtrics(token=TOKEN, datacenter="pdx1")
-sv = c.create_survey("My Project — Pre-Program Survey", language="EN")
-
-survey_id     = sv["SurveyID"]          # SV_xxxxxxxxxxxxxxx
-default_block = sv["DefaultBlockID"]    # BL_xxxxxxxxxxxxxxx
-</pre>
-
-<p>The shell is automatically created with <code>isActive=false</code>.
-Activation is a separate explicit call (<a href="#s7">Step 07</a>).
-Browse to your Qualtrics UI &rarr; Projects and the empty shell appears
-immediately.</p>
-
-<!-- ============== STEP 4 ============== -->
-<h2 id="s4"><span class="step-no">Step 04</span> Add blocks &amp; questions <span class="label">bulk POSTs</span></h2>
-
-<p>Two endpoint families:</p>
-
-<table>
-<thead><tr><th>Endpoint</th><th>What it does</th></tr></thead>
-<tbody>
-  <tr><td class="tight">POST /survey-definitions/{id}/blocks</td><td>Adds a new block. Returns <code>BlockID</code>.</td></tr>
-  <tr><td class="tight">POST /survey-definitions/{id}/questions?blockId=&hellip;</td><td>Adds one question to a block. Returns <code>QuestionID</code>.</td></tr>
-</tbody>
-</table>
-
-<h3>Question payload shape</h3>
-
-<p>Every question type follows the same skeleton. <code>QuestionType</code>
-+ <code>Selector</code> + <code>SubSelector</code> determines the rendered
-input control.</p>
-
-<pre class="code"><span class="lab">Python · 5-point agree-Likert helper</span>def likert_agree(text, tag, force=True):
-    return {
-        "QuestionText": text,
-        "DataExportTag": tag,
-        "QuestionType": "MC",
-        "Selector":    "SAVR",   # Single Answer Vertical Radio
-        "SubSelector": "TX",
-        "Configuration": {"QuestionDescriptionOption": "UseText"},
-        "Choices": {
-            "1": {"Display": "Strongly disagree"},
-            "2": {"Display": "Disagree"},
-            "3": {"Display": "Neither agree nor disagree"},
-            "4": {"Display": "Agree"},
-            "5": {"Display": "Strongly agree"},
-        },
-        "ChoiceOrder": ["1","2","3","4","5"],
-        "Validation": {"Settings": {"ForceResponse": "ON" if force else "OFF",
-                                     "Type": "None"}},
-        "Language": [],
-    }
-</pre>
-
-<h3>Common type matrix</h3>
-
-<table>
-<thead><tr><th>Control</th><th>QuestionType</th><th>Selector</th><th>SubSelector</th></tr></thead>
-<tbody>
-  <tr><td>Single-answer MC (vertical radio)</td><td><code>MC</code></td><td><code>SAVR</code></td><td><code>TX</code></td></tr>
-  <tr><td>Multi-select MC</td><td><code>MC</code></td><td><code>MAVR</code></td><td><code>TX</code></td></tr>
-  <tr><td>Single-line text entry</td><td><code>TE</code></td><td><code>SL</code></td><td>—</td></tr>
-  <tr><td>Multi-line text entry</td><td><code>TE</code></td><td><code>ML</code></td><td>—</td></tr>
-  <tr><td>Likert matrix</td><td><code>Matrix</code></td><td><code>Likert</code></td><td><code>SingleAnswer</code></td></tr>
-  <tr><td>Slider</td><td><code>Slider</code></td><td><code>HSLIDER</code></td><td>—</td></tr>
-  <tr><td>Descriptive text (no input)</td><td><code>DB</code></td><td><code>TB</code></td><td>—</td></tr>
-</tbody>
-</table>
-
-<div class="callout">
-  <b>Tip.</b> For exotic types (Matrix, Side-by-Side), build one in the UI,
-  call <code>GET /survey-definitions/{id}</code>, copy the resulting JSON
-  payload verbatim, and parameterize the wording. Authoring those payloads
-  from scratch fails in subtle ways (e.g. validation schema mismatches).
+<div class="turn user-q">
+  <div class="who"><span class="glyph">P</span>당신 → 클코</div>
+  <div class="body">내 퀄트릭스 토큰 파일이 [여기 경로 적기]에 있어.
+그 토큰으로 내 계정에 잘 연결되는지 확인해줘.
+계속 쓸 거니까 다음에 또 안 부르도록 메모리에 저장해두고.</div>
 </div>
-
-<h3>Bulk add with the helper</h3>
-
-<pre class="code"><span class="lab">Python · build a block of items</span>b = c.add_block(survey_id, "Block 1 — usability")
-items = [
-    ("This system meets my requirements.",      "USAB_1_meets"),
-    ("This system is easy to use.",              "USAB_2_easy"),
-    ("Using this system is a frustrating experience.", "USAB_3_frust_R"),
-    ("I have to spend too much time correcting things.", "USAB_4_correct_R"),
-]
-for text, tag in items:
-    c.add_question(survey_id, likert_agree(text, tag), block_id=b)
-</pre>
-
-<figure>
-  <img src="assets/generated/api-call-flow.svg"
-       alt="API call sequence: POST /survey-definitions ×1 → POST /blocks ×N → POST /questions ×M → PUT /flow ×1 → GET-merge-PUT /options ×1" class="bleed" />
-  <figcaption>Deterministic call order. <code>SurveyID</code> resolves at
-  call 1 and threads through everything that follows; each block returns a
-  <code>BlockID</code> that scopes its questions; flow and options are PUTs
-  that close out the build.</figcaption>
-</figure>
-
-<!-- ============== STEP 5 ============== -->
-<h2 id="s5"><span class="step-no">Step 05</span> Survey flow &amp; EmbeddedData <span class="label">routing &amp; cohort tags</span></h2>
-
-<p>Survey flow controls block order and lets you capture URL parameters
-(<code>?cohort=&hellip;</code>, <code>?wave=&hellip;</code>) into responses.
-A flow PUT replaces the entire flow tree.</p>
-
-<pre class="code"><span class="lab">Python · flow with cohort EmbeddedData</span>def cohort_flow(default_block, extra_blocks):
-    flow = [
-        {"Type": "EmbeddedData", "FlowID": "FL_ED",
-         "EmbeddedData": [{
-             "Description": "cohort", "Type": "Recipient",
-             "Field": "cohort", "VariableType": "String",
-             "DataVisibility": [], "AnalyzeText": False}]},
-        {"Type": "Block", "ID": default_block, "FlowID": "FL_BLK_0"},
-    ]
-    for i, bid in enumerate(extra_blocks, start=1):
-        flow.append({"Type": "Block", "ID": bid, "FlowID": f"FL_BLK_{i}"})
-    return {"Type": "Root", "FlowID": "FL_ROOT",
-            "Properties": {"Count": len(flow) + 1}, "Flow": flow}
-
-c.set_flow(survey_id, cohort_flow(default_block, [b1, b2, b3]))
-</pre>
-
-<p>Distribution link form:
-<code>https://&lt;dc&gt;.qualtrics.com/jfe/form/SV_xxx?cohort=2026-spring</code>.
-The value lands in exported responses next to item answers.</p>
-
-<h3>Branching by response</h3>
-
-<p>Add a <code>Branch</code> element with a <code>BranchLogic</code>
-expression. Editing branch JSON by hand is brittle &mdash; build the branch
-in the UI first, <code>GET</code> the flow, copy the structure.</p>
-
-<pre class="code"><span class="lab">Python · branch shape (sketch)</span>{"Type": "Branch", "FlowID": "FL_BR",
- "BranchLogic": {
-   "0": {"0": {"LogicType": "Question", "QuestionID": "QID1",
-               "Operator": "GreaterThanOrEqualTo", "RightOperand": "4",
-               "Type": "Expression"}, "Type": "If"},
-   "Type": "BooleanExpression"},
- "Flow": [{"Type": "Block", "ID": follow_up_block, "FlowID": "FL_BR_BLK"}]}
-</pre>
-
-<!-- ============== STEP 6 ============== -->
-<h2 id="s6"><span class="step-no">Step 06</span> Theme &amp; options <span class="label">branding</span></h2>
-
-<p>The <code>options</code> endpoint controls progress bar, back button,
-ballot-box prevention, header / footer HTML, and survey-level title /
-metadescription. Custom CSS goes inline inside the <code>Header</code>
-HTML via a <code>&lt;style&gt;</code> tag.</p>
-
-<div class="callout">
-  <b>Important.</b> <code>PUT /options</code> is full-replace, not partial.
-  Forgetting to GET first drops <code>SurveyProtection</code>,
-  <code>PartialData</code>, and other required keys, and the request 400s.
-  Always <b>GET &rarr; merge &rarr; PUT</b>.
-</div>
-
-<pre class="code"><span class="lab">Python · idempotent themer</span>def apply_theme(c, survey_id, *, accent="#9E1B32",
-                title="My Project Survey",
-                header_html, footer_html):
-    current = c._req("GET", f"/survey-definitions/{survey_id}/options")["result"]
-    overrides = {
-        "BackButton": "true",
-        "SaveAndContinue": "true",
-        "BallotBoxStuffingPrevention": "true",
-        "ProgressBarDisplay": "VerboseText",
-        "Header": header_html,
-        "Footer": footer_html,
-        "SurveyTitle": title,
-    }
-    merged = {**current, **overrides}
-    c._req("PUT", f"/survey-definitions/{survey_id}/options", json=merged)
-</pre>
-
-<p>For visual styling beyond progress bar / buttons, embed a
-<code>&lt;style&gt;</code> block at the top of <code>header_html</code>:</p>
-
-<pre class="code"><span class="lab">Header HTML · inline style override</span>&lt;style&gt;
-  body, .Skin { font-family: 'Inter', system-ui, sans-serif !important; }
-  .Skin .ButtonNext, .Skin .ButtonSubmit {
-    background: #9E1B32 !important; border-color: #9E1B32 !important;
-    border-radius: 4px !important;
-  }
-  .Skin .ProgressBarFill { background: #9E1B32 !important; }
-  .Skin .QuestionOuter:hover { background: #fbf7f8 !important; }
-&lt;/style&gt;
-&lt;div style="border-left: 4px solid #9E1B32; padding: 8px 0 8px 14px;"&gt;
-  &lt;div style="font-size: 11px; font-weight: 700;
-              text-transform: uppercase; color: #9E1B32;"&gt;Project Name&lt;/div&gt;
-  &lt;div style="color: #555; font-size: 14px;"&gt;Subtitle here&lt;/div&gt;
-&lt;/div&gt;
-</pre>
-
-<figure>
-  <img src="assets/generated/theme-before-after.webp"
-       alt="Two phone mockups side by side: left shows generic gray-and-blue Qualtrics, right shows the same form themed in crimson on warm cream" class="bleed" />
-  <figcaption>The same survey, before and after a theme PUT. Same questions,
-  same data, different signal &mdash; institution-aligned styling raises
-  perceived legitimacy without re-creating the survey.</figcaption>
-</figure>
-
-<!-- ============== STEP 7 ============== -->
-<h2 id="s7"><span class="step-no">Step 07</span> Activate, distribute, export <span class="label">life-cycle</span></h2>
-
-<h3>Activate</h3>
-
-<p>Until activated, no responses are accepted even if the link is shared.
-Activation is a separate explicit call &mdash; intentional, because it
-implies the instrument is IRB / governance approved.</p>
-
-<pre class="code"><span class="lab">Python</span>c.set_active(survey_id, True)
-</pre>
-
-<h3>Distribute</h3>
-
-<p>Two patterns: anonymous link (no participant identification) or
-individual email link (uses a Qualtrics mailing list).</p>
-
-<pre class="code"><span class="lab">Python · anonymous link with cohort tag</span>dist = {
-    "surveyId": survey_id,
-    "linkType": "Anonymous",
-    "description": "My Project — anonymous link",
-    "action": "CreateDistribution",
-    "expirationDate": "2026-12-31T23:59:59Z",
-}
-print(c._req("POST", "/distributions", json=dist))
-# returns the anonymous link; append ?cohort=&lt;tag&gt; for cohort capture
-</pre>
-
-<h3>Export responses</h3>
-
-<p>Async &mdash; start, poll, download zip, extract.</p>
-
-<pre class="code"><span class="lab">Python · response export pattern</span>import time, io, zipfile
-
-prog = c._req("POST", f"/surveys/{survey_id}/export-responses",
-              json={"format": "csv"})["result"]["progressId"]
-
-while True:
-    s = c._req("GET", f"/surveys/{survey_id}/export-responses/{prog}")["result"]
-    if s["status"] == "complete": break
-    if s["status"] == "failed":   raise RuntimeError(s)
-    time.sleep(2)
-
-raw = c._req("GET",
-             f"/surveys/{survey_id}/export-responses/{s['fileId']}/file")
-zipfile.ZipFile(io.BytesIO(raw)).extractall("./responses/")
-</pre>
-
-<p>The exported CSV preserves <code>DataExportTag</code> column names &mdash;
-your tag scheme from Step 04 maps directly to analyzable columns.</p>
-
-<!-- ============================================================ -->
-<!-- ============   PART 2 — CASE STUDY: TEACHPLAY    =========== -->
-<!-- ============================================================ -->
-
-<div class="part-divider">
-  <p class="part-kicker">Part 2 · Case study</p>
-  <h1 class="part-title">TeachPlay perception &times; efficacy survey</h1>
-  <p class="part-lede">
-    The general pattern from Part 1 applied to a real research project:
-    a 12-session AI-enhanced game-design microcredential at the University
-    of Alabama. Twenty-two items in the Post survey, twenty in the Pre,
-    paired by an anonymous self-generated code.
-  </p>
-</div>
-
-<!-- ============== CASE 1 ============== -->
-<h2 id="c1" class="first-in-part"><span class="step-no">Case 01</span> Project recon <span class="label">context first</span></h2>
-
-<p>Before designing instruments, read the project. The TeachPlay handbook
-(<code>teachplay.dev</code>) already emits in-app pre/post 8-skill
-self-assessment, exit tickets, a 25-criterion rubric, Cohen's &kappa;
-panel, and a completion funnel. The Qualtrics layer should cover only
-what those instruments don't.</p>
 
 <div class="turn cc-a">
-  <div class="who">Recon read</div>
+  <div class="who"><span class="glyph">C</span>클코 → 당신</div>
   <div class="body">
+    <p>파일을 읽어서 토큰 한 줄을 추출하고, <code>/whoami</code> 엔드포인트로 검증할게요.</p>
     <ul>
-      <li>Vault entity pages (<code>AI Microcredential GameDesign</code>, <code>ACHE Microcredential</code>, <code>IRB Studies Portfolio</code>).</li>
-      <li>Repo at <code>Desktop\_projects\TeachPlay</code> &mdash; static HTML/JS, Cloudflare Pages, D1 SQLite, OBv3 / VC2.0 / CLR2.0 / xAPI.</li>
-      <li>L3 evaluation plan: EQ1&ndash;EQ5 named, instruments wired vs. still-to-build listed.</li>
-      <li>IRB <code>HRP-503a</code> R3 active; consent <code>HRP-502</code> R4.</li>
+      <li>토큰 파일 읽음 → 40자 토큰 추출</li>
+      <li>퀄트릭스에 호출: <code>GET /API/v3/whoami</code></li>
+      <li>응답: 브랜드 / 사용자명 / 데이터센터 확인</li>
+      <li>다음 세션에서 다시 묻지 않게 위치 기록 완료</li>
     </ul>
   </div>
 </div>
 
-<!-- ============== CASE 2 ============== -->
-<h2 id="c2"><span class="step-no">Case 02</span> Field-gap mapping &rarr; constructs <span class="label">research design</span></h2>
+<div class="turn result">
+  <div class="who"><span class="glyph">✓</span>이렇게 보일 거예요</div>
+  <div class="body">
+    <ul>
+      <li>"<b>연결 성공</b> — 브랜드 <code>universityofalabama</code>, 사용자 <code>jmoon19#…</code>, 데이터센터 <code>pdx1</code>" 같은 한 줄 보고</li>
+      <li>다음 단계부터는 토큰 다시 안 물음</li>
+    </ul>
+  </div>
+</div>
 
-<p>The 4-way intersection &mdash; microcredential &times; teacher PD &times;
-AI in education &times; game-design pedagogy &mdash; has a chronic short
-list of what published evaluations rarely measure. We deliberately stay in
-that zone.</p>
+<!-- ============== STEP 2 ============== -->
+<h2 id="s2"><span class="step-no">Step 02</span> 빈 서베이 만들기 <span class="label">셸 하나</span></h2>
 
-<table>
-<thead><tr><th>Construct</th><th>Why a gap</th><th>Short form</th></tr></thead>
-<tbody>
-  <tr><td>Usability (program-level)</td><td>SUS-10 too generic; 3-surface app needs targeted measure</td><td>UMUX (Lewis 2013)</td></tr>
-  <tr><td>AI-use self-efficacy</td><td>TeachPlay <em>is</em> AI; existing self-assess covers design only</td><td>Bandura task-specific + Wang 2023</td></tr>
-  <tr><td>Credential value (signal/social/economic)</td><td>Microcredential lit's chronic gap</td><td>Phillips &amp; Cohen 2023 MVS</td></tr>
-  <tr><td>Designer identity + agency</td><td>Game-design pedagogy outcome rarely measured in PD</td><td>Kafai &amp; Fields 2018</td></tr>
-  <tr><td>Teaching efficacy contagion</td><td>"My students will engage with what I designed" rarely captured</td><td>TSES adapted</td></tr>
-</tbody>
-</table>
+<p>먼저 빈 껍데기 서베이부터 하나 만듭니다. 이름만 정해주면 됩니다.
+중요한 건 <b>비활성 상태로 만든다</b>는 점 — 응답이 들어오지 않게.</p>
+
+<div class="turn user-q">
+  <div class="who"><span class="glyph">P</span>당신 → 클코</div>
+  <div class="body">"우리 프로젝트 사전 설문"이라는 빈 서베이 하나 만들어줘.
+영어로, 비활성(isActive=false) 상태로.
+서베이 ID는 알려주고, 다른 작업은 아직 하지 마.</div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who"><span class="glyph">C</span>클코 → 당신</div>
+  <div class="body">
+    <p><code>POST /survey-definitions</code> 한 번 호출했어요.</p>
+    <ul>
+      <li>서베이 이름: "우리 프로젝트 사전 설문"</li>
+      <li>언어: EN · 카테고리: CORE</li>
+      <li>비활성 상태로 자동 생성됨</li>
+    </ul>
+  </div>
+</div>
+
+<div class="turn result">
+  <div class="who"><span class="glyph">✓</span>이렇게 보일 거예요</div>
+  <div class="body">
+    <ul>
+      <li><code>SurveyID: SV_xxxxxxxxxxxxxxx</code> 한 줄</li>
+      <li>퀄트릭스 웹 UI → Projects 탭에 새 서베이가 즉시 보임 (빈 상태)</li>
+      <li>다음 단계에서 이 ID를 계속 씀</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============== STEP 3 ============== -->
+<h2 id="s3"><span class="step-no">Step 03</span> 문항 넣기 <span class="label">자연어로</span></h2>
+
+<p>여기서부터가 핵심입니다. 5점 척도, 단답, 매트릭스 같은 척도 종류를
+직접 지정 안 해도 됩니다. <b>그냥 측정하고 싶은 걸 자연어로 말하세요.</b>
+클코가 표준 양식에 맞춰 페이로드를 짜서 넣어줍니다.</p>
+
+<div class="turn user-q">
+  <div class="who"><span class="glyph">P</span>당신 → 클코</div>
+  <div class="body">방금 만든 서베이에 사용성(usability) 문항 4개를 5점 동의-Likert로 넣어줘.
+- 이 시스템은 내 요구를 충족한다
+- 이 시스템은 사용하기 쉽다
+- 이 시스템을 쓰는 게 답답하다 (역코딩)
+- 잘못된 걸 고치는 데 시간을 너무 많이 썼다 (역코딩)
+다 필수응답으로, 분석용 태그는 USAB_1 ~ USAB_4 로 부탁.</div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who"><span class="glyph">C</span>클코 → 당신</div>
+  <div class="body">
+    <p>4개 문항을 단일선택 수직 라디오(5점, Strongly disagree → Strongly agree)로 만들어 추가했어요.</p>
+    <ul>
+      <li>문항 4개 × <code>POST /questions</code></li>
+      <li><code>DataExportTag</code>: USAB_1, USAB_2, USAB_3, USAB_4 (CSV 컬럼명으로 쓰임)</li>
+      <li><code>ForceResponse</code>: ON</li>
+      <li>아직은 기본 블록에 다 들어가 있음 — 다음 단계에서 블록 나눌 수 있음</li>
+    </ul>
+  </div>
+</div>
+
+<div class="turn result">
+  <div class="who"><span class="glyph">✓</span>이렇게 보일 거예요</div>
+  <div class="body">
+    <ul>
+      <li>퀄트릭스 UI에서 서베이 열면 4개 문항이 5점 척도로 보임</li>
+      <li>Preview 버튼으로 응답자 시점 미리보기 가능</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout">
+  <b>다른 척도가 필요하면.</b> "단답 텍스트로", "여러 항목 매트릭스로 (행이 항목, 열이 5점)",
+  "체크박스로 여러 개 선택", "0~10 슬라이더로" 같이 자연어로 말하면 됩니다.
+  매트릭스나 슬라이더는 양식이 까다로워서 클코가 한 번 더 확인 질문을 할 수 있어요.
+</div>
+
+<!-- ============== STEP 4 ============== -->
+<h2 id="s4"><span class="step-no">Step 04</span> 블록 나누기 <span class="label">섹션 구분</span></h2>
+
+<p>문항이 늘어나면 섹션별로 나누는 게 분석에도 응답자 경험에도 좋습니다.
+클코에게 섹션을 어떻게 나눌지 자연어로 알려주면 됩니다.</p>
+
+<div class="turn user-q">
+  <div class="who"><span class="glyph">P</span>당신 → 클코</div>
+  <div class="body">방금 넣은 4개는 "사용성" 블록으로 묶어줘.
+그리고 새 블록 두 개 더 만들어:
+1) "AI 사용 자신감" — 5점 자신감-Likert 문항 4개
+   (예: 챗GPT/클로드를 수업용 자료 초안에 쓸 수 있다 등 — 좋은 4개로 알아서 짜줘)
+2) "교사 효능감 전이" — 5점 자신감-Likert 문항 3개
+   (내가 만든 자료로 학생들이 잘 배울 거다 같은 톤)
+태그는 AISE_1~4, TSE_1~3 으로.</div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who"><span class="glyph">C</span>클코 → 당신</div>
+  <div class="body">
+    <p>블록 3개 정리, 문항 7개 추가했어요.</p>
+    <ul>
+      <li>기본 블록 → "1_사용성" 으로 이름 변경 (USAB_1~4)</li>
+      <li>새 블록 "2_AI 사용 자신감" 생성 + AISE_1~4 4개 (Bandura 식 task-specific 4문항)</li>
+      <li>새 블록 "3_교사 효능감 전이" 생성 + TSE_1~3 3개</li>
+      <li>총 11문항. 응답 시간 추정 ~3분</li>
+    </ul>
+  </div>
+</div>
+
+<div class="turn result">
+  <div class="who"><span class="glyph">✓</span>이렇게 보일 거예요</div>
+  <div class="body">
+    <ul>
+      <li>UI에 좌측 사이드바로 블록 3개가 트리 구조로 보임</li>
+      <li>각 블록을 펼치면 그 블록의 문항만 보임</li>
+      <li>Preview에서는 블록 간 자동 페이지 분리됨</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============== STEP 5 ============== -->
+<h2 id="s5"><span class="step-no">Step 05</span> 코호트 태그 <span class="label">URL 한 줄로 그룹 구분</span></h2>
+
+<p>한 서베이를 여러 그룹(예: 봄 코호트 / 여름 코호트, 학교 A / 학교 B)에 보낼 때,
+URL 끝에 <code>?cohort=…</code> 만 다르게 붙여 보내면 응답 데이터에
+자동으로 그 태그가 따라 들어옵니다.</p>
+
+<div class="turn user-q">
+  <div class="who"><span class="glyph">P</span>당신 → 클코</div>
+  <div class="body">이 서베이에 cohort 라는 URL 파라미터 받게 해줘.
+배포할 때 ?cohort=2026-spring 같이 붙여 보내면 응답에 그대로 기록되도록.</div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who"><span class="glyph">C</span>클코 → 당신</div>
+  <div class="body">
+    <p>서베이 플로우 첫머리에 EmbeddedData 선언을 추가했어요.</p>
+    <ul>
+      <li>URL의 <code>?cohort=2026-spring</code> 값이 응답 CSV의 <code>cohort</code> 컬럼으로 떨어짐</li>
+      <li>참가자에게는 안 보이는 메타 데이터</li>
+      <li>여러 그룹별로 다른 링크를 보내고 싶으면 같은 서베이에 다른 cohort 값만 붙이면 됨</li>
+    </ul>
+  </div>
+</div>
+
+<div class="turn result">
+  <div class="who"><span class="glyph">✓</span>이렇게 보일 거예요</div>
+  <div class="body">
+    <ul>
+      <li>UI → Survey Flow 탭 첫 줄에 "Set Embedded Data: cohort" 보임</li>
+      <li>나중에 응답 export 하면 <code>cohort</code> 컬럼이 다른 응답 컬럼과 함께 들어옴</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============== STEP 6 ============== -->
+<h2 id="s6"><span class="step-no">Step 06</span> 브랜드 테마 <span class="label">기관 색·폰트로</span></h2>
+
+<p>기본 퀄트릭스는 무난한 회색-파랑입니다. 본인 기관 색·로고로 바꾸면
+응답률이 의미 있게 올라갑니다(인지된 정당성 ↑). 클코에게 색 코드와
+헤더 문구만 주면 됩니다.</p>
+
+<div class="turn user-q">
+  <div class="who"><span class="glyph">P</span>당신 → 클코</div>
+  <div class="body">이 서베이에 우리 학교 브랜드로 테마 입혀줘.
+- 메인 색: #9E1B32 (UA Crimson)
+- 폰트: Inter
+- 헤더: 좌측 Crimson 4px 보더 + "MY PROJECT — University of Alabama, College of Education"
+- 푸터: "익명 연구 도구 · 개인정보 미수집 · UA IRB 승인" 한 줄
+- 진행률 표시(progress bar) 켜고, 뒤로가기 버튼 활성화
+다른 옵션값은 건드리지 말고.</div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who"><span class="glyph">C</span>클코 → 당신</div>
+  <div class="body">
+    <p>기존 옵션을 가져와서(GET) 위 항목만 덮어쓰고 다시 PUT 했어요(idempotent).</p>
+    <ul>
+      <li>버튼 / progress bar / hover 색 → Crimson</li>
+      <li>본문 폰트 → Inter (시스템 폴백)</li>
+      <li>헤더 / 푸터 HTML 적용</li>
+      <li>SurveyProtection, PartialData 같은 필수 키는 그대로 보존</li>
+    </ul>
+  </div>
+</div>
+
+<figure>
+  <img src="assets/generated/theme-before-after.webp"
+       alt="두 폰 모크업: 왼쪽은 일반 회색-파랑 퀄트릭스, 오른쪽은 같은 폼이 cream + Crimson으로 리테마된 모습" class="bleed" />
+  <figcaption>같은 서베이, 테마 입히기 전(왼쪽) / 후(오른쪽).
+  같은 문항 · 같은 데이터 — 다른 신호. 서베이를 다시 만들지 않고 옵션만 PUT으로 변경.</figcaption>
+</figure>
+
+<div class="turn result">
+  <div class="who"><span class="glyph">✓</span>이렇게 보일 거예요</div>
+  <div class="body">
+    <ul>
+      <li>Preview 누르면 위 오른쪽 모크업처럼 Crimson 톤으로 렌더</li>
+      <li>모바일 응답도 같은 테마 유지 (반응형)</li>
+      <li>브라우저 탭 제목도 "MY PROJECT — Pre/Post Survey" 식으로 바뀜</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============== STEP 7 ============== -->
+<h2 id="s7"><span class="step-no">Step 07</span> 활성화 · 배포 <span class="label">응답 받을 준비</span></h2>
+
+<p>여기까지는 모두 <b>비활성</b> 상태였습니다. IRB 검토 / 자체 점검이
+끝났을 때만 활성화하세요. 활성화는 명시적 한 줄로 분리되어 있습니다 — 실수로
+응답 받기 시작하는 일이 없게.</p>
+
+<div class="turn user-q">
+  <div class="who"><span class="glyph">P</span>당신 → 클코</div>
+  <div class="body">서베이 활성화하고, 익명 배포 링크 하나 발급해줘.
+만료일은 2026-12-31 자정.
+링크 끝에 ?cohort= 어떻게 붙이면 되는지도 같이 알려주고.</div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who"><span class="glyph">C</span>클코 → 당신</div>
+  <div class="body">
+    <p>두 단계로 처리:</p>
+    <ul>
+      <li><code>PUT /surveys/{id}</code> → <code>isActive: true</code></li>
+      <li><code>POST /distributions</code> → 익명 링크 + 만료일</li>
+    </ul>
+  </div>
+</div>
+
+<div class="turn result">
+  <div class="who"><span class="glyph">✓</span>이렇게 보일 거예요</div>
+  <div class="body">
+    <ul>
+      <li>익명 링크 한 줄: <code>https://&lt;dc&gt;.qualtrics.com/jfe/form/SV_xxx</code></li>
+      <li>코호트별 발송 시: 위 링크 끝에 <code>?cohort=2026-spring</code>(또는 본인 태그) 붙여서 보내기</li>
+      <li>응답이 들어오기 시작하면 UI → Data &amp; Analysis 탭에서 실시간 카운트</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============== STEP 8 ============== -->
+<h2 id="s8"><span class="step-no">Step 08</span> 응답 export <span class="label">분석용 CSV</span></h2>
+
+<p>응답이 어느 정도 쌓였을 때, 자기 컴퓨터로 CSV 파일 받아오는 단계.
+클코가 비동기 작업(요청 → 폴링 → 다운로드)을 알아서 처리합니다.</p>
+
+<div class="turn user-q">
+  <div class="who"><span class="glyph">P</span>당신 → 클코</div>
+  <div class="body">지금까지 들어온 응답 다 CSV로 받아서
+[원하는 폴더 경로]에 풀어줘.
+컬럼명은 내가 정한 분석 태그(USAB_1 등) 그대로 유지되도록.</div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who"><span class="glyph">C</span>클코 → 당신</div>
+  <div class="body">
+    <p>비동기 export 작업 시작 → 완료 폴링 → zip 다운로드 → 풀어 저장.</p>
+    <ul>
+      <li><code>POST /export-responses</code> → progressId 받음</li>
+      <li>몇 초마다 status 확인하다 <code>complete</code> 되면 fileId 받음</li>
+      <li><code>GET /export-responses/{fileId}/file</code> → zip → 풀기</li>
+      <li>CSV에 <code>cohort</code>, <code>USAB_1~4</code>, <code>AISE_1~4</code>, <code>TSE_1~3</code> 컬럼 모두 들어감</li>
+    </ul>
+  </div>
+</div>
+
+<div class="turn result">
+  <div class="who"><span class="glyph">✓</span>이렇게 보일 거예요</div>
+  <div class="body">
+    <ul>
+      <li>지정한 폴더에 <code>SurveyName_responses.csv</code> 한 파일</li>
+      <li>한 행 = 한 응답자, 컬럼명 = 분석 태그</li>
+      <li>이제 R / Python / SPSS 어느 쪽으로든 분석 시작</li>
+    </ul>
+  </div>
+</div>
+
+<div class="callout">
+  <b>여기까지가 한 사이클.</b> 다음 코호트가 들어오면 Step 5의 cohort 값만 바꿔서 링크
+  새로 발급(Step 7) → 응답 누적 → Step 8 다시. 신규 설문이 필요하면 Step 2부터 다시
+  시작하면 되고, 토큰(Step 1)은 다시 건드릴 필요 없습니다.
+</div>
+
+<!-- ============================================================ -->
+<!-- ============   PART 2 — 케이스: TeachPlay         ========= -->
+<!-- ============================================================ -->
+
+<div class="part-divider">
+  <p class="part-kicker">Part 2 · 케이스</p>
+  <h1 class="part-title">TeachPlay 사전·사후 설문</h1>
+  <p class="part-lede">
+    위 8단계를 실제 프로젝트에 한 번 적용한 사례.
+    UA의 12-세션 AI 게임 디자인 마이크로크레덴셜 평가용으로
+    사전 20문항 + 사후 22문항을 한 번의 대화로 만들었습니다.
+  </p>
+</div>
+
+<!-- ============== CASE ============== -->
+<h2 id="c1" class="first-in-part"><span class="step-no">Case 01</span> 한 번에 시키기 <span class="label">통합 프롬프트</span></h2>
+
+<p>측정 의도와 제약을 한 메시지에 다 적어주면 클코가 Step 2~6까지 한 번에 처리합니다.
+설계가 끝나있을 때 유용한 압축 형태입니다.</p>
+
+<div class="turn user-q">
+  <div class="who"><span class="glyph">P</span>당신 → 클코</div>
+  <div class="body">TeachPlay 프로젝트(AI 게임 디자인 마이크로크레덴셜) 평가용으로
+사전·사후 설문 두 개를 한꺼번에 만들어줘.
+
+[사후 22문항] 비활성, perception × efficacy 두 축
+- Tag 3개: 매칭코드 / 역할 / 실제 투입 시간(버킷)
+- 사용성 4 (UMUX, 5점 동의)
+- AI 사용 자신감 4 (5점 자신감, 사전과 동일 문구)
+- 자격증명 가치 인식 4 (signal/social/economic/realized 단일 합성)
+- 디자이너 정체성 4 (사전과 동일 문구)
+- 교사 효능감 전이 3
+
+[사전 20문항] 비활성
+- 매칭코드 1
+- 익명 인구통계 7 (역할/학년/성별/과목/경력/기관 + opt-in 인종)
+  → 개인식별정보 절대 없이, 자체 4글자 매칭코드로 사전·사후 페어링
+- AI 사용 자신감 4 (베이스라인, 사후와 wording 동일)
+- 디자이너 정체성 4 (베이스라인)
+- 자격증명 기대 4 (사후의 가치 인식과 대칭, 미래시제)
+
+척도는 모두 검증된 짧은 양식으로, 각 구인 ≥ 3문항 (α 추정 가능 수준).
+URL 파라미터로 cohort 받게 하고, UA Crimson 테마 둘 다 입혀줘.
+IRB 승인 전이라 활성화는 절대 하지 마.</div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who"><span class="glyph">C</span>클코 → 당신</div>
+  <div class="body">
+    <p>두 서베이를 순차 생성 — 총 60회의 API 호출 (서베이당 30회).</p>
+    <ul>
+      <li>먼저 헬퍼 모듈 + 문항 정의 파일 작성 → 재사용 가능 구조</li>
+      <li>사전: 빈 셸 → 인구통계 블록 → AI-SE 베이스라인 → 디자이너 정체성 → 자격증명 기대</li>
+      <li>사후: 빈 셸 → Tag → UMUX → AI-SE → 자격증명 가치 → 디자이너 정체성 → TSE 전이</li>
+      <li>둘 다 cohort EmbeddedData + UA Crimson 테마 입힘</li>
+      <li>둘 다 isActive=false 유지</li>
+    </ul>
+  </div>
+</div>
 
 <figure>
   <img src="assets/generated/perception-efficacy-quadrant.svg"
-       alt="Quadrant chart with five labeled construct markers — UMUX, AI-use SE, Credential Value, Designer Identity, Teaching Efficacy Contagion — plotted on perception (x) × efficacy (y)" class="bleed" />
-  <figcaption>Perception &times; efficacy footprint. Five constructs land
-  where the in-app self-assessment doesn't already cover &mdash; that's the
-  survey's footprint. Lower-left quadrant deliberately empty: those signals
-  already live in the in-app stream.</figcaption>
+       alt="2-축 quadrant: perception × efficacy. 5개 라벨된 마커 — UMUX usability, AI-use Self-Efficacy, Credential Value, Designer Identity, Teaching Efficacy Contagion. 각 마커에 items + α + paired/post 표시" class="bleed" />
+  <figcaption>5개 구인이 perception × efficacy 평면 어디에 떨어지는지.
+  좌하 사분면이 비어있는 이유 — 그 신호는 인앱 자기보고로 이미 다루고 있음.</figcaption>
 </figure>
-
-<!-- ============== CASE 3 ============== -->
-<h2 id="c3"><span class="step-no">Case 03</span> 22-item budget under reliability <span class="label">measurement</span></h2>
-
-<p>Hard constraint: keep Cronbach's &alpha; / McDonald's &omega; estimable,
-paired-&Delta; valid, and the survey under ~6 minutes. Rule: every construct
-&ge; 3 items (Hair 2019); validated short forms only.</p>
 
 <figure>
   <img src="assets/generated/item-budget-cards.svg"
-       alt="Five labeled block cards: UMUX Usability (4 items, α .79–.83, Post only) · AI-use SE (4, α .84+, Pre⇄Post) · Credential Value (4, α .78+, Pre→Post) · Designer Identity (4, α .85, Pre⇄Post) · TSE Contagion (3, α .80+, Post only)" class="bleed" />
-  <figcaption>Five blocks, 22 substantive items, every construct &ge; 3 to
-  keep alpha estimable. Pre/Post share AISE and Designer Identity wording
-  verbatim so paired d_z is interpretable.</figcaption>
+       alt="5개 블록 카드: BLOCK 01-05. 각 카드에 구인 이름 + 큰 item 수(4 또는 3) + α + Pre/Post pairing 상태(Crimson 강조)" class="bleed" />
+  <figcaption>5블록 22문항. 모든 구인 ≥ 3개 → 신뢰도 추정 가능.
+  Pre/Post 동일 문구 블록은 paired d_z 분석 가능.</figcaption>
 </figure>
 
-<div class="callout">
-  Pilot N = 20&ndash;50 means &alpha; has wide CIs. Report &alpha; + 95% CI
-  (Feldt 1965); defer CFA to cohort-2 pooled (N &ge; 150).
+<div class="turn result">
+  <div class="who"><span class="glyph">✓</span>이렇게 보일 거예요</div>
+  <div class="body">
+    <p>두 서베이가 UA Qualtrics에 비활성으로 앉아있고, IRB 승인만 기다리는 상태.</p>
+    <ul>
+      <li>Pre &mdash; <code>SV_9QtpyWbqTypaFls</code> · 20 items · ~5분</li>
+      <li>Post &mdash; <code>SV_39sdRK7OVJvSiPk</code> · 22 items · ~6분</li>
+      <li>둘 다 UA Crimson 테마 적용 + cohort URL 파라미터 캡처 + 익명 매칭 코드 페어링 준비</li>
+    </ul>
+  </div>
 </div>
 
-<!-- ============== CASE 4 ============== -->
-<h2 id="c4"><span class="step-no">Case 04</span> Demographics &amp; IRB <span class="label">compliance</span></h2>
-
-<p>Anonymous demographics in the Pre &mdash; minimum needed for EQ3 (equity)
-subgroup analysis, with no PII collected. Pre/Post pairing handled by a
-self-generated 4-character code (Mavros 2018).</p>
-
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Note</th></tr></thead>
+<thead><tr><th>다음 액션</th><th>담당</th><th>시점</th></tr></thead>
 <tbody>
-  <tr><td>D0 matching code</td><td>4-char text</td><td>self-rule (e.g. mother first letter + birth month + favorite color)</td></tr>
-  <tr><td>D1&ndash;D6 demographics</td><td>MC single/multi</td><td>profession / grade level / gender / subject / years / institution; all with "Prefer not to say"</td></tr>
-  <tr><td>D7 race/ethnicity</td><td>opt-in multi</td><td>IPEDS, default unselected, n &ge; 10 cell rule on reporting</td></tr>
+  <tr><td>UI 미리보기 (데스크톱 + 모바일)</td><td>PI</td><td>지금</td></tr>
+  <tr><td>IRB R4 amendment 제출 (Credential Value · Designer Identity · TSE 전이 명시)</td><td>PI</td><td>활성화 전</td></tr>
+  <tr><td>승인 후 Step 7로 활성화 + 배포 링크 발급</td><td>PI</td><td>R4 후</td></tr>
+  <tr><td>코호트 1 종료 → Step 8로 export → α + paired d_z</td><td>RA + PI</td><td>+30일</td></tr>
+  <tr><td>코호트 2-3 누적 (N ≥ 150) → Credential Value 3-요인 CFA</td><td>PI</td><td>2년차</td></tr>
 </tbody>
 </table>
-
-<h3>IRB protocol mapping</h3>
-
-<p>Before any API calls, confirm the active IRB protocol authorizes each
-instrument. Extract the .docx body (zip + XML) and check item-by-item.</p>
-
-<pre class="code"><span class="lab">Python · zip+XML protocol extraction (no python-docx needed)</span>import zipfile, xml.etree.ElementTree as ET
-NS = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
-z   = zipfile.ZipFile('HRP-503a_R3.docx')
-root = ET.fromstring(z.read('word/document.xml'))
-for p in root.iter(NS + 'p'):
-    print(''.join(t.text or '' for t in p.iter(NS + 't')))
-</pre>
-
-<pre class="result"><span class="lab">R3 mapping result</span>✓ Pre/post project surveys (UA Qualtrics) · confidence in AI tool use
-✓ Demographic survey
-✓ Usability logs / structured rubric
-△ H4 "perceived effectiveness for classroom-relevant gamelets"
-✗ Credential value perception        (NOT named)
-✗ Designer identity                  (NOT named)
-</pre>
 
 <div class="callout">
-  <b>Decision:</b> Build all 22 + 20 items. Keep <code>isActive=false</code>
-  until R4 amendment is filed for Credential Value + Designer Identity (and
-  Teaching Efficacy Contagion is named explicitly).
-</div>
-
-<!-- ============== CASE 5 ============== -->
-<h2 id="c5"><span class="step-no">Case 05</span> Outcome &amp; handoff <span class="label">what's left</span></h2>
-
-<p>Two surveys, themed UA Crimson, paired by anonymous code, sitting
-inactive in UA Qualtrics waiting for IRB sign-off.</p>
-
-<table>
-<thead><tr><th>Role</th><th>SurveyID</th><th>Items</th><th>Status</th></tr></thead>
-<tbody>
-  <tr><td>Pre-Program</td><td class="tight">SV_9QtpyWbqTypaFls</td><td>20</td><td>Inactive</td></tr>
-  <tr><td>Post-Program</td><td class="tight">SV_39sdRK7OVJvSiPk</td><td>22</td><td>Inactive</td></tr>
-</tbody>
-</table>
-
-<table>
-<thead><tr><th>Action</th><th>Owner</th><th>When</th></tr></thead>
-<tbody>
-  <tr><td>UI preview (desktop + mobile)</td><td>PI</td><td>Now</td></tr>
-  <tr><td>R4 amendment: Credential Value + Designer Identity (+ name TSE Contagion)</td><td>PI</td><td>Before activation</td></tr>
-  <tr><td><code>set_active(sv, True)</code></td><td>PI</td><td>After R4 approval</td></tr>
-  <tr><td>Cohort link: <code>?cohort=2026-spring</code></td><td>PI</td><td>At cohort enrollment</td></tr>
-  <tr><td>Cohort 1 close &rarr; export &rarr; &alpha; + paired d_z</td><td>RA + PI</td><td>+30 days</td></tr>
-  <tr><td>Cohort 2&ndash;3 pool (N &ge; 150) &rarr; CFA on Credential Value 3-factor</td><td>PI</td><td>Year 2</td></tr>
-</tbody>
-</table>
-
-<figure>
-  <img src="assets/generated/s12-learner-loop.png" alt="Learner loop diagram from session 12 of the TeachPlay handbook" class="bleed" />
-  <figcaption>Session 12 closes the learner loop &mdash; which is also when
-  the Post survey lands. The Pre fires in Session 1.</figcaption>
-</figure>
-
-<h3>Files in this case study</h3>
-<table>
-<thead><tr><th>Path</th><th>Role</th></tr></thead>
-<tbody>
-  <tr><td class="tight">eval/qualtrics_helper.py</td><td>API client + payload builders + theme</td></tr>
-  <tr><td class="tight">eval/instruments.py</td><td>All wording + tags (the editable surface)</td></tr>
-  <tr><td class="tight">eval/build_surveys.py</td><td>Entry point: <code>post / pre / both / verify</code></td></tr>
-  <tr><td class="tight">eval/apply_theme.py</td><td>Idempotent themer (GET-merge-PUT)</td></tr>
-  <tr><td class="tight">eval/_created_surveys.json</td><td>SurveyIDs + block IDs (generated)</td></tr>
-  <tr><td class="tight">eval/README.md</td><td>Operator reference (denser cousin of this guide)</td></tr>
-</tbody>
-</table>
-
-<h3>Two failure modes worth remembering</h3>
-<ul>
-  <li><code>numeric_entry</code> 400 &mdash; Qualtrics' <code>ValidNumber</code> schema rejects what looks like a clean payload. Workaround: bucketed <code>mc_single</code>. To fix properly, build a UI survey with the validation you want, GET <code>/survey-definitions/{id}</code>, copy the Validation block verbatim.</li>
-  <li><code>DELETE /surveys/{id}</code> denied by tooling without explicit user authorization. Plan for it: don't create throwaway shells through the API. If you do, clean up in the UI.</li>
-</ul>
-
-<div class="callout">
-  <b>The general pattern is the value.</b> The TeachPlay survey is one
-  application of Steps 01&ndash;07. The same helper, the same flow, the same
-  theme machinery would work for any other research instrument on this
-  brand &mdash; perception &times; efficacy was just one design choice in
-  the construct-selection step.
+  <b>핵심.</b> 위 통합 프롬프트가 가능한 이유는 Part 1 8단계가 표준화되어 있어서.
+  설계만 끝나면 ETHOBOT, ALGET, AO TeacherSim 같은 다른 프로젝트도 비슷한 한 메시지로
+  세팅 가능합니다 — 측정할 구인 / 척도 길이 / 익명성 정책 / 테마 색만 바꾸면 됨.
 </div>
 
 </main>
 </div>
 
 <footer>
-  Building Qualtrics surveys via the v3 REST API &middot; General build
-  pattern with one applied case study (TeachPlay, UA College of Education)
-  &middot; Generated 2026-05-05.
+  퀄트릭스 서베이를 클코에 시켜서 만들기 &middot;
+  사용자 가이드 (한국어) &middot;
+  적용 사례: TeachPlay AI-Enhanced Educational Game Design,
+  University of Alabama College of Education &middot; 2026-05-05
 </footer>
 
 </body>
