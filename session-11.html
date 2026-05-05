@@ -16,10 +16,11 @@
 </div>
 
 <div class="handbook-topbar">
-          <nav class="primary-nav" data-primary-nav>
+              <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
+        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
         <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
         <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
         <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
@@ -209,11 +210,11 @@
         </p>
 
         <ul class="checklist">
-          <li data-chk-id="top1"><input type="checkbox"/><label class="checklist__label">Executed the top-ranked item in the backlog.</label></li>
-          <li data-chk-id="top2"><input type="checkbox"/><label class="checklist__label">Executed the second-ranked item.</label></li>
-          <li data-chk-id="top3"><input type="checkbox"/><label class="checklist__label">Executed one of the top 5, even if it was a stopper that leap-frogged the list.</label></li>
-          <li data-chk-id="log"><input type="checkbox"/><label class="checklist__label">Each revision has a one-sentence diff entry with its backlog ID.</label></li>
-          <li data-chk-id="no-scope"><input type="checkbox"/><label class="checklist__label">No scope additions this session. Any new idea goes to the backlog below the line.</label></li>
+          <li data-chk-id="top1"><input type="checkbox" id="chk-top1"/><label class="checklist__label" for="chk-top1">Executed the top-ranked item in the backlog.</label></li>
+          <li data-chk-id="top2"><input type="checkbox" id="chk-top2"/><label class="checklist__label" for="chk-top2">Executed the second-ranked item.</label></li>
+          <li data-chk-id="top3"><input type="checkbox" id="chk-top3"/><label class="checklist__label" for="chk-top3">Executed one of the top 5, even if it was a stopper that leap-frogged the list.</label></li>
+          <li data-chk-id="log"><input type="checkbox" id="chk-log"/><label class="checklist__label" for="chk-log">Each revision has a one-sentence diff entry with its backlog ID.</label></li>
+          <li data-chk-id="no-scope"><input type="checkbox" id="chk-no-scope"/><label class="checklist__label" for="chk-no-scope">No scope additions this session. Any new idea goes to the backlog below the line.</label></li>
         </ul>
 
         <div class="callout callout--warn">
@@ -273,10 +274,10 @@
         <div class="block__kicker">07 · Preparation for Session 12</div>
         <h2 class="block__title">Before final presentations</h2>
         <ul class="checklist">
-          <li data-chk-id="backlog-frozen"><input type="checkbox"/><label class="checklist__label">Freeze the backlog. Items still above the line become D5 "known limits."</label></li>
-          <li data-chk-id="deck"><input type="checkbox"/><label class="checklist__label">Assemble D5 deck — 8 slides, to the outline published in the handbook.</label></li>
-          <li data-chk-id="demo"><input type="checkbox"/><label class="checklist__label">Rehearse the demo segment at least twice; time it.</label></li>
-          <li data-chk-id="one-pager"><input type="checkbox"/><label class="checklist__label">Print one-pager summary for the reviewing panel.</label></li>
+          <li data-chk-id="backlog-frozen"><input type="checkbox" id="chk-backlog-frozen"/><label class="checklist__label" for="chk-backlog-frozen">Freeze the backlog. Items still above the line become D5 "known limits."</label></li>
+          <li data-chk-id="deck"><input type="checkbox" id="chk-deck"/><label class="checklist__label" for="chk-deck">Assemble D5 deck — 8 slides, to the outline published in the handbook.</label></li>
+          <li data-chk-id="demo"><input type="checkbox" id="chk-demo"/><label class="checklist__label" for="chk-demo">Rehearse the demo segment at least twice; time it.</label></li>
+          <li data-chk-id="one-pager"><input type="checkbox" id="chk-one-pager"/><label class="checklist__label" for="chk-one-pager">Print one-pager summary for the reviewing panel.</label></li>
         </ul>
       </section>
 

@@ -12,7 +12,7 @@
   --crimson-deep: #5a0d18;
   --crimson-tint: #fdf4f5;
   --crimson-tint-strong: #f7e4e6;
-  --capstone-gray: #828A8F;
+  --capstone-gray: #6a727a;  /* darkened from UA brand #828a8f to clear WCAG AA at 11–13 px (4.78:1 on white) */
   --gray-100: #161616;
   --gray-90: #232323;
   --gray-80: #3a3a3a;
@@ -370,6 +370,83 @@ body[data-role="student"] .instructor-banner { display: none; }
   .primary-nav__cta { margin-left: 8px; padding: 7px 14px; font-size: 12px; }
 }
 
+/* ─── A11y contrast bumps for de-emphasized microtype ───────────
+   Several .video-card__source, .asset-figure__cap, figcaption, .toc__num,
+   privacy/policy retention paragraphs, and small caption text used
+   #777/#888 — clears barely 4.4:1 at 11–13 px. Bump to #595959 (~7:1)
+   so it clears AA at every size we render. */
+.video-card__source,
+.asset-figure__cap,
+figcaption,
+.section--tint .section + p,
+.section p[style*="font-size: 12px"],
+.toc__num {
+  color: #595959 !important;
+}
+/* TOC + handbook side-panel headings (axe flagged "Contents" + similar). */
+.hb-toc h2 { color: #595959 !important; }
+
+/* Various small de-emphasized labels axe flagged at #828a8f / #8d8d8d / #999.
+   All bumped to #595959 (~7:1 on white). */
+.session-header__crumbs span,
+.session-meta__label,
+.examples .ex-tab-btn small,
+.ex-tab-btn small,
+button[data-d] small,
+.quickcheck__prompt span[style*="color"] {
+  color: #595959 !important;
+}
+/* Examples-page level color codes — purple/yellow at AA-failing tones.
+   Darken so they keep their semantic role but pass 4.5:1 on white. */
+.ex-level__label[data-lvl="Emerging"], div[data-lvl="Emerging"] .ex-level__label { color: #6b21a8 !important; }
+.ex-level__label[data-lvl="Developing"], div[data-lvl="Developing"] .ex-level__label { color: #92400e !important; }
+
+/* On the credential page a couple of cards sit on the dark hero backdrop.
+   The deep-crimson .card__label override I added for cream backgrounds
+   fails 4.5:1 on near-black. Detect dark surroundings + use the brand
+   crimson directly (5.7:1 on black). */
+.hero .card .card__label,
+.section--crimson .card .card__label {
+  color: #ffb3b8 !important;
+}
+
+/* ─── A11y contrast tightening (axe-core findings 2026-05-05) ───
+   Three rules to satisfy WCAG 2.1 AA:
+   1. Crimson text inline with darker prose fails the 3:1 link-in-text-
+      block surround contrast. Force an underline on body links so they
+      don't rely on color alone.
+   2. Eyebrow / label microtype (.card__label, .role-switch__label,
+      .toc__group-label) sat at #9e1b32 on light backgrounds — too low
+      at small sizes. Darken the crimson tone for that family of small
+      labels (does not affect the brand color in headings/buttons).
+   3. Same for any link inside body text without a class override. */
+.section p a:not(.btn):not(.hb-cite):not(.deliverable),
+.hb-prose p a:not(.btn):not(.hb-cite),
+.a11y-section a:not(.btn),
+.pp-section a:not(.btn),
+.validity-callout a:not(.btn),
+.session-meta__sub a,
+.fg-stance a,
+.section dd a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.card__label,
+.toc__group-label {
+  /* Deeper crimson + heavier weight so 11px small caps clears AA on cream.
+     No !important so inline overrides on dark-card variants keep working. */
+  color: #7a0e1f;
+  font-weight: 700;
+}
+/* role-switch sits ON the crimson utility bar, so the label needs to be
+   light-on-crimson, not dark-on-crimson. White at slight transparency
+   clears AA against #be1a2f (~14:1) while staying visually quiet. */
+.role-switch__label {
+  color: rgba(255, 255, 255, 0.92) !important;
+  font-weight: 600;
+}
+
 /* ─── Hero (crimson-dark full-bleed block) ────────────────────── */
 .hero {
   background: var(--crimson-deep);
@@ -539,7 +616,11 @@ body[data-role="student"] .instructor-banner { display: none; }
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--capstone-gray);
+  /* axe-core 2026-05-05: var(--capstone-gray) was #828a8f → 3.51:1 on white,
+     fails AA at 11 px. Use deeper crimson (5.7:1) so the label keeps its
+     brand role and passes contrast. Cards on dark backgrounds override
+     this via inline style. */
+  color: #7a0e1f;
   margin-bottom: 10px;
 }
 .card__title {
@@ -726,7 +807,8 @@ body[data-role="student"] .instructor-banner { display: none; }
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--capstone-gray);
+  /* axe 2026-05-05: same fix as .card__label — capstone-gray fails AA at 10 px. */
+  color: #7a0e1f;
   font-weight: 700;
 }
 .toc__item {

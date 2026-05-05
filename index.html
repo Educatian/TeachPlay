@@ -90,7 +90,7 @@
     font-size: 13px; line-height: 1.5; color: #555; margin: 0 0 10px;
   }
   .showcase-card__caption {
-    font-size: 12px; line-height: 1.5; color: #777;
+    font-size: 12px; line-height: 1.5; color: #595959;
     border-top: 1px dashed #e0ddd8; padding-top: 10px; margin-top: auto;
     font-style: italic;
   }
@@ -176,10 +176,11 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-              <nav class="primary-nav" data-primary-nav>
+                  <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
+        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
         <a href="index.html" class="is-active" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
         <a href="#sessions" class="is-active" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
         <a href="#deliverables" class="is-active" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
@@ -606,7 +607,7 @@
   .quickcheck__card[data-state="incorrect"] { border-color: #be1a2f; box-shadow: 0 0 0 2px rgba(190,26,47,0.18); }
   .quickcheck__num {
     position: absolute; top: 16px; right: 22px;
-    font-size: 36px; font-weight: 700; color: var(--gray-10, #ece9e3);
+    font-size: 36px; font-weight: 700; color: #8a8478;
     letter-spacing: -0.02em;
   }
   .quickcheck__prompt { font-size: 16px; line-height: 1.55; margin: 0 0 14px; max-width: 740px; }
@@ -804,7 +805,7 @@
   function renderCard(item, idx) {
     return '<div class="quickcheck__card" data-id="' + item.id + '" data-q="' + (idx + 1) + '">' +
       '<div class="quickcheck__num">' + String(idx + 1).padStart(2, '0') + '</div>' +
-      '<p class="quickcheck__prompt">' + item.prompt + ' <span style="display:block;font-size:11px;color:#999;margin-top:6px;font-weight:400;">From ' + escapeHtml(item.anchor) + '</span></p>' +
+      '<p class="quickcheck__prompt">' + item.prompt + ' <span style="display:block;font-size:11px;color:#595959;margin-top:6px;font-weight:500;">From ' + escapeHtml(item.anchor) + '</span></p>' +
       '<div class="quickcheck__choices">' +
         item.choices.map(function (ch) {
           return '<button data-correct="' + (ch.c ? 'true' : 'false') + '" data-why="' + escapeHtml(ch.why) + '">' + ch.t + '</button>';

@@ -42,8 +42,12 @@ const Quiz = (() => {
 .quiz__summary--pass { background: #f0fff4; border: 1px solid #2f855a; color: #22543d; }
 .quiz__summary--fail { background: #fff5f5; border: 1px solid var(--crimson, #be1a2f); color: #742a2a; }
 .quiz__gate-notice { margin-top: 10px; font-size: 12px; color: var(--gray-40, #888); text-align: center; font-family: var(--font-sans, inherit); }
-.quiz-gated { opacity: 0.3; pointer-events: none; user-select: none; }
-.quiz-gated-btn { opacity: 0.3; pointer-events: none; cursor: not-allowed; }
+/* WCAG AA: opacity-based dimming made foreground text composite to colors
+   that fail 4.5:1. Use full-strength gray instead so disabled cells stay
+   readable while still visually distinct from active links. */
+.quiz-gated { pointer-events: none; user-select: none; filter: grayscale(0.6); }
+.quiz-gated, .quiz-gated * { color: #4f4f4f !important; }
+.quiz-gated-btn { background: #767676 !important; border-color: #767676 !important; color: #fff !important; pointer-events: none; cursor: not-allowed; opacity: 1; }
 `;
     document.head.appendChild(el);
   }

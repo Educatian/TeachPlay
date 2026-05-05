@@ -80,10 +80,14 @@
   }
 
   function init() {
-    // Respect prefers-reduced-motion: present the headline statically.
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      var els = document.querySelectorAll('[data-typewriter]');
-      els.forEach(function (el) { el.setAttribute('data-done', 'true'); });
+    // Respect prefers-reduced-motion (OS-level) and the per-device override
+    // toggle on the accessibility page (localStorage['hb:reduce-motion']='1').
+    var prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var override = false;
+    try { override = localStorage.getItem('hb:reduce-motion') === '1'; } catch (_) {}
+    if (prefersReduce || override) {
+      var staticEls = document.querySelectorAll('[data-typewriter]');
+      staticEls.forEach(function (el) { el.setAttribute('data-done', 'true'); });
       return;
     }
     injectStyles();

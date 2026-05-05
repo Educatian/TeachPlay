@@ -16,10 +16,11 @@
 </div>
 
 <div class="handbook-topbar">
-          <nav class="primary-nav" data-primary-nav>
+              <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
+        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
         <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
         <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
         <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
@@ -139,10 +140,10 @@
         </figure>
 
         <ul class="checklist">
-          <li data-chk-id="rw-trace"><input type="checkbox"/><label class="checklist__label">Every reward in the game can be traced to a D2 objective.</label></li>
-          <li data-chk-id="rw-fastest"><input type="checkbox"/><label class="checklist__label">The fastest path to a high score requires engaging with the objective — not avoiding it.</label></li>
-          <li data-chk-id="rw-cheese"><input type="checkbox"/><label class="checklist__label">I have asked "how would a cynical player cheese this?" and the answer is not alarming.</label></li>
-          <li data-chk-id="rw-extrinsic"><input type="checkbox"/><label class="checklist__label">Extrinsic rewards (points, stars, streaks) are used sparingly and not in judgment-under-uncertainty loops.</label></li>
+          <li data-chk-id="rw-trace"><input type="checkbox" id="chk-rw-trace"/><label class="checklist__label" for="chk-rw-trace">Every reward in the game can be traced to a D2 objective.</label></li>
+          <li data-chk-id="rw-fastest"><input type="checkbox" id="chk-rw-fastest"/><label class="checklist__label" for="chk-rw-fastest">The fastest path to a high score requires engaging with the objective — not avoiding it.</label></li>
+          <li data-chk-id="rw-cheese"><input type="checkbox" id="chk-rw-cheese"/><label class="checklist__label" for="chk-rw-cheese">I have asked "how would a cynical player cheese this?" and the answer is not alarming.</label></li>
+          <li data-chk-id="rw-extrinsic"><input type="checkbox" id="chk-rw-extrinsic"/><label class="checklist__label" for="chk-rw-extrinsic">Extrinsic rewards (points, stars, streaks) are used sparingly and not in judgment-under-uncertainty loops.</label></li>
         </ul>
       </section>
 
@@ -334,11 +335,11 @@
         </p>
 
         <ul class="checklist">
-          <li data-chk-id="ac-vision"><input type="checkbox"/><label class="checklist__label">Color is never the only channel for feedback (color + shape/text/motion).</label></li>
-          <li data-chk-id="ac-audio"><input type="checkbox"/><label class="checklist__label">Audio cues have a visual counterpart — or the game runs with audio off.</label></li>
-          <li data-chk-id="ac-motor"><input type="checkbox"/><label class="checklist__label">All critical actions are reachable without precise timing or fine motor control.</label></li>
-          <li data-chk-id="ac-reading"><input type="checkbox"/><label class="checklist__label">Reading level is matched to the target learner population (not to peers).</label></li>
-          <li data-chk-id="ac-device"><input type="checkbox"/><label class="checklist__label">Device floor is documented. Below that floor, game refuses to launch rather than degrade silently.</label></li>
+          <li data-chk-id="ac-vision"><input type="checkbox" id="chk-ac-vision"/><label class="checklist__label" for="chk-ac-vision">Color is never the only channel for feedback (color + shape/text/motion).</label></li>
+          <li data-chk-id="ac-audio"><input type="checkbox" id="chk-ac-audio"/><label class="checklist__label" for="chk-ac-audio">Audio cues have a visual counterpart — or the game runs with audio off.</label></li>
+          <li data-chk-id="ac-motor"><input type="checkbox" id="chk-ac-motor"/><label class="checklist__label" for="chk-ac-motor">All critical actions are reachable without precise timing or fine motor control.</label></li>
+          <li data-chk-id="ac-reading"><input type="checkbox" id="chk-ac-reading"/><label class="checklist__label" for="chk-ac-reading">Reading level is matched to the target learner population (not to peers).</label></li>
+          <li data-chk-id="ac-device"><input type="checkbox" id="chk-ac-device"/><label class="checklist__label" for="chk-ac-device">Device floor is documented. Below that floor, game refuses to launch rather than degrade silently.</label></li>
         </ul>
       </section>
 
@@ -550,9 +551,9 @@ Rules:
         <div class="block__kicker">10 · Preparation for Session 11</div>
         <h2 class="block__title">Before next week — revision studio</h2>
         <ul class="checklist">
-          <li data-chk-id="memo-submit"><input type="checkbox"/><label class="checklist__label">Submit audit memo v0.1.</label></li>
-          <li data-chk-id="backlog"><input type="checkbox"/><label class="checklist__label">Merge D4 revisions + audit findings into a single ranked backlog for Session 11.</label></li>
-          <li data-chk-id="stop"><input type="checkbox"/><label class="checklist__label">Mark any item that is a stopper (ethics, safety, content error) with a red flag in the backlog.</label></li>
+          <li data-chk-id="memo-submit"><input type="checkbox" id="chk-memo-submit"/><label class="checklist__label" for="chk-memo-submit">Submit audit memo v0.1.</label></li>
+          <li data-chk-id="backlog"><input type="checkbox" id="chk-backlog"/><label class="checklist__label" for="chk-backlog">Merge D4 revisions + audit findings into a single ranked backlog for Session 11.</label></li>
+          <li data-chk-id="stop"><input type="checkbox" id="chk-stop"/><label class="checklist__label" for="chk-stop">Mark any item that is a stopper (ethics, safety, content error) with a red flag in the backlog.</label></li>
         </ul>
       </section>
 

@@ -329,6 +329,11 @@
         '<strong>Annotations</strong>' +
         '<button class="hb-anno-panel__close" aria-label="Close">×</button>' +
       '</div>' +
+      '<div class="hb-anno-panel__local-warning" id="hb-anno-local-warn" hidden>' +
+        '<strong>Local-only storage.</strong> Your highlights live in this browser and ' +
+        'will be lost if you clear site data or switch devices. Download a Markdown ' +
+        'export every few weeks to keep them safe.' +
+      '</div>' +
       '<div class="hb-anno-panel__actions">' +
         '<button data-act="dl-page">Download this page</button>' +
         '<button data-act="dl-all">Download all (.md)</button>' +
@@ -359,6 +364,13 @@
   function refreshList() {
     var list = document.getElementById('hb-anno-list');
     if (!list) return;
+    // Show the local-only warning when total count crosses 10 — high enough
+    // that the user has invested real effort, low enough to nudge before loss.
+    var warn = document.getElementById('hb-anno-local-warn');
+    if (warn) {
+      var total = loadAll().length;
+      warn.hidden = total < 10;
+    }
     var recs = pageRecords();
     if (!recs.length) { list.innerHTML = '<p style="color:#888;font-size:13px;padding:8px;">No annotations on this page yet.</p>'; return; }
     list.innerHTML = recs.map(function (r) {
@@ -543,6 +555,13 @@
       '  background: #be1a2f; color: #fff;',
       '}',
       '.hb-anno-panel__close { background: transparent; color: #fff; border: 0; font-size: 22px; cursor: pointer; line-height: 1; }',
+      '.hb-anno-panel__local-warning {',
+      '  background: #fff7e6; border-left: 3px solid #b8860b;',
+      '  padding: 12px 16px; margin: 12px 18px;',
+      '  font-size: 12.5px; line-height: 1.5; color: #5a3e0c;',
+      '  border-radius: 4px;',
+      '}',
+      '.hb-anno-panel__local-warning strong { color: #8a4a10; display: block; margin-bottom: 3px; }',
       '.hb-anno-panel__actions {',
       '  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;',
       '  padding: 12px 18px; border-bottom: 1px solid #e0ddd8;',

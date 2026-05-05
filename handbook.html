@@ -77,8 +77,38 @@
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;
   }
-  a.hb-cite:hover { color: #be1a2f; text-decoration: underline solid #be1a2f; }
+  a.hb-cite:hover, a.hb-cite:focus { color: #be1a2f; text-decoration: underline solid #be1a2f; }
   .hb-prose a.hb-cite { word-break: normal; overflow-wrap: normal; }
+
+  /* Citation popover — fetched once from references.html, shown on hover/focus */
+  .hb-cite-pop {
+    position: absolute; z-index: 99000;
+    max-width: 420px; min-width: 260px;
+    background: #fff; color: #222;
+    border: 1px solid #be1a2f; border-radius: 8px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+    padding: 14px 18px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px; line-height: 1.55;
+    opacity: 0; transform: translateY(-4px);
+    transition: opacity .15s ease, transform .15s ease;
+    pointer-events: none;
+  }
+  .hb-cite-pop.is-open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .hb-cite-pop__num {
+    display: inline-block; background: #be1a2f; color: #fff;
+    font-family: var(--font-mono, monospace); font-size: 10px;
+    padding: 2px 8px; border-radius: 10px; margin-right: 8px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .hb-cite-pop__body { margin-top: 6px; }
+  .hb-cite-pop__body em { color: #444; }
+  .hb-cite-pop__open {
+    display: inline-block; margin-top: 10px;
+    color: #be1a2f; font-size: 12px; font-weight: 700;
+    text-decoration: none;
+  }
+  .hb-cite-pop__open:hover { text-decoration: underline; }
 
   /* Header strip with download + browse-on-pages-instead links */
   .hb-strip {
@@ -118,10 +148,11 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-        <nav class="primary-nav" data-primary-nav>
+            <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
+        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
         <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
         <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
         <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
@@ -309,6 +340,86 @@
     tocList.innerHTML = toc.map(function (t) {
       return '<li><a class="' + t.cls + '" href="#' + t.id + '">' + t.text + '</a></li>';
     }).join('') || '<li><em style="color:#888;">No headings found.</em></li>';
+
+    // ── Citation popover: fetch references.html once, parse out each <li>
+    // entry by id, then attach hover/focus handlers to every a.hb-cite that
+    // resolves to a known reference id. ─────────────────────────────────
+    (function citationPopovers() {
+      var pop = null;
+      var refMap = null;        // id → { num, html }
+      var hideTimer = null;
+
+      function ensurePop() {
+        if (pop) return pop;
+        pop = document.createElement('div');
+        pop.className = 'hb-cite-pop';
+        pop.setAttribute('role', 'tooltip');
+        document.body.appendChild(pop);
+        // Keep popover alive while pointer is over it
+        pop.addEventListener('mouseenter', function () { clearTimeout(hideTimer); });
+        pop.addEventListener('mouseleave', schedule);
+        return pop;
+      }
+
+      function schedule() { hideTimer = setTimeout(hide, 220); }
+      function hide() { if (pop) pop.classList.remove('is-open'); }
+
+      async function loadRefs() {
+        if (refMap !== null) return refMap;
+        try {
+          var resp = await fetch('references.html');
+          if (!resp.ok) { refMap = {}; return refMap; }
+          var html = await resp.text();
+          var doc = new DOMParser().parseFromString(html, 'text/html');
+          var lis = doc.querySelectorAll('.ref-list li[id]');
+          refMap = {};
+          var n = 0;
+          lis.forEach(function (li) {
+            n++;
+            refMap[li.id] = { num: n, html: li.innerHTML };
+          });
+        } catch (_) { refMap = {}; }
+        return refMap;
+      }
+
+      function show(target, frag) {
+        ensurePop();
+        clearTimeout(hideTimer);
+        pop.innerHTML = '<div><span class="hb-cite-pop__num">Ref ' + frag.num + '</span></div>' +
+          '<div class="hb-cite-pop__body">' + frag.html + '</div>' +
+          '<a class="hb-cite-pop__open" href="references.html#' + target.getAttribute('href').split('#')[1] + '">Open in references →</a>';
+        var rect = target.getBoundingClientRect();
+        // Position below + slight right; clamp to viewport
+        var top = rect.bottom + window.scrollY + 6;
+        var left = rect.left + window.scrollX;
+        if (left + 420 > window.innerWidth) left = Math.max(8, window.innerWidth - 432);
+        pop.style.top = top + 'px';
+        pop.style.left = left + 'px';
+        requestAnimationFrame(function () { pop.classList.add('is-open'); });
+      }
+
+      async function onEnter(e) {
+        var a = e.currentTarget;
+        var href = a.getAttribute('href') || '';
+        var hash = href.split('#')[1];
+        if (!hash) return;
+        var refs = await loadRefs();
+        var frag = refs[hash];
+        if (!frag) return;
+        show(a, frag);
+      }
+
+      // Wire after citation linking has run.
+      prose.querySelectorAll('a.hb-cite').forEach(function (a) {
+        a.addEventListener('mouseenter', onEnter);
+        a.addEventListener('focus', onEnter);
+        a.addEventListener('mouseleave', schedule);
+        a.addEventListener('blur', schedule);
+        // Open in new tab on click so the reading flow stays intact
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noopener');
+      });
+    })();
 
     // If URL has a hash, jump to it after render.
     if (location.hash) {

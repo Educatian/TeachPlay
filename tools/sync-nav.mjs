@@ -29,8 +29,9 @@ const GROUPS = [
   {
     key: 'course',
     label: 'Course',
-    pages: ['index.html', 'handbook.html'],
+    pages: ['index.html', 'handbook.html', 'start.html'],
     items: [
+      ['Start here',       'start.html',               '5-minute orientation tour'],
       ['Overview',         'index.html',               'The handbook at a glance'],
       ['Sessions',         'index.html#sessions',      'Twelve weekly units'],
       ['Deliverables',     'index.html#deliverables',  'Five artifacts you ship'],

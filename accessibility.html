@@ -54,10 +54,11 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-    <nav class="primary-nav" data-primary-nav>
+        <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
+        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
         <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
         <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
         <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
@@ -212,6 +213,97 @@
 </section>
 
 <section class="section">
+  <span class="section__eyebrow">Per-device settings</span>
+  <h2 class="section__title">Accessibility settings.</h2>
+  <p class="section__lede" style="max-width: 880px;">
+    Three preferences live in your browser only — nothing syncs across devices. Toggle
+    anytime; changes apply on the next page load.
+  </p>
+
+  <div class="a11y-settings" data-a11y-settings>
+    <div class="a11y-toggle">
+      <div>
+        <strong>Custom cursor</strong>
+        <p>Hides the OS pointer and replaces it with a small dot + lagging ring. Some users with motor impairments or OS-level cursor settings prefer this off.</p>
+      </div>
+      <button type="button" class="a11y-toggle__btn" data-toggle="cursor" aria-pressed="true">…</button>
+    </div>
+
+    <div class="a11y-toggle">
+      <div>
+        <strong>Gamification (achievement toasts + badge)</strong>
+        <p>Mute the achievement system. Site still tracks what you've done — toasts and the utility-bar badge just stop appearing. See the handbook §6.2 on why this is a real concern.</p>
+      </div>
+      <button type="button" class="a11y-toggle__btn" data-toggle="gamify" aria-pressed="true">…</button>
+    </div>
+
+    <div class="a11y-toggle">
+      <div>
+        <strong>Hero typewriter animation</strong>
+        <p>The homepage headline types itself in. Already off when your OS has <code>prefers-reduced-motion</code> set. This toggle forces it off regardless.</p>
+      </div>
+      <button type="button" class="a11y-toggle__btn" data-toggle="motion" aria-pressed="true">…</button>
+    </div>
+  </div>
+
+  <style>
+    .a11y-settings { display: grid; gap: 14px; max-width: 880px; }
+    .a11y-toggle {
+      display: grid; grid-template-columns: 1fr auto; gap: 22px; align-items: center;
+      background: #fff; border: 1px solid #e0ddd8; border-radius: 8px;
+      padding: 18px 22px;
+    }
+    .a11y-toggle strong { display: block; font-size: 15px; color: #1a1a1a; margin-bottom: 4px; }
+    .a11y-toggle p { font-size: 13.5px; color: #555; line-height: 1.5; margin: 0; max-width: 60ch; }
+    .a11y-toggle__btn {
+      min-height: 36px; min-width: 96px; padding: 8px 14px;
+      border: 1.5px solid #e0ddd8; border-radius: 999px;
+      background: #fafaf7; color: #1a1a1a; cursor: pointer;
+      font-size: 13px; font-weight: 600; font-family: inherit;
+      transition: all .15s ease;
+    }
+    .a11y-toggle__btn[data-state="on"]  { background: #1a6e2e; color: #fff; border-color: #1a6e2e; }
+    .a11y-toggle__btn[data-state="off"] { background: #be1a2f; color: #fff; border-color: #be1a2f; }
+    .a11y-toggle__btn:focus-visible { outline: 3px solid rgba(190,26,47,0.4); outline-offset: 2px; }
+    @media (max-width: 600px) {
+      .a11y-toggle { grid-template-columns: 1fr; }
+      .a11y-toggle__btn { justify-self: start; }
+    }
+  </style>
+
+  <script>
+    (function () {
+      var keys = {
+        cursor: { storage: 'hb:cursor-off',  onLabel: 'Enhanced',     offLabel: 'Native pointer' },
+        gamify: { storage: 'hb:no-gamify',    onLabel: 'On (toasts)',  offLabel: 'Muted' },
+        motion: { storage: 'hb:reduce-motion', onLabel: 'Animated',     offLabel: 'Reduced' },
+      };
+      function isOn(key) {
+        try { return localStorage.getItem(keys[key].storage) !== '1'; }
+        catch (_) { return true; }
+      }
+      function setOn(key, on) {
+        try {
+          if (on) localStorage.removeItem(keys[key].storage);
+          else localStorage.setItem(keys[key].storage, '1');
+        } catch (_) {}
+      }
+      document.querySelectorAll('.a11y-toggle__btn').forEach(function (btn) {
+        var key = btn.dataset.toggle;
+        function paint() {
+          var on = isOn(key);
+          btn.dataset.state = on ? 'on' : 'off';
+          btn.textContent = on ? keys[key].onLabel : keys[key].offLabel;
+          btn.setAttribute('aria-pressed', String(on));
+        }
+        paint();
+        btn.addEventListener('click', function () { setOn(key, !isOn(key)); paint(); });
+      });
+    })();
+  </script>
+</section>
+
+<section class="section section--tint">
   <span class="section__eyebrow">Found a barrier?</span>
   <h2 class="section__title">Tell us. We fix.</h2>
 

@@ -16,10 +16,11 @@
 </div>
 
 <div class="handbook-topbar">
-          <nav class="primary-nav" data-primary-nav>
+              <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
+        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
         <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
         <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
         <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
@@ -379,9 +380,9 @@
         </p>
 
         <ul class="checklist">
-          <li data-chk-id="budget-n"><input type="checkbox"/><label class="checklist__label">I have pre-committed to ≤5 revisions, ranked by expected impact.</label></li>
-          <li data-chk-id="budget-stop"><input type="checkbox"/><label class="checklist__label">I know which observation type would <em>stop</em> the project (ethical concern, content error, impossible transfer).</label></li>
-          <li data-chk-id="budget-ignore"><input type="checkbox"/><label class="checklist__label">I know which observations I will deliberately <em>not</em> act on (one-off preference, taste disagreement).</label></li>
+          <li data-chk-id="budget-n"><input type="checkbox" id="chk-budget-n"/><label class="checklist__label" for="chk-budget-n">I have pre-committed to ≤5 revisions, ranked by expected impact.</label></li>
+          <li data-chk-id="budget-stop"><input type="checkbox" id="chk-budget-stop"/><label class="checklist__label" for="chk-budget-stop">I know which observation type would <em>stop</em> the project (ethical concern, content error, impossible transfer).</label></li>
+          <li data-chk-id="budget-ignore"><input type="checkbox" id="chk-budget-ignore"/><label class="checklist__label" for="chk-budget-ignore">I know which observations I will deliberately <em>not</em> act on (one-off preference, taste disagreement).</label></li>
         </ul>
       </section>
 
@@ -553,9 +554,9 @@ Constraints:
         <div class="block__kicker">09 · Preparation for Session 10</div>
         <h2 class="block__title">Before next week</h2>
         <ul class="checklist">
-          <li data-chk-id="run"><input type="checkbox"/><label class="checklist__label">Run at least 3 target-learner sessions; store raw notes in repo.</label></li>
-          <li data-chk-id="d4-draft"><input type="checkbox"/><label class="checklist__label">Draft D4 report; version it.</label></li>
-          <li data-chk-id="audit-pre"><input type="checkbox"/><label class="checklist__label">Skim the Session 10 audit lens; note which dimension you expect to fare worst.</label></li>
+          <li data-chk-id="run"><input type="checkbox" id="chk-run"/><label class="checklist__label" for="chk-run">Run at least 3 target-learner sessions; store raw notes in repo.</label></li>
+          <li data-chk-id="d4-draft"><input type="checkbox" id="chk-d4-draft"/><label class="checklist__label" for="chk-d4-draft">Draft D4 report; version it.</label></li>
+          <li data-chk-id="audit-pre"><input type="checkbox" id="chk-audit-pre"/><label class="checklist__label" for="chk-audit-pre">Skim the Session 10 audit lens; note which dimension you expect to fare worst.</label></li>
         </ul>
       </section>
 
