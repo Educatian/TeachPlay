@@ -12,6 +12,12 @@
     "sign:example": "node tools/sign-vc.mjs credential/assertion-example-v3.unsigned.json credential/assertion-example-v3.json",
     "issue:learner": "node tools/issue-for-learner.mjs",
     "verify:example": "node tools/verify-vc.mjs credential/assertion-example-v3.json",
+    "build:nav": "node tools/sync-nav.mjs",
+    "build:search": "node tools/build-search-index.mjs",
+    "build": "npm run build:nav && npm run build:search",
+    "smoke": "playwright test tests/smoke.spec.mjs --reporter=list",
+    "audit": "playwright test tests/audit.spec.mjs --reporter=list",
+    "ci": "npm run build && playwright test --reporter=list",
     "test": "npm run verify:example"
   },
   "repository": {

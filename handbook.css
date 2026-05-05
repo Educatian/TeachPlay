@@ -121,6 +121,10 @@ a:hover { color: var(--crimson-dark); text-decoration: underline; }
   .tbl, .rubric-tbl, .traceability { display: block; overflow-x: auto; max-width: 100%; }
   /* Session-page figure images — clamp width strictly to viewport. */
   .asset-figure, .asset-figure__img { max-width: 100%; }
+  /* Defensive: clamp any phantom horizontal overflow (pseudo-elements,
+     transformed/translated decorative shapes). `clip` instead of `hidden`
+     so position:sticky still works for the handbook TOC. */
+  html, body { overflow-x: clip; }
 }
 
 /* ─── Role switch (instructor/student toggle) ────────────────── */

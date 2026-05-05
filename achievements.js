@@ -23,6 +23,9 @@
     { id: 'first_note',      emoji: '📝', title: 'Note-Taker',        desc: 'You added a note to a highlight.' },
     { id: 'curator',         emoji: '🎮', title: 'Curator',           desc: 'Visited five game examples.' },
     { id: 'spec_finisher',   emoji: '📐', title: 'Spec Finisher',     desc: 'Opened the implementation spec (Session 12).' },
+    { id: 'spot_the_loop',   emoji: '🎯', title: 'Loop Spotter',      desc: 'Got 3/3 on the Spot the Loop check.' },
+    { id: 'first_search',    emoji: '🔍', title: 'Searched',          desc: 'Used the handbook search box.' },
+    { id: 'handbook_reader', emoji: '📖', title: 'Source Reader',     desc: 'Opened the full v2 handbook page.' },
     { id: 'easter_konami',   emoji: '🥚', title: 'Konami',            desc: '↑↑↓↓←→←→ B A — you know your roots.' },
   ];
 
@@ -226,6 +229,38 @@
     });
   }
 
+  function trackSearch() {
+    // Hook into the search-box input. Once the user types ≥ 3 chars, unlock.
+    document.querySelectorAll('form.site-header__search input').forEach(function (input) {
+      var fired = false;
+      input.addEventListener('input', function () {
+        if (fired) return;
+        if ((input.value || '').trim().length >= 3) {
+          fired = true;
+          unlock('first_search');
+        }
+      });
+    });
+  }
+
+  function trackHandbookOpen() {
+    if (location.pathname.match(/\/handbook\.html$/)) unlock('handbook_reader');
+  }
+
+  function trackSpotTheLoop() {
+    // Spot the Loop card's score widget appears when answered=3.
+    // Watch for it, then check score.
+    var observer = new MutationObserver(function () {
+      var el = document.querySelector('.quickcheck__score [data-score]');
+      if (el && el.textContent.trim() === '3') {
+        unlock('spot_the_loop');
+        observer.disconnect();
+      }
+    });
+    var root = document.querySelector('[data-quickcheck]');
+    if (root) observer.observe(root, { childList: true, subtree: true, attributes: true });
+  }
+
   function trackKonami() {
     var seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
     var pos = 0;
@@ -247,6 +282,9 @@
     trackSessionVisit();
     trackHighlights();
     trackGameCardVisits();
+    trackSearch();
+    trackHandbookOpen();
+    trackSpotTheLoop();
     trackKonami();
   }
   if (document.readyState === 'loading') {

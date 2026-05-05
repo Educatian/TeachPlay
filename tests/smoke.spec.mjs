@@ -219,6 +219,25 @@ test('28. search dropdown surfaces matches across the site', async ({ page }) =>
   await expect(panel).toBeHidden();
 });
 
+test('31. achievements list grew to 12 with handbook + search + Spot the Loop', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  // Public API exposes the full list
+  const ids = await page.evaluate(() => window.hbAchievements.all().map(a => a.id));
+  expect(ids).toContain('first_search');
+  expect(ids).toContain('handbook_reader');
+  expect(ids).toContain('spot_the_loop');
+  expect(ids.length).toBeGreaterThanOrEqual(12);
+});
+
+test('32. opening handbook.html unlocks the handbook_reader achievement', async ({ page }) => {
+  await page.goto(BASE + '/handbook.html');
+  // The unlock happens at DOMContentLoaded init() — give it a moment.
+  await page.waitForFunction(
+    () => (JSON.parse(localStorage.getItem('hb:achievements') || '[]')).includes('handbook_reader'),
+    null, { timeout: 4000 }
+  );
+});
+
 test('30. search hits text inside figure captions (e.g. "v1 v2 v3")', async ({ page }) => {
   // session-10's figcaption mentions "v1 → v2 → v3" — only reachable if the
   // index now includes figcaption text.

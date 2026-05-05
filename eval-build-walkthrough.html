@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#be1a2f" />
 <title>TeachPlay × Qualtrics — Build Walkthrough</title>
 <style>
   :root {
@@ -444,6 +445,14 @@ should measure right now" list is 5–6.</p>
   </div>
 </div>
 
+<figure>
+  <img src="assets/generated/perception-efficacy-matrix.webp"
+       alt="Two perpendicular planes — cream and crimson — meeting at an axis with five marker points" class="bleed" />
+  <figcaption>Perception × efficacy quadrant. Five constructs land where the
+  in-app self-assessment doesn't already cover &mdash; that's the survey's
+  footprint.</figcaption>
+</figure>
+
 <!-- ===================== STEP 6 ===================== -->
 <h2 id="s6"><span class="step-no">Step 06</span> 22-item budget under reliability<span class="label">measurement</span></h2>
 
@@ -483,6 +492,14 @@ forms only.</p>
   Pilot N = 20–50 means α has wide CIs. Report α + 95% CI (Feldt 1965); defer
   CFA to cohort-2 pooled (N ≥ 150).
 </div>
+
+<figure>
+  <img src="assets/generated/item-budget-blocks.webp"
+       alt="Five rectangular cards laid in a row, each with a thin crimson left border and a faint pencil grid" class="bleed" />
+  <figcaption>Five blocks, 22 substantive items, every construct ≥ 3 to keep
+  alpha estimable. Pre/Post share AISE and Designer Identity wording so paired
+  d_z is interpretable.</figcaption>
+</figure>
 
 <!-- ===================== STEP 7 ===================== -->
 <h2 id="s7"><span class="step-no">Step 07</span> Anonymous demographics<span class="label">PII-free</span></h2>
@@ -622,6 +639,14 @@ verify SV_39sdRK7OVJvSiPk:
 </pre>
 
 <figure>
+  <img src="assets/generated/api-call-sequence.webp"
+       alt="Sequence diagram: a single point on the left fans into five rows of geometric nodes and converges to a single endpoint on the right" class="bleed" />
+  <figcaption>Twenty-nine API calls in order: one survey shell, six block adds,
+  twenty-two question adds, one flow PUT, one options PUT. SurveyID resolves
+  at call one and threads through all the rest.</figcaption>
+</figure>
+
+<figure>
   <img src="assets/generated/facilitator-studio.webp" alt="Facilitator studio illustration" class="bleed" />
   <figcaption>The instruments will land in the same operator surface that
   already runs cohort κ, funnel, and heatmap.</figcaption>
@@ -697,6 +722,14 @@ Verifying applied options...
   <code>PartialData</code>, etc. and 400s. The first attempt failed; the
   GET-merge-PUT pattern is now baked into the helper.
 </div>
+
+<figure>
+  <img src="assets/generated/theme-before-after.webp"
+       alt="Two smartphone mockups side by side — left is generic gray-and-blue, right is the same form re-themed in UA crimson on warm cream" class="bleed" />
+  <figcaption>Generic Qualtrics on the left; UA-themed on the right. Same
+  questions, same data, different signal &mdash; applied via PUT options,
+  not by re-creating the survey.</figcaption>
+</figure>
 
 <!-- ===================== STEP 11 ===================== -->
 <h2 id="s11"><span class="step-no">Step 11</span> Verify, ship, iterate<span class="label">handoff</span></h2>
