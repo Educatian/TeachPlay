@@ -203,6 +203,35 @@ test('16. 404.html serves and offers four quick-link cards', async ({ page }) =>
   await expect(page.locator('.card-grid .card')).toHaveCount(4);
 });
 
+test('28. search dropdown surfaces matches across the site', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  const input = page.locator('form.site-header__search input').first();
+  // Trigger fetch + type
+  await input.focus();
+  await input.fill('cognitive load');
+  // Wait for the debounced render
+  const panel = page.locator('.hb-search-results.is-open');
+  await expect(panel).toBeVisible({ timeout: 4000 });
+  // At least one result should be the dedicated cognitive-load page
+  await expect(panel.locator('a.hb-search-row[href="cognitive-load.html"]')).toHaveCount(1);
+  // Esc closes
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
+});
+
+test('29. search-index.json is served and contains every navigable page', async ({ request }) => {
+  const resp = await request.get(BASE + '/search-index.json');
+  expect(resp.status()).toBe(200);
+  const idx = await resp.json();
+  expect(Array.isArray(idx)).toBe(true);
+  expect(idx.length).toBeGreaterThan(20);
+  // Sanity-check a couple of expected pages
+  const urls = idx.map(e => e.url);
+  expect(urls).toContain('handbook.html');
+  expect(urls).toContain('cognitive-load.html');
+  expect(urls).toContain('references.html');
+});
+
 test('26. reading-time pill appears on long content pages', async ({ page }) => {
   await asLearner(page);
   await page.goto(BASE + '/session-03.html');

@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TeachPlay × Qualtrics — Build Walkthrough</title>
+<style>
+  :root {
+    --crimson: #9E1B32;
+    --crimson-dark: #7a0e1f;
+    --crimson-tint: #fbf6f7;
+    --ink: #2c2a29;
+    --muted: #6e6967;
+    --line: #ebe5e0;
+    --bg: #fefcfa;
+    --code-bg: #1f1d1c;
+    --code-fg: #f5efe9;
+    --code-comment: #8a8278;
+    --code-key: #e8b27d;
+    --code-str: #c2d6a8;
+    --prompt-bg: #fdf8f5;
+    --response-bg: #f5f2ef;
+    --result-bg: #1a1816;
+    --result-fg: #c8e6a0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  code, pre, .mono { font-family: 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace; }
+
+  /* ----------- HERO ----------- */
+  .hero {
+    background: linear-gradient(135deg, #1a0a0d 0%, #4a0d18 60%, var(--crimson) 100%);
+    color: #fefcfa;
+    padding: 64px 8% 80px;
+    border-bottom: 6px solid var(--crimson);
+  }
+  .hero .kicker {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #f3c8d0; font-weight: 700; margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 44px; line-height: 1.1; margin: 0 0 14px; font-weight: 800;
+    max-width: 760px;
+  }
+  .hero .lede {
+    font-size: 18px; color: #f3e8ea; max-width: 680px; line-height: 1.5;
+  }
+  .hero .meta {
+    margin-top: 28px; font-size: 12px; letter-spacing: 0.04em;
+    color: #d8b6bd;
+  }
+  .hero .meta b { color: #f9e8eb; font-weight: 600; }
+
+  /* ----------- LAYOUT ----------- */
+  .wrap { display: grid; grid-template-columns: 240px 1fr; max-width: 1200px;
+          margin: 0 auto; gap: 36px; padding: 36px 24px 96px; }
+  @media (max-width: 880px) { .wrap { grid-template-columns: 1fr; } }
+
+  /* ----------- TOC ----------- */
+  nav.toc {
+    position: sticky; top: 24px; align-self: start;
+    border-left: 3px solid var(--crimson);
+    padding: 4px 0 4px 14px;
+    font-size: 13px; line-height: 1.4;
+  }
+  nav.toc .toc-h {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--crimson); font-weight: 700; margin-bottom: 12px;
+  }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: tn; }
+  nav.toc li { padding: 4px 0; counter-increment: tn; }
+  nav.toc li::before {
+    content: counter(tn, decimal-leading-zero);
+    color: var(--muted); font-size: 10px; margin-right: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  nav.toc a { color: var(--ink); text-decoration: none; }
+  nav.toc a:hover { color: var(--crimson); }
+  @media (max-width: 880px) { nav.toc { position: static; } }
+
+  /* ----------- MAIN ----------- */
+  main { min-width: 0; }
+  main h2 {
+    font-size: 28px; line-height: 1.2; margin: 56px 0 6px;
+    border-top: 1px solid var(--line); padding-top: 36px;
+  }
+  main h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+  main h2 .step-no {
+    display: inline-block;
+    color: var(--crimson); font-weight: 800;
+    font-size: 13px; letter-spacing: 0.1em;
+    margin-right: 12px; vertical-align: middle;
+    text-transform: uppercase;
+  }
+  main h2 .label {
+    display: inline-block; font-size: 14px; font-weight: 600;
+    color: var(--muted); letter-spacing: 0.04em; margin-left: 10px;
+    vertical-align: middle;
+  }
+  main h3 {
+    font-size: 17px; margin: 26px 0 10px; color: var(--ink);
+  }
+  main p { margin: 8px 0 14px; }
+  main ul, main ol { padding-left: 22px; }
+  main li { margin: 4px 0; }
+  main img.bleed {
+    width: 100%; border-radius: 8px; margin: 18px 0 6px;
+    box-shadow: 0 6px 24px rgba(28,16,18,0.10);
+    border: 1px solid var(--line);
+  }
+  main img.cap-img { width: 100%; border-radius: 6px; border: 1px solid var(--line); }
+  main figure { margin: 18px 0; }
+  main figure figcaption {
+    font-size: 12px; color: var(--muted); margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ----------- TIKI-TAKA BLOCKS ----------- */
+  .turn {
+    border-radius: 8px; padding: 14px 18px 4px; margin: 14px 0;
+    border: 1px solid var(--line);
+  }
+  .turn .who {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.16em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .turn.user-q {
+    background: var(--prompt-bg);
+    border-left: 4px solid var(--crimson);
+  }
+  .turn.user-q .who { color: var(--crimson); }
+  .turn.cc-a {
+    background: var(--response-bg);
+    border-left: 4px solid #4a6b78;
+  }
+  .turn.cc-a .who { color: #4a6b78; }
+  .turn .body p:first-child { margin-top: 4px; }
+  .turn .body p:last-child { margin-bottom: 12px; }
+  .turn .body code { font-size: 13px; background: rgba(0,0,0,0.04); padding: 1px 5px; border-radius: 3px; }
+
+  /* ----------- CODE BLOCKS ----------- */
+  pre.code {
+    background: var(--code-bg); color: var(--code-fg);
+    padding: 14px 18px; border-radius: 8px; overflow-x: auto;
+    font-size: 13px; line-height: 1.55; margin: 12px 0;
+    border: 1px solid #2c2826;
+  }
+  pre.code .c { color: var(--code-comment); font-style: italic; }
+  pre.code .k { color: var(--code-key); }
+  pre.code .s { color: var(--code-str); }
+  pre.code .lab {
+    display: block; font-size: 9px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--code-comment);
+    margin-bottom: 8px; font-weight: 700;
+  }
+
+  pre.result {
+    background: var(--result-bg); color: var(--result-fg);
+    padding: 14px 18px; border-radius: 8px; overflow-x: auto;
+    font-size: 12px; line-height: 1.55; margin: 12px 0;
+    border-left: 3px solid #5a7a3a;
+  }
+  pre.result .lab {
+    display: block; font-size: 9px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: #6a8a4a;
+    margin-bottom: 8px; font-weight: 700;
+  }
+
+  /* ----------- TABLES ----------- */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0;
+          font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px;
+           border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--crimson-tint); color: var(--ink);
+       font-weight: 600; font-size: 12px;
+       letter-spacing: 0.04em; text-transform: uppercase; }
+  td.tight { white-space: nowrap; font-family: 'SF Mono', Menlo, Consolas, monospace;
+             font-size: 12px; color: var(--muted); }
+
+  /* ----------- BADGES ----------- */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+    margin-right: 4px;
+  }
+  .badge.ok { background: #e0eedb; color: #3e6326; }
+  .badge.warn { background: #fbe8d2; color: #8a4a10; }
+  .badge.bad { background: #f5d5d8; color: #8a1a26; }
+
+  /* ----------- CALLOUT ----------- */
+  .callout {
+    background: var(--crimson-tint);
+    border-left: 4px solid var(--crimson);
+    padding: 12px 16px; border-radius: 4px; margin: 18px 0;
+    font-size: 14px;
+  }
+  .callout b { color: var(--crimson); }
+
+  .lede-img-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    margin: 14px 0;
+  }
+  @media (max-width: 600px) { .lede-img-row { grid-template-columns: 1fr; } }
+
+  footer {
+    border-top: 1px solid var(--line); padding: 28px 8%;
+    color: var(--muted); font-size: 12px; line-height: 1.5;
+    background: #faf6f2;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker">TeachPlay · Operator Walkthrough</div>
+  <h1>Building a perception × efficacy survey on Qualtrics, end to end</h1>
+  <p class="lede">
+    A tiki-taka transcript: every prompt, every Claude Code reply, every
+    artifact &mdash; in the order it actually happened. Eleven steps from
+    "can the API even do this?" to two themed surveys sitting in UA Qualtrics
+    waiting for IRB sign-off.
+  </p>
+  <div class="meta">
+    <b>For:</b> AI-Enhanced Educational Game Design microcredential
+    &nbsp;·&nbsp; <b>Tooling:</b> Claude Code CLI &nbsp;·&nbsp;
+    <b>Stack:</b> Python · Qualtrics v3 REST · UA pdx1 datacenter
+    &nbsp;·&nbsp; <b>Output:</b> Pre 20 + Post 22 items, isActive=false
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <div class="toc-h">Steps</div>
+  <ol>
+    <li><a href="#s1">API capability</a></li>
+    <li><a href="#s2">Token + auth</a></li>
+    <li><a href="#s3">Context recon</a></li>
+    <li><a href="#s4">Field gap mapping</a></li>
+    <li><a href="#s5">Construct selection</a></li>
+    <li><a href="#s6">22-item budget</a></li>
+    <li><a href="#s7">Demographics</a></li>
+    <li><a href="#s8">IRB protocol check</a></li>
+    <li><a href="#s9">Build the surveys</a></li>
+    <li><a href="#s10">Theme &amp; branding</a></li>
+    <li><a href="#s11">Verify, ship, iterate</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ===================== STEP 1 ===================== -->
+<h2 id="s1"><span class="step-no">Step 01</span> Can Qualtrics actually do this? <span class="label">capability scoping</span></h2>
+
+<p>Before writing code, confirm the surface area. The Qualtrics v3 REST API
+exposes survey-definition / blocks / questions / flow / distributions / export
+endpoints &mdash; meaning a fully programmatic Pre/Post pipeline is on the
+table.</p>
+
+<div class="turn user-q">
+  <div class="who">User → Claude Code</div>
+  <div class="body"><p>qualtricsAPI로 서베이제작 가능한지 봐봐</p></div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who">Claude Code → User</div>
+  <div class="body">
+    <p>Yes. Eight core endpoints cover create / blocks / questions / flow /
+    options / activate / distributions / export. Auth = <code>X-API-TOKEN</code>
+    header, base URL <code>https://{datacenter}.qualtrics.com/API/v3</code>.
+    Practical pattern: build a master in the UI, <code>GET</code> the JSON,
+    then <em>POST</em> variants from that template &mdash; safer than authoring
+    Matrix / Side-by-Side payloads from scratch.</p>
+  </div>
+</div>
+
+<figure>
+  <img src="screenshots/resources-hero2.png" alt="TeachPlay landing — anchor for the program scope" class="bleed" />
+  <figcaption>The handbook the surveys will measure: 12 sessions, 5 deliverables,
+  one Proficient floor &mdash; teachplay.dev.</figcaption>
+</figure>
+
+<!-- ===================== STEP 2 ===================== -->
+<h2 id="s2"><span class="step-no">Step 02</span> Token + datacenter<span class="label">auth</span></h2>
+
+<p>UA Qualtrics keeps the token + datacenter on the IDs page
+(<i>Account Settings → Qualtrics IDs → API</i>). Save the export to a local
+text file; never paste it into chat. The CLI reads it from disk.</p>
+
+<div class="turn user-q">
+  <div class="who">User → Claude Code</div>
+  <div class="body"><p>"C:\Users\jewoo\Desktop\qualtrics-token.txt" includes id and token</p></div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who">Claude Code → User</div>
+  <div class="body">
+    <p>Read the file. The line starts with <code>Token&lt;TAB&gt;...</code>
+    so split on whitespace, take field 2. Verify against
+    <code>GET /API/v3/whoami</code> before doing anything destructive.</p>
+  </div>
+</div>
+
+<pre class="code"><span class="lab">PowerShell · whoami probe</span>$line  = (Get-Content "C:\Users\jewoo\Desktop\qualtrics-token.txt" `
+          | Where-Object { $_ -match "^Token\s" })
+$token = ($line -split "\s+", 2)[1].Trim()
+Invoke-RestMethod `
+  -Uri "https://pdx1.qualtrics.com/API/v3/whoami" `
+  -Headers @{"X-API-TOKEN" = $token}
+</pre>
+
+<pre class="result"><span class="lab">Result</span>brandId     : universityofalabama
+userId      : UR_2se6qQmGfufO8Em
+userName    : jmoon19#universityofalabama
+firstName   : Jewoong   /   lastName : Moon
+email       : jmoon19@ua.edu
+datacenter  : az1
+</pre>
+
+<div class="callout">
+  <b>Note.</b> The IDs page lists <code>pdx1</code>; <code>whoami</code> reports
+  <code>az1</code>. Both route. Stick with <code>pdx1</code> &mdash; the
+  documented one.
+</div>
+
+<!-- ===================== STEP 3 ===================== -->
+<h2 id="s3"><span class="step-no">Step 03</span> Recon the host project<span class="label">context-first</span></h2>
+
+<p>Don't design instruments in the abstract. Read the program first &mdash;
+its hypotheses, its existing in-app measures, its IRB posture &mdash; so the
+new survey covers <em>only what the in-app instruments can't</em>.</p>
+
+<div class="turn user-q">
+  <div class="who">User → Claude Code</div>
+  <div class="body"><p>teachplay 프로젝트 파악하고 거기에 붙이기</p></div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who">Claude Code → User</div>
+  <div class="body">
+    <p>Pulled four anchors:</p>
+    <ul>
+      <li>Vault entity pages: <code>AI Microcredential GameDesign</code>,
+        <code>ACHE Microcredential</code>, <code>IRB Studies Portfolio</code>.</li>
+      <li>Repo at <code>Desktop\_projects\TeachPlay</code> — Cloudflare Pages
+        static, D1 SQLite, OBv3 / VC2.0 / CLR2.0 / xAPI live.</li>
+      <li>L3 evaluation plan (<code>docs/L3-evaluation-plan.md</code>) names
+        EQ1–EQ5 and lists what's already wired vs. still to build.</li>
+      <li>IRB: <code>HRP-503a</code> R3 active; HRP-502 consent R4.</li>
+    </ul>
+    <p>Already in-app: pre/post 8-skill self-assessment, exit tickets,
+    25-criterion rubric, κ panel, funnel, skills-growth heatmap. The Qualtrics
+    layer needs to cover the gaps the in-app stream doesn't reach.</p>
+  </div>
+</div>
+
+<figure>
+  <img src="screenshots/s01-desktop.jpg" alt="TeachPlay sidebar showing the 12-session structure" class="bleed" />
+  <figcaption>The 12-session left rail. Whatever survey we build has to
+  answer to <em>this</em> structure, not a generic PD template.</figcaption>
+</figure>
+
+<!-- ===================== STEP 4 ===================== -->
+<h2 id="s4"><span class="step-no">Step 04</span> Field-gap mapping<span class="label">research design</span></h2>
+
+<p>The honest version of "this field hasn't measured X" is a small table.
+Anything already in-app gets crossed off. Anything covered by literature but
+absent from the program plan becomes a candidate.</p>
+
+<div class="turn user-q">
+  <div class="who">User → Claude Code</div>
+  <div class="body"><p>이쪽 필드 연구에서 아직 안해본, 그런데 필요한 것들 수집하고 싶음. 일단 usability survey는 넣어야겠고</p></div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who">Claude Code → User</div>
+  <div class="body">
+    <p>Mapped the 4-way intersection &mdash; microcredential × teacher PD ×
+    AI in education × game-design pedagogy &mdash; against published
+    short-form scales:</p>
+  </div>
+</div>
+
+<table>
+<thead><tr><th>Construct</th><th>Why a gap</th><th>Short form</th></tr></thead>
+<tbody>
+  <tr><td>Usability (program-level)</td><td>SUS-10 too generic; 3-surface app needs targeted measure</td><td>UMUX (Lewis 2013)</td></tr>
+  <tr><td>AI literacy + AI-use SE</td><td>TeachPlay <em>is</em> AI; existing self-assess covers design only</td><td>Bandura task-specific + Wang 2023</td></tr>
+  <tr><td>AI over-reliance / authorship</td><td>Negative-space rubric exists; self-report doesn't</td><td>Buçinca 2021 pattern</td></tr>
+  <tr><td>Credential value (signal/social/economic)</td><td>Microcredential lit's chronic gap</td><td>Phillips &amp; Cohen 2023 MVS</td></tr>
+  <tr><td>Designer identity + agency</td><td>Game-design pedagogy outcome rarely measured in PD</td><td>Kafai &amp; Fields 2018</td></tr>
+  <tr><td>Equity-conscious design intent</td><td>UDL crosswalk exists; intent unmeasured</td><td>self-built + vignette</td></tr>
+  <tr><td>Teaching efficacy contagion</td><td>"My students will engage with what I designed" rarely captured</td><td>TSES adapted</td></tr>
+</tbody>
+</table>
+
+<figure>
+  <img src="assets/generated/alignment-coverage-matrix.webp" alt="Alignment coverage matrix illustration" class="bleed" />
+  <figcaption>Coverage matrices like this are how the L3 plan's EQ1–EQ5 keep
+  honest about what's measured vs. what's claimed.</figcaption>
+</figure>
+
+<!-- ===================== STEP 5 ===================== -->
+<h2 id="s5"><span class="step-no">Step 05</span> Narrow to perception × efficacy<span class="label">scope discipline</span></h2>
+
+<p>The "everything we could measure" list has 40+ items. The "what we
+should measure right now" list is 5–6.</p>
+
+<div class="turn user-q">
+  <div class="who">User → Claude Code</div>
+  <div class="body"><p>너무 과한것 말고 현제는 perception efficacy 위주로</p></div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who">Claude Code → User</div>
+  <div class="body">
+    <p>Two-axis frame:</p>
+    <ul>
+      <li><b>Perception</b> &mdash; usability, credential value, designer identity.</li>
+      <li><b>Efficacy</b> &mdash; AI-use self-efficacy, teaching efficacy contagion.</li>
+    </ul>
+    <p>Demographics live in the Pre as a separate, non-substantive block so
+    they don't compete with the construct items for attention.</p>
+  </div>
+</div>
+
+<!-- ===================== STEP 6 ===================== -->
+<h2 id="s6"><span class="step-no">Step 06</span> 22-item budget under reliability<span class="label">measurement</span></h2>
+
+<p>The hard constraint: keep Cronbach's α and McDonald's ω
+estimable, paired-Δ analysis valid, and fit inside ~6 minutes.
+Rule: every construct ≥ 3 items (Hair 2019); use validated short
+forms only.</p>
+
+<div class="turn user-q">
+  <div class="who">User → Claude Code</div>
+  <div class="body"><p>22개 reliability나 통계적 가정 벗어나지 않은 수준에서</p></div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who">Claude Code → User</div>
+  <div class="body">
+    <p>Composition that fits 22 substantive items + 4 tag/demographic items
+    while keeping every construct ≥ 3:</p>
+  </div>
+</div>
+
+<table>
+<thead><tr><th>Block</th><th>Items</th><th>α reported</th><th>Why</th></tr></thead>
+<tbody>
+  <tr><td>UMUX usability</td><td>4</td><td>.79–.83</td><td>SUS proxy at 4 items; r ≈ .80 with SUS-10 (Lewis 2013)</td></tr>
+  <tr><td>AI-use Self-Efficacy</td><td>4</td><td>.84+</td><td>Pre/Post identical wording → paired d_z</td></tr>
+  <tr><td>Credential value (single composite)</td><td>4</td><td>.78+</td><td>3-factor needs 9 items; pilot can't carry</td></tr>
+  <tr><td>Designer Identity</td><td>4</td><td>.85</td><td>Pre/Post identical → paired d_z</td></tr>
+  <tr><td>Teaching Efficacy Contagion</td><td>3</td><td>.80+</td><td>Post-only (no baseline frame)</td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+  Pilot N = 20–50 means α has wide CIs. Report α + 95% CI (Feldt 1965); defer
+  CFA to cohort-2 pooled (N ≥ 150).
+</div>
+
+<!-- ===================== STEP 7 ===================== -->
+<h2 id="s7"><span class="step-no">Step 07</span> Anonymous demographics<span class="label">PII-free</span></h2>
+
+<p>EQ3 (equity) needs subgroup data. The L3 plan's stance: collect minimum,
+opt-in for sensitive items, never break out cells with n &lt; 10.</p>
+
+<div class="turn user-q">
+  <div class="who">User → Claude Code</div>
+  <div class="body"><p>이름 신상명세 묻지 않는 demographic survey도. grade level, gender, profession types.</p></div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who">Claude Code → User</div>
+  <div class="body">
+    <p>Eight blocks, zero PII. Pairing handled by a self-generated 4-character
+    code — mother's first letter + birth-month 2 digits + favorite-color first
+    letter (e.g. <code>K07B</code>). Mavros 2018 pattern; expected pairing
+    rate 70–90 %.</p>
+  </div>
+</div>
+
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Note</th></tr></thead>
+<tbody>
+  <tr><td>D0 matching code</td><td>4-char text</td><td>self-rule, PII-free</td></tr>
+  <tr><td>D1 profession</td><td>single-select</td><td>pre-service / K-5 / 6-8 / 9-12 / higher-ed / LXD / admin / other / PNTS</td></tr>
+  <tr><td>D2 grade level</td><td>multi-select</td><td>PreK–K, 1-2, 3-5, 6-8, 9-12, higher-ed, adult, not teaching, PNTS</td></tr>
+  <tr><td>D3 gender</td><td>single-select</td><td>woman / man / non-binary / self-describe (no PII) / PNTS</td></tr>
+  <tr><td>D4 subject</td><td>multi-select</td><td>ELA / math / sci-STEM / social / CS / arts / SpEd / multi / other / PNTS</td></tr>
+  <tr><td>D5 years teaching</td><td>bucketed</td><td>0 / 1-3 / 4-9 / 10-19 / 20+ / PNTS</td></tr>
+  <tr><td>D6 institution</td><td>single-select</td><td>public / private / charter / higher-ed / non-school / PNTS</td></tr>
+  <tr><td>D7 race / ethnicity</td><td>opt-in multi</td><td>IPEDS, default unselected, n ≥ 10 cell rule on reporting</td></tr>
+</tbody>
+</table>
+
+<!-- ===================== STEP 8 ===================== -->
+<h2 id="s8"><span class="step-no">Step 08</span> IRB protocol check<span class="label">compliance</span></h2>
+
+<p>Before issuing a single API call, confirm that the active IRB protocol
+(<code>HRP-503a</code> R3) authorizes the instruments. The protocol lives
+as a <code>.docx</code>, so extract its text without a Word install.</p>
+
+<pre class="code"><span class="lab">Python · zip+XML extraction (no python-docx needed)</span>import zipfile, xml.etree.ElementTree as ET
+NS = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
+z   = zipfile.ZipFile(r'...HRP-503a...R3.docx')
+root = ET.fromstring(z.read('word/document.xml'))
+for p in root.iter(NS + 'p'):
+    print(''.join(t.text or '' for t in p.iter(NS + 't')))
+</pre>
+
+<pre class="result"><span class="lab">Result · what R3 explicitly authorizes</span>✓ "Pre/post project surveys (UA Qualtrics)" · confidence in AI tool use
+✓ "Demographic survey"
+✓ "Usability logs" / structured rubric
+△ H4 "perceived effectiveness for classroom-relevant gamelets"
+✗ Credential value perception        (NOT named)
+✗ Designer identity                  (NOT named)
+</pre>
+
+<div class="callout">
+  <b>Decision:</b> Build all 22 + 20 items. Keep <code>isActive=false</code>
+  until R4 amendment is filed for Credential Value + Designer Identity (and
+  Teaching Efficacy Contagion is named explicitly).
+</div>
+
+<!-- ===================== STEP 9 ===================== -->
+<h2 id="s9"><span class="step-no">Step 09</span> Build the surveys<span class="label">code + API</span></h2>
+
+<p>Three Python files. <code>qualtrics_helper.py</code> wraps the API.
+<code>instruments.py</code> holds every wording in one place &mdash; the
+editable surface. <code>build_surveys.py</code> orchestrates POSTs in the
+right order.</p>
+
+<div class="turn user-q">
+  <div class="who">User → Claude Code</div>
+  <div class="body"><p>응 진행</p></div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who">Claude Code → User</div>
+  <div class="body">
+    <p>TaskCreate × 5 (IRB extract → helper → post → pre → verify). Wrote
+    files. First Post build hit a 400 on <code>T2_hours_actual</code>
+    (numeric validation schema mismatch). Pivoted that one item to bucketed
+    <code>mc_single</code> (less than 18 / 18-30 / 31-42 / 43-54 / 54+ /
+    don't remember) and resumed on the same SurveyID rather than re-creating.</p>
+  </div>
+</div>
+
+<pre class="code"><span class="lab">qualtrics_helper.py · payload builder shape</span>def likert_agree(text, tag, force=True):
+    return {
+        "QuestionText": text,
+        "DataExportTag": tag,
+        "QuestionType": "MC",
+        "Selector": "SAVR",          # single-answer vertical radio
+        "SubSelector": "TX",
+        "Choices": LIKERT_5_AGREE,    # Strongly disagree → Strongly agree
+        "ChoiceOrder": ["1","2","3","4","5"],
+        "Validation": {"Settings": {"ForceResponse": "ON" if force else "OFF",
+                                     "Type": "None"}},
+    }
+</pre>
+
+<pre class="code"><span class="lab">build_surveys.py · POST sequence</span>sv = client.create_survey("TeachPlay Post-Program Survey", language="EN")
+survey_id, default_block = sv["SurveyID"], sv["DefaultBlockID"]
+
+# Tag block (3 items)
+client.add_question(survey_id, qh.text_entry(t0_text, "T0_match_code", True), default_block)
+add_dynamic_block(client, survey_id, default_block, TAG_ITEMS_POST[1:])  # T1, T2
+
+# Construct blocks
+b_umux = client.add_block(survey_id, "1_Usability_UMUX")
+add_likert_block(client, survey_id, b_umux, UMUX, "agree")
+b_aise = client.add_block(survey_id, "2_AI_Use_Self_Efficacy")
+add_likert_block(client, survey_id, b_aise, AI_SE, "confidence")
+# ... CredValue, DesignerID, TSEContagion
+
+# Survey Flow w/ cohort EmbeddedData (URL param)
+client.set_flow(survey_id, cohort_flow(survey_id, default_block,
+                                       [b_umux, b_aise, b_cv, b_di, b_tse]))
+</pre>
+
+<pre class="result"><span class="lab">Result · two surveys live, inactive</span>POST  → SV_39sdRK7OVJvSiPk   (Post · 22 items · Inactive)
+POST  → SV_9QtpyWbqTypaFls   (Pre  · 20 items · Inactive)
+
+verify SV_39sdRK7OVJvSiPk:
+  block_count       7  (Default + Trash + 5 added)
+  question_count    22
+  data_export_tags  T0..T2 / UMUX_1..4 / AISE_1..4 / CV_1..4 / DI_1..4 / TSE_1..3
+</pre>
+
+<figure>
+  <img src="assets/generated/facilitator-studio.webp" alt="Facilitator studio illustration" class="bleed" />
+  <figcaption>The instruments will land in the same operator surface that
+  already runs cohort κ, funnel, and heatmap.</figcaption>
+</figure>
+
+<!-- ===================== STEP 10 ===================== -->
+<h2 id="s10"><span class="step-no">Step 10</span> Theme it <em>like the rest of the program</em><span class="label">branding</span></h2>
+
+<p>The handbook is UA Crimson #9E1B32 with Inter typography. The Qualtrics
+surveys should look like the same project, not a generic data-collection
+form. <code>PUT /survey-definitions/{id}/options</code> is full-replace, so
+GET → merge → PUT.</p>
+
+<div class="turn user-q">
+  <div class="who">User → Claude Code</div>
+  <div class="body"><p>이쁘게 만들어줄수도 있어? 테마적용해서 프로처럼</p></div>
+</div>
+
+<div class="turn cc-a">
+  <div class="who">Claude Code → User</div>
+  <div class="body">
+    <p>Layered TeachPlay branding on top of the auto-applied UA brand skin
+    (<code>SkinLibrary: universityofalabama</code>). Inline <code>&lt;style&gt;</code>
+    in the Header field overrides Crimson, Inter, button radius, hover state,
+    progress bar fill, accent border on hover. Footer carries IRB attribution.</p>
+  </div>
+</div>
+
+<pre class="code"><span class="lab">qualtrics_helper.py · theme options</span>def teachplay_theme_options(survey_title):
+    css = ("&lt;style&gt;"
+        "body, .Skin { font-family: 'Inter', system-ui, sans-serif !important; }"
+        ".Skin .ButtonNext, .Skin .ButtonSubmit {"
+        "  background: #9E1B32 !important; border-color: #9E1B32 !important;"
+        "  border-radius: 4px !important; }"
+        ".Skin .ProgressBarFill { background: #9E1B32 !important; }"
+        ".Skin .QuestionOuter:hover { background: #fbf7f8 !important; }"
+        "&lt;/style&gt;")
+    header = css + "&lt;div ...crimson left-border block, TeachPlay wordmark...&gt;"
+    footer = "&lt;div ...IRB attribution...&gt;"
+    return {
+        "BackButton": "true",
+        "SaveAndContinue": "true",
+        "BallotBoxStuffingPrevention": "true",
+        "ProgressBarDisplay": "VerboseText",
+        "Header": header,
+        "Footer": footer,
+        "SurveyTitle": survey_title,
+        ...
+    }
+</pre>
+
+<pre class="code"><span class="lab">apply_theme.py · GET-merge-PUT (idempotent)</span>for role, (sv_id, title) in SURVEYS.items():
+    current = c._req("GET",  f"/survey-definitions/{sv_id}/options")["result"]
+    merged  = {**current, **qh.teachplay_theme_options(survey_title=title)}
+    c._req("PUT", f"/survey-definitions/{sv_id}/options", json=merged)
+</pre>
+
+<pre class="result"><span class="lab">Result</span>post   SV_39sdRK7OVJvSiPk   → 200 OK
+pre    SV_9QtpyWbqTypaFls   → 200 OK
+
+Verifying applied options...
+  post   ProgressBar=VerboseText  BackButton=true  BallotBox=true  Header=set
+  pre    ProgressBar=VerboseText  BackButton=true  BallotBox=true  Header=set
+</pre>
+
+<div class="callout">
+  <b>Lesson:</b> Qualtrics' <code>PUT options</code> is full-replace, not
+  partial. Forgetting to GET first drops <code>SurveyProtection</code>,
+  <code>PartialData</code>, etc. and 400s. The first attempt failed; the
+  GET-merge-PUT pattern is now baked into the helper.
+</div>
+
+<!-- ===================== STEP 11 ===================== -->
+<h2 id="s11"><span class="step-no">Step 11</span> Verify, ship, iterate<span class="label">handoff</span></h2>
+
+<p>Two surveys, themed, inactive. The remaining work is human, not API.</p>
+
+<table>
+<thead><tr><th>Action</th><th>Owner</th><th>When</th></tr></thead>
+<tbody>
+  <tr><td>UI preview (desktop + mobile)</td><td>PI</td><td>Now</td></tr>
+  <tr><td>R4 amendment: Credential Value + Designer Identity (+ name TSE Contagion)</td><td>PI</td><td>Before activation</td></tr>
+  <tr><td><code>set_active(sv, True)</code></td><td>PI</td><td>After R4 approval</td></tr>
+  <tr><td>Cohort link: <code>?cohort=2026-spring</code></td><td>PI</td><td>At cohort enrollment</td></tr>
+  <tr><td>Cohort 1 close → export → α + paired d_z</td><td>RA + PI</td><td>+30 days</td></tr>
+  <tr><td>If matching-code pair rate &lt; 70%, revise prompt for cohort 2</td><td>RA</td><td>Cohort 2 launch</td></tr>
+  <tr><td>Cohort 2-3 pool (N ≥ 150) → CFA on Credential Value 3-factor</td><td>PI</td><td>Year 2</td></tr>
+</tbody>
+</table>
+
+<figure>
+  <img src="assets/generated/s12-learner-loop.png" alt="Learner loop diagram from session 12" class="bleed" />
+  <figcaption>Session 12 closes the learner loop &mdash; which is also when
+  the Post survey lands. The Pre fires in Session 1.</figcaption>
+</figure>
+
+<h3>Files in this build</h3>
+<table>
+<thead><tr><th>Path</th><th>Role</th></tr></thead>
+<tbody>
+  <tr><td class="tight">eval/qualtrics_helper.py</td><td>API client + payload builders + theme</td></tr>
+  <tr><td class="tight">eval/instruments.py</td><td>All wording + tags (the editable surface)</td></tr>
+  <tr><td class="tight">eval/build_surveys.py</td><td>Entry point: post / pre / both / verify</td></tr>
+  <tr><td class="tight">eval/apply_theme.py</td><td>Idempotent themer</td></tr>
+  <tr><td class="tight">eval/_created_surveys.json</td><td>SurveyIDs + block IDs (generated)</td></tr>
+  <tr><td class="tight">eval/README.md</td><td>Operator reference (this file's denser cousin)</td></tr>
+  <tr><td class="tight">25_Service/IRB/TeachPlay/extracted/R3_protocol.txt</td><td>R3 plain-text dump for amendment drafting</td></tr>
+</tbody>
+</table>
+
+<h3>Two failure modes worth remembering</h3>
+<ul>
+  <li><code>numeric_entry</code> 400 &mdash; Qualtrics' <code>ValidNumber</code>
+    schema rejects what looks like a clean payload. Workaround: bucketed
+    <code>mc_single</code>. To fix properly, build a UI survey with the
+    validation you want, <code>GET /survey-definitions/{id}</code>, copy the
+    Validation block verbatim.</li>
+  <li><code>DELETE /surveys/{id}</code> denied by harness without explicit
+    user authorization. Plan for it: don't create throwaway shells through
+    the API. If you do, clean up in the UI.</li>
+</ul>
+
+<div class="callout">
+  <b>The point.</b> Eleven prompts, two surveys, 22 + 20 items, fully themed,
+  IRB-aware, paired-Δ ready. The instruments don't measure what the in-app
+  stream already covers; they cover the field gaps the L3 plan named
+  explicitly. Activation is the next human gate, not the next code gate.
+</div>
+
+</main>
+</div>
+
+<footer>
+  TeachPlay × Qualtrics build walkthrough &middot; The University of Alabama,
+  College of Education &middot; Generated 2026-05-05 &middot; All operator
+  steps reproduced from the actual Claude Code session that built
+  <code>SV_9QtpyWbqTypaFls</code> and <code>SV_39sdRK7OVJvSiPk</code>.
+</footer>
+
+</body>
+</html>
