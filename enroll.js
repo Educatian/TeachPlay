@@ -13,6 +13,9 @@
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
   function xapiPost(payload) {
+    // Admin preview mode (set by admin-gate.js) browses sessions without
+    // generating real telemetry. Short-circuit before the network call.
+    try { if (localStorage.getItem('hb:admin') === '1') return; } catch (_) {}
     fetch('/api/xapi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -136,6 +136,11 @@
   let flushTimer = null;
   async function flush() {
     if (!CONFIG.endpoint) return;
+    // Admin preview mode (set by admin-gate.js) browses sessions without
+    // generating real telemetry. Drop the queue so it doesn't accumulate.
+    try {
+      if (localStorage.getItem('hb:admin') === '1') { writeQueue([]); return; }
+    } catch (_) {}
     const q = readQueue();
     if (!q.length) return;
     try {
