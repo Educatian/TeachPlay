@@ -173,6 +173,36 @@ test('9. annotation Markdown export downloads a file with notes inline', async (
   expect(content).toContain('Watch for the speed-run gate.');
 });
 
+test('14. back-to-top button hides initially, appears after scroll, scrolls page back', async ({ page }) => {
+  await asLearner(page);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto(BASE + '/rubrics.html');
+  const btn = page.locator('.hb-totop');
+  await expect(btn).toHaveCount(1);
+  // Initially hidden (not in is-on state)
+  await expect(btn).not.toHaveClass(/is-on/);
+  // Scroll down past 600px → button appears
+  await page.evaluate(() => window.scrollTo(0, 1500));
+  await expect(btn).toHaveClass(/is-on/);
+  await btn.click();
+  // After click, smooth scroll resolves; give it a beat then assert near top
+  await page.waitForFunction(() => window.scrollY < 50, null, { timeout: 4000 });
+});
+
+test('15. theme-color meta is set on every page sample', async ({ page }) => {
+  for (const path of ['/index.html', '/rubrics.html', '/session-03.html', '/404.html']) {
+    await page.goto(BASE + path);
+    const v = await page.locator('meta[name="theme-color"]').first().getAttribute('content');
+    expect(v).toBe('#be1a2f');
+  }
+});
+
+test('16. 404.html serves and offers four quick-link cards', async ({ page }) => {
+  await page.goto(BASE + '/404.html');
+  await expect(page.locator('h1.hero__title')).toContainText("compile");
+  await expect(page.locator('.card-grid .card')).toHaveCount(4);
+});
+
 test('11. examples.html renders 3 worked-example figures (D2 / D3 / D5)', async ({ page }) => {
   await page.goto(BASE + '/examples.html');
   // Expect three new asset-figure images at the top of the artifact preview.
