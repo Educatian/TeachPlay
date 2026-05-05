@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#be1a2f" />
+<title>The Full Handbook (v2) · AI-enhanced Educational Game Design</title>
+<meta name="description" content="The complete v2 handbook for the AI-enhanced Educational Game Design micro-credential — foundations, design toolkits, twelve-session delivery, per-deliverable rubrics, operations, and references. Browseable inline, downloadable as Markdown." />
+<link rel="canonical" href="https://teachplay.dev/handbook.html" />
+<link rel="icon" type="image/svg+xml" href="credential/badge.svg" />
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  /* Layout: sticky TOC on the left, prose on the right */
+  .hb-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 36px; max-width: 1200px; margin: 0 auto; padding: 32px 36px 64px; }
+  @media (max-width: 1000px) { .hb-layout { grid-template-columns: 1fr; padding: 24px; } }
+
+  .hb-toc {
+    position: sticky; top: 24px; align-self: start;
+    max-height: calc(100vh - 48px); overflow-y: auto;
+    font-size: 13px; line-height: 1.5;
+    padding: 18px 20px; background: #f4f3f0; border-radius: 8px;
+    border: 1px solid #e0ddd8;
+  }
+  .hb-toc h2 { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin: 0 0 12px; }
+  .hb-toc ul { list-style: none; padding: 0; margin: 0; }
+  .hb-toc li { margin-bottom: 4px; }
+  .hb-toc a { color: #444; text-decoration: none; display: block; padding: 4px 8px; border-radius: 4px; }
+  .hb-toc a:hover { background: #fff; color: var(--crimson); }
+  .hb-toc a.is-h1 { font-weight: 700; color: #1a1a1a; margin-top: 12px; padding-left: 8px; }
+  .hb-toc a.is-h2 { padding-left: 16px; }
+  .hb-toc a.is-h3 { padding-left: 28px; font-size: 12px; color: #666; }
+  @media (max-width: 1000px) {
+    .hb-toc { position: static; max-height: none; }
+  }
+
+  /* Prose */
+  .hb-prose { max-width: 780px; font-family: var(--font-serif, Georgia, serif); font-size: 16px; line-height: 1.7; color: #1a1a1a; }
+  .hb-prose h1 { font-family: var(--font-display, Georgia, serif); font-size: 38px; line-height: 1.15; margin: 48px 0 18px; color: #1a1a1a; border-bottom: 3px solid var(--crimson); padding-bottom: 10px; }
+  .hb-prose h1:first-child { margin-top: 0; }
+  .hb-prose h2 { font-family: var(--font-sans, -apple-system, sans-serif); font-size: 26px; line-height: 1.2; margin: 36px 0 14px; color: var(--crimson); }
+  .hb-prose h3 { font-family: var(--font-sans, -apple-system, sans-serif); font-size: 19px; line-height: 1.3; margin: 28px 0 10px; color: #1a1a1a; }
+  .hb-prose p { margin: 0 0 14px; }
+  .hb-prose ul, .hb-prose ol { margin: 0 0 16px 0; padding-left: 26px; }
+  .hb-prose li { margin-bottom: 6px; }
+  .hb-prose strong { color: #1a1a1a; }
+  .hb-prose em { color: #444; }
+  .hb-prose a { color: var(--crimson); text-decoration: none; word-break: break-word; }
+  .hb-prose a:hover { text-decoration: underline; }
+  .hb-prose blockquote { margin: 16px 0; padding: 10px 18px; background: #f4f3f0; border-left: 3px solid var(--crimson); font-size: 15px; color: #444; }
+  .hb-prose code { background: #f4f3f0; padding: 1px 6px; border-radius: 3px; font-size: 14px; font-family: var(--font-mono, monospace); }
+  .hb-prose pre { background: #1a1a1a; color: #fff; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+  .hb-prose hr { border: 0; border-top: 1px solid #e0ddd8; margin: 36px 0; }
+  .hb-prose table {
+    width: 100%; border-collapse: collapse; margin: 18px 0;
+    font-size: 14px; font-family: var(--font-sans, -apple-system, sans-serif);
+  }
+  .hb-prose th, .hb-prose td {
+    text-align: left; padding: 10px 14px;
+    border-bottom: 1px solid #e0ddd8; vertical-align: top;
+  }
+  .hb-prose th { background: #1a1a1a; color: #fff; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .hb-prose tbody tr:nth-child(even) { background: #fafaf7; }
+
+  .hb-loading { text-align: center; padding: 80px 20px; color: #888; font-size: 16px; }
+
+  /* Header strip with download + browse-on-pages-instead links */
+  .hb-strip {
+    background: #1a1a1a; color: #fff;
+    padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    font-family: var(--font-sans, -apple-system, sans-serif);
+  }
+  .hb-strip__meta { font-size: 13px; opacity: 0.85; }
+  .hb-strip__meta strong { color: #f0c44a; }
+  .hb-strip__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hb-strip__actions a {
+    background: var(--crimson); color: #fff; padding: 8px 16px; border-radius: 6px;
+    font-size: 13px; font-weight: 600; text-decoration: none;
+  }
+  .hb-strip__actions a:hover { background: #9c1526; }
+  .hb-strip__actions a.secondary { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); }
+  .hb-strip__actions a.secondary:hover { background: rgba(255,255,255,0.2); }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <span data-role-switch></span>
+    <a href="#">myBama</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">AI-enhanced Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+    <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group is-active" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
+        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
+        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
+        <a href="handbook.html" class="is-active" role="menuitem">Full Handbook v2<span class="sub">The 1,046-line source doc</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Resources <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Non-compensatory criteria</span></a>
+        <a href="examples.html" role="menuitem">Worked Examples<span class="sub">Annotated exemplars</span></a>
+        <a href="cognitive-load.html" role="menuitem">Cognitive Load<span class="sub">Engagement vs. transfer</span></a>
+        <a href="ai-use-policy.html" role="menuitem">AI Use Policy<span class="sub">Binding from 2026</span></a>
+        <a href="alignment.html" role="menuitem">Alignment<span class="sub">Standards crosswalk</span></a>
+        <a href="resources.html" role="menuitem">Resource Library<span class="sub">Companion handouts</span></a>
+        <a href="references.html" role="menuitem">References<span class="sub">29 sources, APA 7</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Credential <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="credential.html" role="menuitem">About the Credential<span class="sub">Open Badges 3.0 / VC</span></a>
+        <a href="portfolio.html" role="menuitem">Portfolio<span class="sub">Your five deliverables</span></a>
+        <a href="verifier.html" role="menuitem">Verify a Credential<span class="sub">For employers & registrars</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group instructor-only" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Instructor <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="facilitator.html" role="menuitem">Facilitator Guide<span class="sub">Run each session</span></a>
+        <a href="calibration.html" role="menuitem">Calibration<span class="sub">Norm your rubric scores</span></a>
+        <a href="analytics.html" role="menuitem">Analytics<span class="sub">Cohort dashboards</span></a>
+      </div>
+    </div>
+    <a href="#" class="primary-nav__cta" id="primary-cta" data-primary-cta>Register →</a>
+  </nav>
+</header>
+
+<div class="hb-strip">
+  <div class="hb-strip__meta">
+    <strong>Course Handbook v2 · 1,046 lines · 4 parts · 21 sections</strong>
+    &nbsp;&nbsp; Revised 2026-04-18 · the source-of-truth document this site is built from.
+  </div>
+  <div class="hb-strip__actions">
+    <a href="handbook-v2.md" download>Download .md</a>
+    <a href="index.html#sessions" class="secondary">Browse by session →</a>
+  </div>
+</div>
+
+<div class="hb-layout">
+  <aside class="hb-toc" aria-label="Handbook table of contents">
+    <h2>Contents</h2>
+    <ul id="hb-toc-list">
+      <li><em style="color:#888;">Building TOC…</em></li>
+    </ul>
+  </aside>
+
+  <article class="hb-prose" id="hb-prose">
+    <p class="hb-loading">Loading the handbook…</p>
+  </article>
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <div>
+      <div class="site-footer__brand">AI-enhanced Educational Game Design</div>
+      <div class="site-footer__meta">A micro-credential handbook · v2 · 2026</div>
+    </div>
+    <div class="site-footer__meta">
+      Educational Technology · College of Education<br/>
+      The University of Alabama · Tuscaloosa, AL
+    </div>
+  </div>
+</footer>
+
+<!-- marked.js for client-side markdown rendering — version-pinned -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"
+        crossorigin="anonymous"></script>
+
+<script>
+(async function () {
+  var prose = document.getElementById('hb-prose');
+  var tocList = document.getElementById('hb-toc-list');
+
+  try {
+    var resp = await fetch('handbook-v2.md');
+    if (!resp.ok) throw new Error('fetch failed: ' + resp.status);
+    var md = await resp.text();
+    if (!window.marked) throw new Error('marked.js not loaded');
+    marked.setOptions({ gfm: true, breaks: false, headerIds: true });
+    var html = marked.parse(md);
+    prose.innerHTML = html;
+
+    // Build TOC from rendered headings
+    var toc = [];
+    prose.querySelectorAll('h1, h2, h3').forEach(function (h) {
+      // Slugify if no id
+      if (!h.id) {
+        var slug = h.textContent.trim().toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 60);
+        h.id = slug;
+      }
+      toc.push({ level: h.tagName.toLowerCase(), text: h.textContent, id: h.id });
+    });
+    tocList.innerHTML = toc.map(function (t) {
+      return '<li><a class="is-' + t.level + '" href="#' + t.id + '">' + t.text + '</a></li>';
+    }).join('') || '<li><em style="color:#888;">No headings found.</em></li>';
+
+    // If URL has a hash, jump to it after render.
+    if (location.hash) {
+      var el = document.getElementById(location.hash.slice(1));
+      if (el) el.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
+  } catch (err) {
+    prose.innerHTML = '<p class="hb-loading">Couldn’t load the handbook (' + (err.message || err) + '). ' +
+      'You can still <a href="handbook-v2.md" download>download the Markdown source</a>.</p>';
+  }
+})();
+</script>
+
+<script src="xapi.js"></script>
+<script src="role.js"></script>
+<script src="enroll.js"></script>
+<script src="nav.js"></script>
+<script src="back-to-top.js"></script>
+<script src="cursor.js"></script>
+<script src="annotate.js"></script>
+<script src="achievements.js"></script>
+</body>
+</html>

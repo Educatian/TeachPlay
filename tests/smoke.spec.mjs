@@ -203,6 +203,25 @@ test('16. 404.html serves and offers four quick-link cards', async ({ page }) =>
   await expect(page.locator('.card-grid .card')).toHaveCount(4);
 });
 
+test('24. handbook.html renders v2 markdown and builds a TOC', async ({ page }) => {
+  await page.goto(BASE + '/handbook.html');
+  // marked.js fetched the .md and rendered → first H1 of the v2 doc must appear.
+  await expect(page.locator('.hb-prose h1').first()).toContainText('Educational Game Design Micro-Credential', { timeout: 8000 });
+  // TOC populated (>= 30 entries — v2 has 21 sections + intro + many sub-headings)
+  const tocCount = await page.locator('#hb-toc-list a').count();
+  expect(tocCount).toBeGreaterThan(20);
+  // Download link is present and points at the markdown file.
+  await expect(page.locator('a[href="handbook-v2.md"][download]')).toHaveCount(1);
+});
+
+test('25. handbook-v2.md is served at the repo root', async ({ request }) => {
+  const resp = await request.get(BASE + '/handbook-v2.md');
+  expect(resp.status()).toBe(200);
+  const txt = await resp.text();
+  expect(txt).toContain('Educational Game Design Micro-Credential');
+  expect(txt.length).toBeGreaterThan(60_000);
+});
+
 test('19. references.html lists 29 sources + traceability table', async ({ page }) => {
   await page.goto(BASE + '/references.html');
   await expect(page.locator('.ref-list li')).toHaveCount(29);

@@ -29,11 +29,12 @@ const GROUPS = [
   {
     key: 'course',
     label: 'Course',
-    pages: ['index.html'],
+    pages: ['index.html', 'handbook.html'],
     items: [
-      ['Overview',      'index.html',               'The handbook at a glance'],
-      ['Sessions',      'index.html#sessions',      'Twelve weekly units'],
-      ['Deliverables',  'index.html#deliverables',  'Five artifacts you ship'],
+      ['Overview',         'index.html',               'The handbook at a glance'],
+      ['Sessions',         'index.html#sessions',      'Twelve weekly units'],
+      ['Deliverables',     'index.html#deliverables',  'Five artifacts you ship'],
+      ['Full Handbook v2', 'handbook.html',            'The 1,046-line source doc'],
     ],
   },
   {
