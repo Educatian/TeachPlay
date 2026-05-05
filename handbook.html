@@ -196,21 +196,44 @@
     if (!window.marked) throw new Error('marked.js not loaded');
     marked.setOptions({ gfm: true, breaks: false, headerIds: true });
     var html = marked.parse(md);
-    prose.innerHTML = html;
+    // Demote every rendered heading by one level so the page has exactly one
+    // <h1> (a visually-hidden page-level title) and the markdown's H1s become
+    // H2s. Walking the parsed DOM in reverse order keeps text + ids intact.
+    var tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    Array.from(tmp.querySelectorAll('h1, h2, h3, h4, h5')).reverse().forEach(function (el) {
+      var lvl = parseInt(el.tagName.slice(1), 10);
+      var bumped = document.createElement('h' + Math.min(6, lvl + 1));
+      bumped.innerHTML = el.innerHTML;
+      for (var i = 0; i < el.attributes.length; i++) {
+        var a = el.attributes[i];
+        bumped.setAttribute(a.name, a.value);
+      }
+      el.replaceWith(bumped);
+    });
+    // Inject a single page-level H1 at the top — visually hidden, but it
+    // gives the page a proper document outline for screen readers / SEO.
+    var pageH1 = document.createElement('h1');
+    pageH1.textContent = 'AI-enhanced Educational Game Design — Course Handbook (v2)';
+    pageH1.style.cssText = 'position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden;';
+    tmp.insertBefore(pageH1, tmp.firstChild);
+    prose.innerHTML = tmp.innerHTML;
 
-    // Build TOC from rendered headings
+    // Build TOC from rendered headings (H2/H3/H4 after demotion). Map the
+    // tag name to a stable depth class (is-h1/h2/h3) so the existing CSS
+    // styles still apply.
     var toc = [];
-    prose.querySelectorAll('h1, h2, h3').forEach(function (h) {
-      // Slugify if no id
+    var levelMap = { h2: 'is-h1', h3: 'is-h2', h4: 'is-h3' };
+    prose.querySelectorAll('h2, h3, h4').forEach(function (h) {
       if (!h.id) {
         var slug = h.textContent.trim().toLowerCase()
           .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').slice(0, 60);
         h.id = slug;
       }
-      toc.push({ level: h.tagName.toLowerCase(), text: h.textContent, id: h.id });
+      toc.push({ cls: levelMap[h.tagName.toLowerCase()] || 'is-h3', text: h.textContent, id: h.id });
     });
     tocList.innerHTML = toc.map(function (t) {
-      return '<li><a class="is-' + t.level + '" href="#' + t.id + '">' + t.text + '</a></li>';
+      return '<li><a class="' + t.cls + '" href="#' + t.id + '">' + t.text + '</a></li>';
     }).join('') || '<li><em style="color:#888;">No headings found.</em></li>';
 
     // If URL has a hash, jump to it after render.

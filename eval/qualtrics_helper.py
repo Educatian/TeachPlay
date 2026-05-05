@@ -194,6 +194,72 @@ def text_entry(text: str, tag: str, force: bool = False, multiline: bool = False
     }
 
 
+def teachplay_theme_options(survey_title: str = "TeachPlay — Program Evaluation Survey") -> dict:
+    """Survey-level options payload for `PUT /survey-definitions/{id}/options`.
+
+    Layered on top of the UA brand skin (`SkinLibrary: universityofalabama`,
+    auto-applied). Adds UA Crimson (#9E1B32), Inter typography, sticky brand
+    header, IRB-aware footer, verbose progress bar, back button, save-and-continue.
+    """
+    css = (
+        "<style>"
+        "body, .Skin { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "
+        "'Segoe UI', Roboto, 'Helvetica Neue', sans-serif !important; }"
+        ".QuestionText { font-size: 16px !important; line-height: 1.55 !important; "
+        "color: #2c2a29 !important; font-weight: 500 !important; }"
+        ".QuestionBody { font-size: 15px !important; }"
+        ".Skin .ButtonNext, .Skin .ButtonSubmit, "
+        ".Skin input[type=submit], .Skin button[type=submit] {"
+        " background: #9E1B32 !important; border-color: #9E1B32 !important; "
+        " color: #ffffff !important; border-radius: 4px !important; "
+        " font-weight: 600 !important; letter-spacing: 0.02em !important; "
+        " padding: 10px 22px !important; box-shadow: none !important; }"
+        ".Skin .ButtonNext:hover, .Skin .ButtonSubmit:hover { "
+        " background: #7a0e1f !important; border-color: #7a0e1f !important; }"
+        ".Skin .ProgressBarFill, .progress-bar-fill { background: #9E1B32 !important; }"
+        ".Skin .QuestionOuter.row { padding: 14px 0 !important; }"
+        ".Skin .QuestionOuter:hover { background: #fbf7f8 !important; }"
+        ".Skin a { color: #9E1B32 !important; }"
+        ".Skin .Separator { border-color: #ebe5e0 !important; }"
+        "</style>"
+    )
+    header_html = (
+        css
+        + "<div style=\"max-width: 720px; margin: 0 auto 18px; "
+          "border-left: 4px solid #9E1B32; padding: 8px 0 8px 14px;\">"
+          "<div style=\"font-size: 11px; font-weight: 700; letter-spacing: 0.12em; "
+          "text-transform: uppercase; color: #9E1B32;\">TeachPlay</div>"
+          "<div style=\"font-size: 14px; color: #555; margin-top: 2px;\">"
+          "AI-Enhanced Educational Game Design &middot; "
+          "University of Alabama, College of Education</div>"
+          "</div>"
+    )
+    footer_html = (
+        "<div style=\"max-width: 720px; margin: 18px auto 0; font-size: 11px; "
+        "color: #888; padding-top: 10px; border-top: 1px solid #ebe5e0; "
+        "line-height: 1.5;\">"
+        "Anonymous research instrument &middot; No personally identifying "
+        "information collected &middot; Data stored on UA-approved Qualtrics "
+        "servers &middot; UA IRB protocol HRP-503a (TeachPlay)."
+        "</div>"
+    )
+    return {
+        "BackButton": "true",
+        "SaveAndContinue": "true",
+        "BallotBoxStuffingPrevention": "true",
+        "NoIndex": "Yes",
+        "SecureResponseFiles": "true",
+        "ProgressBarDisplay": "VerboseText",
+        "Header": header_html,
+        "Footer": footer_html,
+        "SurveyTitle": survey_title,
+        "SurveyMetaDescription": (
+            "TeachPlay program evaluation survey — University of Alabama, "
+            "College of Education. Anonymous research instrument."
+        ),
+    }
+
+
 def numeric_entry(text: str, tag: str, force: bool = False) -> dict:
     return {
         "QuestionText": text,

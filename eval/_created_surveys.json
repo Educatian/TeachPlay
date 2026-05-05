@@ -10,5 +10,16 @@
       "5_Teaching_Efficacy_Contagion": "BL_6f1uQ895D4DSkAe"
     },
     "item_count": 22
+  },
+  "pre": {
+    "SurveyID": "SV_9QtpyWbqTypaFls",
+    "blocks": {
+      "0_Tag": "BL_9otodItNlMW8wgm",
+      "1_Demographics": "BL_3C8Uw8AduzPOu3A",
+      "2_AI_Use_Self_Efficacy_Baseline": "BL_dopC6a1Z8CuUty6",
+      "3_Designer_Identity_Baseline": "BL_aXVAuEVlA9BdfJI",
+      "4_Credential_Expectation": "BL_didX7CQQx1a6i34"
+    },
+    "item_count": 20
   }
 }

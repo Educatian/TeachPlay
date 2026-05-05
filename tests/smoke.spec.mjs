@@ -222,9 +222,13 @@ test('27. credential.html shows the ACHE funding acknowledgment with full name',
 
 test('24. handbook.html renders v2 markdown and builds a TOC', async ({ page }) => {
   await page.goto(BASE + '/handbook.html');
-  // marked.js fetched the .md and rendered → first H1 of the v2 doc must appear.
-  await expect(page.locator('.hb-prose h1').first()).toContainText('Educational Game Design Micro-Credential', { timeout: 8000 });
-  // TOC populated (>= 30 entries — v2 has 21 sections + intro + many sub-headings)
+  // marked.js renders + we demote markdown H1→H2 so the page has exactly one
+  // <h1> (visually hidden, screen-reader visible). Wait until at least the
+  // first demoted H2 (was the doc title H1) shows up.
+  await expect(page.locator('.hb-prose h2').first()).toContainText('Educational Game Design Micro-Credential', { timeout: 8000 });
+  // Exactly one page-level H1 (a11y).
+  await expect(page.locator('.hb-prose h1')).toHaveCount(1);
+  // TOC populated (≥ 20 entries — v2 has many sections + sub-headings)
   const tocCount = await page.locator('#hb-toc-list a').count();
   expect(tocCount).toBeGreaterThan(20);
   // Download link is present and points at the markdown file.
