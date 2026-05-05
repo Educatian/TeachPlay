@@ -203,6 +203,16 @@ test('16. 404.html serves and offers four quick-link cards', async ({ page }) =>
   await expect(page.locator('.card-grid .card')).toHaveCount(4);
 });
 
+test('17. alignment.html shows the curriculum coverage matrix figure', async ({ page }) => {
+  await page.goto(BASE + '/alignment.html');
+  await expect(page.locator('img[src="assets/generated/alignment-coverage-matrix.webp"]')).toBeVisible();
+});
+
+test('18. facilitator.html shows the studio room photograph', async ({ page }) => {
+  await page.goto(BASE + '/facilitator.html');
+  await expect(page.locator('img[src="assets/generated/facilitator-studio.webp"]')).toBeVisible();
+});
+
 test('11. examples.html renders 3 worked-example figures (D2 / D3 / D5)', async ({ page }) => {
   await page.goto(BASE + '/examples.html');
   // Expect three new asset-figure images at the top of the artifact preview.
