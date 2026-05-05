@@ -37,3 +37,7 @@ credential/assertions/
 test-results/
 playwright-report/
 .smoke-server.log
+
+# Python bytecode
+__pycache__/
+*.pyc
