@@ -34,7 +34,14 @@
 </style>
 </head>
 <body>
-
+<noscript>
+<div class="hb-noscript">
+  <strong>Heads-up:</strong> JavaScript is off, so search, annotations, the
+  lightbox, and achievement tracking won't work. The handbook content,
+  navigation, and rubrics remain fully readable.
+  <a href="accessibility.html">More on the site's accessibility setup →</a>
+</div>
+</noscript>
 <a class="hb-skip" href="#main">Skip to main content</a>
 
 <div class="utility">
@@ -53,7 +60,7 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-            <nav class="primary-nav" data-primary-nav>
+              <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
@@ -294,6 +301,7 @@
 <script src="role.js"></script>
 <script src="enroll.js"></script>
 <script src="nav.js"></script>
+<script src="focus-trap.js"></script>
 <script src="a11y.js"></script>
 <script src="storage-banner.js"></script>
 <script src="back-to-top.js"></script>

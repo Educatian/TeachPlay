@@ -206,8 +206,23 @@
   }
   function togglePanel() {
     ensurePanel();
-    panel.classList.toggle('is-open');
-    if (panel.classList.contains('is-open')) renderList();
+    var willOpen = !panel.classList.contains('is-open');
+    panel.classList.toggle('is-open', willOpen);
+    if (willOpen) {
+      renderList();
+      if (window.hbFocusTrap) {
+        panel._releaseTrap = window.hbFocusTrap.trap(panel, {
+          onEscape: function () {
+            if (panel._releaseTrap) panel._releaseTrap();
+            panel._releaseTrap = null;
+            panel.classList.remove('is-open');
+          },
+        });
+      }
+    } else if (panel._releaseTrap) {
+      panel._releaseTrap();
+      panel._releaseTrap = null;
+    }
   }
   function renderList() {
     var list = document.getElementById('hb-ach-list');

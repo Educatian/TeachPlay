@@ -219,6 +219,34 @@ test('28. search dropdown surfaces matches across the site', async ({ page }) =>
   await expect(panel).toBeHidden();
 });
 
+test('43. print stylesheet hides UI chrome and shows main content', async ({ page }) => {
+  await page.goto(BASE + '/rubrics.html');
+  // Switch to print emulation
+  await page.emulateMedia({ media: 'print' });
+  // Custom cursor + back-to-top + utility chrome should all be display:none
+  await expect(page.locator('.hb-cursor-dot')).toBeHidden();
+  await expect(page.locator('.hb-totop')).toBeHidden();
+  await expect(page.locator('.primary-nav')).toBeHidden();
+  // Main heading is still visible
+  await expect(page.locator('h1.hero__title')).toBeVisible();
+  await page.emulateMedia({ media: null });
+});
+
+test('44. focus-trap util is loaded site-wide', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  const has = await page.evaluate(() => typeof window.hbFocusTrap === 'object' && typeof window.hbFocusTrap.trap === 'function');
+  expect(has).toBe(true);
+});
+
+test('45. noscript fallback element exists on every sample page', async ({ page }) => {
+  for (const path of ['/index.html', '/rubrics.html', '/handbook.html']) {
+    await page.goto(BASE + path);
+    // <noscript> content is parsed into a #shadow-equivalent; locator counts the wrapping div
+    const ns = await page.locator('noscript').count();
+    expect(ns).toBeGreaterThanOrEqual(1);
+  }
+});
+
 test('36. accessibility.html ships with conformance + known-issues + complaint mechanism', async ({ page }) => {
   await page.goto(BASE + '/accessibility.html');
   await expect(page.locator('h1.hero__title')).toContainText('What you can expect');

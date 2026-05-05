@@ -97,6 +97,8 @@
     return fc ? fc.textContent.trim() : '';
   }
 
+  var releaseTrap = null;
+
   function open(img) {
     if (!overlay) buildOverlay();
     imgEl.src = img.currentSrc || img.src;
@@ -106,12 +108,13 @@
     capEl.style.display = cap ? '' : 'none';
     lastFocus = document.activeElement;
     document.body.style.overflow = 'hidden';
-    // Trigger CSS transition.
     requestAnimationFrame(function () { overlay.setAttribute('data-open', 'true'); });
+    if (window.hbFocusTrap) releaseTrap = window.hbFocusTrap.trap(overlay, { onEscape: close });
   }
 
   function close() {
     if (!overlay || overlay.getAttribute('data-open') !== 'true') return;
+    if (releaseTrap) { releaseTrap(); releaseTrap = null; }
     overlay.removeAttribute('data-open');
     document.body.style.overflow = '';
     setTimeout(function () { if (imgEl) imgEl.src = ''; }, 200);
