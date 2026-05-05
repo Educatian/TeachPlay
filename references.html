@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#be1a2f" />
+<title>References · AI-enhanced Educational Game Design</title>
+<meta name="description" content="The 29 sources that ground the AI-enhanced Educational Game Design micro-credential — micro-credential policy, game-based learning research, cognitive load theory, and the Three.js implementation primitives." />
+<link rel="canonical" href="https://teachplay.dev/references.html" />
+<link rel="icon" type="image/svg+xml" href="credential/badge.svg" />
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  .ref-list { counter-reset: ref; padding: 0; list-style: none; max-width: 880px; }
+  .ref-list li {
+    counter-increment: ref;
+    position: relative;
+    padding: 14px 18px 14px 56px;
+    border-top: 1px solid #e8e6e2;
+    font-size: 14px; line-height: 1.55; color: #222;
+  }
+  .ref-list li:last-child { border-bottom: 1px solid #e8e6e2; }
+  .ref-list li::before {
+    content: counter(ref);
+    position: absolute; left: 14px; top: 14px;
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--crimson); font-weight: 700;
+    background: #fafaf7; border: 1px solid #e8e6e2;
+    width: 30px; text-align: center; padding: 2px 0; border-radius: 4px;
+  }
+  .ref-list a { color: var(--crimson); text-decoration: none; word-break: break-all; }
+  .ref-list a:hover { text-decoration: underline; }
+  .ref-list em { color: #444; }
+  .ref-meta {
+    background: #f4f3f0; border-left: 3px solid var(--crimson);
+    padding: 14px 18px; margin: 0 0 28px;
+    font-size: 13px; line-height: 1.5; max-width: 880px; color: #444;
+  }
+  .traceability {
+    width: 100%; max-width: 880px; border-collapse: collapse;
+    font-size: 13.5px; margin: 24px 0 32px;
+  }
+  .traceability th, .traceability td {
+    text-align: left; padding: 10px 14px;
+    border-bottom: 1px solid #e8e6e2; vertical-align: top;
+  }
+  .traceability th {
+    background: #1a1a1a; color: #fff;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .traceability td:first-child { font-weight: 600; color: #1a1a1a; width: 32%; }
+  .traceability td a { color: var(--crimson); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <span data-role-switch></span>
+    <a href="#">myBama</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">AI-enhanced Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+    <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
+        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
+        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group is-active" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Resources <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Non-compensatory criteria</span></a>
+        <a href="examples.html" role="menuitem">Worked Examples<span class="sub">Annotated exemplars</span></a>
+        <a href="cognitive-load.html" role="menuitem">Cognitive Load<span class="sub">Engagement vs. transfer</span></a>
+        <a href="ai-use-policy.html" role="menuitem">AI Use Policy<span class="sub">Binding from 2026</span></a>
+        <a href="alignment.html" role="menuitem">Alignment<span class="sub">Standards crosswalk</span></a>
+        <a href="resources.html" role="menuitem">Resource Library<span class="sub">Companion handouts</span></a>
+        <a href="references.html" class="is-active" role="menuitem">References<span class="sub">29 sources, APA 7</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Credential <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="credential.html" role="menuitem">About the Credential<span class="sub">Open Badges 3.0 / VC</span></a>
+        <a href="portfolio.html" role="menuitem">Portfolio<span class="sub">Your five deliverables</span></a>
+        <a href="verifier.html" role="menuitem">Verify a Credential<span class="sub">For employers & registrars</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group instructor-only" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Instructor <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="facilitator.html" role="menuitem">Facilitator Guide<span class="sub">Run each session</span></a>
+        <a href="calibration.html" role="menuitem">Calibration<span class="sub">Norm your rubric scores</span></a>
+        <a href="analytics.html" role="menuitem">Analytics<span class="sub">Cohort dashboards</span></a>
+      </div>
+    </div>
+    <a href="#" class="primary-nav__cta" id="primary-cta" data-primary-cta>Register →</a>
+  </nav>
+</header>
+
+<section class="hero" style="padding-bottom: 56px;">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <div class="hero__eyebrow">Sources · 29 references</div>
+    <h1 class="hero__title" style="font-size: 52px; line-height: 1.05;">Twenty-nine sources<br/>under every claim.</h1>
+    <p class="hero__lede" style="max-width: 780px;">
+      Every design heuristic in this handbook is traceable to a source. The list below ground
+      Parts 1–2 (foundations + design toolkits) and the case material in Part 3. Where the
+      handbook says &ldquo;research-informed,&rdquo; this page is what's behind it.
+    </p>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<section class="section">
+  <span class="section__eyebrow">Principle → citation</span>
+  <h2 class="section__title">Where each claim lands.</h2>
+  <p class="ref-meta">
+    The handbook is built outward from a small set of stable findings. This is the traceability
+    table — every design instrument in Part 2 and every required deliverable in Part 3 maps
+    back to one or more of these sources.
+  </p>
+  <table class="traceability">
+    <thead>
+      <tr><th>Claim in this handbook</th><th>Primary source(s)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Teacher facilitation + curriculum guides decide whether GBL transfers to classroom outcomes.</td>
+        <td>Jong, Dong, &amp; Luk (2017); Nousiainen et al. (2018); Sharma et al. (2024)</td>
+      </tr>
+      <tr>
+        <td>Alignment between learning objectives and game mechanics is the single most consistent predictor.</td>
+        <td>Plass, Homer, &amp; Kinzer (2015); Annetta (2010); Arnab et al. (2015)</td>
+      </tr>
+      <tr>
+        <td>Gamification effects are modest; design quality and context dominate.</td>
+        <td>Sailer &amp; Homner (2020)</td>
+      </tr>
+      <tr>
+        <td>GBL produces small-to-moderate effects on critical thinking + computational thinking.</td>
+        <td>Mao, Cui, Chiu, &amp; Lei (2022); Ma, Zhang, Zhu, Zhao, &amp; Wang (2023)</td>
+      </tr>
+      <tr>
+        <td>Playtest with target learners — not proxies — is the most consistent stakeholder-design recommendation.</td>
+        <td>Bunt, Greeff, &amp; Taylor (2024); Silva (2020)</td>
+      </tr>
+      <tr>
+        <td>Cognitive load theory's intrinsic / extraneous / germane distinction guides screen-element pruning.</td>
+        <td>Sweller, van Merriënboer, &amp; Paas (2019)</td>
+      </tr>
+      <tr>
+        <td>Backward-design discipline — outcomes → evidence → mechanics — for the D2 crosswalk.</td>
+        <td>Wiggins &amp; McTighe (2005)</td>
+      </tr>
+      <tr>
+        <td>Micro-credential workload + quality-assurance bands.</td>
+        <td>Council of the EU (2022); MicroHE (2020); MICROBOL (2022); NZQA (2026); ENQA (2023); OECD (2021, 2023); Varadarajan, Koh, &amp; Daniel (2023); Ahsan et al. (2023)</td>
+      </tr>
+      <tr>
+        <td>Three.js implementation primitives (D5 bridge module).</td>
+        <td>three.js manual + docs (2026)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="section section--tint">
+  <span class="section__eyebrow">Bibliography · APA 7</span>
+  <h2 class="section__title">All twenty-nine sources.</h2>
+
+  <ol class="ref-list">
+    <li>Ahsan, K., Akbar, S., Kam, B., &amp; Abdulrahman, M. D.-A. (2023). Implementation of micro-credentials in higher education: A systematic literature review. <em>Education and Information Technologies, 28</em>(10), 13505–13540. <a href="https://doi.org/10.1007/s10639-023-11739-z" target="_blank" rel="noopener">https://doi.org/10.1007/s10639-023-11739-z</a></li>
+    <li>Alaswad, Z., &amp; Nadolny, L. (2015). Designing for game-based learning: The effective integration of technology to support learning. <em>Journal of Educational Technology Systems, 43</em>(4), 389–402. <a href="https://doi.org/10.1177/0047239515588164" target="_blank" rel="noopener">https://doi.org/10.1177/0047239515588164</a></li>
+    <li>Annetta, L. A. (2010). The "I's" have it: A framework for serious educational game design. <em>Review of General Psychology, 14</em>(2), 105–112. <a href="https://doi.org/10.1037/a0018985" target="_blank" rel="noopener">https://doi.org/10.1037/a0018985</a></li>
+    <li>Arnab, S., Lim, T., Carvalho, M. B., Bellotti, F., de Freitas, S., Louchart, S., Suttie, N., Berta, R., &amp; De Gloria, A. (2015). Mapping learning and game mechanics for serious games analysis. <em>British Journal of Educational Technology, 46</em>(2), 391–411. <a href="https://doi.org/10.1111/bjet.12113" target="_blank" rel="noopener">https://doi.org/10.1111/bjet.12113</a></li>
+    <li>Bunt, L., Greeff, J., &amp; Taylor, E. (2024). Enhancing serious game design: Expert-reviewed, stakeholder-centered framework. <em>JMIR Serious Games, 12</em>, e48099. <a href="https://doi.org/10.2196/48099" target="_blank" rel="noopener">https://doi.org/10.2196/48099</a></li>
+    <li>Council of the European Union. (2022). <em>Council Recommendation of 16 June 2022 on a European approach to micro-credentials for lifelong learning and employability</em> (2022/C 243/02). Official Journal of the European Union. <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=uriserv:OJ.C_.2022.243.01.0010.01.ENG" target="_blank" rel="noopener">https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=uriserv:OJ.C_.2022.243.01.0010.01.ENG</a></li>
+    <li>European Education Area. (2026). A European approach to micro-credentials. <a href="https://education.ec.europa.eu/education-levels/higher-education/micro-credentials" target="_blank" rel="noopener">https://education.ec.europa.eu/education-levels/higher-education/micro-credentials</a></li>
+    <li>European Education Area. (2026). European Credit Transfer and Accumulation System (ECTS). <a href="https://education.ec.europa.eu/education-levels/higher-education/inclusive-and-connected-higher-education/european-credit-transfer-and-accumulation-system" target="_blank" rel="noopener">https://education.ec.europa.eu/education-levels/higher-education/inclusive-and-connected-higher-education/european-credit-transfer-and-accumulation-system</a></li>
+    <li>European Network for Quality Assurance in Higher Education (ENQA). (2023). <em>Quality assurance of micro-credentials.</em> ENQA. <a href="https://www.enqa.eu/wp-content/uploads/ENQA-micro-credentials-report.pdf" target="_blank" rel="noopener">https://www.enqa.eu/wp-content/uploads/ENQA-micro-credentials-report.pdf</a></li>
+    <li>Jong, M. S. Y., Dong, A., &amp; Luk, E. (2017). Design-based research on teacher facilitation practices for serious gaming in formal schooling. <em>Research and Practice in Technology Enhanced Learning, 12</em>, Article 19. <a href="https://doi.org/10.1186/s41039-017-0056-6" target="_blank" rel="noopener">https://doi.org/10.1186/s41039-017-0056-6</a></li>
+    <li>Ma, J., Zhang, Y., Zhu, Z., Zhao, S., &amp; Wang, Q. (2023). Game-based learning for students' computational thinking: A meta-analysis. <em>Simulation &amp; Gaming, 54</em>(4), 421–448. <a href="https://doi.org/10.1177/10468781231178948" target="_blank" rel="noopener">https://doi.org/10.1177/10468781231178948</a></li>
+    <li>Mao, W., Cui, Y., Chiu, M. M., &amp; Lei, H. (2022). Effects of game-based learning on students' critical thinking: A meta-analysis. <em>Simulation &amp; Gaming, 53</em>(1), 5–35. <a href="https://doi.org/10.1177/10468781211007098" target="_blank" rel="noopener">https://doi.org/10.1177/10468781211007098</a></li>
+    <li>MICROBOL. (2022). <em>Micro-credentials linked to the Bologna Key Commitments: Common framework.</em> Bologna Follow-Up Group. <a href="https://microcredentials.eu/microbol/" target="_blank" rel="noopener">https://microcredentials.eu/microbol/</a></li>
+    <li>MicroHE Consortium. (2020). <em>The Micro-Credential Users' Guide.</em> MicroHE. <a href="https://microcredentials.eu/wp-content/uploads/sites/20/2021/05/D3_3_MicroHE-Users-Guide.pdf" target="_blank" rel="noopener">https://microcredentials.eu/wp-content/uploads/sites/20/2021/05/D3_3_MicroHE-Users-Guide.pdf</a></li>
+    <li>New Zealand Qualifications Authority. (2026). Micro-credential listing, approval, and accreditation. <a href="https://www2.nzqa.govt.nz/tertiary/approval-accreditation-and-registration/micro-credentials/" target="_blank" rel="noopener">https://www2.nzqa.govt.nz/tertiary/approval-accreditation-and-registration/micro-credentials/</a></li>
+    <li>New Zealand Qualifications Authority. (2026). <em>Micro-credential Approval and Accreditation Rules 2026.</em> <a href="https://www2.nzqa.govt.nz/about-us/rules-fees-policies/nzqa-rules/micro-credential-approval-and-accreditation-rules/" target="_blank" rel="noopener">https://www2.nzqa.govt.nz/about-us/rules-fees-policies/nzqa-rules/micro-credential-approval-and-accreditation-rules/</a></li>
+    <li>Nousiainen, T., Kangas, M., Rikala, J., &amp; Vesisenaho, M. (2018). Teacher competencies in game-based pedagogy. <em>Teaching and Teacher Education, 74</em>, 85–97. <a href="https://doi.org/10.1016/j.tate.2018.04.012" target="_blank" rel="noopener">https://doi.org/10.1016/j.tate.2018.04.012</a></li>
+    <li>OECD. (2021). <em>Micro-credential innovations in higher education: Who, what and why?</em> OECD Publishing. <a href="https://doi.org/10.1787/f14ef041-en" target="_blank" rel="noopener">https://doi.org/10.1787/f14ef041-en</a></li>
+    <li>OECD. (2023). <em>Micro-credentials for lifelong learning and employability: Uses and possibilities.</em> OECD Publishing. <a href="https://doi.org/10.1787/9c4b7b68-en" target="_blank" rel="noopener">https://doi.org/10.1787/9c4b7b68-en</a></li>
+    <li>Plass, J. L., Homer, B. D., &amp; Kinzer, C. K. (2015). Foundations of game-based learning. <em>Educational Psychologist, 50</em>(4), 258–283. <a href="https://doi.org/10.1080/00461520.2015.1122533" target="_blank" rel="noopener">https://doi.org/10.1080/00461520.2015.1122533</a></li>
+    <li>Sailer, M., &amp; Homner, L. (2020). The gamification of learning: A meta-analysis. <em>Educational Psychology Review, 32</em>, 77–112. <a href="https://doi.org/10.1007/s10648-019-09498-w" target="_blank" rel="noopener">https://doi.org/10.1007/s10648-019-09498-w</a></li>
+    <li>Sharma, R., Tan, C., Gomez, D., Xu, C., &amp; Dubé, A. K. (2024). Guiding teachers' game-based learning. <em>Teaching and Teacher Education, 148</em>, 104915. <a href="https://doi.org/10.1016/j.tate.2024.104915" target="_blank" rel="noopener">https://doi.org/10.1016/j.tate.2024.104915</a></li>
+    <li>Silva, F. G. M. (2020). Practical methodology for the design of educational serious games. <em>Information, 11</em>(1), 14. <a href="https://doi.org/10.3390/info11010014" target="_blank" rel="noopener">https://doi.org/10.3390/info11010014</a></li>
+    <li>Sweller, J., van Merriënboer, J. J. G., &amp; Paas, F. (2019). Cognitive architecture and instructional design: 20 years later. <em>Educational Psychology Review, 31</em>, 261–292. <a href="https://doi.org/10.1007/s10648-019-09465-5" target="_blank" rel="noopener">https://doi.org/10.1007/s10648-019-09465-5</a></li>
+    <li>Varadarajan, S., Koh, J. H. L., &amp; Daniel, B. K. (2023). A systematic review of the opportunities and challenges of micro-credentials for multiple stakeholders. <em>International Journal of Educational Technology in Higher Education, 20</em>, Article 13. <a href="https://doi.org/10.1186/s41239-023-00381-x" target="_blank" rel="noopener">https://doi.org/10.1186/s41239-023-00381-x</a></li>
+    <li>three.js manual. (2026). Creating a scene. <a href="https://threejs.org/manual/en/creating-a-scene.html" target="_blank" rel="noopener">https://threejs.org/manual/en/creating-a-scene.html</a></li>
+    <li>three.js manual. (2026). Picking. <a href="https://threejs.org/manual/en/picking.html" target="_blank" rel="noopener">https://threejs.org/manual/en/picking.html</a></li>
+    <li>three.js documentation. (2026). Raycaster. <a href="https://threejs.org/docs/?q=Raycaster#api/en/core/Raycaster" target="_blank" rel="noopener">https://threejs.org/docs/?q=Raycaster#api/en/core/Raycaster</a></li>
+    <li>Wiggins, G., &amp; McTighe, J. (2005). <em>Understanding by Design</em> (2nd ed.). ASCD.</li>
+  </ol>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <div>
+      <div class="site-footer__brand">AI-enhanced Educational Game Design</div>
+      <div class="site-footer__meta">A micro-credential handbook · v2 · 2026</div>
+    </div>
+    <div class="site-footer__meta">
+      Educational Technology · College of Education<br/>
+      The University of Alabama · Tuscaloosa, AL
+    </div>
+  </div>
+</footer>
+
+<script src="xapi.js"></script>
+<script src="role.js"></script>
+<script src="enroll.js"></script>
+<script src="nav.js"></script>
+<script src="back-to-top.js"></script>
+<script src="cursor.js"></script>
+<script src="annotate.js"></script>
+<script src="achievements.js"></script>
+</body>
+</html>

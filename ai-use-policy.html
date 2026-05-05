@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#be1a2f" />
+<title>AI Use Policy · AI-enhanced Educational Game Design</title>
+<meta name="description" content="The binding generative-AI use policy for the AI-enhanced Educational Game Design micro-credential — what is permitted, what is not, and the AI Use Disclosure that ships with every deliverable." />
+<link rel="canonical" href="https://teachplay.dev/ai-use-policy.html" />
+<link rel="icon" type="image/svg+xml" href="credential/badge.svg" />
+<link rel="stylesheet" href="handbook.css" />
+<style>
+  .policy-grid {
+    display: grid; gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    max-width: 1100px;
+  }
+  .policy-card {
+    background: #fff; border: 1px solid #e0ddd8; border-radius: 10px;
+    padding: 26px 28px; border-top: 4px solid var(--crimson);
+  }
+  .policy-card.is-permit { border-top-color: #1a6e2e; }
+  .policy-card.is-deny   { border-top-color: var(--crimson); }
+  .policy-card h3 {
+    font-size: 16px; font-weight: 700; margin: 0 0 14px;
+    text-transform: uppercase; letter-spacing: 0.06em; color: #1a1a1a;
+  }
+  .policy-card.is-permit h3 { color: #1a6e2e; }
+  .policy-card.is-deny   h3 { color: var(--crimson); }
+  .policy-card ul { margin: 0; padding: 0 0 0 18px; }
+  .policy-card li { font-size: 14px; line-height: 1.55; margin-bottom: 10px; color: #333; }
+  .disclosure {
+    margin-top: 28px;
+    background: #fff3cd; border-left: 4px solid #b8860b;
+    padding: 22px 26px; max-width: 880px; border-radius: 4px;
+  }
+  .disclosure h3 { margin: 0 0 8px; color: #856404; font-size: 16px; }
+  .disclosure p { margin: 0 0 10px; font-size: 14px; line-height: 1.55; color: #333; }
+  .disclosure ol { margin: 0; padding-left: 22px; }
+  .disclosure li { font-size: 14px; line-height: 1.55; margin-bottom: 6px; }
+  .rationale-box {
+    background: #f4f3f0; border-left: 3px solid var(--crimson);
+    padding: 18px 22px; margin: 28px 0; max-width: 880px;
+    font-size: 14px; line-height: 1.6; color: #333;
+  }
+  .breach-callout {
+    margin-top: 32px; padding: 20px 24px;
+    background: #fde2e2; border: 1px solid var(--crimson); border-radius: 6px;
+    max-width: 880px;
+  }
+  .breach-callout strong { color: var(--crimson); }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
+  <div class="utility__right">
+    <span data-role-switch></span>
+    <a href="#">myBama</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="site-header__row">
+    <a href="index.html" class="site-header__section">AI-enhanced Educational Game Design</a>
+    <form class="site-header__search" onsubmit="return false;">
+      <input type="search" placeholder="Search handbook…" aria-label="Search handbook" />
+      <button class="site-header__search-btn" aria-label="Search">🔍</button>
+    </form>
+  </div>
+    <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
+        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
+        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group is-active" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Resources <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Non-compensatory criteria</span></a>
+        <a href="examples.html" role="menuitem">Worked Examples<span class="sub">Annotated exemplars</span></a>
+        <a href="cognitive-load.html" role="menuitem">Cognitive Load<span class="sub">Engagement vs. transfer</span></a>
+        <a href="ai-use-policy.html" class="is-active" role="menuitem">AI Use Policy<span class="sub">Binding from 2026</span></a>
+        <a href="alignment.html" role="menuitem">Alignment<span class="sub">Standards crosswalk</span></a>
+        <a href="resources.html" role="menuitem">Resource Library<span class="sub">Companion handouts</span></a>
+        <a href="references.html" role="menuitem">References<span class="sub">29 sources, APA 7</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Credential <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="credential.html" role="menuitem">About the Credential<span class="sub">Open Badges 3.0 / VC</span></a>
+        <a href="portfolio.html" role="menuitem">Portfolio<span class="sub">Your five deliverables</span></a>
+        <a href="verifier.html" role="menuitem">Verify a Credential<span class="sub">For employers & registrars</span></a>
+      </div>
+    </div>
+    <div class="primary-nav__group instructor-only" data-nav-group>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Instructor <span class="caret" aria-hidden="true">▾</span></button>
+      <div class="primary-nav__panel" role="menu">
+        <a href="facilitator.html" role="menuitem">Facilitator Guide<span class="sub">Run each session</span></a>
+        <a href="calibration.html" role="menuitem">Calibration<span class="sub">Norm your rubric scores</span></a>
+        <a href="analytics.html" role="menuitem">Analytics<span class="sub">Cohort dashboards</span></a>
+      </div>
+    </div>
+    <a href="#" class="primary-nav__cta" id="primary-cta" data-primary-cta>Register →</a>
+  </nav>
+</header>
+
+<section class="hero" style="padding-bottom: 56px;">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <div class="hero__eyebrow">Policy · Binding from 2026</div>
+    <h1 class="hero__title" style="font-size: 52px; line-height: 1.05;">A clear AI policy.<br/>Disclosed every time.</h1>
+    <p class="hero__lede" style="max-width: 780px;">
+      Generative AI is a tool for this course, not a substitute for the credential's claim
+      about what the learner can do. The lines below apply to all five deliverables and ship
+      with the rubric — a missing or untrue disclosure fails the deliverable.
+    </p>
+  </div>
+  <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
+  </svg>
+</section>
+
+<section class="section">
+  <span class="section__eyebrow">The two lists</span>
+  <h2 class="section__title">What's in. What's out.</h2>
+
+  <div class="policy-grid">
+    <div class="policy-card is-permit">
+      <h3>✓ Permitted with disclosure</h3>
+      <ul>
+        <li>Brainstorming mechanics, generating candidate design ideas, or critiquing your own drafts — provided every use is disclosed.</li>
+        <li>Drafting boilerplate sections of the facilitator guide (e.g. risk-mitigation language) — provided you review, revise, and disclose.</li>
+        <li>AI coding assistants for prototype scaffolding (Twine templates, early Three.js scaffolds) — provided you can explain every line you submit.</li>
+        <li>AI image tools for placeholder assets in low- and medium-fidelity prototypes.</li>
+      </ul>
+    </div>
+
+    <div class="policy-card is-deny">
+      <h3>✗ Not permitted</h3>
+      <ul>
+        <li>Submitting AI-generated learning objectives without your own analysis step.</li>
+        <li>Submitting AI-generated playtest observations as if they were observed data.</li>
+        <li>Submitting AI-generated reflections as Deliverable 5.</li>
+        <li>Submitting a prototype whose interaction design you cannot explain or modify.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tint">
+  <span class="section__eyebrow">Required disclosure</span>
+  <h2 class="section__title">Three lines per deliverable.</h2>
+
+  <div class="disclosure">
+    <h3>AI Use Disclosure (appendix in every deliverable)</h3>
+    <p>
+      Each of the five deliverables ships with a short appendix titled <em>AI Use Disclosure</em>.
+      Three items, no more:
+    </p>
+    <ol>
+      <li>Which tool(s) were used.</li>
+      <li>On which sections.</li>
+      <li>What you changed after the tool's contribution.</li>
+    </ol>
+  </div>
+
+  <div class="breach-callout">
+    <strong>Breach.</strong> A missing or obviously untrue disclosure is a breach of academic
+    integrity. The deliverable fails. The pass-bar rule (proficient on every criterion, no
+    averaging) means a failed deliverable holds up the entire credential.
+  </div>
+</section>
+
+<section class="section">
+  <span class="section__eyebrow">Why this line</span>
+  <h2 class="section__title">The credential's claim is the point.</h2>
+
+  <div class="rationale-box">
+    The line above tracks the program's outcomes. <strong>Outcomes 1, 2, 7, and 10</strong> require
+    the learner's own judgment and observation — these are the outcomes where AI substitution
+    most damages credentialing validity. <strong>Outcomes 4, 5, 6, and 9</strong> involve production
+    work where AI assistance, if disclosed, does not undermine what the credential is certifying.
+    The list above is the line drawn on that distinction; the disclosure is what makes the line
+    enforceable.
+  </div>
+
+  <p style="max-width: 880px; font-size: 14px; line-height: 1.6; color: #444; margin-top: 16px;">
+    Source: Educational Game Design Micro-Credential Course Handbook, v2, §7. See
+    <a href="references.html" style="color:var(--crimson);">references</a> for the empirical basis.
+  </p>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer__row">
+    <div>
+      <div class="site-footer__brand">AI-enhanced Educational Game Design</div>
+      <div class="site-footer__meta">A micro-credential handbook · v2 · 2026</div>
+    </div>
+    <div class="site-footer__meta">
+      Educational Technology · College of Education<br/>
+      The University of Alabama · Tuscaloosa, AL
+    </div>
+  </div>
+</footer>
+
+<script src="xapi.js"></script>
+<script src="role.js"></script>
+<script src="enroll.js"></script>
+<script src="nav.js"></script>
+<script src="back-to-top.js"></script>
+<script src="cursor.js"></script>
+<script src="annotate.js"></script>
+<script src="achievements.js"></script>
+</body>
+</html>

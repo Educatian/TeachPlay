@@ -39,12 +39,15 @@ const GROUPS = [
   {
     key: 'resources',
     label: 'Resources',
-    pages: ['rubrics.html', 'examples.html', 'alignment.html', 'resources.html'],
+    pages: ['rubrics.html', 'examples.html', 'cognitive-load.html', 'ai-use-policy.html', 'alignment.html', 'resources.html', 'references.html'],
     items: [
-      ['Rubrics',          'rubrics.html',   'Non-compensatory criteria'],
-      ['Worked Examples',  'examples.html',  'Annotated exemplars'],
-      ['Alignment',        'alignment.html', 'Standards crosswalk'],
-      ['Resource Library', 'resources.html', 'Companion handouts'],
+      ['Rubrics',          'rubrics.html',        'Non-compensatory criteria'],
+      ['Worked Examples',  'examples.html',       'Annotated exemplars'],
+      ['Cognitive Load',   'cognitive-load.html', 'Engagement vs. transfer'],
+      ['AI Use Policy',    'ai-use-policy.html',  'Binding from 2026'],
+      ['Alignment',        'alignment.html',      'Standards crosswalk'],
+      ['Resource Library', 'resources.html',      'Companion handouts'],
+      ['References',       'references.html',     '29 sources, APA 7'],
     ],
   },
   {

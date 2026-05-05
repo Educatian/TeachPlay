@@ -203,6 +203,45 @@ test('16. 404.html serves and offers four quick-link cards', async ({ page }) =>
   await expect(page.locator('.card-grid .card')).toHaveCount(4);
 });
 
+test('19. references.html lists 29 sources + traceability table', async ({ page }) => {
+  await page.goto(BASE + '/references.html');
+  await expect(page.locator('.ref-list li')).toHaveCount(29);
+  await expect(page.locator('.traceability tbody tr')).toHaveCount(9);
+});
+
+test('20. ai-use-policy.html shows permitted + not-permitted lists + disclosure', async ({ page }) => {
+  await page.goto(BASE + '/ai-use-policy.html');
+  await expect(page.locator('.policy-card.is-permit li')).toHaveCount(4);
+  await expect(page.locator('.policy-card.is-deny li')).toHaveCount(4);
+  await expect(page.locator('.disclosure ol li')).toHaveCount(3);
+});
+
+test('21. cognitive-load.html shows three-load grid + three tensions', async ({ page }) => {
+  await page.goto(BASE + '/cognitive-load.html');
+  await expect(page.locator('.load-card')).toHaveCount(3);
+  await expect(page.locator('.tension')).toHaveCount(3);
+});
+
+test('22. facilitator.html now includes the workload + cohort sizing block', async ({ page }) => {
+  await page.goto(BASE + '/facilitator.html');
+  await expect(page.locator('.fg-workload')).toBeVisible();
+  // Per-deliverable + cohort tables both rendered (5 D rows + 5 cohort rows)
+  await expect(page.locator('.fg-workload__panel:nth-child(1) tbody tr')).toHaveCount(6); // 5 deliverables + total row
+  await expect(page.locator('.fg-workload__panel:nth-child(2) tbody tr')).toHaveCount(5);
+});
+
+test('23. nav has new Resources entries on every regenerated page', async ({ page }) => {
+  for (const path of ['/index.html', '/rubrics.html', '/session-03.html']) {
+    await page.goto(BASE + path);
+    // Menu items are present in DOM but hidden until the dropdown opens — use count + href.
+    const items = page.locator('.primary-nav__group:nth-child(2) .primary-nav__panel a');
+    await expect(items).toHaveCount(7);
+    await expect(page.locator('.primary-nav a[href="references.html"]')).toHaveCount(1);
+    await expect(page.locator('.primary-nav a[href="ai-use-policy.html"]')).toHaveCount(1);
+    await expect(page.locator('.primary-nav a[href="cognitive-load.html"]')).toHaveCount(1);
+  }
+});
+
 test('17. alignment.html shows the curriculum coverage matrix figure', async ({ page }) => {
   await page.goto(BASE + '/alignment.html');
   await expect(page.locator('img[src="assets/generated/alignment-coverage-matrix.webp"]')).toBeVisible();
