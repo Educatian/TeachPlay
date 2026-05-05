@@ -370,6 +370,35 @@ body[data-role="student"] .instructor-banner { display: none; }
   .primary-nav__cta { margin-left: 8px; padding: 7px 14px; font-size: 12px; }
 }
 
+/* ─── Global :focus-visible ring ─────────────────────────────────
+   WCAG 2.4.7 (Focus Visible). Many components defined their own focus
+   styles ad hoc; some skipped them entirely. This site-wide rule
+   guarantees a 2 px crimson outline on every keyboard-focused
+   interactive element, while leaving mouse-click focus unstyled (so the
+   ring doesn't show up on every click). */
+:focus { outline: none; }
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible,
+[role="button"]:focus-visible,
+[role="menuitem"]:focus-visible {
+  outline: 2px solid #be1a2f;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+/* On the dark utility bar / hero, ring should be light to stay visible. */
+.utility a:focus-visible,
+.utility button:focus-visible,
+.hero a:focus-visible,
+.hero button:focus-visible,
+.section--crimson a:focus-visible,
+.section--crimson button:focus-visible {
+  outline-color: #f0c44a;
+}
+
 /* ─── <noscript> banner — visible only when JS is disabled ───────
    The site degrades gracefully (read content + nav still work), but the
    nice-to-haves (search, annotations, achievements, lightbox) need JS.

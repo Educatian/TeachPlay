@@ -20,7 +20,12 @@
   function loadIndex() {
     if (!indexPromise) {
       indexPromise = fetch(INDEX_URL)
-        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (r) { return r.ok ? r.json() : { pages: [] }; })
+        .then(function (data) {
+          // Backwards compat: pre-envelope versions returned a flat array.
+          if (Array.isArray(data)) return data;
+          return data.pages || [];
+        })
         .catch(function () { return []; });
     }
     return indexPromise;

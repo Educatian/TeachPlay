@@ -105,5 +105,15 @@ for (const file of files) {
   });
 }
 
-writeFileSync(join(root, 'search-index.json'), JSON.stringify(index));
-console.log(`Wrote search-index.json — ${index.length} pages, ${(JSON.stringify(index).length / 1024).toFixed(1)} KB`);
+// Wrap the index in an envelope with a version stamp so the runtime can
+// surface a hint when the served index pre-dates the deploy. Version is
+// the current build's UTC timestamp, written into both search-index.json
+// and a small search-index-version.txt that index.html can fetch HEAD on.
+var envelope = {
+  generated: new Date().toISOString(),
+  count: index.length,
+  pages: index,
+};
+writeFileSync(join(root, 'search-index.json'), JSON.stringify(envelope));
+writeFileSync(join(root, 'search-index-version.txt'), envelope.generated + '\n');
+console.log(`Wrote search-index.json — ${index.length} pages, ${(JSON.stringify(envelope).length / 1024).toFixed(1)} KB (v=${envelope.generated})`);

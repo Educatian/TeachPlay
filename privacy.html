@@ -60,7 +60,7 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-              <nav class="primary-nav" data-primary-nav>
+                <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
@@ -150,6 +150,33 @@
       are gone. Use the <strong>Notes panel → Download .md</strong> action to export your
       annotations periodically.
     </div>
+  </div>
+
+  <div class="pp-section">
+    <h3>1b. xAPI verb catalog (full list of events recorded)</h3>
+    <p>Every learning event the site captures is one of the nine xAPI verbs below.
+       The site does <strong>not</strong> record keystrokes, mouse positions,
+       camera/microphone, or any biometric signal. Source:
+       <code>xapi.js</code> in the
+       <a href="https://github.com/Educatian/TeachPlay" target="_blank" rel="noopener">repository</a>.</p>
+    <table class="pp-tbl">
+      <thead><tr><th>Verb</th><th>When it fires</th><th>What's stored</th></tr></thead>
+      <tbody>
+        <tr><td><code>started</code></td>          <td>First load of a session page</td>           <td>activity_id (<code>session/s03</code>), timestamp</td></tr>
+        <tr><td><code>experienced</code> / <code>viewed</code></td><td>A section block scrolls into view ≥ 40% for ≥ 2 s</td><td>activity_id (<code>section/s03/core</code>), timestamp</td></tr>
+        <tr><td><code>heartbeat</code></td>        <td>Every 60 s while the session-page tab is active</td><td>activity_id, timestamp (used to compute time-on-task)</td></tr>
+        <tr><td><code>attempted</code> / <code>answered</code> / <code>responded</code></td><td>Quiz item interactions</td><td>activity_id, response value, correctness</td></tr>
+        <tr><td><code>scored</code></td>           <td>End-of-quiz score</td>                       <td>activity_id, raw score, percentage</td></tr>
+        <tr><td><code>completed</code></td>        <td>"Mark session complete" click</td>           <td>activity_id, timestamp</td></tr>
+        <tr><td><code>submitted</code></td>        <td>Deliverable upload</td>                      <td>activity_id, file hash (SHA-256 — no file body)</td></tr>
+        <tr><td><code>reviewed</code></td>         <td>Instructor scores a deliverable</td>         <td>activity_id, criterion-level score</td></tr>
+        <tr><td><code>verified</code></td>         <td>Credential verification flow</td>            <td>credential_id, verifier identity if provided</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size: 12.5px; color: #595959;">
+      Annotations and notes are <strong>never</strong> serialized into xAPI events.
+      They live exclusively in your browser's localStorage.
+    </p>
   </div>
 
   <div class="pp-section">

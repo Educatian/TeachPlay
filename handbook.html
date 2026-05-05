@@ -155,7 +155,7 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-                  <nav class="primary-nav" data-primary-nav>
+                    <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
@@ -433,6 +433,18 @@
       // Esc dismisses the popover when open — keyboard parity with hover.
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && pop && pop.classList.contains('is-open')) hide();
+      });
+
+      // Keyboard parity: when a citation has focus and the user presses ↓,
+      // jump focus into the popover's "Open in references →" link so they
+      // can open the entry without reaching for the mouse.
+      prose.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowDown') return;
+        var a = e.target;
+        if (!a.matches || !a.matches('a.hb-cite')) return;
+        if (!pop || !pop.classList.contains('is-open')) return;
+        var openLink = pop.querySelector('.hb-cite-pop__open');
+        if (openLink) { e.preventDefault(); openLink.focus(); }
       });
     })();
 

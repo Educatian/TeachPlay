@@ -391,12 +391,17 @@ test('30. search hits text inside figure captions (e.g. "v1 v2 v3")', async ({ p
   await expect(panel.locator('a.hb-search-row[href="session-10.html"]')).toHaveCount(1);
 });
 
-test('29. search-index.json is served and contains every navigable page', async ({ request }) => {
+test('29. search-index.json is served, versioned, and contains every navigable page', async ({ request }) => {
   const resp = await request.get(BASE + '/search-index.json');
   expect(resp.status()).toBe(200);
-  const idx = await resp.json();
-  expect(Array.isArray(idx)).toBe(true);
+  const data = await resp.json();
+  // New envelope shape: { generated, count, pages: [...] }
+  const idx = Array.isArray(data) ? data : data.pages;
   expect(idx.length).toBeGreaterThan(20);
+  if (!Array.isArray(data)) {
+    expect(typeof data.generated).toBe('string');
+    expect(data.generated).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  }
   // Sanity-check a couple of expected pages
   const urls = idx.map(e => e.url);
   expect(urls).toContain('handbook.html');
