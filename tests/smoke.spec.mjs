@@ -173,6 +173,30 @@ test('9. annotation Markdown export downloads a file with notes inline', async (
   expect(content).toContain('Watch for the speed-run gate.');
 });
 
+test('11. examples.html renders 3 worked-example figures (D2 / D3 / D5)', async ({ page }) => {
+  await page.goto(BASE + '/examples.html');
+  // Expect three new asset-figure images at the top of the artifact preview.
+  await expect(page.locator('img[src="assets/generated/examples-d2-levels.webp"]')).toBeVisible();
+  await expect(page.locator('img[src="assets/generated/examples-d3-prototype.webp"]')).toBeVisible();
+  await expect(page.locator('img[src="assets/generated/examples-d5-spec.webp"]')).toBeVisible();
+});
+
+test('12. rubrics.html shows the non-compensatory floor diagram', async ({ page }) => {
+  await page.goto(BASE + '/rubrics.html');
+  await expect(page.locator('img[src="assets/generated/rubrics-floor-bars.webp"]')).toBeVisible();
+});
+
+test('13. og-image-v3 is referenced in meta tags and reachable', async ({ page, request }) => {
+  await page.goto(BASE + '/index.html');
+  const og = await page.locator('meta[property="og:image"]').getAttribute('content');
+  const tw = await page.locator('meta[name="twitter:image"]').getAttribute('content');
+  expect(og).toContain('og-image-v3.png');
+  expect(tw).toContain('og-image-v3.png');
+  // Confirm the file is actually served at the local server.
+  const resp = await request.get(BASE + '/og-image-v3.png');
+  expect(resp.status()).toBe(200);
+});
+
 test('10. Spot the Loop mini-game scores 3/3 when correct buttons clicked', async ({ page }) => {
   await page.goto(BASE + '/index.html');
   // For each of the 3 cards, click the button that has data-correct="true".
