@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#be1a2f" />
-<title>TeachPlay × Qualtrics — Build Walkthrough</title>
+<title>Qualtrics Survey via API — Build Walkthrough</title>
 <style>
   :root {
     --crimson: #9E1B32;
@@ -35,48 +35,33 @@
   }
   code, pre, .mono { font-family: 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace; }
 
-  /* ----------- HERO ----------- */
+  /* HERO */
   .hero {
     background: linear-gradient(135deg, #1a0a0d 0%, #4a0d18 60%, var(--crimson) 100%);
-    color: #fefcfa;
-    padding: 64px 8% 80px;
-    border-bottom: 6px solid var(--crimson);
+    color: #fefcfa; padding: 64px 8% 80px; border-bottom: 6px solid var(--crimson);
   }
-  .hero .kicker {
-    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-    color: #f3c8d0; font-weight: 700; margin-bottom: 16px;
-  }
-  .hero h1 {
-    font-size: 44px; line-height: 1.1; margin: 0 0 14px; font-weight: 800;
-    max-width: 760px;
-  }
-  .hero .lede {
-    font-size: 18px; color: #f3e8ea; max-width: 680px; line-height: 1.5;
-  }
-  .hero .meta {
-    margin-top: 28px; font-size: 12px; letter-spacing: 0.04em;
-    color: #d8b6bd;
-  }
+  .hero .kicker { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+                  color: #f3c8d0; font-weight: 700; margin-bottom: 16px; }
+  .hero h1 { font-size: 44px; line-height: 1.1; margin: 0 0 14px; font-weight: 800; max-width: 820px; }
+  .hero .lede { font-size: 18px; color: #f3e8ea; max-width: 720px; line-height: 1.5; }
+  .hero .meta { margin-top: 28px; font-size: 12px; letter-spacing: 0.04em; color: #d8b6bd; }
   .hero .meta b { color: #f9e8eb; font-weight: 600; }
 
-  /* ----------- LAYOUT ----------- */
+  /* LAYOUT */
   .wrap { display: grid; grid-template-columns: 240px 1fr; max-width: 1200px;
           margin: 0 auto; gap: 36px; padding: 36px 24px 96px; }
   @media (max-width: 880px) { .wrap { grid-template-columns: 1fr; } }
 
-  /* ----------- TOC ----------- */
-  nav.toc {
-    position: sticky; top: 24px; align-self: start;
-    border-left: 3px solid var(--crimson);
-    padding: 4px 0 4px 14px;
-    font-size: 13px; line-height: 1.4;
-  }
-  nav.toc .toc-h {
-    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--crimson); font-weight: 700; margin-bottom: 12px;
-  }
+  /* TOC */
+  nav.toc { position: sticky; top: 24px; align-self: start;
+            border-left: 3px solid var(--crimson); padding: 4px 0 4px 14px;
+            font-size: 13px; line-height: 1.4; }
+  nav.toc .toc-h { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+                   color: var(--crimson); font-weight: 700; margin: 0 0 10px; }
+  nav.toc .toc-part { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+                      color: var(--muted); font-weight: 700; margin: 14px 0 6px; }
   nav.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: tn; }
-  nav.toc li { padding: 4px 0; counter-increment: tn; }
+  nav.toc li { padding: 3px 0; counter-increment: tn; }
   nav.toc li::before {
     content: counter(tn, decimal-leading-zero);
     color: var(--muted); font-size: 10px; margin-right: 8px;
@@ -86,82 +71,71 @@
   nav.toc a:hover { color: var(--crimson); }
   @media (max-width: 880px) { nav.toc { position: static; } }
 
-  /* ----------- MAIN ----------- */
+  /* MAIN */
   main { min-width: 0; }
-  main h2 {
-    font-size: 28px; line-height: 1.2; margin: 56px 0 6px;
-    border-top: 1px solid var(--line); padding-top: 36px;
+  main .part-divider {
+    border-top: 2px solid var(--crimson); margin: 64px 0 0; padding-top: 18px;
   }
-  main h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+  main .part-divider:first-child { margin-top: 0; }
+  main .part-kicker {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--crimson); font-weight: 800; margin: 0;
+  }
+  main .part-title { font-size: 32px; font-weight: 800; margin: 6px 0 0; line-height: 1.1; }
+  main .part-lede { font-size: 15px; color: var(--muted); margin: 8px 0 0; max-width: 680px; }
+
+  main h2 {
+    font-size: 26px; line-height: 1.2; margin: 48px 0 6px;
+    border-top: 1px solid var(--line); padding-top: 32px;
+  }
+  main h2.first-in-part { border-top: none; padding-top: 24px; margin-top: 24px; }
   main h2 .step-no {
-    display: inline-block;
-    color: var(--crimson); font-weight: 800;
-    font-size: 13px; letter-spacing: 0.1em;
-    margin-right: 12px; vertical-align: middle;
-    text-transform: uppercase;
+    display: inline-block; color: var(--crimson); font-weight: 800;
+    font-size: 13px; letter-spacing: 0.1em; margin-right: 10px;
+    vertical-align: middle; text-transform: uppercase;
   }
   main h2 .label {
-    display: inline-block; font-size: 14px; font-weight: 600;
-    color: var(--muted); letter-spacing: 0.04em; margin-left: 10px;
+    display: inline-block; font-size: 13px; font-weight: 600;
+    color: var(--muted); letter-spacing: 0.04em; margin-left: 8px;
     vertical-align: middle;
   }
-  main h3 {
-    font-size: 17px; margin: 26px 0 10px; color: var(--ink);
-  }
+  main h3 { font-size: 16px; margin: 22px 0 8px; color: var(--ink); }
   main p { margin: 8px 0 14px; }
   main ul, main ol { padding-left: 22px; }
   main li { margin: 4px 0; }
+
   main img.bleed {
     width: 100%; border-radius: 8px; margin: 18px 0 6px;
     box-shadow: 0 6px 24px rgba(28,16,18,0.10);
     border: 1px solid var(--line);
   }
-  main img.cap-img { width: 100%; border-radius: 6px; border: 1px solid var(--line); }
   main figure { margin: 18px 0; }
   main figure figcaption {
-    font-size: 12px; color: var(--muted); margin-top: 6px;
-    font-style: italic;
+    font-size: 12px; color: var(--muted); margin-top: 6px; font-style: italic;
   }
 
-  /* ----------- EXCHANGE BLOCKS ----------- */
-  .turn {
-    border-radius: 8px; padding: 14px 18px 4px; margin: 14px 0;
-    border: 1px solid var(--line);
-  }
-  .turn .who {
-    font-size: 10px; font-weight: 800; letter-spacing: 0.16em;
-    text-transform: uppercase; margin-bottom: 6px;
-  }
-  .turn.user-q {
-    background: var(--prompt-bg);
-    border-left: 4px solid var(--crimson);
-  }
+  /* EXCHANGE BLOCKS (used in case study) */
+  .turn { border-radius: 8px; padding: 14px 18px 4px; margin: 14px 0; border: 1px solid var(--line); }
+  .turn .who { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 6px; }
+  .turn.user-q { background: var(--prompt-bg); border-left: 4px solid var(--crimson); }
   .turn.user-q .who { color: var(--crimson); }
-  .turn.cc-a {
-    background: var(--response-bg);
-    border-left: 4px solid #4a6b78;
-  }
+  .turn.cc-a { background: var(--response-bg); border-left: 4px solid #4a6b78; }
   .turn.cc-a .who { color: #4a6b78; }
   .turn .body p:first-child { margin-top: 4px; }
   .turn .body p:last-child { margin-bottom: 12px; }
   .turn .body code { font-size: 13px; background: rgba(0,0,0,0.04); padding: 1px 5px; border-radius: 3px; }
 
-  /* ----------- CODE BLOCKS ----------- */
+  /* CODE */
   pre.code {
     background: var(--code-bg); color: var(--code-fg);
     padding: 14px 18px; border-radius: 8px; overflow-x: auto;
-    font-size: 13px; line-height: 1.55; margin: 12px 0;
-    border: 1px solid #2c2826;
+    font-size: 13px; line-height: 1.55; margin: 12px 0; border: 1px solid #2c2826;
   }
-  pre.code .c { color: var(--code-comment); font-style: italic; }
-  pre.code .k { color: var(--code-key); }
-  pre.code .s { color: var(--code-str); }
   pre.code .lab {
     display: block; font-size: 9px; letter-spacing: 0.16em;
     text-transform: uppercase; color: var(--code-comment);
     margin-bottom: 8px; font-weight: 700;
   }
-
   pre.result {
     background: var(--result-bg); color: var(--result-fg);
     padding: 14px 18px; border-radius: 8px; overflow-x: auto;
@@ -174,389 +148,556 @@
     margin-bottom: 8px; font-weight: 700;
   }
 
-  /* ----------- TABLES ----------- */
-  table { width: 100%; border-collapse: collapse; margin: 16px 0;
-          font-size: 14px; }
-  th, td { text-align: left; padding: 9px 10px;
-           border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { background: var(--crimson-tint); color: var(--ink);
-       font-weight: 600; font-size: 12px;
-       letter-spacing: 0.04em; text-transform: uppercase; }
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--crimson-tint); color: var(--ink); font-weight: 600;
+       font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
   td.tight { white-space: nowrap; font-family: 'SF Mono', Menlo, Consolas, monospace;
              font-size: 12px; color: var(--muted); }
 
-  /* ----------- BADGES ----------- */
-  .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
-    margin-right: 4px;
-  }
-  .badge.ok { background: #e0eedb; color: #3e6326; }
-  .badge.warn { background: #fbe8d2; color: #8a4a10; }
-  .badge.bad { background: #f5d5d8; color: #8a1a26; }
-
-  /* ----------- CALLOUT ----------- */
+  /* CALLOUT */
   .callout {
-    background: var(--crimson-tint);
-    border-left: 4px solid var(--crimson);
-    padding: 12px 16px; border-radius: 4px; margin: 18px 0;
-    font-size: 14px;
+    background: var(--crimson-tint); border-left: 4px solid var(--crimson);
+    padding: 12px 16px; border-radius: 4px; margin: 18px 0; font-size: 14px;
   }
   .callout b { color: var(--crimson); }
 
-  .lede-img-row {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-    margin: 14px 0;
-  }
-  @media (max-width: 600px) { .lede-img-row { grid-template-columns: 1fr; } }
-
   footer {
     border-top: 1px solid var(--line); padding: 28px 8%;
-    color: var(--muted); font-size: 12px; line-height: 1.5;
-    background: #faf6f2;
+    color: var(--muted); font-size: 12px; line-height: 1.5; background: #faf6f2;
   }
 </style>
 </head>
 <body>
 
 <header class="hero">
-  <div class="kicker">TeachPlay · Operator Walkthrough</div>
-  <h1>Building a perception × efficacy survey on Qualtrics, end to end</h1>
+  <div class="kicker">Operator Walkthrough</div>
+  <h1>Building Qualtrics surveys via the v3 REST API</h1>
   <p class="lede">
-    A step-by-step build log: the canonical prompt, Claude Code's response,
-    and the resulting artifact for each stage. Eleven steps from "can the
-    API even do this?" to two themed surveys sitting in UA Qualtrics waiting
-    for IRB sign-off.
+    A general build pattern &mdash; token, helper, blocks, questions, flow,
+    theme, distribution, export. Reusable across any UA Qualtrics project.
+    Closes with one case study: a perception &times; efficacy survey for the
+    TeachPlay microcredential.
   </p>
   <div class="meta">
-    <b>For:</b> AI-Enhanced Educational Game Design microcredential
-    &nbsp;·&nbsp; <b>Tooling:</b> Claude Code CLI &nbsp;·&nbsp;
-    <b>Stack:</b> Python · Qualtrics v3 REST · UA pdx1 datacenter
-    &nbsp;·&nbsp; <b>Output:</b> Pre 20 + Post 22 items, isActive=false
+    <b>Stack:</b> Python &middot; Qualtrics v3 REST &middot; <code>X-API-TOKEN</code> auth
+    &nbsp;&middot;&nbsp; <b>Reusable across:</b> any institution-tier Qualtrics brand
+    &nbsp;&middot;&nbsp; <b>Output:</b> programmatic survey shells, themed, ready for activation
   </div>
 </header>
 
 <div class="wrap">
 
 <nav class="toc">
-  <div class="toc-h">Steps</div>
+  <div class="toc-h">Contents</div>
+
+  <div class="toc-part">Part 1 — General build pattern</div>
   <ol>
-    <li><a href="#s1">API capability</a></li>
-    <li><a href="#s2">Token + auth</a></li>
-    <li><a href="#s3">Context recon</a></li>
-    <li><a href="#s4">Field gap mapping</a></li>
-    <li><a href="#s5">Construct selection</a></li>
-    <li><a href="#s6">22-item budget</a></li>
-    <li><a href="#s7">Demographics</a></li>
-    <li><a href="#s8">IRB protocol check</a></li>
-    <li><a href="#s9">Build the surveys</a></li>
-    <li><a href="#s10">Theme &amp; branding</a></li>
-    <li><a href="#s11">Verify, ship, iterate</a></li>
+    <li><a href="#s1">Auth &amp; capability</a></li>
+    <li><a href="#s2">Reusable helper module</a></li>
+    <li><a href="#s3">Create empty survey</a></li>
+    <li><a href="#s4">Add blocks &amp; questions</a></li>
+    <li><a href="#s5">Survey flow &amp; EmbeddedData</a></li>
+    <li><a href="#s6">Theme &amp; options</a></li>
+    <li><a href="#s7">Activate, distribute, export</a></li>
+  </ol>
+
+  <div class="toc-part">Part 2 — Case study: TeachPlay</div>
+  <ol style="counter-reset: tn 7;">
+    <li><a href="#c1">Project recon</a></li>
+    <li><a href="#c2">Field-gap → constructs</a></li>
+    <li><a href="#c3">22-item budget under reliability</a></li>
+    <li><a href="#c4">Demographics &amp; IRB</a></li>
+    <li><a href="#c5">Outcome &amp; handoff</a></li>
   </ol>
 </nav>
 
 <main>
 
-<!-- ===================== STEP 1 ===================== -->
-<h2 id="s1"><span class="step-no">Step 01</span> Can Qualtrics actually do this? <span class="label">capability scoping</span></h2>
+<!-- ============================================================ -->
+<!-- ============   PART 1 — GENERAL BUILD PATTERN   ============ -->
+<!-- ============================================================ -->
 
-<p>Before writing code, confirm the surface area. The Qualtrics v3 REST API
-exposes survey-definition / blocks / questions / flow / distributions / export
-endpoints &mdash; meaning a fully programmatic Pre/Post pipeline is on the
-table.</p>
-
-<div class="turn user-q">
-  <div class="who">User → Claude Code</div>
-  <div class="body"><p>Can the Qualtrics v3 REST API support full programmatic
-  survey creation &mdash; questions, blocks, flow, distribution, and response
-  export &mdash; well enough for an end-to-end research pipeline?</p></div>
+<div class="part-divider">
+  <p class="part-kicker">Part 1</p>
+  <h1 class="part-title">General build pattern</h1>
+  <p class="part-lede">
+    Seven steps that work for any Qualtrics project on any institution-tier
+    brand. The Python helper is project-agnostic; only wording and block
+    composition change between projects.
+  </p>
 </div>
 
-<div class="turn cc-a">
-  <div class="who">Claude Code → User</div>
-  <div class="body">
-    <p>Yes. Eight core endpoints cover create / blocks / questions / flow /
-    options / activate / distributions / export. Auth = <code>X-API-TOKEN</code>
-    header, base URL <code>https://{datacenter}.qualtrics.com/API/v3</code>.
-    Practical pattern: build a master in the UI, <code>GET</code> the JSON,
-    then <em>POST</em> variants from that template &mdash; safer than authoring
-    Matrix / Side-by-Side payloads from scratch.</p>
-  </div>
-</div>
+<!-- ============== STEP 1 ============== -->
+<h2 id="s1" class="first-in-part"><span class="step-no">Step 01</span> Auth &amp; capability <span class="label">prerequisite</span></h2>
 
-<figure>
-  <img src="screenshots/resources-hero2.png" alt="TeachPlay landing — anchor for the program scope" class="bleed" />
-  <figcaption>The handbook the surveys will measure: 12 sessions, 5 deliverables,
-  one Proficient floor &mdash; teachplay.dev.</figcaption>
-</figure>
+<p>The Qualtrics v3 REST API exposes everything a research pipeline needs:
+survey-definition CRUD, blocks, questions, flow, options, distributions,
+response export. Auth is a single header.</p>
 
-<!-- ===================== STEP 2 ===================== -->
-<h2 id="s2"><span class="step-no">Step 02</span> Token + datacenter<span class="label">auth</span></h2>
+<h3>Where to get the token</h3>
+<ol>
+  <li>Log in to your institution's Qualtrics &rarr; <i>Account Settings &rarr; Qualtrics IDs</i>.</li>
+  <li>Copy the <b>API token</b> (40-char string) and the <b>Datacenter ID</b> (e.g. <code>pdx1</code>, <code>iad1</code>, <code>fra1</code>, <code>ca1</code>, <code>az1</code>).</li>
+  <li>Save the token to a local file outside any version-controlled directory.</li>
+</ol>
 
-<p>UA Qualtrics keeps the token + datacenter on the IDs page
-(<i>Account Settings → Qualtrics IDs → API</i>). Save the export to a local
-text file; never paste it into chat. The CLI reads it from disk.</p>
+<h3>Verify before doing anything destructive</h3>
+<pre class="code"><span class="lab">PowerShell · whoami probe</span>$token = "&lt;your 40-char token&gt;"
+$dc    = "pdx1"   # your datacenter
 
-<div class="turn user-q">
-  <div class="who">User → Claude Code</div>
-  <div class="body"><p>My Qualtrics API token is saved at
-  <code>C:\Users\jewoo\Desktop\qualtrics-token.txt</code>. Verify the
-  credentials via <code>/whoami</code>, confirm the datacenter, and set up a
-  reusable client wrapper so subsequent calls don't re-read the file.</p></div>
-</div>
-
-<div class="turn cc-a">
-  <div class="who">Claude Code → User</div>
-  <div class="body">
-    <p>Read the file. The line starts with <code>Token&lt;TAB&gt;...</code>
-    so split on whitespace, take field 2. Verify against
-    <code>GET /API/v3/whoami</code> before doing anything destructive.</p>
-  </div>
-</div>
-
-<pre class="code"><span class="lab">PowerShell · whoami probe</span>$line  = (Get-Content "C:\Users\jewoo\Desktop\qualtrics-token.txt" `
-          | Where-Object { $_ -match "^Token\s" })
-$token = ($line -split "\s+", 2)[1].Trim()
 Invoke-RestMethod `
-  -Uri "https://pdx1.qualtrics.com/API/v3/whoami" `
+  -Uri "https://$dc.qualtrics.com/API/v3/whoami" `
   -Headers @{"X-API-TOKEN" = $token}
 </pre>
 
-<pre class="result"><span class="lab">Result</span>brandId     : universityofalabama
-userId      : UR_2se6qQmGfufO8Em
-userName    : jmoon19#universityofalabama
-firstName   : Jewoong   /   lastName : Moon
-email       : jmoon19@ua.edu
-datacenter  : az1
+<pre class="result"><span class="lab">Result</span>brandId     : your-brand
+userId      : UR_xxxxxxxxxxxxxxx
+userName    : your-username#your-brand
+firstName   : ...
+datacenter  : ...
 </pre>
 
 <div class="callout">
-  <b>Note.</b> The IDs page lists <code>pdx1</code>; <code>whoami</code> reports
-  <code>az1</code>. Both route. Stick with <code>pdx1</code> &mdash; the
-  documented one.
+  <b>Note.</b> The IDs page may list one datacenter (e.g. <code>pdx1</code>);
+  <code>whoami</code> may return another (<code>az1</code>). Both route. Use
+  the IDs-page value for consistency.
 </div>
 
-<!-- ===================== STEP 3 ===================== -->
-<h2 id="s3"><span class="step-no">Step 03</span> Recon the host project<span class="label">context-first</span></h2>
+<!-- ============== STEP 2 ============== -->
+<h2 id="s2"><span class="step-no">Step 02</span> Reusable helper module <span class="label">DRY</span></h2>
 
-<p>Don't design instruments in the abstract. Read the program first &mdash;
-its hypotheses, its existing in-app measures, its IRB posture &mdash; so the
-new survey covers <em>only what the in-app instruments can't</em>.</p>
+<p>Wrap the API in a small Python class so every project shares the same
+auth, error handling, and payload shape. The same helper drives every
+subsequent step.</p>
 
-<div class="turn user-q">
-  <div class="who">User → Claude Code</div>
-  <div class="body"><p>I want to add Qualtrics evaluation surveys to the
-  TeachPlay project. Read the program's evaluation plan, IRB protocol, and
-  existing in-app instruments first &mdash; the new surveys should cover only
-  what isn't already measured by the handbook.</p></div>
+<pre class="code"><span class="lab">qualtrics_helper.py · core class</span>import json, requests
+from pathlib import Path
+
+class Qualtrics:
+    def __init__(self, token, datacenter="pdx1"):
+        self.token = token
+        self.base  = f"https://{datacenter}.qualtrics.com/API/v3"
+        self.headers = {"X-API-TOKEN": token, "Content-Type": "application/json"}
+
+    def _req(self, method, path, **kw):
+        r = requests.request(method, f"{self.base}{path}",
+                             headers=self.headers, timeout=30, **kw)
+        data = r.json()
+        if r.status_code &gt;= 400:
+            raise RuntimeError(f"{method} {path} -&gt; {r.status_code}: "
+                               f"{json.dumps(data)[:600]}")
+        return data
+
+    def whoami(self):
+        return self._req("GET", "/whoami")["result"]
+
+    def create_survey(self, name, language="EN", category="CORE"):
+        body = {"SurveyName": name, "Language": language,
+                "ProjectCategory": category}
+        return self._req("POST", "/survey-definitions", json=body)["result"]
+
+    def add_block(self, survey_id, description, block_type="Standard"):
+        body = {"Type": block_type, "Description": description, "BlockElements": []}
+        return self._req("POST", f"/survey-definitions/{survey_id}/blocks",
+                         json=body)["result"]["BlockID"]
+
+    def add_question(self, survey_id, payload, block_id=None):
+        params = {"blockId": block_id} if block_id else None
+        return self._req("POST", f"/survey-definitions/{survey_id}/questions",
+                         params=params, json=payload)["result"]["QuestionID"]
+
+    def get_survey(self, survey_id):
+        return self._req("GET", f"/survey-definitions/{survey_id}")["result"]
+
+    def set_flow(self, survey_id, flow):
+        return self._req("PUT", f"/survey-definitions/{survey_id}/flow",
+                         json=flow)
+
+    def set_active(self, survey_id, active):
+        return self._req("PUT", f"/surveys/{survey_id}",
+                         json={"isActive": active})
+</pre>
+
+<p>One file, one class, every endpoint that matters. Add payload builders
+(<code>likert_agree</code>, <code>mc_single</code>, <code>text_entry</code>,
+&hellip;) as separate top-level functions so wording lives away from the
+HTTP plumbing.</p>
+
+<!-- ============== STEP 3 ============== -->
+<h2 id="s3"><span class="step-no">Step 03</span> Create an empty survey shell <span class="label">first POST</span></h2>
+
+<p>Every survey starts the same way: a single POST that returns the
+<code>SurveyID</code> and a <code>DefaultBlockID</code>. Save both &mdash;
+they thread through every subsequent call.</p>
+
+<pre class="code"><span class="lab">Python</span>c = Qualtrics(token=TOKEN, datacenter="pdx1")
+sv = c.create_survey("My Project — Pre-Program Survey", language="EN")
+
+survey_id     = sv["SurveyID"]          # SV_xxxxxxxxxxxxxxx
+default_block = sv["DefaultBlockID"]    # BL_xxxxxxxxxxxxxxx
+</pre>
+
+<p>The shell is automatically created with <code>isActive=false</code>.
+Activation is a separate explicit call (<a href="#s7">Step 07</a>).
+Browse to your Qualtrics UI &rarr; Projects and the empty shell appears
+immediately.</p>
+
+<!-- ============== STEP 4 ============== -->
+<h2 id="s4"><span class="step-no">Step 04</span> Add blocks &amp; questions <span class="label">bulk POSTs</span></h2>
+
+<p>Two endpoint families:</p>
+
+<table>
+<thead><tr><th>Endpoint</th><th>What it does</th></tr></thead>
+<tbody>
+  <tr><td class="tight">POST /survey-definitions/{id}/blocks</td><td>Adds a new block. Returns <code>BlockID</code>.</td></tr>
+  <tr><td class="tight">POST /survey-definitions/{id}/questions?blockId=&hellip;</td><td>Adds one question to a block. Returns <code>QuestionID</code>.</td></tr>
+</tbody>
+</table>
+
+<h3>Question payload shape</h3>
+
+<p>Every question type follows the same skeleton. <code>QuestionType</code>
++ <code>Selector</code> + <code>SubSelector</code> determines the rendered
+input control.</p>
+
+<pre class="code"><span class="lab">Python · 5-point agree-Likert helper</span>def likert_agree(text, tag, force=True):
+    return {
+        "QuestionText": text,
+        "DataExportTag": tag,
+        "QuestionType": "MC",
+        "Selector":    "SAVR",   # Single Answer Vertical Radio
+        "SubSelector": "TX",
+        "Configuration": {"QuestionDescriptionOption": "UseText"},
+        "Choices": {
+            "1": {"Display": "Strongly disagree"},
+            "2": {"Display": "Disagree"},
+            "3": {"Display": "Neither agree nor disagree"},
+            "4": {"Display": "Agree"},
+            "5": {"Display": "Strongly agree"},
+        },
+        "ChoiceOrder": ["1","2","3","4","5"],
+        "Validation": {"Settings": {"ForceResponse": "ON" if force else "OFF",
+                                     "Type": "None"}},
+        "Language": [],
+    }
+</pre>
+
+<h3>Common type matrix</h3>
+
+<table>
+<thead><tr><th>Control</th><th>QuestionType</th><th>Selector</th><th>SubSelector</th></tr></thead>
+<tbody>
+  <tr><td>Single-answer MC (vertical radio)</td><td><code>MC</code></td><td><code>SAVR</code></td><td><code>TX</code></td></tr>
+  <tr><td>Multi-select MC</td><td><code>MC</code></td><td><code>MAVR</code></td><td><code>TX</code></td></tr>
+  <tr><td>Single-line text entry</td><td><code>TE</code></td><td><code>SL</code></td><td>—</td></tr>
+  <tr><td>Multi-line text entry</td><td><code>TE</code></td><td><code>ML</code></td><td>—</td></tr>
+  <tr><td>Likert matrix</td><td><code>Matrix</code></td><td><code>Likert</code></td><td><code>SingleAnswer</code></td></tr>
+  <tr><td>Slider</td><td><code>Slider</code></td><td><code>HSLIDER</code></td><td>—</td></tr>
+  <tr><td>Descriptive text (no input)</td><td><code>DB</code></td><td><code>TB</code></td><td>—</td></tr>
+</tbody>
+</table>
+
+<div class="callout">
+  <b>Tip.</b> For exotic types (Matrix, Side-by-Side), build one in the UI,
+  call <code>GET /survey-definitions/{id}</code>, copy the resulting JSON
+  payload verbatim, and parameterize the wording. Authoring those payloads
+  from scratch fails in subtle ways (e.g. validation schema mismatches).
 </div>
 
-<div class="turn cc-a">
-  <div class="who">Claude Code → User</div>
-  <div class="body">
-    <p>Pulled four anchors:</p>
-    <ul>
-      <li>Vault entity pages: <code>AI Microcredential GameDesign</code>,
-        <code>ACHE Microcredential</code>, <code>IRB Studies Portfolio</code>.</li>
-      <li>Repo at <code>Desktop\_projects\TeachPlay</code> — Cloudflare Pages
-        static, D1 SQLite, OBv3 / VC2.0 / CLR2.0 / xAPI live.</li>
-      <li>L3 evaluation plan (<code>docs/L3-evaluation-plan.md</code>) names
-        EQ1–EQ5 and lists what's already wired vs. still to build.</li>
-      <li>IRB: <code>HRP-503a</code> R3 active; HRP-502 consent R4.</li>
-    </ul>
-    <p>Already in-app: pre/post 8-skill self-assessment, exit tickets,
-    25-criterion rubric, κ panel, funnel, skills-growth heatmap. The Qualtrics
-    layer needs to cover the gaps the in-app stream doesn't reach.</p>
-  </div>
-</div>
+<h3>Bulk add with the helper</h3>
+
+<pre class="code"><span class="lab">Python · build a block of items</span>b = c.add_block(survey_id, "Block 1 — usability")
+items = [
+    ("This system meets my requirements.",      "USAB_1_meets"),
+    ("This system is easy to use.",              "USAB_2_easy"),
+    ("Using this system is a frustrating experience.", "USAB_3_frust_R"),
+    ("I have to spend too much time correcting things.", "USAB_4_correct_R"),
+]
+for text, tag in items:
+    c.add_question(survey_id, likert_agree(text, tag), block_id=b)
+</pre>
 
 <figure>
-  <img src="screenshots/s01-desktop.jpg" alt="TeachPlay sidebar showing the 12-session structure" class="bleed" />
-  <figcaption>The 12-session left rail. Whatever survey we build has to
-  answer to <em>this</em> structure, not a generic PD template.</figcaption>
+  <img src="assets/generated/api-call-flow.svg"
+       alt="API call sequence: POST /survey-definitions ×1 → POST /blocks ×N → POST /questions ×M → PUT /flow ×1 → GET-merge-PUT /options ×1" class="bleed" />
+  <figcaption>Deterministic call order. <code>SurveyID</code> resolves at
+  call 1 and threads through everything that follows; each block returns a
+  <code>BlockID</code> that scopes its questions; flow and options are PUTs
+  that close out the build.</figcaption>
 </figure>
 
-<!-- ===================== STEP 4 ===================== -->
-<h2 id="s4"><span class="step-no">Step 04</span> Field-gap mapping<span class="label">research design</span></h2>
+<!-- ============== STEP 5 ============== -->
+<h2 id="s5"><span class="step-no">Step 05</span> Survey flow &amp; EmbeddedData <span class="label">routing &amp; cohort tags</span></h2>
 
-<p>The honest version of "this field hasn't measured X" is a small table.
-Anything already in-app gets crossed off. Anything covered by literature but
-absent from the program plan becomes a candidate.</p>
+<p>Survey flow controls block order and lets you capture URL parameters
+(<code>?cohort=&hellip;</code>, <code>?wave=&hellip;</code>) into responses.
+A flow PUT replaces the entire flow tree.</p>
 
-<div class="turn user-q">
-  <div class="who">User → Claude Code</div>
-  <div class="body"><p>Map what this field &mdash; microcredentials × teacher
-  PD × AI in education × game-design pedagogy &mdash; typically measures versus
-  what it doesn't, and propose construct candidates worth including. Usability
-  is required.</p></div>
+<pre class="code"><span class="lab">Python · flow with cohort EmbeddedData</span>def cohort_flow(default_block, extra_blocks):
+    flow = [
+        {"Type": "EmbeddedData", "FlowID": "FL_ED",
+         "EmbeddedData": [{
+             "Description": "cohort", "Type": "Recipient",
+             "Field": "cohort", "VariableType": "String",
+             "DataVisibility": [], "AnalyzeText": False}]},
+        {"Type": "Block", "ID": default_block, "FlowID": "FL_BLK_0"},
+    ]
+    for i, bid in enumerate(extra_blocks, start=1):
+        flow.append({"Type": "Block", "ID": bid, "FlowID": f"FL_BLK_{i}"})
+    return {"Type": "Root", "FlowID": "FL_ROOT",
+            "Properties": {"Count": len(flow) + 1}, "Flow": flow}
+
+c.set_flow(survey_id, cohort_flow(default_block, [b1, b2, b3]))
+</pre>
+
+<p>Distribution link form:
+<code>https://&lt;dc&gt;.qualtrics.com/jfe/form/SV_xxx?cohort=2026-spring</code>.
+The value lands in exported responses next to item answers.</p>
+
+<h3>Branching by response</h3>
+
+<p>Add a <code>Branch</code> element with a <code>BranchLogic</code>
+expression. Editing branch JSON by hand is brittle &mdash; build the branch
+in the UI first, <code>GET</code> the flow, copy the structure.</p>
+
+<pre class="code"><span class="lab">Python · branch shape (sketch)</span>{"Type": "Branch", "FlowID": "FL_BR",
+ "BranchLogic": {
+   "0": {"0": {"LogicType": "Question", "QuestionID": "QID1",
+               "Operator": "GreaterThanOrEqualTo", "RightOperand": "4",
+               "Type": "Expression"}, "Type": "If"},
+   "Type": "BooleanExpression"},
+ "Flow": [{"Type": "Block", "ID": follow_up_block, "FlowID": "FL_BR_BLK"}]}
+</pre>
+
+<!-- ============== STEP 6 ============== -->
+<h2 id="s6"><span class="step-no">Step 06</span> Theme &amp; options <span class="label">branding</span></h2>
+
+<p>The <code>options</code> endpoint controls progress bar, back button,
+ballot-box prevention, header / footer HTML, and survey-level title /
+metadescription. Custom CSS goes inline inside the <code>Header</code>
+HTML via a <code>&lt;style&gt;</code> tag.</p>
+
+<div class="callout">
+  <b>Important.</b> <code>PUT /options</code> is full-replace, not partial.
+  Forgetting to GET first drops <code>SurveyProtection</code>,
+  <code>PartialData</code>, and other required keys, and the request 400s.
+  Always <b>GET &rarr; merge &rarr; PUT</b>.
 </div>
+
+<pre class="code"><span class="lab">Python · idempotent themer</span>def apply_theme(c, survey_id, *, accent="#9E1B32",
+                title="My Project Survey",
+                header_html, footer_html):
+    current = c._req("GET", f"/survey-definitions/{survey_id}/options")["result"]
+    overrides = {
+        "BackButton": "true",
+        "SaveAndContinue": "true",
+        "BallotBoxStuffingPrevention": "true",
+        "ProgressBarDisplay": "VerboseText",
+        "Header": header_html,
+        "Footer": footer_html,
+        "SurveyTitle": title,
+    }
+    merged = {**current, **overrides}
+    c._req("PUT", f"/survey-definitions/{survey_id}/options", json=merged)
+</pre>
+
+<p>For visual styling beyond progress bar / buttons, embed a
+<code>&lt;style&gt;</code> block at the top of <code>header_html</code>:</p>
+
+<pre class="code"><span class="lab">Header HTML · inline style override</span>&lt;style&gt;
+  body, .Skin { font-family: 'Inter', system-ui, sans-serif !important; }
+  .Skin .ButtonNext, .Skin .ButtonSubmit {
+    background: #9E1B32 !important; border-color: #9E1B32 !important;
+    border-radius: 4px !important;
+  }
+  .Skin .ProgressBarFill { background: #9E1B32 !important; }
+  .Skin .QuestionOuter:hover { background: #fbf7f8 !important; }
+&lt;/style&gt;
+&lt;div style="border-left: 4px solid #9E1B32; padding: 8px 0 8px 14px;"&gt;
+  &lt;div style="font-size: 11px; font-weight: 700;
+              text-transform: uppercase; color: #9E1B32;"&gt;Project Name&lt;/div&gt;
+  &lt;div style="color: #555; font-size: 14px;"&gt;Subtitle here&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+
+<figure>
+  <img src="assets/generated/theme-before-after.webp"
+       alt="Two phone mockups side by side: left shows generic gray-and-blue Qualtrics, right shows the same form themed in crimson on warm cream" class="bleed" />
+  <figcaption>The same survey, before and after a theme PUT. Same questions,
+  same data, different signal &mdash; institution-aligned styling raises
+  perceived legitimacy without re-creating the survey.</figcaption>
+</figure>
+
+<!-- ============== STEP 7 ============== -->
+<h2 id="s7"><span class="step-no">Step 07</span> Activate, distribute, export <span class="label">life-cycle</span></h2>
+
+<h3>Activate</h3>
+
+<p>Until activated, no responses are accepted even if the link is shared.
+Activation is a separate explicit call &mdash; intentional, because it
+implies the instrument is IRB / governance approved.</p>
+
+<pre class="code"><span class="lab">Python</span>c.set_active(survey_id, True)
+</pre>
+
+<h3>Distribute</h3>
+
+<p>Two patterns: anonymous link (no participant identification) or
+individual email link (uses a Qualtrics mailing list).</p>
+
+<pre class="code"><span class="lab">Python · anonymous link with cohort tag</span>dist = {
+    "surveyId": survey_id,
+    "linkType": "Anonymous",
+    "description": "My Project — anonymous link",
+    "action": "CreateDistribution",
+    "expirationDate": "2026-12-31T23:59:59Z",
+}
+print(c._req("POST", "/distributions", json=dist))
+# returns the anonymous link; append ?cohort=&lt;tag&gt; for cohort capture
+</pre>
+
+<h3>Export responses</h3>
+
+<p>Async &mdash; start, poll, download zip, extract.</p>
+
+<pre class="code"><span class="lab">Python · response export pattern</span>import time, io, zipfile
+
+prog = c._req("POST", f"/surveys/{survey_id}/export-responses",
+              json={"format": "csv"})["result"]["progressId"]
+
+while True:
+    s = c._req("GET", f"/surveys/{survey_id}/export-responses/{prog}")["result"]
+    if s["status"] == "complete": break
+    if s["status"] == "failed":   raise RuntimeError(s)
+    time.sleep(2)
+
+raw = c._req("GET",
+             f"/surveys/{survey_id}/export-responses/{s['fileId']}/file")
+zipfile.ZipFile(io.BytesIO(raw)).extractall("./responses/")
+</pre>
+
+<p>The exported CSV preserves <code>DataExportTag</code> column names &mdash;
+your tag scheme from Step 04 maps directly to analyzable columns.</p>
+
+<!-- ============================================================ -->
+<!-- ============   PART 2 — CASE STUDY: TEACHPLAY    =========== -->
+<!-- ============================================================ -->
+
+<div class="part-divider">
+  <p class="part-kicker">Part 2 · Case study</p>
+  <h1 class="part-title">TeachPlay perception &times; efficacy survey</h1>
+  <p class="part-lede">
+    The general pattern from Part 1 applied to a real research project:
+    a 12-session AI-enhanced game-design microcredential at the University
+    of Alabama. Twenty-two items in the Post survey, twenty in the Pre,
+    paired by an anonymous self-generated code.
+  </p>
+</div>
+
+<!-- ============== CASE 1 ============== -->
+<h2 id="c1" class="first-in-part"><span class="step-no">Case 01</span> Project recon <span class="label">context first</span></h2>
+
+<p>Before designing instruments, read the project. The TeachPlay handbook
+(<code>teachplay.dev</code>) already emits in-app pre/post 8-skill
+self-assessment, exit tickets, a 25-criterion rubric, Cohen's &kappa;
+panel, and a completion funnel. The Qualtrics layer should cover only
+what those instruments don't.</p>
 
 <div class="turn cc-a">
-  <div class="who">Claude Code → User</div>
+  <div class="who">Recon read</div>
   <div class="body">
-    <p>Mapped the 4-way intersection &mdash; microcredential × teacher PD ×
-    AI in education × game-design pedagogy &mdash; against published
-    short-form scales:</p>
+    <ul>
+      <li>Vault entity pages (<code>AI Microcredential GameDesign</code>, <code>ACHE Microcredential</code>, <code>IRB Studies Portfolio</code>).</li>
+      <li>Repo at <code>Desktop\_projects\TeachPlay</code> &mdash; static HTML/JS, Cloudflare Pages, D1 SQLite, OBv3 / VC2.0 / CLR2.0 / xAPI.</li>
+      <li>L3 evaluation plan: EQ1&ndash;EQ5 named, instruments wired vs. still-to-build listed.</li>
+      <li>IRB <code>HRP-503a</code> R3 active; consent <code>HRP-502</code> R4.</li>
+    </ul>
   </div>
 </div>
+
+<!-- ============== CASE 2 ============== -->
+<h2 id="c2"><span class="step-no">Case 02</span> Field-gap mapping &rarr; constructs <span class="label">research design</span></h2>
+
+<p>The 4-way intersection &mdash; microcredential &times; teacher PD &times;
+AI in education &times; game-design pedagogy &mdash; has a chronic short
+list of what published evaluations rarely measure. We deliberately stay in
+that zone.</p>
 
 <table>
 <thead><tr><th>Construct</th><th>Why a gap</th><th>Short form</th></tr></thead>
 <tbody>
   <tr><td>Usability (program-level)</td><td>SUS-10 too generic; 3-surface app needs targeted measure</td><td>UMUX (Lewis 2013)</td></tr>
-  <tr><td>AI literacy + AI-use SE</td><td>TeachPlay <em>is</em> AI; existing self-assess covers design only</td><td>Bandura task-specific + Wang 2023</td></tr>
-  <tr><td>AI over-reliance / authorship</td><td>Negative-space rubric exists; self-report doesn't</td><td>Buçinca 2021 pattern</td></tr>
+  <tr><td>AI-use self-efficacy</td><td>TeachPlay <em>is</em> AI; existing self-assess covers design only</td><td>Bandura task-specific + Wang 2023</td></tr>
   <tr><td>Credential value (signal/social/economic)</td><td>Microcredential lit's chronic gap</td><td>Phillips &amp; Cohen 2023 MVS</td></tr>
   <tr><td>Designer identity + agency</td><td>Game-design pedagogy outcome rarely measured in PD</td><td>Kafai &amp; Fields 2018</td></tr>
-  <tr><td>Equity-conscious design intent</td><td>UDL crosswalk exists; intent unmeasured</td><td>self-built + vignette</td></tr>
   <tr><td>Teaching efficacy contagion</td><td>"My students will engage with what I designed" rarely captured</td><td>TSES adapted</td></tr>
 </tbody>
 </table>
 
 <figure>
-  <img src="assets/generated/alignment-coverage-matrix.webp" alt="Alignment coverage matrix illustration" class="bleed" />
-  <figcaption>Coverage matrices like this are how the L3 plan's EQ1–EQ5 keep
-  honest about what's measured vs. what's claimed.</figcaption>
-</figure>
-
-<!-- ===================== STEP 5 ===================== -->
-<h2 id="s5"><span class="step-no">Step 05</span> Narrow to perception × efficacy<span class="label">scope discipline</span></h2>
-
-<p>The "everything we could measure" list has 40+ items. The "what we
-should measure right now" list is 5–6.</p>
-
-<div class="turn user-q">
-  <div class="who">User → Claude Code</div>
-  <div class="body"><p>Narrow the construct list to perception and self-efficacy
-  domains. Drop anything the in-app pre/post 8-skill self-assessment already
-  covers.</p></div>
-</div>
-
-<div class="turn cc-a">
-  <div class="who">Claude Code → User</div>
-  <div class="body">
-    <p>Two-axis frame:</p>
-    <ul>
-      <li><b>Perception</b> &mdash; usability, credential value, designer identity.</li>
-      <li><b>Efficacy</b> &mdash; AI-use self-efficacy, teaching efficacy contagion.</li>
-    </ul>
-    <p>Demographics live in the Pre as a separate, non-substantive block so
-    they don't compete with the construct items for attention.</p>
-  </div>
-</div>
-
-<figure>
   <img src="assets/generated/perception-efficacy-quadrant.svg"
        alt="Quadrant chart with five labeled construct markers — UMUX, AI-use SE, Credential Value, Designer Identity, Teaching Efficacy Contagion — plotted on perception (x) × efficacy (y)" class="bleed" />
-  <figcaption>Perception × efficacy quadrant. Five constructs land where the
-  in-app self-assessment doesn't already cover &mdash; that's the survey's
-  footprint.</figcaption>
+  <figcaption>Perception &times; efficacy footprint. Five constructs land
+  where the in-app self-assessment doesn't already cover &mdash; that's the
+  survey's footprint. Lower-left quadrant deliberately empty: those signals
+  already live in the in-app stream.</figcaption>
 </figure>
 
-<!-- ===================== STEP 6 ===================== -->
-<h2 id="s6"><span class="step-no">Step 06</span> 22-item budget under reliability<span class="label">measurement</span></h2>
+<!-- ============== CASE 3 ============== -->
+<h2 id="c3"><span class="step-no">Case 03</span> 22-item budget under reliability <span class="label">measurement</span></h2>
 
-<p>The hard constraint: keep Cronbach's α and McDonald's ω
-estimable, paired-Δ analysis valid, and fit inside ~6 minutes.
-Rule: every construct ≥ 3 items (Hair 2019); use validated short
-forms only.</p>
-
-<div class="turn user-q">
-  <div class="who">User → Claude Code</div>
-  <div class="body"><p>Constrain the post-program survey to roughly 22 items
-  while preserving every construct's reliability and statistical assumptions
-  &mdash; alpha/omega estimable, factor identification valid, paired-Δ
-  interpretable. Use validated short forms only.</p></div>
-</div>
-
-<div class="turn cc-a">
-  <div class="who">Claude Code → User</div>
-  <div class="body">
-    <p>Composition that fits 22 substantive items + 4 tag/demographic items
-    while keeping every construct ≥ 3:</p>
-  </div>
-</div>
-
-<table>
-<thead><tr><th>Block</th><th>Items</th><th>α reported</th><th>Why</th></tr></thead>
-<tbody>
-  <tr><td>UMUX usability</td><td>4</td><td>.79–.83</td><td>SUS proxy at 4 items; r ≈ .80 with SUS-10 (Lewis 2013)</td></tr>
-  <tr><td>AI-use Self-Efficacy</td><td>4</td><td>.84+</td><td>Pre/Post identical wording → paired d_z</td></tr>
-  <tr><td>Credential value (single composite)</td><td>4</td><td>.78+</td><td>3-factor needs 9 items; pilot can't carry</td></tr>
-  <tr><td>Designer Identity</td><td>4</td><td>.85</td><td>Pre/Post identical → paired d_z</td></tr>
-  <tr><td>Teaching Efficacy Contagion</td><td>3</td><td>.80+</td><td>Post-only (no baseline frame)</td></tr>
-</tbody>
-</table>
-
-<div class="callout">
-  Pilot N = 20–50 means α has wide CIs. Report α + 95% CI (Feldt 1965); defer
-  CFA to cohort-2 pooled (N ≥ 150).
-</div>
+<p>Hard constraint: keep Cronbach's &alpha; / McDonald's &omega; estimable,
+paired-&Delta; valid, and the survey under ~6 minutes. Rule: every construct
+&ge; 3 items (Hair 2019); validated short forms only.</p>
 
 <figure>
   <img src="assets/generated/item-budget-cards.svg"
        alt="Five labeled block cards: UMUX Usability (4 items, α .79–.83, Post only) · AI-use SE (4, α .84+, Pre⇄Post) · Credential Value (4, α .78+, Pre→Post) · Designer Identity (4, α .85, Pre⇄Post) · TSE Contagion (3, α .80+, Post only)" class="bleed" />
-  <figcaption>Five blocks, 22 substantive items, every construct ≥ 3 to keep
-  alpha estimable. Pre/Post share AISE and Designer Identity wording so paired
-  d_z is interpretable.</figcaption>
+  <figcaption>Five blocks, 22 substantive items, every construct &ge; 3 to
+  keep alpha estimable. Pre/Post share AISE and Designer Identity wording
+  verbatim so paired d_z is interpretable.</figcaption>
 </figure>
 
-<!-- ===================== STEP 7 ===================== -->
-<h2 id="s7"><span class="step-no">Step 07</span> Anonymous demographics<span class="label">PII-free</span></h2>
-
-<p>EQ3 (equity) needs subgroup data. The L3 plan's stance: collect minimum,
-opt-in for sensitive items, never break out cells with n &lt; 10.</p>
-
-<div class="turn user-q">
-  <div class="who">User → Claude Code</div>
-  <div class="body"><p>Add an anonymous demographics block to the pre-program
-  survey covering, at minimum, grade level, gender, and profession type.
-  Collect no personally identifying information; pair Pre and Post by a
-  self-generated code.</p></div>
+<div class="callout">
+  Pilot N = 20&ndash;50 means &alpha; has wide CIs. Report &alpha; + 95% CI
+  (Feldt 1965); defer CFA to cohort-2 pooled (N &ge; 150).
 </div>
 
-<div class="turn cc-a">
-  <div class="who">Claude Code → User</div>
-  <div class="body">
-    <p>Eight blocks, zero PII. Pairing handled by a self-generated 4-character
-    code — mother's first letter + birth-month 2 digits + favorite-color first
-    letter (e.g. <code>K07B</code>). Mavros 2018 pattern; expected pairing
-    rate 70–90 %.</p>
-  </div>
-</div>
+<!-- ============== CASE 4 ============== -->
+<h2 id="c4"><span class="step-no">Case 04</span> Demographics &amp; IRB <span class="label">compliance</span></h2>
+
+<p>Anonymous demographics in the Pre &mdash; minimum needed for EQ3 (equity)
+subgroup analysis, with no PII collected. Pre/Post pairing handled by a
+self-generated 4-character code (Mavros 2018).</p>
 
 <table>
 <thead><tr><th>Field</th><th>Type</th><th>Note</th></tr></thead>
 <tbody>
-  <tr><td>D0 matching code</td><td>4-char text</td><td>self-rule, PII-free</td></tr>
-  <tr><td>D1 profession</td><td>single-select</td><td>pre-service / K-5 / 6-8 / 9-12 / higher-ed / LXD / admin / other / PNTS</td></tr>
-  <tr><td>D2 grade level</td><td>multi-select</td><td>PreK–K, 1-2, 3-5, 6-8, 9-12, higher-ed, adult, not teaching, PNTS</td></tr>
-  <tr><td>D3 gender</td><td>single-select</td><td>woman / man / non-binary / self-describe (no PII) / PNTS</td></tr>
-  <tr><td>D4 subject</td><td>multi-select</td><td>ELA / math / sci-STEM / social / CS / arts / SpEd / multi / other / PNTS</td></tr>
-  <tr><td>D5 years teaching</td><td>bucketed</td><td>0 / 1-3 / 4-9 / 10-19 / 20+ / PNTS</td></tr>
-  <tr><td>D6 institution</td><td>single-select</td><td>public / private / charter / higher-ed / non-school / PNTS</td></tr>
-  <tr><td>D7 race / ethnicity</td><td>opt-in multi</td><td>IPEDS, default unselected, n ≥ 10 cell rule on reporting</td></tr>
+  <tr><td>D0 matching code</td><td>4-char text</td><td>self-rule (e.g. mother first letter + birth month + favorite color)</td></tr>
+  <tr><td>D1&ndash;D6 demographics</td><td>MC single/multi</td><td>profession / grade level / gender / subject / years / institution; all with "Prefer not to say"</td></tr>
+  <tr><td>D7 race/ethnicity</td><td>opt-in multi</td><td>IPEDS, default unselected, n &ge; 10 cell rule on reporting</td></tr>
 </tbody>
 </table>
 
-<!-- ===================== STEP 8 ===================== -->
-<h2 id="s8"><span class="step-no">Step 08</span> IRB protocol check<span class="label">compliance</span></h2>
+<h3>IRB protocol mapping</h3>
 
-<p>Before issuing a single API call, confirm that the active IRB protocol
-(<code>HRP-503a</code> R3) authorizes the instruments. The protocol lives
-as a <code>.docx</code>, so extract its text without a Word install.</p>
+<p>Before any API calls, confirm the active IRB protocol authorizes each
+instrument. Extract the .docx body (zip + XML) and check item-by-item.</p>
 
-<pre class="code"><span class="lab">Python · zip+XML extraction (no python-docx needed)</span>import zipfile, xml.etree.ElementTree as ET
+<pre class="code"><span class="lab">Python · zip+XML protocol extraction (no python-docx needed)</span>import zipfile, xml.etree.ElementTree as ET
 NS = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
-z   = zipfile.ZipFile(r'...HRP-503a...R3.docx')
+z   = zipfile.ZipFile('HRP-503a_R3.docx')
 root = ET.fromstring(z.read('word/document.xml'))
 for p in root.iter(NS + 'p'):
     print(''.join(t.text or '' for t in p.iter(NS + 't')))
 </pre>
 
-<pre class="result"><span class="lab">Result · what R3 explicitly authorizes</span>✓ "Pre/post project surveys (UA Qualtrics)" · confidence in AI tool use
-✓ "Demographic survey"
-✓ "Usability logs" / structured rubric
+<pre class="result"><span class="lab">R3 mapping result</span>✓ Pre/post project surveys (UA Qualtrics) · confidence in AI tool use
+✓ Demographic survey
+✓ Usability logs / structured rubric
 △ H4 "perceived effectiveness for classroom-relevant gamelets"
 ✗ Credential value perception        (NOT named)
 ✗ Designer identity                  (NOT named)
@@ -568,173 +709,19 @@ for p in root.iter(NS + 'p'):
   Teaching Efficacy Contagion is named explicitly).
 </div>
 
-<!-- ===================== STEP 9 ===================== -->
-<h2 id="s9"><span class="step-no">Step 09</span> Build the surveys<span class="label">code + API</span></h2>
+<!-- ============== CASE 5 ============== -->
+<h2 id="c5"><span class="step-no">Case 05</span> Outcome &amp; handoff <span class="label">what's left</span></h2>
 
-<p>Three Python files. <code>qualtrics_helper.py</code> wraps the API.
-<code>instruments.py</code> holds every wording in one place &mdash; the
-editable surface. <code>build_surveys.py</code> orchestrates POSTs in the
-right order.</p>
+<p>Two surveys, themed UA Crimson, paired by anonymous code, sitting
+inactive in UA Qualtrics waiting for IRB sign-off.</p>
 
-<div class="turn user-q">
-  <div class="who">User → Claude Code</div>
-  <div class="body"><p>Proceed with the build. Use a reusable helper module so
-  all wording lives in one editable surface, leave both surveys
-  <code>isActive=false</code> on creation, and add a <code>cohort</code>
-  EmbeddedData parameter to the survey flow so anonymous links can carry
-  the cohort tag.</p></div>
-</div>
-
-<div class="turn cc-a">
-  <div class="who">Claude Code → User</div>
-  <div class="body">
-    <p>TaskCreate × 5 (IRB extract → helper → post → pre → verify). Wrote
-    files. First Post build hit a 400 on <code>T2_hours_actual</code>
-    (numeric validation schema mismatch). Pivoted that one item to bucketed
-    <code>mc_single</code> (less than 18 / 18-30 / 31-42 / 43-54 / 54+ /
-    don't remember) and resumed on the same SurveyID rather than re-creating.</p>
-  </div>
-</div>
-
-<pre class="code"><span class="lab">qualtrics_helper.py · payload builder shape</span>def likert_agree(text, tag, force=True):
-    return {
-        "QuestionText": text,
-        "DataExportTag": tag,
-        "QuestionType": "MC",
-        "Selector": "SAVR",          # single-answer vertical radio
-        "SubSelector": "TX",
-        "Choices": LIKERT_5_AGREE,    # Strongly disagree → Strongly agree
-        "ChoiceOrder": ["1","2","3","4","5"],
-        "Validation": {"Settings": {"ForceResponse": "ON" if force else "OFF",
-                                     "Type": "None"}},
-    }
-</pre>
-
-<pre class="code"><span class="lab">build_surveys.py · POST sequence</span>sv = client.create_survey("TeachPlay Post-Program Survey", language="EN")
-survey_id, default_block = sv["SurveyID"], sv["DefaultBlockID"]
-
-# Tag block (3 items)
-client.add_question(survey_id, qh.text_entry(t0_text, "T0_match_code", True), default_block)
-add_dynamic_block(client, survey_id, default_block, TAG_ITEMS_POST[1:])  # T1, T2
-
-# Construct blocks
-b_umux = client.add_block(survey_id, "1_Usability_UMUX")
-add_likert_block(client, survey_id, b_umux, UMUX, "agree")
-b_aise = client.add_block(survey_id, "2_AI_Use_Self_Efficacy")
-add_likert_block(client, survey_id, b_aise, AI_SE, "confidence")
-# ... CredValue, DesignerID, TSEContagion
-
-# Survey Flow w/ cohort EmbeddedData (URL param)
-client.set_flow(survey_id, cohort_flow(survey_id, default_block,
-                                       [b_umux, b_aise, b_cv, b_di, b_tse]))
-</pre>
-
-<pre class="result"><span class="lab">Result · two surveys live, inactive</span>POST  → SV_39sdRK7OVJvSiPk   (Post · 22 items · Inactive)
-POST  → SV_9QtpyWbqTypaFls   (Pre  · 20 items · Inactive)
-
-verify SV_39sdRK7OVJvSiPk:
-  block_count       7  (Default + Trash + 5 added)
-  question_count    22
-  data_export_tags  T0..T2 / UMUX_1..4 / AISE_1..4 / CV_1..4 / DI_1..4 / TSE_1..3
-</pre>
-
-<figure>
-  <img src="assets/generated/api-call-flow.svg"
-       alt="Five sequential API call cards: POST /survey-definitions ×1 → POST /blocks ×5 → POST /questions ×22 → PUT /flow ×1 → GET-merge-PUT /options ×1, totaling 30 calls per survey" class="bleed" />
-  <figcaption>Thirty API calls per survey, in deterministic order: 1 shell
-  POST → 5 block POSTs → 22 question POSTs → 1 flow PUT → 1 options
-  GET-merge-PUT. SurveyID resolves at call one and threads through the rest.</figcaption>
-</figure>
-
-<figure>
-  <img src="assets/generated/facilitator-studio.webp" alt="Facilitator studio illustration" class="bleed" />
-  <figcaption>The instruments will land in the same operator surface that
-  already runs cohort κ, funnel, and heatmap.</figcaption>
-</figure>
-
-<!-- ===================== STEP 10 ===================== -->
-<h2 id="s10"><span class="step-no">Step 10</span> Theme it <em>like the rest of the program</em><span class="label">branding</span></h2>
-
-<p>The handbook is UA Crimson #9E1B32 with Inter typography. The Qualtrics
-surveys should look like the same project, not a generic data-collection
-form. <code>PUT /survey-definitions/{id}/options</code> is full-replace, so
-GET → merge → PUT.</p>
-
-<div class="turn user-q">
-  <div class="who">User → Claude Code</div>
-  <div class="body"><p>Apply professional theming to both surveys via the
-  survey-options API: UA Crimson palette, Inter typography, branded header,
-  IRB-attribution footer, verbose progress bar, and back button. Use an
-  idempotent <code>GET → merge → PUT</code> pattern so re-runs don't drop
-  required option fields.</p></div>
-</div>
-
-<div class="turn cc-a">
-  <div class="who">Claude Code → User</div>
-  <div class="body">
-    <p>Layered TeachPlay branding on top of the auto-applied UA brand skin
-    (<code>SkinLibrary: universityofalabama</code>). Inline <code>&lt;style&gt;</code>
-    in the Header field overrides Crimson, Inter, button radius, hover state,
-    progress bar fill, accent border on hover. Footer carries IRB attribution.</p>
-  </div>
-</div>
-
-<pre class="code"><span class="lab">qualtrics_helper.py · theme options</span>def teachplay_theme_options(survey_title):
-    css = ("&lt;style&gt;"
-        "body, .Skin { font-family: 'Inter', system-ui, sans-serif !important; }"
-        ".Skin .ButtonNext, .Skin .ButtonSubmit {"
-        "  background: #9E1B32 !important; border-color: #9E1B32 !important;"
-        "  border-radius: 4px !important; }"
-        ".Skin .ProgressBarFill { background: #9E1B32 !important; }"
-        ".Skin .QuestionOuter:hover { background: #fbf7f8 !important; }"
-        "&lt;/style&gt;")
-    header = css + "&lt;div ...crimson left-border block, TeachPlay wordmark...&gt;"
-    footer = "&lt;div ...IRB attribution...&gt;"
-    return {
-        "BackButton": "true",
-        "SaveAndContinue": "true",
-        "BallotBoxStuffingPrevention": "true",
-        "ProgressBarDisplay": "VerboseText",
-        "Header": header,
-        "Footer": footer,
-        "SurveyTitle": survey_title,
-        ...
-    }
-</pre>
-
-<pre class="code"><span class="lab">apply_theme.py · GET-merge-PUT (idempotent)</span>for role, (sv_id, title) in SURVEYS.items():
-    current = c._req("GET",  f"/survey-definitions/{sv_id}/options")["result"]
-    merged  = {**current, **qh.teachplay_theme_options(survey_title=title)}
-    c._req("PUT", f"/survey-definitions/{sv_id}/options", json=merged)
-</pre>
-
-<pre class="result"><span class="lab">Result</span>post   SV_39sdRK7OVJvSiPk   → 200 OK
-pre    SV_9QtpyWbqTypaFls   → 200 OK
-
-Verifying applied options...
-  post   ProgressBar=VerboseText  BackButton=true  BallotBox=true  Header=set
-  pre    ProgressBar=VerboseText  BackButton=true  BallotBox=true  Header=set
-</pre>
-
-<div class="callout">
-  <b>Lesson:</b> Qualtrics' <code>PUT options</code> is full-replace, not
-  partial. Forgetting to GET first drops <code>SurveyProtection</code>,
-  <code>PartialData</code>, etc. and 400s. The first attempt failed; the
-  GET-merge-PUT pattern is now baked into the helper.
-</div>
-
-<figure>
-  <img src="assets/generated/theme-before-after.webp"
-       alt="Two smartphone mockups side by side — left is generic gray-and-blue, right is the same form re-themed in UA crimson on warm cream" class="bleed" />
-  <figcaption>Generic Qualtrics on the left; UA-themed on the right. Same
-  questions, same data, different signal &mdash; applied via PUT options,
-  not by re-creating the survey.</figcaption>
-</figure>
-
-<!-- ===================== STEP 11 ===================== -->
-<h2 id="s11"><span class="step-no">Step 11</span> Verify, ship, iterate<span class="label">handoff</span></h2>
-
-<p>Two surveys, themed, inactive. The remaining work is human, not API.</p>
+<table>
+<thead><tr><th>Role</th><th>SurveyID</th><th>Items</th><th>Status</th></tr></thead>
+<tbody>
+  <tr><td>Pre-Program</td><td class="tight">SV_9QtpyWbqTypaFls</td><td>20</td><td>Inactive</td></tr>
+  <tr><td>Post-Program</td><td class="tight">SV_39sdRK7OVJvSiPk</td><td>22</td><td>Inactive</td></tr>
+</tbody>
+</table>
 
 <table>
 <thead><tr><th>Action</th><th>Owner</th><th>When</th></tr></thead>
@@ -743,59 +730,51 @@ Verifying applied options...
   <tr><td>R4 amendment: Credential Value + Designer Identity (+ name TSE Contagion)</td><td>PI</td><td>Before activation</td></tr>
   <tr><td><code>set_active(sv, True)</code></td><td>PI</td><td>After R4 approval</td></tr>
   <tr><td>Cohort link: <code>?cohort=2026-spring</code></td><td>PI</td><td>At cohort enrollment</td></tr>
-  <tr><td>Cohort 1 close → export → α + paired d_z</td><td>RA + PI</td><td>+30 days</td></tr>
-  <tr><td>If matching-code pair rate &lt; 70%, revise prompt for cohort 2</td><td>RA</td><td>Cohort 2 launch</td></tr>
-  <tr><td>Cohort 2-3 pool (N ≥ 150) → CFA on Credential Value 3-factor</td><td>PI</td><td>Year 2</td></tr>
+  <tr><td>Cohort 1 close &rarr; export &rarr; &alpha; + paired d_z</td><td>RA + PI</td><td>+30 days</td></tr>
+  <tr><td>Cohort 2&ndash;3 pool (N &ge; 150) &rarr; CFA on Credential Value 3-factor</td><td>PI</td><td>Year 2</td></tr>
 </tbody>
 </table>
 
 <figure>
-  <img src="assets/generated/s12-learner-loop.png" alt="Learner loop diagram from session 12" class="bleed" />
+  <img src="assets/generated/s12-learner-loop.png" alt="Learner loop diagram from session 12 of the TeachPlay handbook" class="bleed" />
   <figcaption>Session 12 closes the learner loop &mdash; which is also when
   the Post survey lands. The Pre fires in Session 1.</figcaption>
 </figure>
 
-<h3>Files in this build</h3>
+<h3>Files in this case study</h3>
 <table>
 <thead><tr><th>Path</th><th>Role</th></tr></thead>
 <tbody>
   <tr><td class="tight">eval/qualtrics_helper.py</td><td>API client + payload builders + theme</td></tr>
   <tr><td class="tight">eval/instruments.py</td><td>All wording + tags (the editable surface)</td></tr>
-  <tr><td class="tight">eval/build_surveys.py</td><td>Entry point: post / pre / both / verify</td></tr>
-  <tr><td class="tight">eval/apply_theme.py</td><td>Idempotent themer</td></tr>
+  <tr><td class="tight">eval/build_surveys.py</td><td>Entry point: <code>post / pre / both / verify</code></td></tr>
+  <tr><td class="tight">eval/apply_theme.py</td><td>Idempotent themer (GET-merge-PUT)</td></tr>
   <tr><td class="tight">eval/_created_surveys.json</td><td>SurveyIDs + block IDs (generated)</td></tr>
-  <tr><td class="tight">eval/README.md</td><td>Operator reference (this file's denser cousin)</td></tr>
-  <tr><td class="tight">25_Service/IRB/TeachPlay/extracted/R3_protocol.txt</td><td>R3 plain-text dump for amendment drafting</td></tr>
+  <tr><td class="tight">eval/README.md</td><td>Operator reference (denser cousin of this guide)</td></tr>
 </tbody>
 </table>
 
 <h3>Two failure modes worth remembering</h3>
 <ul>
-  <li><code>numeric_entry</code> 400 &mdash; Qualtrics' <code>ValidNumber</code>
-    schema rejects what looks like a clean payload. Workaround: bucketed
-    <code>mc_single</code>. To fix properly, build a UI survey with the
-    validation you want, <code>GET /survey-definitions/{id}</code>, copy the
-    Validation block verbatim.</li>
-  <li><code>DELETE /surveys/{id}</code> denied by harness without explicit
-    user authorization. Plan for it: don't create throwaway shells through
-    the API. If you do, clean up in the UI.</li>
+  <li><code>numeric_entry</code> 400 &mdash; Qualtrics' <code>ValidNumber</code> schema rejects what looks like a clean payload. Workaround: bucketed <code>mc_single</code>. To fix properly, build a UI survey with the validation you want, GET <code>/survey-definitions/{id}</code>, copy the Validation block verbatim.</li>
+  <li><code>DELETE /surveys/{id}</code> denied by tooling without explicit user authorization. Plan for it: don't create throwaway shells through the API. If you do, clean up in the UI.</li>
 </ul>
 
 <div class="callout">
-  <b>The point.</b> Eleven prompts, two surveys, 22 + 20 items, fully themed,
-  IRB-aware, paired-Δ ready. The instruments don't measure what the in-app
-  stream already covers; they cover the field gaps the L3 plan named
-  explicitly. Activation is the next human gate, not the next code gate.
+  <b>The general pattern is the value.</b> The TeachPlay survey is one
+  application of Steps 01&ndash;07. The same helper, the same flow, the same
+  theme machinery would work for any other research instrument on this
+  brand &mdash; perception &times; efficacy was just one design choice in
+  the construct-selection step.
 </div>
 
 </main>
 </div>
 
 <footer>
-  TeachPlay × Qualtrics build walkthrough &middot; The University of Alabama,
-  College of Education &middot; Generated 2026-05-05 &middot; All operator
-  steps reproduced from the actual Claude Code session that built
-  <code>SV_9QtpyWbqTypaFls</code> and <code>SV_39sdRK7OVJvSiPk</code>.
+  Building Qualtrics surveys via the v3 REST API &middot; General build
+  pattern with one applied case study (TeachPlay, UA College of Education)
+  &middot; Generated 2026-05-05.
 </footer>
 
 </body>

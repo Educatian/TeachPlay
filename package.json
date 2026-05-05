@@ -42,6 +42,8 @@
     "qrcode-generator": "^2.0.4"
   },
   "devDependencies": {
-    "patch-package": "^8.0.1"
+    "@playwright/test": "^1.59.1",
+    "patch-package": "^8.0.1",
+    "playwright": "^1.59.1"
   }
 }

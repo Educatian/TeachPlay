@@ -34,11 +34,13 @@ jobs:
           node tools/build-sitemap.mjs
 
       - name: Verify generated artifacts didn't drift from committed copies
-        # If a contributor edits content but forgets to rebuild, this surfaces it.
+        # search-index.json drift = a content edit forgot to rebuild.
+        # sitemap.xml is excluded — its <lastmod> uses file mtime, which always
+        # differs between CI's fresh checkout and committed copies.
         run: |
-          if ! git diff --quiet -- search-index.json sitemap.xml; then
-            echo "::warning::search-index.json or sitemap.xml is out of date — run 'npm run build'"
-            git diff --stat -- search-index.json sitemap.xml
+          if ! git diff --quiet -- search-index.json; then
+            echo "::warning::search-index.json is out of date — run 'npm run build:search'"
+            git diff --stat -- search-index.json
           fi
 
       - name: Start static server
