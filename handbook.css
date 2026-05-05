@@ -82,6 +82,47 @@ a:hover { color: var(--crimson-dark); text-decoration: underline; }
 .utility__right a { color: var(--white); font-weight: 500; }
 .utility__right a:hover { color: var(--white); text-decoration: underline; opacity: 0.9; }
 
+/* Mobile (≤ 720px): wrap utility bar contents + bump tap targets ≥ 32px so
+   the right-side row of links (Admin / Notes / 🏆 / myBama / role-switch)
+   doesn't overflow the viewport and stays comfortably tappable. */
+@media (max-width: 720px) {
+  .utility {
+    flex-wrap: wrap;
+    padding: 8px 14px;
+    gap: 8px 12px;
+  }
+  .utility__right {
+    gap: 6px 12px;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .utility__right a,
+  .utility__right .hb-ach-badge,
+  .utility__right #hb-anno-toggle {
+    min-height: 32px;
+    padding: 4px 8px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .role-switch__btn { min-height: 32px; padding: 4px 10px; }
+  .utility__brand { padding: 6px 0; min-height: 32px; display: inline-flex; align-items: center; }
+  /* Primary nav: wrap groups + Register CTA so the bar doesn't horizontally
+     overflow on a 390px viewport. */
+  .primary-nav { flex-wrap: wrap; row-gap: 4px; }
+  .primary-nav__cta { margin-left: 0; }
+  /* Session-page toolbar (Print + Mark complete) — stack on mobile so the
+     two buttons don't push past the viewport edge. */
+  .toolbar { flex-wrap: wrap; gap: 6px; }
+  .toolbar .btn { flex: 1 1 auto; min-height: 32px; }
+  /* Site-wide: any rendered table (handbook content tables, rubric tables,
+     session tables) that's wider than its column should scroll inside it
+     rather than push the whole page wider. */
+  .tbl, .rubric-tbl, .traceability { display: block; overflow-x: auto; max-width: 100%; }
+  /* Session-page figure images — clamp width strictly to viewport. */
+  .asset-figure, .asset-figure__img { max-width: 100%; }
+}
+
 /* ─── Role switch (instructor/student toggle) ────────────────── */
 .role-switch {
   display: inline-flex;

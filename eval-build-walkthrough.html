@@ -122,7 +122,7 @@
     font-style: italic;
   }
 
-  /* ----------- TIKI-TAKA BLOCKS ----------- */
+  /* ----------- EXCHANGE BLOCKS ----------- */
   .turn {
     border-radius: 8px; padding: 14px 18px 4px; margin: 14px 0;
     border: 1px solid var(--line);
@@ -222,10 +222,10 @@
   <div class="kicker">TeachPlay · Operator Walkthrough</div>
   <h1>Building a perception × efficacy survey on Qualtrics, end to end</h1>
   <p class="lede">
-    A tiki-taka transcript: every prompt, every Claude Code reply, every
-    artifact &mdash; in the order it actually happened. Eleven steps from
-    "can the API even do this?" to two themed surveys sitting in UA Qualtrics
-    waiting for IRB sign-off.
+    A step-by-step build log: the canonical prompt, Claude Code's response,
+    and the resulting artifact for each stage. Eleven steps from "can the
+    API even do this?" to two themed surveys sitting in UA Qualtrics waiting
+    for IRB sign-off.
   </p>
   <div class="meta">
     <b>For:</b> AI-Enhanced Educational Game Design microcredential
@@ -266,7 +266,9 @@ table.</p>
 
 <div class="turn user-q">
   <div class="who">User → Claude Code</div>
-  <div class="body"><p>qualtricsAPI로 서베이제작 가능한지 봐봐</p></div>
+  <div class="body"><p>Can the Qualtrics v3 REST API support full programmatic
+  survey creation &mdash; questions, blocks, flow, distribution, and response
+  export &mdash; well enough for an end-to-end research pipeline?</p></div>
 </div>
 
 <div class="turn cc-a">
@@ -296,7 +298,10 @@ text file; never paste it into chat. The CLI reads it from disk.</p>
 
 <div class="turn user-q">
   <div class="who">User → Claude Code</div>
-  <div class="body"><p>"C:\Users\jewoo\Desktop\qualtrics-token.txt" includes id and token</p></div>
+  <div class="body"><p>My Qualtrics API token is saved at
+  <code>C:\Users\jewoo\Desktop\qualtrics-token.txt</code>. Verify the
+  credentials via <code>/whoami</code>, confirm the datacenter, and set up a
+  reusable client wrapper so subsequent calls don't re-read the file.</p></div>
 </div>
 
 <div class="turn cc-a">
@@ -339,7 +344,10 @@ new survey covers <em>only what the in-app instruments can't</em>.</p>
 
 <div class="turn user-q">
   <div class="who">User → Claude Code</div>
-  <div class="body"><p>teachplay 프로젝트 파악하고 거기에 붙이기</p></div>
+  <div class="body"><p>I want to add Qualtrics evaluation surveys to the
+  TeachPlay project. Read the program's evaluation plan, IRB protocol, and
+  existing in-app instruments first &mdash; the new surveys should cover only
+  what isn't already measured by the handbook.</p></div>
 </div>
 
 <div class="turn cc-a">
@@ -376,7 +384,10 @@ absent from the program plan becomes a candidate.</p>
 
 <div class="turn user-q">
   <div class="who">User → Claude Code</div>
-  <div class="body"><p>이쪽 필드 연구에서 아직 안해본, 그런데 필요한 것들 수집하고 싶음. 일단 usability survey는 넣어야겠고</p></div>
+  <div class="body"><p>Map what this field &mdash; microcredentials × teacher
+  PD × AI in education × game-design pedagogy &mdash; typically measures versus
+  what it doesn't, and propose construct candidates worth including. Usability
+  is required.</p></div>
 </div>
 
 <div class="turn cc-a">
@@ -415,7 +426,9 @@ should measure right now" list is 5–6.</p>
 
 <div class="turn user-q">
   <div class="who">User → Claude Code</div>
-  <div class="body"><p>너무 과한것 말고 현제는 perception efficacy 위주로</p></div>
+  <div class="body"><p>Narrow the construct list to perception and self-efficacy
+  domains. Drop anything the in-app pre/post 8-skill self-assessment already
+  covers.</p></div>
 </div>
 
 <div class="turn cc-a">
@@ -441,7 +454,10 @@ forms only.</p>
 
 <div class="turn user-q">
   <div class="who">User → Claude Code</div>
-  <div class="body"><p>22개 reliability나 통계적 가정 벗어나지 않은 수준에서</p></div>
+  <div class="body"><p>Constrain the post-program survey to roughly 22 items
+  while preserving every construct's reliability and statistical assumptions
+  &mdash; alpha/omega estimable, factor identification valid, paired-Δ
+  interpretable. Use validated short forms only.</p></div>
 </div>
 
 <div class="turn cc-a">
@@ -476,7 +492,10 @@ opt-in for sensitive items, never break out cells with n &lt; 10.</p>
 
 <div class="turn user-q">
   <div class="who">User → Claude Code</div>
-  <div class="body"><p>이름 신상명세 묻지 않는 demographic survey도. grade level, gender, profession types.</p></div>
+  <div class="body"><p>Add an anonymous demographics block to the pre-program
+  survey covering, at minimum, grade level, gender, and profession type.
+  Collect no personally identifying information; pair Pre and Post by a
+  self-generated code.</p></div>
 </div>
 
 <div class="turn cc-a">
@@ -542,7 +561,11 @@ right order.</p>
 
 <div class="turn user-q">
   <div class="who">User → Claude Code</div>
-  <div class="body"><p>응 진행</p></div>
+  <div class="body"><p>Proceed with the build. Use a reusable helper module so
+  all wording lives in one editable surface, leave both surveys
+  <code>isActive=false</code> on creation, and add a <code>cohort</code>
+  EmbeddedData parameter to the survey flow so anonymous links can carry
+  the cohort tag.</p></div>
 </div>
 
 <div class="turn cc-a">
@@ -614,7 +637,11 @@ GET → merge → PUT.</p>
 
 <div class="turn user-q">
   <div class="who">User → Claude Code</div>
-  <div class="body"><p>이쁘게 만들어줄수도 있어? 테마적용해서 프로처럼</p></div>
+  <div class="body"><p>Apply professional theming to both surveys via the
+  survey-options API: UA Crimson palette, Inter typography, branded header,
+  IRB-attribution footer, verbose progress bar, and back button. Use an
+  idempotent <code>GET → merge → PUT</code> pattern so re-runs don't drop
+  required option fields.</p></div>
 </div>
 
 <div class="turn cc-a">

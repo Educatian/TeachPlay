@@ -36,6 +36,10 @@ function note(page, severity, kind, msg) {
 
 test.describe.configure({ mode: 'serial' });
 
+// Mobile pages to spot-check at 390×844 (iPhone 14 Pro). Full traversal
+// would double the audit runtime — sample the most-visited pages instead.
+const MOBILE_SAMPLE = ['index.html', 'rubrics.html', 'examples.html', 'handbook.html', 'session-03.html', 'credential.html'];
+
 for (const page_ of HTML_PAGES) {
   test(`audit · ${page_}`, async ({ page }) => {
     // Plant a synthetic learner so enroll.js doesn't show its modal.
@@ -163,6 +167,75 @@ for (const page_ of HTML_PAGES) {
       if (/youtube|googlevideo|gstatic|doubleclick/i.test(f.url)) continue;
       // marked.js CDN redirect is fine if status is 200 ultimately
       note(page_, 'error', 'network', `${f.status} ${f.url.replace(BASE, '')}`);
+    }
+  });
+}
+
+// ── Mobile viewport pass ─────────────────────────────────────────
+for (const page_ of MOBILE_SAMPLE) {
+  test(`audit · ${page_} @mobile-390`, async ({ page }) => {
+    await page.addInitScript(() => {
+      try { localStorage.setItem('hb:learner_id', 'audit'); } catch (_) {}
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    let nav;
+    try {
+      nav = await page.goto(BASE + '/' + page_, { waitUntil: 'networkidle', timeout: 12000 });
+    } catch (e) {
+      note(page_, 'error', 'mobile-nav', e.message);
+      return;
+    }
+    if (!nav || nav.status() !== 200) {
+      note(page_, 'error', 'mobile-http', `Status ${nav?.status()}`);
+      return;
+    }
+    // Check for horizontal overflow — the most common mobile bug.
+    const overflow = await page.evaluate(() => {
+      const docW = document.documentElement.clientWidth;
+      const scrollW = document.documentElement.scrollWidth;
+      const slack = scrollW - docW;
+      // Find the RIGHTMOST element causing the overflow (not just the first).
+      let widestOffender = null, maxRight = docW;
+      if (slack > 1) {
+        const all = document.querySelectorAll('body *');
+        for (const el of all) {
+          const r = el.getBoundingClientRect();
+          if (r.right > maxRight + 1) {
+            maxRight = r.right;
+            widestOffender = `${el.tagName.toLowerCase()}.${(el.className||'').toString().split(' ')[0] || 'no-class'} (right=${Math.round(r.right)}, w=${Math.round(r.width)})`;
+          }
+        }
+      }
+      return { docW, scrollW, slack, widestOffender };
+    });
+    // Allow up to 10px slack — typical scrollbar reserve / sub-pixel rounding
+    // is OK, anything beyond that is a real layout escape.
+    if (overflow.slack > 10) {
+      note(page_, 'warning', 'mobile-overflow',
+        `Horizontal overflow ${overflow.slack}px (doc=${overflow.docW}, scroll=${overflow.scrollW})${overflow.widestOffender ? ' · likely: ' + overflow.widestOffender : ''}`);
+    }
+
+    // Tap-target check: every <a> and <button> in the viewport should be ≥ 32px in either dim.
+    const tooSmallTargets = await page.evaluate(() => {
+      const targets = document.querySelectorAll('a, button');
+      const tooSmall = [];
+      for (const t of targets) {
+        const r = t.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) continue; // hidden
+        if (r.top < 0 || r.top > window.innerHeight) continue; // off-screen
+        if (r.width < 24 || r.height < 24) {
+          tooSmall.push({
+            tag: t.tagName.toLowerCase(),
+            cls: (t.className || '').toString().slice(0, 30),
+            w: Math.round(r.width), h: Math.round(r.height),
+          });
+        }
+      }
+      return tooSmall.slice(0, 3); // top 3 only
+    });
+    for (const t of tooSmallTargets) {
+      note(page_, 'warning', 'mobile-tap',
+        `${t.tag}.${t.cls} ${t.w}×${t.h} (recommended ≥ 32×32)`);
     }
   });
 }

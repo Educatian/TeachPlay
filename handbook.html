@@ -30,11 +30,14 @@
   .hb-toc a.is-h2 { padding-left: 16px; }
   .hb-toc a.is-h3 { padding-left: 28px; font-size: 12px; color: #666; }
   @media (max-width: 1000px) {
-    .hb-toc { position: static; max-height: none; }
+    .hb-toc { position: static; max-height: none; width: 100%; box-sizing: border-box; }
+    .hb-toc a { white-space: normal; overflow-wrap: anywhere; }
   }
 
   /* Prose */
-  .hb-prose { max-width: 780px; font-family: var(--font-serif, Georgia, serif); font-size: 16px; line-height: 1.7; color: #1a1a1a; }
+  .hb-prose { max-width: 780px; min-width: 0; font-family: var(--font-serif, Georgia, serif); font-size: 16px; line-height: 1.7; color: #1a1a1a; }
+  .hb-prose a { word-break: break-word; overflow-wrap: anywhere; }
+  .hb-prose pre, .hb-prose code { max-width: 100%; overflow-x: auto; }
   .hb-prose h1 { font-family: var(--font-display, Georgia, serif); font-size: 38px; line-height: 1.15; margin: 48px 0 18px; color: #1a1a1a; border-bottom: 3px solid var(--crimson); padding-bottom: 10px; }
   .hb-prose h1:first-child { margin-top: 0; }
   .hb-prose h2 { font-family: var(--font-sans, -apple-system, sans-serif); font-size: 26px; line-height: 1.2; margin: 36px 0 14px; color: var(--crimson); }
@@ -60,6 +63,9 @@
   }
   .hb-prose th { background: #1a1a1a; color: #fff; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
   .hb-prose tbody tr:nth-child(even) { background: #fafaf7; }
+  /* Wide tables — let them scroll horizontally inside the prose column on
+     mobile rather than forcing the page wider. */
+  .hb-prose table { display: block; overflow-x: auto; max-width: 100%; }
 
   .hb-loading { text-align: center; padding: 80px 20px; color: #888; font-size: 16px; }
 

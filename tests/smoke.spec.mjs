@@ -219,6 +219,19 @@ test('28. search dropdown surfaces matches across the site', async ({ page }) =>
   await expect(panel).toBeHidden();
 });
 
+test('30. search hits text inside figure captions (e.g. "v1 v2 v3")', async ({ page }) => {
+  // session-10's figcaption mentions "v1 → v2 → v3" — only reachable if the
+  // index now includes figcaption text.
+  await page.goto(BASE + '/index.html');
+  const input = page.locator('form.site-header__search input').first();
+  await input.focus();
+  await input.fill('revision cycle');
+  const panel = page.locator('.hb-search-results.is-open');
+  await expect(panel).toBeVisible({ timeout: 4000 });
+  // session-10 should be in the top results (its figure caption matches)
+  await expect(panel.locator('a.hb-search-row[href="session-10.html"]')).toHaveCount(1);
+});
+
 test('29. search-index.json is served and contains every navigable page', async ({ request }) => {
   const resp = await request.get(BASE + '/search-index.json');
   expect(resp.status()).toBe(200);

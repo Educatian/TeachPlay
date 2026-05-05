@@ -73,16 +73,18 @@
     for (var i = 0; i < index.length; i++) {
       var p = index[i];
       var score = 0;
-      var titleLow = (p.title || '').toLowerCase();
-      var descLow = (p.description || '').toLowerCase();
-      var bodyLow = (p.body || '').toLowerCase();
+      var titleLow   = (p.title || '').toLowerCase();
+      var descLow    = (p.description || '').toLowerCase();
+      var bodyLow    = (p.body || '').toLowerCase();
       var headingLow = (p.headings || []).join(' \n ').toLowerCase();
+      var figureLow  = (p.figures  || []).join(' \n ').toLowerCase();
       var matchedAll = true;
       for (var k = 0; k < tokens.length; k++) {
         var t = tokens[k];
         var hit = false;
         if (titleLow.indexOf(t)   !== -1) { score += 5; hit = true; }
         if (headingLow.indexOf(t) !== -1) { score += 3; hit = true; }
+        if (figureLow.indexOf(t)  !== -1) { score += 2.5; hit = true; }
         if (descLow.indexOf(t)    !== -1) { score += 2; hit = true; }
         if (bodyLow.indexOf(t)    !== -1) { score += 1; hit = true; }
         if (!hit) { matchedAll = false; break; }

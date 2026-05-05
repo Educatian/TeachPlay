@@ -65,6 +65,22 @@ function extractText(html) {
     .trim();
 }
 
+function extractFigureText(html) {
+  // Pull <img alt="..."> and <figcaption>...</figcaption> bits — they describe
+  // the page's anchor visuals and are gold for search ("crosswalk visual",
+  // "playtest captures", etc.).
+  const out = [];
+  const altRe = /<img[^>]*\salt=["']([^"']+)["']/gi;
+  let m;
+  while ((m = altRe.exec(html))) out.push(m[1]);
+  const capRe = /<figcaption[^>]*>([\s\S]*?)<\/figcaption>/gi;
+  while ((m = capRe.exec(html))) {
+    const text = m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (text) out.push(text);
+  }
+  return out;
+}
+
 const root = process.cwd();
 const files = readdirSync(root).filter(f => f.endsWith('.html') && !SKIP.has(f));
 
@@ -74,14 +90,17 @@ for (const file of files) {
   const title = extractTitle(html);
   const description = extractDescription(html);
   const headings = extractHeadings(html);
+  const figures = extractFigureText(html);
   const body = extractText(html);
   // Cap body to ~6 KB per page to keep the index compact (still plenty for
-  // matching). Headings + description carry the most weight in search.js.
+  // matching). Headings + description carry the most weight in search.js;
+  // figure alts/captions are weighted between heading and description.
   index.push({
     url: file,
     title,
     description,
     headings,
+    figures,
     body: body.slice(0, 6000),
   });
 }
