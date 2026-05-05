@@ -13,6 +13,17 @@
 
   var KEY = 'hb:achievements';
   var SEEN_GAME_KEY = 'hb:games-clicked';
+  var MUTE_KEY = 'hb:no-gamify';
+
+  function isMuted() {
+    try { return localStorage.getItem(MUTE_KEY) === '1'; } catch (_) { return false; }
+  }
+  function setMuted(v) {
+    try {
+      if (v) localStorage.setItem(MUTE_KEY, '1');
+      else localStorage.removeItem(MUTE_KEY);
+    } catch (_) {}
+  }
 
   var ACHIEVEMENTS = [
     { id: 'first_session',  emoji: '🎯', title: 'First Session',     desc: 'You opened your first handbook session.' },
@@ -43,7 +54,7 @@
     var spec = ACHIEVEMENTS.filter(function (a) { return a.id === id; })[0];
     if (!spec) return;
     var arr = unlocked(); arr.push(id); setUnlocked(arr);
-    toast(spec);
+    if (!isMuted()) toast(spec);
     refreshBadge();
   }
 
@@ -95,6 +106,18 @@
       '  background: #1a1a1a; color: #fff;',
       '}',
       '.hb-ach-panel__close { background: transparent; color: #fff; border: 0; font-size: 22px; cursor: pointer; line-height: 1; }',
+      '.hb-ach-panel__caveat {',
+      '  padding: 14px 18px; background: #fff7e6;',
+      '  border-bottom: 1px solid #f0e6c8;',
+      '  font-size: 12.5px; line-height: 1.5; color: #5a3e0c;',
+      '}',
+      '.hb-ach-panel__caveat strong { color: #8a3800; display: block; margin-bottom: 4px; }',
+      '.hb-ach-mute-toggle {',
+      '  margin-top: 8px; background: #1a1a1a; color: #fff;',
+      '  border: 0; padding: 6px 12px; border-radius: 4px;',
+      '  font-size: 12px; cursor: pointer; font-weight: 600;',
+      '}',
+      '.hb-ach-mute-toggle:hover { background: #be1a2f; }',
       '.hb-ach-panel__list { flex: 1; overflow-y: auto; padding: 12px 18px 24px; }',
       '.hb-ach-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px dashed #eee; }',
       '.hb-ach-row__emoji { font-size: 24px; line-height: 1; opacity: 0.4; }',
@@ -142,6 +165,11 @@
   function refreshBadge() {
     ensureBadge();
     if (!badge) return;
+    if (isMuted()) {
+      badge.style.display = 'none';
+      return;
+    }
+    badge.style.display = '';
     var c = badge.querySelector('[data-count]');
     if (c) c.textContent = unlocked().length + '/' + ACHIEVEMENTS.length;
   }
@@ -154,9 +182,26 @@
         '<strong>Achievements</strong>' +
         '<button class="hb-ach-panel__close" aria-label="Close">×</button>' +
       '</div>' +
+      '<div class="hb-ach-panel__caveat">' +
+        '<strong>The handbook (§6.2) warns about this.</strong> Reward substitution — ' +
+        'where points and badges displace the cognitive work — is a documented failure ' +
+        'mode the curriculum teaches against. These badges count <em>clicks</em>, not ' +
+        'learning. Use them as breadcrumbs of where you\'ve been, not as performance ' +
+        'signals. ' +
+        '<button class="hb-ach-mute-toggle" data-mute>Mute the gamification ›</button>' +
+      '</div>' +
       '<div class="hb-ach-panel__list" id="hb-ach-list"></div>';
     document.body.appendChild(panel);
     panel.querySelector('.hb-ach-panel__close').onclick = function () { panel.classList.remove('is-open'); };
+    panel.querySelector('[data-mute]').onclick = function () {
+      var muted = !isMuted();
+      setMuted(muted);
+      this.textContent = muted ? 'Un-mute the gamification ›' : 'Mute the gamification ›';
+      refreshBadge();
+    };
+    // Reflect current mute state on first render
+    var btn = panel.querySelector('[data-mute]');
+    if (isMuted()) btn.textContent = 'Un-mute the gamification ›';
     return panel;
   }
   function togglePanel() {

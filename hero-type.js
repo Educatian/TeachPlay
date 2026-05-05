@@ -80,6 +80,12 @@
   }
 
   function init() {
+    // Respect prefers-reduced-motion: present the headline statically.
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      var els = document.querySelectorAll('[data-typewriter]');
+      els.forEach(function (el) { el.setAttribute('data-done', 'true'); });
+      return;
+    }
     injectStyles();
     var els = document.querySelectorAll('[data-typewriter]');
     els.forEach(play);

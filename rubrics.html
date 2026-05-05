@@ -182,7 +182,7 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-            <nav class="primary-nav" data-primary-nav>
+              <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
@@ -269,6 +269,57 @@
       <p>Each deliverable is scored against the rubric using the artifact itself plus a short change log. Self-assessment first, instructor assessment second, peer review between.</p>
     </div>
   </div>
+
+  <!-- Validity / calibration disclosure ────────────────────────── -->
+  <section class="validity-callout" style="margin: 24px 0 28px; max-width: 880px;">
+    <style>
+      .validity-callout {
+        background: #fff7e6;
+        border-left: 4px solid #b8860b;
+        border-radius: 4px;
+        padding: 18px 22px;
+        font-size: 14px; line-height: 1.55;
+      }
+      .validity-callout h3 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #8a4a10;
+      }
+      .validity-callout dl {
+        display: grid; grid-template-columns: 180px 1fr;
+        gap: 8px 18px; margin: 0;
+      }
+      @media (max-width: 700px) { .validity-callout dl { grid-template-columns: 1fr; gap: 4px; } }
+      .validity-callout dt {
+        font-weight: 700; color: #5a3e0c; font-size: 13px;
+      }
+      .validity-callout dd { margin: 0; color: #444; font-size: 13.5px; }
+      .validity-callout dd em { color: #8a4a10; font-style: normal; font-weight: 600; }
+    </style>
+    <h3>Validity &amp; calibration · current status</h3>
+    <p style="margin-top: 0;">
+      The rubric makes a strong claim — <em>non-compensatory pass bar, no averaging</em> — and
+      therefore inherits a strong burden of proof. The status table is the honest one.
+    </p>
+    <dl>
+      <dt>Inter-rater agreement (κ)</dt>
+      <dd><em>Forthcoming.</em> Pre-pilot calibration session planned for the first cohort that produces ≥ 6 D2 portfolios. Two raters score independently, then reconcile. Cohen's κ reported per criterion. Target floor: κ ≥ 0.60 (substantial agreement).</dd>
+
+      <dt>Test–retest reliability</dt>
+      <dd><em>Not yet measured.</em> Same artifact rescored by the same rater 4 weeks later. Same κ ≥ 0.60 target.</dd>
+
+      <dt>Calibration drift monitoring</dt>
+      <dd>Per <a href="handbook.html#125-cohort-size-operational-guidance">Handbook §15.2</a>, cohorts above 24 learners require a TA / co-assessor who completes the calibration session with the primary instructor. Drift checked at deliverable midpoint via three blind re-scores per rater pair.</dd>
+
+      <dt>Construct validity</dt>
+      <dd><em>Argument-based, not yet correlational.</em> The traceability table on <a href="references.html">references</a> grounds each criterion in cited source(s). Concurrent validity against an external panel (e.g. AERA-affiliated reviewers) is on the next-phase research agenda.</dd>
+
+      <dt>Public reporting</dt>
+      <dd>When κ data exists, this section flips from <em>forthcoming</em> to a per-criterion table. The current status is the status — we don't pretend it's stronger than it is.</dd>
+    </dl>
+  </section>
 
   <div class="pass-rule" style="margin-bottom: 20px;">
     <h3 style="display:flex; justify-content:space-between; align-items:center; gap:16px;">
@@ -754,6 +805,7 @@
 
 <script src="enroll.js"></script>
 <script src="nav.js"></script>
+<script src="a11y.js"></script>
 <script src="back-to-top.js"></script>
 <script src="reading-time.js"></script>
 <script src="search.js"></script>

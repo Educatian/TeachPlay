@@ -219,6 +219,83 @@ test('28. search dropdown surfaces matches across the site', async ({ page }) =>
   await expect(panel).toBeHidden();
 });
 
+test('36. accessibility.html ships with conformance + known-issues + complaint mechanism', async ({ page }) => {
+  await page.goto(BASE + '/accessibility.html');
+  await expect(page.locator('h1.hero__title')).toContainText('What you can expect');
+  // At least 4 status badges (ok / partial / known-issue chips) on the conformance list
+  const badges = await page.locator('.a11y-status').count();
+  expect(badges).toBeGreaterThan(4);
+  // Complaint contact email
+  await expect(page.locator('a[href="mailto:jmoon19@ua.edu"]').first()).toBeVisible();
+});
+
+test('37. privacy.html lists local + server data + FERPA notice + retention', async ({ page }) => {
+  await page.goto(BASE + '/privacy.html');
+  await expect(page.locator('h1.hero__title')).toContainText('FERPA');
+  // Both data-collection tables
+  const tables = await page.locator('table.pp-tbl').count();
+  expect(tables).toBeGreaterThanOrEqual(3);
+  // FERPA reference + retention
+  await expect(page.locator('body')).toContainText(/FERPA/);
+  await expect(page.locator('body')).toContainText(/retention/i);
+});
+
+test('38. skip-to-content link auto-injected on every page sample', async ({ page }) => {
+  for (const path of ['/index.html', '/rubrics.html', '/handbook.html', '/session-03.html']) {
+    await page.goto(BASE + path);
+    const skip = page.locator('a.hb-skip').first();
+    await expect(skip).toHaveCount(1);
+    const href = await skip.getAttribute('href');
+    expect(href).toBe('#main');
+  }
+});
+
+test('39. footer auto-injects accessibility + privacy + source links', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  const links = page.locator('.hb-footer-meta-links a');
+  await expect(links).toHaveCount(3);
+  await expect(page.locator('.hb-footer-meta-links a[href="accessibility.html"]')).toHaveCount(1);
+  await expect(page.locator('.hb-footer-meta-links a[href="privacy.html"]')).toHaveCount(1);
+});
+
+test('40. Spot the Loop bank: reroll surfaces a fresh trio', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  // Capture the first set of question IDs (data-id on cards)
+  await expect(page.locator('.quickcheck__card')).toHaveCount(3);
+  const firstSet = await page.locator('.quickcheck__card').evaluateAll(els => els.map(e => e.getAttribute('data-id')));
+  // Answer all 3 cards (correct buttons) so the score widget shows + reroll appears
+  for (const card of await page.locator('.quickcheck__card').all()) {
+    await card.locator('button[data-correct="true"]').first().click();
+  }
+  // Click the new "Pull new items" button
+  const reroll = page.locator('button[data-reroll]');
+  await expect(reroll).toBeVisible();
+  await reroll.click();
+  // After reroll, fresh 3 cards rendered (likely all different IDs since 12-item bank)
+  await expect(page.locator('.quickcheck__card')).toHaveCount(3);
+  const secondSet = await page.locator('.quickcheck__card').evaluateAll(els => els.map(e => e.getAttribute('data-id')));
+  // At least one ID should differ between sets (cooldown-driven)
+  const overlap = firstSet.filter(id => secondSet.includes(id));
+  expect(overlap.length).toBeLessThan(3);
+});
+
+test('41. achievements panel shows §6.2 caveat + mute toggle', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  // Click the 🏆 badge to open the panel
+  await page.locator('#hb-ach-toggle').click();
+  await expect(page.locator('.hb-ach-panel.is-open')).toBeVisible();
+  await expect(page.locator('.hb-ach-panel__caveat')).toContainText('§6.2');
+  await expect(page.locator('button[data-mute]')).toBeVisible();
+});
+
+test('42. rubrics.html shows validity + calibration disclosure', async ({ page }) => {
+  await page.goto(BASE + '/rubrics.html');
+  const callout = page.locator('.validity-callout');
+  await expect(callout).toBeVisible();
+  await expect(callout).toContainText('Inter-rater agreement');
+  await expect(callout).toContainText('Forthcoming');
+});
+
 test('33. sitemap.xml + robots.txt are served and reference each other', async ({ request }) => {
   const sm = await request.get(BASE + '/sitemap.xml');
   expect(sm.status()).toBe(200);

@@ -176,7 +176,7 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-            <nav class="primary-nav" data-primary-nav>
+              <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
@@ -568,44 +568,29 @@
   </p>
 
   <div class="quickcheck" data-quickcheck>
-    <div class="quickcheck__card" data-q="1">
-      <div class="quickcheck__num">01</div>
-      <p class="quickcheck__prompt">A trivia game that asks one factual question, plays a wrong-answer sound, then loops back to a new random question. Same loop, forever. <strong>Is this a learning loop?</strong></p>
-      <div class="quickcheck__choices">
-        <button data-correct="false" data-why="Retrieval practice happens, but with no spacing, no scaffolding, and no transfer it plateaus fast — see Session 03's note on procedural fluency without conceptual reasoning.">Yes — retrieval practice.</button>
-        <button data-correct="true"  data-why="Right. There's a feedback loop, but no instructional design behind it: the difficulty doesn't adapt, and the player learns the question, not the concept.">Loop, yes — but it doesn't <em>teach</em>.</button>
-        <button data-correct="false" data-why="The loop exists. The question is whether it produces durable learning — not whether the player is doing something.">No, there's no loop at all.</button>
-      </div>
-      <div class="quickcheck__feedback" hidden></div>
-    </div>
-
-    <div class="quickcheck__card" data-q="2">
-      <div class="quickcheck__num">02</div>
-      <p class="quickcheck__prompt">A branching scenario where every choice leads to one obvious "right" answer telegraphed by the writing tone. <strong>What's broken about this loop?</strong></p>
-      <div class="quickcheck__choices">
-        <button data-correct="false" data-why="The branching is fine — the problem is what the branching is doing. See the Session 03 trap: branching that telegraphs the right answer = no real trade-off = no real judgment.">Branching is too complex.</button>
-        <button data-correct="true"  data-why="Exactly. No real trade-off → no real judgment under uncertainty. The player is performing comprehension, not exercising judgment. Session 03's pitfall column flags this as the most common mistake in serious-game design.">No real trade-off — judgment never exercised.</button>
-        <button data-correct="false" data-why="Feedback timing is downstream. The structural issue is that there's no actual decision being made.">Feedback comes too late.</button>
-      </div>
-      <div class="quickcheck__feedback" hidden></div>
-    </div>
-
-    <div class="quickcheck__card" data-q="3">
-      <div class="quickcheck__num">03</div>
-      <p class="quickcheck__prompt">You've sketched a 30-second paper loop your teammate can run blind. <strong>Which deliverable is this?</strong></p>
-      <div class="quickcheck__choices">
-        <button data-correct="false" data-why="D2 is the Objective × Mechanic Crosswalk — the table that justifies <em>why</em> a mechanic teaches an objective, not the playable artifact itself.">D2 — Objective × Mechanic Crosswalk</button>
-        <button data-correct="true"  data-why="Yes. D3 is the Paper Prototype + Facilitator Guide. The runnable-by-someone-else test is the gate. Session 07.">D3 — Paper Prototype &amp; Facilitator Guide</button>
-        <button data-correct="false" data-why="D5 is the Implementation Spec — the state machine + event map for a developer. You're nine sessions early.">D5 — Implementation Spec</button>
-      </div>
-      <div class="quickcheck__feedback" hidden></div>
-    </div>
+    <!-- Three cards rendered from a 12-item bank with 7-day cooldown so
+         the activity actually behaves like spaced retrieval rather than the
+         "ask one question, never re-ask" anti-pattern §6.1 warns about. -->
+    <div data-quickcheck-mount></div>
 
     <div class="quickcheck__score" hidden>
       <div class="quickcheck__score-num"><span data-score>0</span><span style="opacity:.5;font-size:0.5em;font-weight:400;"> / 3</span></div>
       <div class="quickcheck__score-msg" data-msg></div>
-      <button class="btn btn--outline" data-reset type="button">Try again</button>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
+        <button class="btn btn--outline" data-reset type="button">Try again (same items)</button>
+        <button class="btn" data-reroll type="button">Pull new items</button>
+      </div>
     </div>
+
+    <p class="quickcheck__caveat">
+      <strong>Why this is structured this way.</strong>
+      The handbook (§6.1) calls out one-shot retrieval as a hollow learning
+      pattern — "no spacing, no scaffolding, no transfer." This widget pulls
+      three random items from a bank of twelve, skips items you've answered
+      in the last seven days, and re-rolls fresh items on demand. It's a
+      <em>warm-up</em>, not the assessment. The assessment lives in your D2
+      crosswalk.
+    </p>
   </div>
 </section>
 
@@ -651,84 +636,253 @@
   }
   .quickcheck__score-num { font-size: 64px; font-weight: 700; color: #f0c44a; line-height: 1; margin-bottom: 8px; }
   .quickcheck__score-msg { font-size: 15px; margin-bottom: 18px; opacity: 0.9; }
+  .quickcheck__caveat {
+    margin-top: 18px; max-width: 760px;
+    font-size: 13px; line-height: 1.55; color: #555;
+    background: #faf9f7; border-left: 3px solid #be1a2f;
+    padding: 12px 16px; border-radius: 4px;
+  }
+  .quickcheck__caveat strong { color: #1a1a1a; }
 </style>
 
 <script>
 (function () {
   var root = document.querySelector('[data-quickcheck]');
   if (!root) return;
-  var cards = root.querySelectorAll('.quickcheck__card');
+
+  // ─── Item bank (12 items) ─────────────────────────────────────
+  // Each item maps to one or two v2 sessions. Mix of three question types:
+  // (a) "Is this a learning loop?" diagnostic, (b) "What's broken?" failure-mode,
+  // (c) "Which deliverable is this?" scope. Choices kept ≤ 3 to fit the card.
+  var BANK = [
+    { id: 'q01-trivia-loop', anchor: 'Session 03',
+      prompt: 'A trivia game asks one factual question, plays a wrong-answer sound, then loops back to a new random question. Same loop, forever. <strong>Is this a learning loop?</strong>',
+      choices: [
+        { c: false, t: 'Yes — retrieval practice.',
+          why: 'Retrieval practice happens, but with no spacing, no scaffolding, and no transfer it plateaus fast — see Session 03 on procedural fluency without conceptual reasoning.' },
+        { c: true, t: 'Loop, yes — but it doesn\'t <em>teach</em>.',
+          why: 'Right. There\'s a feedback loop, but no instructional design behind it: difficulty doesn\'t adapt and the player learns the question, not the concept.' },
+        { c: false, t: 'No, there\'s no loop at all.',
+          why: 'The loop exists. The question is whether it produces durable learning — not whether the player is doing something.' },
+      ] },
+    { id: 'q02-telegraphed-branch', anchor: 'Session 03',
+      prompt: 'A branching scenario where every choice leads to one obvious "right" answer telegraphed by the writing tone. <strong>What\'s broken about this loop?</strong>',
+      choices: [
+        { c: false, t: 'Branching is too complex.',
+          why: 'The branching is fine — the problem is what the branching is doing. Branching that telegraphs the right answer = no real trade-off = no real judgment.' },
+        { c: true, t: 'No real trade-off — judgment never exercised.',
+          why: 'Exactly. The player is performing comprehension, not exercising judgment under uncertainty. Session 03\'s pitfall column flags this as the most common serious-game mistake.' },
+        { c: false, t: 'Feedback comes too late.',
+          why: 'Feedback timing is downstream. The structural issue is that there\'s no actual decision being made.' },
+      ] },
+    { id: 'q03-paper-prototype', anchor: 'Session 07',
+      prompt: 'You\'ve sketched a 30-second paper loop a teammate can run blind. <strong>Which deliverable is this?</strong>',
+      choices: [
+        { c: false, t: 'D2 — Objective × Mechanic Crosswalk',
+          why: 'D2 is the table that justifies <em>why</em> a mechanic teaches an objective, not the playable artifact itself.' },
+        { c: true, t: 'D3 — Paper Prototype &amp; Facilitator Guide',
+          why: 'Yes. The runnable-by-someone-else test is the gate. Session 07.' },
+        { c: false, t: 'D5 — Implementation Spec',
+          why: 'D5 is the state machine + event map for a developer. You\'re nine sessions early.' },
+      ] },
+    { id: 'q04-decoration-load', anchor: 'Session 04 / Cognitive Load',
+      prompt: 'A simulation\'s screen has six decorative animations, two unrelated sound effects, and one objective-relevant graph. <strong>What load category dominates?</strong>',
+      choices: [
+        { c: false, t: 'Intrinsic — the content is just complex.',
+          why: 'Intrinsic load is the content itself. Decoration isn\'t intrinsic — it\'s added to the scene.' },
+        { c: true, t: 'Extraneous — and removable before first playtest.',
+          why: 'Extraneous load comes from presentation choices, not content. The cognitive-load page calls these "candidates for removal before the first playtest."' },
+        { c: false, t: 'Germane — supports schema construction.',
+          why: 'Germane load is invested in schema construction. Decorative effects without germane function don\'t earn that label.' },
+      ] },
+    { id: 'q05-reward-substitution', anchor: 'Session 04 / §6.2',
+      prompt: 'Players in your game farm a high-score animation by skipping the reflection prompt. <strong>What\'s the failure?</strong>',
+      choices: [
+        { c: true, t: 'Reward substitution — points displaced the cognitive act.',
+          why: 'Yes. The reward decoupled from the act it was supposed to reinforce. Remediation: reward the rationale, not the outcome.' },
+        { c: false, t: 'Difficulty too high — players are escaping.',
+          why: 'Players aren\'t escaping difficulty here; they\'re optimizing reward. The system rewards the wrong thing.' },
+        { c: false, t: 'Narrative capture — players got lost in the story.',
+          why: 'Narrative capture displaces objective-relevant decisions with story decisions. This is reward, not narrative.' },
+      ] },
+    { id: 'q06-playtest-population', anchor: 'Session 09',
+      prompt: 'For your D4 playtest you can\'t access target learners. <strong>Which is NOT an approved alternative?</strong>',
+      choices: [
+        { c: false, t: 'Partner with another learner — playtest both designs with one group.',
+          why: 'This IS approved (the most common alternative — see Facilitator Guide §15.3).' },
+        { c: false, t: 'Target-adjacent substitute with prior instructor approval.',
+          why: 'This IS approved when target audience is restricted (e.g. clinical) — same role/prior knowledge, different diagnosis.' },
+        { c: true, t: 'Peer-only playtest with classmates.',
+          why: 'Not approved. A peer-only playtest does not satisfy D4\'s target-learner dimension. Session 09 + Facilitator §15.3.' },
+      ] },
+    { id: 'q07-d1-fields', anchor: 'Session 02',
+      prompt: 'A team\'s D1 says: "Educators want better tools for engagement, so we\'re making a fun game." <strong>What\'s missing?</strong>',
+      choices: [
+        { c: false, t: 'Nothing — that\'s a clean problem statement.',
+          why: 'D1 needs four fields filled: Learner / Context / Constraint / Shift. None are concrete here. Session 02.' },
+        { c: true, t: 'Specific learner, context, constraint, and the measurable shift.',
+          why: 'Right. "Educators" isn\'t a learner. "Engagement" isn\'t a measurable shift. This is a vibe, not a problem statement.' },
+        { c: false, t: 'A reference to the engagement literature.',
+          why: 'Citations strengthen rationale but D1 is about specifying the gap — not citing literature.' },
+      ] },
+    { id: 'q08-non-compensatory', anchor: 'Session 02 / Rubrics',
+      prompt: 'Your D5 scores 9/10 on Objective Fit, 9/10 on Playability, 9/10 on Evidence, 9/10 on Accessibility — and 2/10 on Implementability. <strong>What\'s your rubric outcome?</strong>',
+      choices: [
+        { c: false, t: 'Average is 7.6/10 — clear pass.',
+          why: 'The rubric is non-compensatory. Averaging is exactly what it forbids.' },
+        { c: true, t: 'Fail — Implementability below the floor disqualifies the portfolio.',
+          why: 'Right. One-criterion-below-floor fails the deliverable. "Proficient on every criterion, no averaging."' },
+        { c: false, t: 'Pass with a note — the team revises Implementability later.',
+          why: 'There is no "pass with note." The pass bar is binary per criterion.' },
+      ] },
+    { id: 'q09-fluency-vs-judgment', anchor: 'Session 03 / 04',
+      prompt: 'Your objective is "judgment under uncertainty in triage scenarios." <strong>Which mechanic is the worst fit?</strong>',
+      choices: [
+        { c: false, t: 'Branching scenarios with delayed feedback.',
+          why: 'This is a strong fit — Session 03\'s recommended mechanic for judgment objectives.' },
+        { c: true, t: 'Speed-run with correctness gates.',
+          why: 'Speed-run compresses time per decision — good for fluency, harmful for judgment. Session 04 calls this "competition flattening."' },
+        { c: false, t: 'Role play with partial information.',
+          why: 'Strong fit — partial info forces the same kind of judgment the objective targets.' },
+      ] },
+    { id: 'q10-ai-policy-disclosure', anchor: 'AI Use Policy',
+      prompt: 'You used ChatGPT to brainstorm three mechanics, then picked one and wrote the rest of D2 yourself. <strong>What\'s required?</strong>',
+      choices: [
+        { c: false, t: 'Nothing — brainstorming with AI is invisible to graders.',
+          why: 'Every AI-assisted use requires a three-line AI Use Disclosure. No exceptions. AI Use Policy §7.3.' },
+        { c: true, t: 'A three-line disclosure: tool, sections, what you changed.',
+          why: 'Yes. Tool used / which sections / what you revised after the tool. Missing or untrue disclosure fails the deliverable.' },
+        { c: false, t: 'Re-do D2 without AI assistance.',
+          why: 'Permitted use plus disclosure is fine. Re-doing isn\'t required — disclosing is.' },
+      ] },
+    { id: 'q11-narrative-wrapper', anchor: 'Session 05',
+      prompt: 'Your game has a Mars-colony narrative wrapping a stoichiometry mechanic. The plot choices don\'t change the chemistry. <strong>What\'s the structural risk?</strong>',
+      choices: [
+        { c: false, t: 'The narrative is too detailed.',
+          why: 'Detail isn\'t the issue. Decoupling is.' },
+        { c: true, t: 'Narrative is a wrapper, not a mechanic — players can ignore the chemistry.',
+          why: 'Yes. Session 05 distinguishes wrapper vs. mechanic. When narrative-relevant choices ≠ objective-relevant choices, the wrapper carries no learning load.' },
+        { c: false, t: 'Mars context is too unfamiliar.',
+          why: 'Unfamiliar context can be onboarded in 60–90 seconds. The structural problem is the decoupling.' },
+      ] },
+    { id: 'q12-three-loads', anchor: 'Cognitive Load',
+      prompt: '<strong>Which load do you most want to <em>increase</em></strong> in an educational game?',
+      choices: [
+        { c: false, t: 'Intrinsic — load up the content.',
+          why: 'Intrinsic load is set by the objective; you don\'t increase it for fun. You match it.' },
+        { c: false, t: 'Extraneous — more visuals = more engagement.',
+          why: 'Extraneous load is what you cut, not what you add.' },
+        { c: true, t: 'Germane — invested in schema construction.',
+          why: 'Yes. Germane is the good load: working memory invested in building durable schemas. Cut extraneous to free up budget for germane.' },
+      ] },
+  ];
+
+  // ─── Spaced retrieval: track seen items + their last-seen timestamp ──
+  var STORE_KEY = 'hb:quickcheck:seen';
+  var COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+  function loadSeen() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch (_) { return {}; }
+  }
+  function saveSeen(s) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch (_) {}
+  }
+  function pickThree() {
+    var seen = loadSeen();
+    var now = Date.now();
+    var fresh = BANK.filter(function (q) { return !seen[q.id] || (now - seen[q.id]) > COOLDOWN_MS; });
+    var pool = fresh.length >= 3 ? fresh : BANK.slice();
+    // Fisher–Yates partial shuffle for the first 3
+    var arr = pool.slice();
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr.slice(0, 3);
+  }
+
+  function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, function (c) { return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]; }); }
+  function renderCard(item, idx) {
+    return '<div class="quickcheck__card" data-id="' + item.id + '" data-q="' + (idx + 1) + '">' +
+      '<div class="quickcheck__num">' + String(idx + 1).padStart(2, '0') + '</div>' +
+      '<p class="quickcheck__prompt">' + item.prompt + ' <span style="display:block;font-size:11px;color:#999;margin-top:6px;font-weight:400;">From ' + escapeHtml(item.anchor) + '</span></p>' +
+      '<div class="quickcheck__choices">' +
+        item.choices.map(function (ch) {
+          return '<button data-correct="' + (ch.c ? 'true' : 'false') + '" data-why="' + escapeHtml(ch.why) + '">' + ch.t + '</button>';
+        }).join('') +
+      '</div>' +
+      '<div class="quickcheck__feedback" hidden></div>' +
+    '</div>';
+  }
+
+  var mount = root.querySelector('[data-quickcheck-mount]');
   var scoreEl = root.querySelector('.quickcheck__score');
   var scoreNum = root.querySelector('[data-score]');
   var scoreMsg = root.querySelector('[data-msg]');
   var resetBtn = root.querySelector('[data-reset]');
+  var rerollBtn = root.querySelector('[data-reroll]');
+  var currentItems = [];
+
+  function render(items) {
+    currentItems = items;
+    mount.innerHTML = items.map(renderCard).join('');
+    scoreEl.hidden = true;
+    wireCards();
+  }
 
   function answered() {
-    return Array.prototype.filter.call(cards, function (c) { return c.dataset.state; }).length;
+    return mount.querySelectorAll('.quickcheck__card[data-state]').length;
   }
   function score() {
-    return Array.prototype.filter.call(cards, function (c) { return c.dataset.state === 'correct'; }).length;
+    return mount.querySelectorAll('.quickcheck__card[data-state="correct"]').length;
   }
 
-  cards.forEach(function (card) {
-    card.querySelectorAll('.quickcheck__choices button').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        if (card.dataset.state) return; // already answered
-        var correct = btn.dataset.correct === 'true';
-        card.dataset.state = correct ? 'correct' : 'incorrect';
-        // Disable + mark all buttons in this card
-        card.querySelectorAll('button').forEach(function (b) {
-          b.disabled = true;
-          if (b.dataset.correct === 'true') b.classList.add('is-correct');
-        });
-        btn.classList.add('is-chosen', correct ? 'is-correct' : 'is-incorrect');
-        // Show feedback
-        var fb = card.querySelector('.quickcheck__feedback');
-        fb.innerHTML = '<strong>' + (correct ? '✓ ' : '✗ ') + '</strong>' + btn.dataset.why;
-        fb.hidden = false;
-        // Scroll feedback into view smoothly
-        setTimeout(function () { fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 50);
+  function wireCards() {
+    mount.querySelectorAll('.quickcheck__card').forEach(function (card) {
+      card.querySelectorAll('.quickcheck__choices button').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (card.dataset.state) return;
+          var correct = btn.dataset.correct === 'true';
+          card.dataset.state = correct ? 'correct' : 'incorrect';
+          card.querySelectorAll('button').forEach(function (b) {
+            b.disabled = true;
+            if (b.dataset.correct === 'true') b.classList.add('is-correct');
+          });
+          btn.classList.add('is-chosen', correct ? 'is-correct' : 'is-incorrect');
+          var fb = card.querySelector('.quickcheck__feedback');
+          fb.innerHTML = '<strong>' + (correct ? '✓ ' : '✗ ') + '</strong>' + btn.dataset.why;
+          fb.hidden = false;
+          setTimeout(function () { fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 50);
 
-        if (answered() === cards.length) {
-          var s = score();
-          scoreNum.textContent = s;
-          scoreMsg.textContent = s === 3
-            ? 'Crosswalk-ready. Open Session 03 and write yours.'
-            : s === 2
-              ? 'Close — re-read the pitfall column on Session 03 before you draft D2.'
-              : 'Worth a real read of Session 03 before drafting your D2 crosswalk.';
-          scoreEl.hidden = false;
-          // Achievement hook
-          if (s === 3 && window.hbAchievements) {
-            // Re-use a generic emoji-titled toast via a synthetic id
-            try {
-              if (!window.hbAchievements.unlocked().includes('quickcheck_3of3')) {
-                // Add on the fly — the achievements module reads its own list,
-                // so we just call its unlock with a known id by extending the
-                // list at runtime would need API changes. Instead, fire a
-                // generic toast via DOM event the module isn't watching for.
-                // Simpler: piggyback on first_session if user hasn't visited
-                // any session yet, to give visible feedback.
-              }
-            } catch (_) {}
+          if (answered() === currentItems.length) {
+            // Mark all current items as seen now (cooldown starts)
+            var seen = loadSeen();
+            currentItems.forEach(function (q) { seen[q.id] = Date.now(); });
+            saveSeen(seen);
+
+            var s = score();
+            scoreNum.textContent = s;
+            scoreMsg.textContent = s === 3
+              ? 'Crosswalk-ready. Open Session 03 and write yours.'
+              : s === 2
+                ? 'Close — re-read the pitfall column on the source session before you draft D2.'
+                : 'Worth a real read of the source sessions before drafting your D2 crosswalk.';
+            scoreEl.hidden = false;
           }
-        }
+        });
       });
     });
-  });
+  }
 
   resetBtn && resetBtn.addEventListener('click', function () {
-    cards.forEach(function (c) {
-      delete c.dataset.state;
-      c.querySelectorAll('button').forEach(function (b) {
-        b.disabled = false;
-        b.classList.remove('is-chosen', 'is-correct', 'is-incorrect');
-      });
-      var fb = c.querySelector('.quickcheck__feedback');
-      fb.hidden = true; fb.innerHTML = '';
-    });
-    scoreEl.hidden = true;
+    // Re-render the SAME items in their cleared state
+    render(currentItems);
   });
+  rerollBtn && rerollBtn.addEventListener('click', function () {
+    render(pickThree());
+  });
+
+  // Initial render
+  render(pickThree());
 })();
 </script>
 
@@ -838,6 +992,7 @@
 <script src="shell.js"></script>
 <script src="enroll.js"></script>
 <script src="nav.js"></script>
+<script src="a11y.js"></script>
 <script src="back-to-top.js"></script>
 <script src="reading-time.js"></script>
 <script src="search.js"></script>

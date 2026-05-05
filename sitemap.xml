@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://teachplay.dev/accessibility.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://teachplay.dev/ai-use-policy.html</loc>
     <lastmod>2026-05-05</lastmod>
     <priority>0.6</priority>
@@ -52,6 +57,11 @@
   </url>
   <url>
     <loc>https://teachplay.dev/portfolio.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/privacy.html</loc>
     <lastmod>2026-05-05</lastmod>
     <priority>0.6</priority>
   </url>
