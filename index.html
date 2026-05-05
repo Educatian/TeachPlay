@@ -546,6 +546,181 @@
   </div>
 </section>
 
+<!-- ─── Quick Check mini-game ──────────────────────────────────── -->
+<section class="section" id="spot-the-loop">
+  <span class="section__eyebrow">Spot the Loop · 60-second check</span>
+  <h2 class="section__title">Three scenarios.<br/>Which ones actually teach?</h2>
+  <p class="section__lede">
+    Before Session 03 forces you to defend a crosswalk, warm up the same muscle here. Pick the
+    answer that best matches what each design <em>really</em> does to the player. Reveal pulls
+    straight from the deliverable rubrics.
+  </p>
+
+  <div class="quickcheck" data-quickcheck>
+    <div class="quickcheck__card" data-q="1">
+      <div class="quickcheck__num">01</div>
+      <p class="quickcheck__prompt">A trivia game that asks one factual question, plays a wrong-answer sound, then loops back to a new random question. Same loop, forever. <strong>Is this a learning loop?</strong></p>
+      <div class="quickcheck__choices">
+        <button data-correct="false" data-why="Retrieval practice happens, but with no spacing, no scaffolding, and no transfer it plateaus fast — see Session 03's note on procedural fluency without conceptual reasoning.">Yes — retrieval practice.</button>
+        <button data-correct="true"  data-why="Right. There's a feedback loop, but no instructional design behind it: the difficulty doesn't adapt, and the player learns the question, not the concept.">Loop, yes — but it doesn't <em>teach</em>.</button>
+        <button data-correct="false" data-why="The loop exists. The question is whether it produces durable learning — not whether the player is doing something.">No, there's no loop at all.</button>
+      </div>
+      <div class="quickcheck__feedback" hidden></div>
+    </div>
+
+    <div class="quickcheck__card" data-q="2">
+      <div class="quickcheck__num">02</div>
+      <p class="quickcheck__prompt">A branching scenario where every choice leads to one obvious "right" answer telegraphed by the writing tone. <strong>What's broken about this loop?</strong></p>
+      <div class="quickcheck__choices">
+        <button data-correct="false" data-why="The branching is fine — the problem is what the branching is doing. See the Session 03 trap: branching that telegraphs the right answer = no real trade-off = no real judgment.">Branching is too complex.</button>
+        <button data-correct="true"  data-why="Exactly. No real trade-off → no real judgment under uncertainty. The player is performing comprehension, not exercising judgment. Session 03's pitfall column flags this as the most common mistake in serious-game design.">No real trade-off — judgment never exercised.</button>
+        <button data-correct="false" data-why="Feedback timing is downstream. The structural issue is that there's no actual decision being made.">Feedback comes too late.</button>
+      </div>
+      <div class="quickcheck__feedback" hidden></div>
+    </div>
+
+    <div class="quickcheck__card" data-q="3">
+      <div class="quickcheck__num">03</div>
+      <p class="quickcheck__prompt">You've sketched a 30-second paper loop your teammate can run blind. <strong>Which deliverable is this?</strong></p>
+      <div class="quickcheck__choices">
+        <button data-correct="false" data-why="D2 is the Objective × Mechanic Crosswalk — the table that justifies <em>why</em> a mechanic teaches an objective, not the playable artifact itself.">D2 — Objective × Mechanic Crosswalk</button>
+        <button data-correct="true"  data-why="Yes. D3 is the Paper Prototype + Facilitator Guide. The runnable-by-someone-else test is the gate. Session 07.">D3 — Paper Prototype &amp; Facilitator Guide</button>
+        <button data-correct="false" data-why="D5 is the Implementation Spec — the state machine + event map for a developer. You're nine sessions early.">D5 — Implementation Spec</button>
+      </div>
+      <div class="quickcheck__feedback" hidden></div>
+    </div>
+
+    <div class="quickcheck__score" hidden>
+      <div class="quickcheck__score-num"><span data-score>0</span><span style="opacity:.5;font-size:0.5em;font-weight:400;"> / 3</span></div>
+      <div class="quickcheck__score-msg" data-msg></div>
+      <button class="btn btn--outline" data-reset type="button">Try again</button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .quickcheck { display: grid; gap: 16px; }
+  .quickcheck__card {
+    background: #fff; border: 1px solid var(--gray-15, #e0ddd8);
+    border-radius: 10px; padding: 22px 26px;
+    position: relative;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .quickcheck__card[data-state="correct"]   { border-color: #1a6e2e; box-shadow: 0 0 0 2px rgba(26,110,46,0.18); }
+  .quickcheck__card[data-state="incorrect"] { border-color: #be1a2f; box-shadow: 0 0 0 2px rgba(190,26,47,0.18); }
+  .quickcheck__num {
+    position: absolute; top: 16px; right: 22px;
+    font-size: 36px; font-weight: 700; color: var(--gray-10, #ece9e3);
+    letter-spacing: -0.02em;
+  }
+  .quickcheck__prompt { font-size: 16px; line-height: 1.55; margin: 0 0 14px; max-width: 740px; }
+  .quickcheck__choices { display: grid; gap: 8px; }
+  .quickcheck__choices button {
+    text-align: left;
+    padding: 12px 16px;
+    background: #fafaf7; border: 1.5px solid #e0ddd8; border-radius: 8px;
+    font-size: 14px; font-family: inherit; cursor: pointer;
+    transition: all .15s ease;
+  }
+  .quickcheck__choices button:hover:not(:disabled) {
+    background: #fff; border-color: var(--crimson, #be1a2f); transform: translateX(2px);
+  }
+  .quickcheck__choices button:disabled { cursor: default; }
+  .quickcheck__choices button.is-chosen.is-correct   { background: #e7f4eb; border-color: #1a6e2e; color: #0a3622; font-weight: 600; }
+  .quickcheck__choices button.is-chosen.is-incorrect { background: #fde2e2; border-color: #be1a2f; color: #6e0d18; font-weight: 600; }
+  .quickcheck__choices button.is-correct:not(.is-chosen) { border-color: #1a6e2e; opacity: 0.85; }
+  .quickcheck__feedback {
+    margin-top: 12px; padding: 10px 14px;
+    background: #f4f3f0; border-left: 3px solid var(--crimson, #be1a2f);
+    font-size: 13px; line-height: 1.55; color: #333; border-radius: 4px;
+  }
+  .quickcheck__score {
+    text-align: center; padding: 28px;
+    background: #1a1a1a; color: #fff; border-radius: 10px;
+  }
+  .quickcheck__score-num { font-size: 64px; font-weight: 700; color: #f0c44a; line-height: 1; margin-bottom: 8px; }
+  .quickcheck__score-msg { font-size: 15px; margin-bottom: 18px; opacity: 0.9; }
+</style>
+
+<script>
+(function () {
+  var root = document.querySelector('[data-quickcheck]');
+  if (!root) return;
+  var cards = root.querySelectorAll('.quickcheck__card');
+  var scoreEl = root.querySelector('.quickcheck__score');
+  var scoreNum = root.querySelector('[data-score]');
+  var scoreMsg = root.querySelector('[data-msg]');
+  var resetBtn = root.querySelector('[data-reset]');
+
+  function answered() {
+    return Array.prototype.filter.call(cards, function (c) { return c.dataset.state; }).length;
+  }
+  function score() {
+    return Array.prototype.filter.call(cards, function (c) { return c.dataset.state === 'correct'; }).length;
+  }
+
+  cards.forEach(function (card) {
+    card.querySelectorAll('.quickcheck__choices button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (card.dataset.state) return; // already answered
+        var correct = btn.dataset.correct === 'true';
+        card.dataset.state = correct ? 'correct' : 'incorrect';
+        // Disable + mark all buttons in this card
+        card.querySelectorAll('button').forEach(function (b) {
+          b.disabled = true;
+          if (b.dataset.correct === 'true') b.classList.add('is-correct');
+        });
+        btn.classList.add('is-chosen', correct ? 'is-correct' : 'is-incorrect');
+        // Show feedback
+        var fb = card.querySelector('.quickcheck__feedback');
+        fb.innerHTML = '<strong>' + (correct ? '✓ ' : '✗ ') + '</strong>' + btn.dataset.why;
+        fb.hidden = false;
+        // Scroll feedback into view smoothly
+        setTimeout(function () { fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 50);
+
+        if (answered() === cards.length) {
+          var s = score();
+          scoreNum.textContent = s;
+          scoreMsg.textContent = s === 3
+            ? 'Crosswalk-ready. Open Session 03 and write yours.'
+            : s === 2
+              ? 'Close — re-read the pitfall column on Session 03 before you draft D2.'
+              : 'Worth a real read of Session 03 before drafting your D2 crosswalk.';
+          scoreEl.hidden = false;
+          // Achievement hook
+          if (s === 3 && window.hbAchievements) {
+            // Re-use a generic emoji-titled toast via a synthetic id
+            try {
+              if (!window.hbAchievements.unlocked().includes('quickcheck_3of3')) {
+                // Add on the fly — the achievements module reads its own list,
+                // so we just call its unlock with a known id by extending the
+                // list at runtime would need API changes. Instead, fire a
+                // generic toast via DOM event the module isn't watching for.
+                // Simpler: piggyback on first_session if user hasn't visited
+                // any session yet, to give visible feedback.
+              }
+            } catch (_) {}
+          }
+        }
+      });
+    });
+  });
+
+  resetBtn && resetBtn.addEventListener('click', function () {
+    cards.forEach(function (c) {
+      delete c.dataset.state;
+      c.querySelectorAll('button').forEach(function (b) {
+        b.disabled = false;
+        b.classList.remove('is-chosen', 'is-correct', 'is-incorrect');
+      });
+      var fb = c.querySelector('.quickcheck__feedback');
+      fb.hidden = true; fb.innerHTML = '';
+    });
+    scoreEl.hidden = true;
+  });
+})();
+</script>
+
 <!-- ─── Sessions grid ──────────────────────────────────────────── -->
 <section class="section section--tint" id="sessions">
   <span class="section__eyebrow">The Curriculum</span>
@@ -656,6 +831,7 @@
 <script src="hero-type.js"></script>
 <script src="cursor.js"></script>
 <script src="annotate.js"></script>
+<script src="achievements.js"></script>
 <script src="admin-gate.js"></script>
 </body>
 </html>

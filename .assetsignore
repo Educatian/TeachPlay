@@ -49,3 +49,10 @@ README.md
 
 # D1 migration SQL — not a public asset.
 migrations/
+
+# Playwright smoke tests — dev-only, must never reach the public site.
+tests/
+test-results/
+playwright-report/
+playwright.config.mjs
+.smoke-server.log

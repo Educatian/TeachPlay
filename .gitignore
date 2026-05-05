@@ -34,3 +34,6 @@ tools/keys/*.private.json
 # The example assertion (assertion-example-v3.json) is fine to ship; real
 # cohort issuances land in credential/assertions/ and are gitignored.
 credential/assertions/
+test-results/
+playwright-report/
+.smoke-server.log

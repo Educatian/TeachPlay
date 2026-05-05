@@ -182,16 +182,28 @@
         text: text, prefix: ctx.prefix, suffix: ctx.suffix,
         note: '', ts: Date.now(),
       };
-      if (act === 'note') {
-        var note = window.prompt('Note for this highlight:', '');
-        if (note == null) return hideToolbar();
-        rec.note = note.trim();
-      }
+      // Wrap + persist immediately so the highlight visual lands now;
+      // the note (if requested) is then collected in the drawer and
+      // patched onto the same record.
       wrapRange(range, rec.id);
       upsert(rec);
       sel.removeAllRanges();
       hideToolbar();
       refreshNotesBadge();
+      if (act === 'note') {
+        openNoteDrawer({
+          mode: 'add', text: rec.text, value: '',
+          onSave: function (val) {
+            rec.note = (val || '').trim();
+            upsert(rec);
+            refreshList();
+          },
+          onCancel: function () {
+            // Drawer closing without saving keeps the highlight; user
+            // can still add a note later via the popover.
+          },
+        });
+      }
     });
     return toolbar;
   }
@@ -244,11 +256,16 @@
     popover.style.top = (rect.bottom + window.scrollY + 6) + 'px';
     popover.style.left = (rect.left + window.scrollX) + 'px';
     popover.querySelector('[data-act="edit"]').onclick = function () {
-      var v = window.prompt('Edit note:', rec.note || '');
-      if (v == null) return;
-      rec.note = v.trim();
-      upsert(rec);
       hidePopover();
+      openNoteDrawer({
+        mode: rec.note ? 'edit' : 'add',
+        text: rec.text, value: rec.note || '',
+        onSave: function (val) {
+          rec.note = (val || '').trim();
+          upsert(rec);
+          refreshList();
+        },
+      });
     };
     popover.querySelector('[data-act="remove"]').onclick = function () {
       document.querySelectorAll('mark[data-anno-id="' + rec.id + '"]').forEach(function (m) {
@@ -352,6 +369,64 @@
       '</div>';
     }).join('');
   }
+
+  // ─── Note drawer (slides in from the right; folds away on save) ──
+  var drawer = null;
+  function ensureDrawer() {
+    if (drawer) return drawer;
+    drawer = document.createElement('aside');
+    drawer.className = 'hb-anno-drawer';
+    drawer.innerHTML =
+      '<div class="hb-anno-drawer__head">' +
+        '<strong class="hb-anno-drawer__title">Add note</strong>' +
+        '<button class="hb-anno-drawer__close" aria-label="Close" type="button">×</button>' +
+      '</div>' +
+      '<blockquote class="hb-anno-drawer__quote"></blockquote>' +
+      '<label class="hb-anno-drawer__label" for="hb-anno-drawer-ta">Your note</label>' +
+      '<textarea id="hb-anno-drawer-ta" rows="6" placeholder="What stood out? What do you want to do with this later?"></textarea>' +
+      '<div class="hb-anno-drawer__actions">' +
+        '<button type="button" data-act="cancel">Cancel</button>' +
+        '<button type="button" data-act="save" class="primary">Save note</button>' +
+      '</div>' +
+      '<p class="hb-anno-drawer__hint">Cmd/Ctrl + Enter to save · Esc to close</p>';
+    document.body.appendChild(drawer);
+    return drawer;
+  }
+
+  function openNoteDrawer(opts) {
+    ensureDrawer();
+    var titleEl = drawer.querySelector('.hb-anno-drawer__title');
+    var quoteEl = drawer.querySelector('.hb-anno-drawer__quote');
+    var ta      = drawer.querySelector('textarea');
+    var save    = drawer.querySelector('[data-act="save"]');
+    var cancel  = drawer.querySelector('[data-act="cancel"]');
+    var close   = drawer.querySelector('.hb-anno-drawer__close');
+
+    titleEl.textContent = opts.mode === 'edit' ? 'Edit note' : 'Add note';
+    quoteEl.textContent = opts.text || '';
+    ta.value = opts.value || '';
+
+    function commit() {
+      var val = ta.value;
+      closeDrawer();
+      if (typeof opts.onSave === 'function') opts.onSave(val);
+    }
+    function abort() {
+      closeDrawer();
+      if (typeof opts.onCancel === 'function') opts.onCancel();
+    }
+    save.onclick   = commit;
+    cancel.onclick = abort;
+    close.onclick  = abort;
+    ta.onkeydown   = function (e) {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { e.preventDefault(); abort(); }
+    };
+
+    drawer.classList.add('is-open');
+    setTimeout(function () { ta.focus(); }, 60);
+  }
+  function closeDrawer() { if (drawer) drawer.classList.remove('is-open'); }
 
   // ─── Export ──────────────────────────────────────────────────
   function downloadMd(pageOnly) {
@@ -485,6 +560,70 @@
       '.hb-anno-item__text::after  { content: "”"; color: #be1a2f; font-weight: 700; }',
       '.hb-anno-item__note { margin-top: 4px; color: #555; font-style: italic; }',
       '.hb-anno-item__meta { margin-top: 4px; color: #aaa; font-size: 11px; }',
+
+      // Note drawer — slides in from the right, folds away after save
+      '.hb-anno-drawer {',
+      '  position: fixed; top: 0; right: 0; bottom: 0;',
+      '  width: 380px; max-width: 92vw;',
+      '  background: #fff; border-left: 1px solid #e0ddd8;',
+      '  box-shadow: -10px 0 32px rgba(0,0,0,0.16);',
+      '  display: flex; flex-direction: column;',
+      '  padding: 18px 22px 22px;',
+      '  transform: translateX(105%); transition: transform .25s ease;',
+      '  z-index: 100002;',
+      '  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;',
+      '}',
+      '.hb-anno-drawer.is-open { transform: translateX(0); }',
+      '.hb-anno-drawer__head {',
+      '  display: flex; align-items: center; justify-content: space-between;',
+      '  margin-bottom: 14px;',
+      '}',
+      '.hb-anno-drawer__title { font-size: 16px; color: #1a1a1a; }',
+      '.hb-anno-drawer__close {',
+      '  background: transparent; border: 0; font-size: 24px;',
+      '  color: #888; cursor: pointer; line-height: 1;',
+      '}',
+      '.hb-anno-drawer__close:hover { color: #be1a2f; }',
+      '.hb-anno-drawer__quote {',
+      '  margin: 0 0 14px;',
+      '  padding: 10px 12px;',
+      '  background: rgba(255, 220, 100, 0.35);',
+      '  border-left: 3px solid #be1a2f;',
+      '  font-size: 13px; line-height: 1.5; color: #333;',
+      '  border-radius: 4px;',
+      '  max-height: 120px; overflow-y: auto;',
+      '}',
+      '.hb-anno-drawer__label {',
+      '  display: block; margin-bottom: 4px;',
+      '  font-size: 12px; font-weight: 600;',
+      '  text-transform: uppercase; letter-spacing: 0.06em; color: #666;',
+      '}',
+      '.hb-anno-drawer textarea {',
+      '  width: 100%; box-sizing: border-box;',
+      '  padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px;',
+      '  font-family: inherit; font-size: 14px; line-height: 1.5;',
+      '  resize: vertical; min-height: 120px;',
+      '}',
+      '.hb-anno-drawer textarea:focus {',
+      '  outline: none; border-color: #be1a2f;',
+      '  box-shadow: 0 0 0 3px rgba(190,26,47,0.15);',
+      '}',
+      '.hb-anno-drawer__actions {',
+      '  display: flex; gap: 8px; margin-top: 14px; justify-content: flex-end;',
+      '}',
+      '.hb-anno-drawer__actions button {',
+      '  padding: 8px 16px; border-radius: 6px; cursor: pointer;',
+      '  font-size: 13px; font-weight: 600; font-family: inherit;',
+      '  background: #f4f3f0; color: #333; border: 1px solid #ddd;',
+      '}',
+      '.hb-anno-drawer__actions button:hover { background: #e8e6e2; }',
+      '.hb-anno-drawer__actions button.primary {',
+      '  background: #be1a2f; color: #fff; border-color: #be1a2f;',
+      '}',
+      '.hb-anno-drawer__actions button.primary:hover { background: #9c1526; border-color: #9c1526; }',
+      '.hb-anno-drawer__hint {',
+      '  margin: 10px 0 0; font-size: 11px; color: #999; text-align: right;',
+      '}',
     ].join('\n');
     document.head.appendChild(s);
   }
