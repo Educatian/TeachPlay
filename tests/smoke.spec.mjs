@@ -45,6 +45,26 @@ test('2. game showcase + Google AI Studio sections render with cards', async ({ 
   await expect(page.locator('#watch iframe')).toHaveCount(3);
 });
 
+test('2b. live game showcase links point to individual playable examples', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  const expected = new Map([
+    ['Asteroid Game', 'https://gpt5-coding-examples.vercel.app/asteroid-game-5.2'],
+    ['Escape the Maze', 'https://gpt5-coding-examples.vercel.app/escape-the-maze'],
+    ['Falling Fruit Catcher', 'https://gpt5-coding-examples.vercel.app/falling-object-catcher'],
+    ['Solar System Explorer', 'https://gpt5-coding-examples.vercel.app/solar-system-explorer-5.2'],
+    ['Ocean Wave Simulation', 'https://gpt5-coding-examples.vercel.app/ocean-wave-simulation-5.2'],
+    ['Target Click Challenge', 'https://gpt5-coding-examples.vercel.app/target-clicker'],
+    ['Festival Lights', 'https://gpt5-coding-examples.vercel.app/festival-lights-show'],
+  ]);
+
+  for (const [title, href] of expected) {
+    const card = page.locator('#live-examples .showcase-card', { hasText: title });
+    await expect(card).toHaveAttribute('href', href);
+  }
+
+  await expect(page.locator('#live-examples .showcase-card[href="https://gpt5-coding-examples.vercel.app/"]')).toHaveCount(0);
+});
+
 test('3. lightbox opens on figure-image click and Escape closes', async ({ page }) => {
   await asLearner(page);
   await page.goto(BASE + '/session-03.html');

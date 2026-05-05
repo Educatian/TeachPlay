@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TeachPlay game icon">
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b21f37"/>
+      <stop offset="0.48" stop-color="#7f1535"/>
+      <stop offset="1" stop-color="#15171f"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#bg)"/>
+  <path d="M 14 29 C 18 18 28 18 32 27 C 36 18 47 18 51 29 C 55 39 50 48 42 47 C 37 46 35 42 32 38 C 29 42 27 46 22 47 C 14 48 10 39 14 29 Z" fill="#fff8ec"/>
+  <rect x="18" y="30" width="4" height="14" rx="2" fill="#15171f"/>
+  <rect x="13" y="35" width="14" height="4" rx="2" fill="#15171f"/>
+  <circle cx="43" cy="32" r="3.2" fill="#2563eb"/>
+  <circle cx="49" cy="38" r="3.2" fill="#0f766e"/>
+  <path d="M 29 43 C 35 48 42 48 49 43" fill="none" stroke="#b21f37" stroke-width="4" stroke-linecap="round"/>
+</svg>
