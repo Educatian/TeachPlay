@@ -70,7 +70,10 @@
   .showcase-card__media--placeholder {
     display: flex; align-items: center; justify-content: center;
     background: linear-gradient(135deg, #2a2a2e 0%, #44444a 100%);
-    color: #fff; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #fff; font-size: 22px; font-weight: 600;
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    padding: 0 16px; text-align: center;
   }
   .showcase-card__body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
   .showcase-card__tag {
@@ -92,17 +95,19 @@
   }
   .showcase-card__caption strong { color: var(--crimson, #be1a2f); font-style: normal; }
 
-  /* Video embeds */
+  /* Video embeds — featured-first layout */
+  .video-stack { display: flex; flex-direction: column; gap: 28px; }
   .video-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
     gap: 24px;
   }
   .video-card {
     background: #fff;
     border: 1px solid var(--gray-15, #e0ddd8);
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.04);
   }
   .video-card__frame {
     position: relative;
@@ -129,6 +134,24 @@
     padding: 4px 0 4px 12px; margin: 0;
   }
   .video-card__caption strong { color: var(--crimson, #be1a2f); }
+
+  /* Featured (hero) variant — used for the lead workflow video */
+  .video-card--featured {
+    border-width: 2px;
+    border-color: var(--crimson, #be1a2f);
+    box-shadow: 0 12px 40px rgba(190, 26, 47, 0.18);
+  }
+  .video-card--featured .video-card__body { padding: 24px 28px 28px; }
+  .video-card--featured .video-card__title { font-size: 22px; line-height: 1.25; margin-bottom: 6px; }
+  .video-card--featured .video-card__source { font-size: 12px; margin-bottom: 14px; }
+  .video-card--featured .video-card__caption { font-size: 15px; line-height: 1.6; padding: 6px 0 6px 14px; border-left-width: 4px; }
+  .video-card__featured-tag {
+    display: inline-block;
+    background: var(--crimson, #be1a2f); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 12px;
+    margin-bottom: 10px;
+  }
 </style>
 </head>
 <body>
@@ -346,6 +369,113 @@
   </div>
 </section>
 
+<!-- ─── Built in Google AI Studio ──────────────────────────────── -->
+<section class="section section--tint" id="ai-studio">
+  <span class="section__eyebrow">Built in Google AI Studio</span>
+  <h2 class="section__title">Eight remix-ready games<br/>from Gemini's own gallery.</h2>
+  <p class="section__lede">
+    Google's <a href="https://aistudio.google.com/apps" target="_blank" rel="noopener">AI Studio Apps gallery</a>
+    and the <a href="https://blog.google/innovation-and-ai/technology/developers-tools/io-save-the-date-2026-gemini/" target="_blank" rel="noopener">I/O 2026 save-the-date countdown</a>
+    publish full source for every demo — fork them in one click. Each game below is a working
+    answer to a different question this handbook asks. Play one, then crack open the source and
+    notice the shape of its loop.
+  </p>
+
+  <div class="showcase-grid">
+
+    <!-- ── I/O 2026 Countdown · 4 games ── -->
+
+    <a class="showcase-card" href="https://io.google/2026/puzzle/date-reveal/" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Supersonic_Bot.width-700.format-webp.webp" alt="Supersonic Bot — Android bot side-scrolling runner controlled by voice volume." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">I/O 2026 · voice input</div>
+        <h3 class="showcase-card__title">Supersonic Bot</h3>
+        <p class="showcase-card__desc">Side-scrolling runner where your voice volume is the controller — louder = higher.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 04.</strong> A single-verb mechanic with an unusual input channel — the kind of constrained-but-expressive loop you should be able to defend in your D2 crosswalk.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://io.google/2026/puzzle/date-reveal/" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Hole-in-oneCat.width-700.format-webp.webp" alt="Hole in One — mini-golf game with an AI caddy." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">I/O 2026 · AI feedback</div>
+        <h3 class="showcase-card__title">Hole in One</h3>
+        <p class="showcase-card__desc">Mini-golf where Gemini plays caddy — contextual coaching after every shot.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 09.</strong> Live AI feedback as the evidence your D4 playtest tries to capture, just generated instead of harvested. Compare quality and judge.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://io.google/2026/puzzle/date-reveal/" target="_blank" rel="noopener">
+      <div class="showcase-card__media showcase-card__media--placeholder">⬛ Logic puzzle</div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">I/O 2026 · procedural</div>
+        <h3 class="showcase-card__title">Nonogram</h3>
+        <p class="showcase-card__desc">Picross-style logic puzzle — Level 1 is fixed, Levels 2–3 are generated fresh by Gemini each play.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 03.</strong> Pure conceptual reasoning under lawful constraint — and a clean look at where AI generates content vs. where AI <em>shouldn't</em>.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://io.google/2026/puzzle/date-reveal/" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Chrome_Dino_virtual_pet_1.width-700.format-webp.webp" alt="Dino Pal — Chrome Dino as virtual pet whose personality emerges from your gameplay." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">I/O 2026 · persistent state</div>
+        <h3 class="showcase-card__title">Dino Pal</h3>
+        <p class="showcase-card__desc">A Chrome Dino virtual pet whose personality traits Gemini assigns based on how you played the other four games.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 04.</strong> Persistent state as a relationship-builder — what your D2 crosswalk calls &ldquo;memory becomes mechanic.&rdquo;</p>
+      </div>
+    </a>
+
+    <!-- ── AI Studio Showcase Apps · 4 demos ── -->
+
+    <a class="showcase-card" href="https://aistudio.google.com/apps/bundled/gemini_95?showPreview=true" target="_blank" rel="noopener">
+      <div class="showcase-card__media showcase-card__media--placeholder" style="background:linear-gradient(135deg,#008080 0%,#3a3a8c 100%);">🖥️ Retro desktop sim</div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">AI Studio · sandbox</div>
+        <h3 class="showcase-card__title">Gemini 95</h3>
+        <p class="showcase-card__desc">A simulated Windows 95 desktop — Minesweeper, Notepad, Paint, even a fake Chrome — all with Gemini smarts wired in.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 03.</strong> The cleanest example of a <em>simulated environment as a conceptual sandbox</em> — playable, lawful, and very obviously remix-ready.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://aistudio.google.com/apps/bundled/tiny_cats?showPreview=true" target="_blank" rel="noopener">
+      <div class="showcase-card__media showcase-card__media--placeholder" style="background:linear-gradient(135deg,#f7b3a8 0%,#be1a2f 100%);">🐱 Explainer game</div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">AI Studio · explainer loop</div>
+        <h3 class="showcase-card__title">Explain Things with Tiny Cats</h3>
+        <p class="showcase-card__desc">Type any topic; Gemini generates an illustrated cat-led explainer. The loop is the explanation itself.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 02 / 04.</strong> Useful contrast: where does &ldquo;a learning loop&rdquo; end and &ldquo;a content generator&rdquo; begin? Hold this next to your D1 problem statement.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://aistudio.google.com/apps/bundled/video_toys?showPreview=true" target="_blank" rel="noopener">
+      <div class="showcase-card__media showcase-card__media--placeholder" style="background:linear-gradient(135deg,#1a6e2e 0%,#0a2c14 100%);">🎬 Video → app</div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">AI Studio · transformation</div>
+        <h3 class="showcase-card__title">Video Toys</h3>
+        <p class="showcase-card__desc">Drop a YouTube link → Gemini turns it into an interactive learning app that lets you poke at the concepts.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 11.</strong> A live answer to &ldquo;passive media → active instrument.&rdquo; The rubric question: does interaction here actually buy learning, or just engagement?</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://aistudio.google.com/apps/bundled/p5js_playground?showPreview=true" target="_blank" rel="noopener">
+      <div class="showcase-card__media showcase-card__media--placeholder" style="background:linear-gradient(135deg,#e8853a 0%,#9c1526 100%);">🎨 Code playground</div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">AI Studio · creative coding</div>
+        <h3 class="showcase-card__title">p5.js Playground</h3>
+        <p class="showcase-card__desc">Chat-driven creative coding for p5.js — describe an interactive sketch or mini-game, edit it live.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 06.</strong> The bridge from a five-minute paper loop into runnable code without a full Three.js detour. Use it to prototype D3 mechanics fast.</p>
+      </div>
+    </a>
+
+  </div>
+</section>
+
 <!-- ─── Watch the workflow ─────────────────────────────────────── -->
 <section class="section" id="watch">
   <span class="section__eyebrow">Watch the Workflow</span>
@@ -355,9 +485,10 @@
     (D5) becomes a real engine, in real time. Watch how a state machine, an event-feedback map,
     and a Three.js bridge translate from paper to working build.
   </p>
-  <div class="video-grid">
+  <div class="video-stack">
 
-    <div class="video-card">
+    <!-- Featured: full-width hero video -->
+    <div class="video-card video-card--featured">
       <div class="video-card__frame">
         <iframe
           src="https://www.youtube-nocookie.com/embed/bWxIF903t_I"
@@ -368,43 +499,47 @@
           allowfullscreen></iframe>
       </div>
       <div class="video-card__body">
+        <span class="video-card__featured-tag">★ Watch first · the full workflow</span>
         <h3 class="video-card__title">Build a Full MR Game with Unity AI + Meta Agentic Tools</h3>
         <div class="video-card__source">Dilmer Valecillos · 17:01</div>
-        <p class="video-card__caption"><strong>Why we picked it.</strong> An end-to-end agentic build — ball launcher, trail effects, scoreboard UI — that is exactly the shape of your D5 implementation spec, just in a different engine. Notice the state machine driving feedback events.</p>
+        <p class="video-card__caption"><strong>Why we picked it.</strong> An end-to-end agentic build — ball launcher, trail effects, scoreboard UI — that is exactly the shape of your D5 implementation spec, just in a different engine. Watch how the state machine drives every feedback event.</p>
       </div>
     </div>
 
-    <div class="video-card">
-      <div class="video-card__frame">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/d1PwLkvgP7A"
-          title="Your First Steps with Immersive Web SDK"
-          loading="lazy"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen></iframe>
+    <!-- Supporting: 2-up grid -->
+    <div class="video-grid">
+      <div class="video-card">
+        <div class="video-card__frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/d1PwLkvgP7A"
+            title="Your First Steps with Immersive Web SDK"
+            loading="lazy"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+        </div>
+        <div class="video-card__body">
+          <h3 class="video-card__title">Your First Steps with Immersive Web SDK</h3>
+          <div class="video-card__source">Meta · IWSDK onboarding</div>
+          <p class="video-card__caption"><strong>Why we picked it.</strong> The ECS + signals + Three.js stack you cite in the D5 spec, walked through cold. Use this to ground the &ldquo;Three.js bridge&rdquo; vocabulary in something you can actually run.</p>
+        </div>
       </div>
-      <div class="video-card__body">
-        <h3 class="video-card__title">Your First Steps with Immersive Web SDK</h3>
-        <div class="video-card__source">Meta · IWSDK onboarding</div>
-        <p class="video-card__caption"><strong>Why we picked it.</strong> The ECS + signals + Three.js stack you cite in the D5 spec, walked through cold. Use this to ground the &ldquo;Three.js bridge&rdquo; vocabulary in something you can actually run.</p>
-      </div>
-    </div>
 
-    <div class="video-card">
-      <div class="video-card__frame">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/vnC9Sw6k5Ao"
-          title="WebXR / VR / AR with Three.js — foundation series"
-          loading="lazy"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen></iframe>
-      </div>
-      <div class="video-card__body">
-        <h3 class="video-card__title">WebXR with Three.js — Foundation Series</h3>
-        <div class="video-card__source">Nik Lever · Three.js fundamentals</div>
-        <p class="video-card__caption"><strong>Why we picked it.</strong> A patient, free Three.js series — the right primer if your team's developer reads your D5 spec and asks &ldquo;okay, but where do I actually start?&rdquo;</p>
+      <div class="video-card">
+        <div class="video-card__frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/vnC9Sw6k5Ao"
+            title="WebXR / VR / AR with Three.js — foundation series"
+            loading="lazy"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+        </div>
+        <div class="video-card__body">
+          <h3 class="video-card__title">WebXR with Three.js — Foundation Series</h3>
+          <div class="video-card__source">Nik Lever · Three.js fundamentals</div>
+          <p class="video-card__caption"><strong>Why we picked it.</strong> A patient, free Three.js series — the right primer if your team's developer reads your D5 spec and asks &ldquo;okay, but where do I actually start?&rdquo;</p>
+        </div>
       </div>
     </div>
 
