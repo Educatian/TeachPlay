@@ -31,6 +31,105 @@
 <link rel="icon" type="image/svg+xml" href="credential/badge.svg" />
 
 <link rel="stylesheet" href="handbook.css" />
+
+<!-- Local styles for the showcase (game examples + video embeds) -->
+<style>
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .showcase-card {
+    display: flex; flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--gray-15, #e0ddd8);
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none; color: inherit;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .showcase-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border-color: var(--crimson, #be1a2f);
+    text-decoration: none;
+  }
+  .showcase-card__media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: #f0ede8;
+    overflow: hidden;
+  }
+  .showcase-card__media img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+  }
+  .showcase-card:hover .showcase-card__media img { transform: scale(1.04); }
+  .showcase-card__media--placeholder {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #2a2a2e 0%, #44444a 100%);
+    color: #fff; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .showcase-card__body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
+  .showcase-card__tag {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--crimson, #be1a2f); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .showcase-card__title {
+    font-size: 17px; font-weight: 700; margin: 0 0 6px;
+    color: #1a1a1a; line-height: 1.25;
+  }
+  .showcase-card__desc {
+    font-size: 13px; line-height: 1.5; color: #555; margin: 0 0 10px;
+  }
+  .showcase-card__caption {
+    font-size: 12px; line-height: 1.5; color: #777;
+    border-top: 1px dashed #e0ddd8; padding-top: 10px; margin-top: auto;
+    font-style: italic;
+  }
+  .showcase-card__caption strong { color: var(--crimson, #be1a2f); font-style: normal; }
+
+  /* Video embeds */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  .video-card {
+    background: #fff;
+    border: 1px solid var(--gray-15, #e0ddd8);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .video-card__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+  .video-card__frame iframe {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    border: 0;
+  }
+  .video-card__body { padding: 16px 18px 18px; }
+  .video-card__title {
+    font-size: 15px; font-weight: 700; margin: 0 0 4px;
+    color: #1a1a1a; line-height: 1.3;
+  }
+  .video-card__source {
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #888; margin-bottom: 10px;
+  }
+  .video-card__caption {
+    font-size: 13px; line-height: 1.55; color: #444;
+    border-left: 3px solid var(--crimson, #be1a2f);
+    padding: 4px 0 4px 12px; margin: 0;
+  }
+  .video-card__caption strong { color: var(--crimson, #be1a2f); }
+</style>
 </head>
 <body>
 
@@ -96,7 +195,7 @@
   <div class="hero__bg"></div>
   <div class="hero__content">
     <div class="hero__eyebrow">Micro-credential · v2 · 12 Sessions · ~36 Contact Hours</div>
-    <h1 class="hero__title">Design a game that<br/>actually <em>teaches</em>.</h1>
+    <h1 class="hero__title" data-typewriter>Design a game that<br/>actually <em>teaches</em>.</h1>
     <p class="hero__lede">
       A twelve-session handbook for designers, educators, and developers who ship small, rigorous
       learning games — grounded in objectives, shaped by playtest, and implementable in a real engine.
@@ -135,6 +234,180 @@
       <h3 class="card__title">Specify to Implementation</h3>
       <p>Hand a developer a state machine, event-feedback map, and Three.js bridge they can build from on day one.</p>
     </div>
+  </div>
+</section>
+
+<!-- ─── Live game examples ─────────────────────────────────────── -->
+<section class="section" id="live-examples">
+  <span class="section__eyebrow">From the Field</span>
+  <h2 class="section__title">Tiny games. Real loops.</h2>
+  <p class="section__lede">
+    These are end-to-end browser games and one research-grade WebXR apparatus drawn from the
+    <a href="https://educatian.github.io/agentic-xr-workflow/" target="_blank" rel="noopener">Agentic XR Workflow</a>
+    sister project. Each one shows what a tight learning loop, a clear mechanic, or a single
+    state machine looks like once it ships — the same primitives you build across Sessions 03–12.
+  </p>
+  <div class="showcase-grid">
+
+    <a class="showcase-card" href="https://github.com/Educatian/virtual-makerspace" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://educatian.github.io/agentic-xr-workflow/images/vm/hero.png" alt="Virtual Makerspace WebXR breadboard study apparatus." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">WebXR · research</div>
+        <h3 class="showcase-card__title">Virtual Makerspace</h3>
+        <p class="showcase-card__desc">A research-grade WebXR breadboard with grabbable parts and circuit evaluation — embodied Productive Failure at study scale.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 12.</strong> Same shape as your D5 implementation spec — state machine, event map, and a Three.js bridge — but instrumented for a real classroom study.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://gpt5-coding-examples.vercel.app/" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://educatian.github.io/agentic-xr-workflow/images/community/asteroid-game-5.2.png" alt="Asteroid arcade game screenshot with player ship and rocks." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">Browser arcade</div>
+        <h3 class="showcase-card__title">Asteroid Game</h3>
+        <p class="showcase-card__desc">2D dogfighting against AI ships and asteroid debris — a single-verb arcade loop done well.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 03.</strong> Procedural-fluency on the crosswalk: one verb, escalating pressure, a gate that earns the next round.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://gpt5-coding-examples.vercel.app/" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://educatian.github.io/agentic-xr-workflow/images/community/escape-the-maze.png" alt="Escape the Maze procedural maze game screenshot." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">Procedural</div>
+        <h3 class="showcase-card__title">Escape the Maze</h3>
+        <p class="showcase-card__desc">Randomly generated maze, timer, replay button — a complete loop with a real fail-and-retry rhythm.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 08.</strong> Minimum-viable state machine: <em>start → run → win/lose → reset</em>. Notice how the reset is what makes the loop teach.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://gpt5-coding-examples.vercel.app/" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://educatian.github.io/agentic-xr-workflow/images/community/falling-object-catcher.png" alt="Falling fruit catcher arcade game screenshot." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">Tight feedback</div>
+        <h3 class="showcase-card__title">Falling Fruit Catcher</h3>
+        <p class="showcase-card__desc">Move a basket left/right; catch fruit; difficulty rises. The smallest loop that still keeps a player honest.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 06.</strong> &ldquo;Five-minute paper loop&rdquo; benchmark — the kind of thing you should be able to playtest in your D3.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://gpt5-coding-examples.vercel.app/" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://educatian.github.io/agentic-xr-workflow/images/community/solar-system-explorer-5.2.png" alt="Solar system explorer with planets and orbital paths." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">Sandbox model</div>
+        <h3 class="showcase-card__title">Solar System Explorer</h3>
+        <p class="showcase-card__desc">Navigate planetary scale and orbital relationships in a single 3D scene.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 03.</strong> Conceptual reasoning under <em>lawful constraint</em> — model is right or wrong, not opinion-based.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://gpt5-coding-examples.vercel.app/" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://educatian.github.io/agentic-xr-workflow/images/community/ocean-wave-simulation-5.2.png" alt="Ocean wave physics simulation with wind and height controls." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">Parameter sandbox</div>
+        <h3 class="showcase-card__title">Ocean Wave Simulation</h3>
+        <p class="showcase-card__desc">Live wind-speed and height sliders; watch wave shape change in real time.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 03.</strong> Prediction-then-test sandbox: change one parameter, observe, refine the mental model.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://inferent.io/playground" target="_blank" rel="noopener">
+      <div class="showcase-card__media showcase-card__media--placeholder">Playable · No screenshot</div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">Physics toy</div>
+        <h3 class="showcase-card__title">Hex Bounce</h3>
+        <p class="showcase-card__desc">Glowing balls ricochet inside a slowly rotating hexagon — a pure physics sandbox with one tunable.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 04.</strong> &ldquo;What makes a loop sing&rdquo; — minimum mechanic, maximum readability.</p>
+      </div>
+    </a>
+
+    <a class="showcase-card" href="https://gpt5-coding-examples.vercel.app/" target="_blank" rel="noopener">
+      <div class="showcase-card__media">
+        <img loading="lazy" src="https://educatian.github.io/agentic-xr-workflow/images/community/festival-lights-show.png" alt="Festival lights show interactive light performance." />
+      </div>
+      <div class="showcase-card__body">
+        <div class="showcase-card__tag">Performance toy</div>
+        <h3 class="showcase-card__title">Festival Lights</h3>
+        <p class="showcase-card__desc">An interactive light performance — pure expression, no win condition.</p>
+        <p class="showcase-card__caption"><strong>Connects to · Session 04.</strong> The non-game end of the spectrum — useful to mark where &ldquo;loop&rdquo; ends and &ldquo;toy&rdquo; begins.</p>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ─── Watch the workflow ─────────────────────────────────────── -->
+<section class="section" id="watch">
+  <span class="section__eyebrow">Watch the Workflow</span>
+  <h2 class="section__title">From spec to playable<br/>in one sitting.</h2>
+  <p class="section__lede">
+    Three free deep-dives that map onto the back half of this handbook — the implementation spec
+    (D5) becomes a real engine, in real time. Watch how a state machine, an event-feedback map,
+    and a Three.js bridge translate from paper to working build.
+  </p>
+  <div class="video-grid">
+
+    <div class="video-card">
+      <div class="video-card__frame">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/bWxIF903t_I"
+          title="How to Build Full VR/MR Games With Unity AI + Meta Agentic Tools"
+          loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen></iframe>
+      </div>
+      <div class="video-card__body">
+        <h3 class="video-card__title">Build a Full MR Game with Unity AI + Meta Agentic Tools</h3>
+        <div class="video-card__source">Dilmer Valecillos · 17:01</div>
+        <p class="video-card__caption"><strong>Why we picked it.</strong> An end-to-end agentic build — ball launcher, trail effects, scoreboard UI — that is exactly the shape of your D5 implementation spec, just in a different engine. Notice the state machine driving feedback events.</p>
+      </div>
+    </div>
+
+    <div class="video-card">
+      <div class="video-card__frame">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/d1PwLkvgP7A"
+          title="Your First Steps with Immersive Web SDK"
+          loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen></iframe>
+      </div>
+      <div class="video-card__body">
+        <h3 class="video-card__title">Your First Steps with Immersive Web SDK</h3>
+        <div class="video-card__source">Meta · IWSDK onboarding</div>
+        <p class="video-card__caption"><strong>Why we picked it.</strong> The ECS + signals + Three.js stack you cite in the D5 spec, walked through cold. Use this to ground the &ldquo;Three.js bridge&rdquo; vocabulary in something you can actually run.</p>
+      </div>
+    </div>
+
+    <div class="video-card">
+      <div class="video-card__frame">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/vnC9Sw6k5Ao"
+          title="WebXR / VR / AR with Three.js — foundation series"
+          loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen></iframe>
+      </div>
+      <div class="video-card__body">
+        <h3 class="video-card__title">WebXR with Three.js — Foundation Series</h3>
+        <div class="video-card__source">Nik Lever · Three.js fundamentals</div>
+        <p class="video-card__caption"><strong>Why we picked it.</strong> A patient, free Three.js series — the right primer if your team's developer reads your D5 spec and asks &ldquo;okay, but where do I actually start?&rdquo;</p>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -244,6 +517,8 @@
 <script src="shell.js"></script>
 <script src="enroll.js"></script>
 <script src="nav.js"></script>
+<script src="lightbox.js"></script>
+<script src="hero-type.js"></script>
 <script src="admin-gate.js"></script>
 </body>
 </html>
