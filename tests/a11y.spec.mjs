@@ -46,8 +46,6 @@ for (const path of PAGES) {
       // Don't scan into 3rd-party iframes (YouTube embeds in particular —
       // we can't fix YouTube's internal a11y, and it pollutes our score).
       .exclude('iframe')
-      // Disable rules we can't address page-by-page yet.
-      .disableRules(['region']) // <main> wrapping is being added gradually
       .analyze();
 
     if (results.violations.length > 0) {

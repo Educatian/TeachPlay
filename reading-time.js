@@ -10,7 +10,13 @@
 (function () {
   'use strict';
 
-  var WPM = 220;
+  // Two reading rates:
+  //   220 wpm — average native-English adult silent reading
+  //   140 wpm — typical ESL / second-language reading rate (Carver, 1990;
+  //              Brantmeier, 2005). UA cohorts include international
+  //              students; surface both estimates so they can self-pace.
+  var WPM_NATIVE = 220;
+  var WPM_ESL = 140;
   var MIN_WORDS = 300;
 
   function injectStyles() {
@@ -65,16 +71,18 @@
     return txt.split(/\s+/).length;
   }
 
-  function buildPill(minutes) {
+  function buildPill(nativeMins, eslMins) {
     var span = document.createElement('span');
     span.className = 'hb-rtime';
-    span.setAttribute('aria-label', 'Estimated reading time');
+    var label = '~' + nativeMins + ' min (native) · ~' + eslMins + ' min (ESL)';
+    span.setAttribute('aria-label', 'Estimated reading time: ' + label);
+    span.title = 'Native English reader: ~' + nativeMins + ' min · Second-language reader: ~' + eslMins + ' min';
     span.innerHTML =
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
         '<circle cx="12" cy="12" r="9"></circle>' +
         '<polyline points="12 7 12 12 15 14"></polyline>' +
       '</svg>' +
-      '<span>~' + minutes + ' min read</span>';
+      '<span>~' + nativeMins + '–' + eslMins + ' min read</span>';
     return span;
   }
 
@@ -84,10 +92,11 @@
     if (!region) return;
     var words = countWords(region);
     if (words < MIN_WORDS) return;
-    var minutes = Math.max(1, Math.ceil(words / WPM));
+    var nativeMins = Math.max(1, Math.ceil(words / WPM_NATIVE));
+    var eslMins = Math.max(1, Math.ceil(words / WPM_ESL));
     var slot = pickInsertSlot();
     if (!slot) return;
-    var pill = buildPill(minutes);
+    var pill = buildPill(nativeMins, eslMins);
     // Append next to the eyebrow / crumbs so it visually belongs to the heading
     slot.appendChild(document.createTextNode(' '));
     slot.appendChild(pill);

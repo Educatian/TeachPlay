@@ -153,7 +153,7 @@
     } else {
       panel.innerHTML = results.map(function (p, i) {
         var snip = snippet(p.body, tokens, 180);
-        return '<a class="hb-search-row" data-idx="' + i + '" href="' + p.url + '" role="option">' +
+        return '<a class="hb-search-row" id="hb-search-row-' + i + '" data-idx="' + i + '" href="' + p.url + '" role="option">' +
           '<div class="hb-search-row__title">' + highlight(p.title || p.url, tokens) + '</div>' +
           '<div class="hb-search-row__url">' + p.url + '</div>' +
           (snip ? '<div class="hb-search-row__snip">' + highlight(snip, tokens) + '</div>' : '') +
@@ -161,12 +161,19 @@
       }).join('');
     }
     panel.classList.add('is-open');
+    var input = form.querySelector('input[type="search"], input[type="text"]');
+    if (input) input.setAttribute('aria-expanded', 'true');
     return panel;
   }
 
   function close(form) {
     var panel = form.querySelector('.hb-search-results');
     if (panel) panel.classList.remove('is-open');
+    var input = form.querySelector('input[type="search"], input[type="text"]');
+    if (input) {
+      input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant');
+    }
   }
 
   function wire(form) {
@@ -176,8 +183,11 @@
 
     var input = form.querySelector('input[type="search"], input[type="text"]');
     if (!input) return;
-    // The form already has onsubmit="return false;" — keep that, but we hijack
-    // the input events to drive the dropdown.
+    // ARIA wiring: declare the input as a combobox controlling a listbox.
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-expanded', 'false');
+    input.setAttribute('aria-haspopup', 'listbox');
 
     var debounceT = null;
     var lastTokens = [];
@@ -222,9 +232,12 @@
         input.blur();
       }
       rows.forEach(function (r, i) { r.classList.toggle('is-active', i === activeIdx); });
-      // Scroll the active row into view inside the panel (long lists)
+      // ARIA: tell screen readers which row is active without moving focus.
       if (activeIdx >= 0 && rows[activeIdx]) {
+        input.setAttribute('aria-activedescendant', rows[activeIdx].id || '');
         rows[activeIdx].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        input.removeAttribute('aria-activedescendant');
       }
     });
 
