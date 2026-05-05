@@ -364,12 +364,30 @@
   function refreshList() {
     var list = document.getElementById('hb-anno-list');
     if (!list) return;
-    // Show the local-only warning when total count crosses 10 — high enough
-    // that the user has invested real effort, low enough to nudge before loss.
+    // Show the local-only warning when:
+    //   - total count >= 10 (user has invested real effort), OR
+    //   - more than 30 days since last export (real "you should back up"
+    //     condition that doesn't depend only on volume).
     var warn = document.getElementById('hb-anno-local-warn');
     if (warn) {
       var total = loadAll().length;
-      warn.hidden = total < 10;
+      var lastExport = 0;
+      try { lastExport = parseInt(localStorage.getItem('hb:annotations:last-export') || '0', 10); } catch (_) {}
+      var daysSinceExport = (Date.now() - lastExport) / (1000 * 60 * 60 * 24);
+      var oldUnexported = total > 0 && (lastExport === 0 || daysSinceExport > 30);
+      warn.hidden = total < 10 && !oldUnexported;
+      // If reason is age-based, message that explicitly.
+      if (oldUnexported && total > 0 && total < 10) {
+        warn.innerHTML =
+          '<strong>Backup recommended.</strong> It\'s been &gt; 30 days since you ' +
+          'last exported your annotations. Browser data can be cleared at any time — ' +
+          'a quick <em>Download all (.md)</em> below keeps your notes safe.';
+      } else if (total >= 10) {
+        warn.innerHTML =
+          '<strong>Local-only storage.</strong> Your highlights live in this browser and ' +
+          'will be lost if you clear site data or switch devices. Download a Markdown ' +
+          'export every few weeks to keep them safe.';
+      }
     }
     var recs = pageRecords();
     if (!recs.length) { list.innerHTML = '<p style="color:#888;font-size:13px;padding:8px;">No annotations on this page yet.</p>'; return; }
@@ -477,6 +495,9 @@
     a.href = url; a.download = filename;
     document.body.appendChild(a); a.click();
     setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 200);
+    // Stamp the export so the 30-day reminder doesn't keep nagging.
+    try { localStorage.setItem('hb:annotations:last-export', String(Date.now())); } catch (_) {}
+    refreshList();
   }
   function ymd() {
     var d = new Date();

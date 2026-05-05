@@ -30,7 +30,7 @@
     font-size: 12.5px;
     line-height: 1.6;
   }
-  .pf-id-card h3 {
+  .pf-id-card .pf-id-card__title, .pf-id-card h3 {
     margin: 0 0 12px;
     font-family: var(--font-sans);
     font-size: 12px;
@@ -211,7 +211,7 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-                    <nav class="primary-nav" data-primary-nav>
+                      <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
@@ -270,8 +270,8 @@
         facilitator or pin it to a permanent URL.
       </p>
     </div>
-    <aside class="pf-id-card">
-      <h3>Learner Identity</h3>
+    <aside class="pf-id-card" aria-label="Learner identity card">
+      <h2 class="pf-id-card__title">Learner Identity</h2>
       <dl>
         <dt>Actor</dt><dd id="pf-actor">—</dd>
         <dt>Cohort</dt><dd><input id="pf-cohort" placeholder="e.g. 2026-spring" /></dd>
@@ -695,6 +695,7 @@ pre{background:#161616;color:#c6c6c6;padding:18px;font-size:12px;overflow-x:auto
 </script>
 <script src="nav.js"></script>
 <script src="a11y.js"></script>
+<script src="storage-banner.js"></script>
 <script src="back-to-top.js"></script>
 <script src="reading-time.js"></script>
 <script src="search.js"></script>

@@ -111,15 +111,47 @@ for (const page_ of HTML_PAGES) {
     if (!themeColor) note(page_, 'warning', 'meta', 'Missing theme-color meta');
 
     // ── Images ───────────────────────────────────────────────
-    // Every <img> needs alt (empty alt="" is OK if decorative)
-    const imgs = await page.locator('img').all();
-    let imgsWithoutAlt = 0;
-    for (const img of imgs) {
-      const alt = await img.getAttribute('alt');
-      if (alt === null) imgsWithoutAlt++;
+    // Every <img> needs alt (empty alt="" is OK if decorative).
+    // Additionally flag the SR anti-pattern where alt and figcaption are
+    // identical (causes screen readers to announce the same text twice).
+    const imgInfo = await page.locator('img').evaluateAll(els =>
+      els.map(img => {
+        var fig = img.closest('figure');
+        var cap = fig ? fig.querySelector('figcaption') : null;
+        return {
+          alt: img.getAttribute('alt'),
+          captionText: cap ? cap.textContent.trim() : '',
+          srcSnippet: (img.getAttribute('src') || '').slice(-40),
+        };
+      })
+    );
+    let imgsWithoutAlt = 0, dupAltCaption = 0;
+    for (const info of imgInfo) {
+      if (info.alt === null) imgsWithoutAlt++;
+      if (info.alt && info.captionText && info.alt.trim() === info.captionText) dupAltCaption++;
     }
     if (imgsWithoutAlt > 0) {
       note(page_, 'warning', 'a11y', `${imgsWithoutAlt} <img> tag(s) missing alt`);
+    }
+    if (dupAltCaption > 0) {
+      note(page_, 'warning', 'a11y', `${dupAltCaption} image(s) have alt text identical to figcaption (SR will announce twice)`);
+    }
+
+    // ── Heading hierarchy: catch H2→H4 skips, multiple H1s already
+    //    flagged above. WCAG 1.3.1 / 2.4.10. ─────────────────────────
+    const skips = await page.locator('h1, h2, h3, h4, h5, h6').evaluateAll(els => {
+      var prev = 0; var skipsFound = [];
+      for (const h of els) {
+        var lvl = parseInt(h.tagName.slice(1), 10);
+        if (prev > 0 && lvl > prev + 1) {
+          skipsFound.push({ from: prev, to: lvl, text: h.textContent.trim().slice(0, 40) });
+        }
+        prev = lvl;
+      }
+      return skipsFound;
+    });
+    for (const s of skips) {
+      note(page_, 'warning', 'a11y', `Heading skip H${s.from} → H${s.to} ("${s.text}")`);
     }
 
     // ── Internal links ───────────────────────────────────────
