@@ -102,6 +102,14 @@ for (const page_ of HTML_PAGES) {
     const title = await page.title();
     if (!title || title.length < 5) note(page_, 'warning', 'seo', 'Title missing or too short');
 
+    // Exactly one <main> landmark (WCAG 1.3.1 / ARIA spec).
+    // Some pages declare both <main id="main"> and an inner <main class="main">
+    // (session pages have a sidebar+main shell). Allow at most one direct child
+    // <main>; nested <main> is the actual a11y warning.
+    const mainCount = await page.locator('main').count();
+    if (mainCount === 0) note(page_, 'error', 'a11y', 'No <main> landmark');
+    if (mainCount > 1) note(page_, 'warning', 'a11y', `${mainCount} <main> elements (expected 1)`);
+
     // Every page must have <meta name="viewport"> (mobile-friendly)
     const hasViewport = await page.locator('meta[name="viewport"]').count();
     if (!hasViewport) note(page_, 'error', 'a11y', 'Missing viewport meta');

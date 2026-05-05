@@ -143,7 +143,7 @@
   <a href="index.html" class="utility__brand">THE UNIVERSITY OF ALABAMA<span class="reg">®</span></a>
   <div class="utility__right">
     <span data-role-switch></span>
-    <a href="#">myBama</a>
+    <a href="https://mybama.ua.edu" target="_blank" rel="noopener">myBama</a>
   </div>
 </div>
 
@@ -155,7 +155,7 @@
       <button class="site-header__search-btn" aria-label="Search">🔍</button>
     </form>
   </div>
-                    <nav class="primary-nav" data-primary-nav>
+                      <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
@@ -398,14 +398,31 @@
         pop.innerHTML = '<div><span class="hb-cite-pop__num">Ref ' + frag.num + '</span></div>' +
           '<div class="hb-cite-pop__body">' + frag.html + '</div>' +
           '<a class="hb-cite-pop__open" href="references.html#' + target.getAttribute('href').split('#')[1] + '">Open in references →</a>';
+
+        // Render hidden first so we can measure the popover before placing it.
+        pop.classList.add('is-open');
+        pop.style.visibility = 'hidden';
+        pop.style.top = '-9999px';
+        pop.style.left = '0';
         var rect = target.getBoundingClientRect();
-        // Position below + slight right; clamp to viewport
+        var popRect = pop.getBoundingClientRect();
+        var pad = 8;
         var top = rect.bottom + window.scrollY + 6;
         var left = rect.left + window.scrollX;
-        if (left + 420 > window.innerWidth) left = Math.max(8, window.innerWidth - 432);
+        // Clamp horizontally inside viewport (handles right-edge citations).
+        if (left + popRect.width > window.innerWidth - pad) {
+          left = Math.max(pad, window.innerWidth - popRect.width - pad);
+        }
+        if (left < pad) left = pad;
+        // Flip above the citation if there's not enough room below.
+        var viewportBottom = window.scrollY + window.innerHeight - pad;
+        if (top + popRect.height > viewportBottom) {
+          var flipTop = rect.top + window.scrollY - popRect.height - 6;
+          if (flipTop > window.scrollY + pad) top = flipTop;
+        }
         pop.style.top = top + 'px';
         pop.style.left = left + 'px';
-        requestAnimationFrame(function () { pop.classList.add('is-open'); });
+        pop.style.visibility = '';
       }
 
       async function onEnter(e) {
