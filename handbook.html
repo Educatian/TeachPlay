@@ -69,6 +69,17 @@
 
   .hb-loading { text-align: center; padding: 80px 20px; color: #888; font-size: 16px; }
 
+  /* Inline citation links — subtle dotted underline so the prose stays
+     reading-flow. Hover lifts the underline + crimson tint. */
+  a.hb-cite {
+    color: inherit;
+    text-decoration: underline dotted #be1a2f;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  a.hb-cite:hover { color: #be1a2f; text-decoration: underline solid #be1a2f; }
+  .hb-prose a.hb-cite { word-break: normal; overflow-wrap: normal; }
+
   /* Header strip with download + browse-on-pages-instead links */
   .hb-strip {
     background: #1a1a1a; color: #fff;
@@ -224,6 +235,63 @@
     pageH1.style.cssText = 'position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden;';
     tmp.insertBefore(pageH1, tmp.firstChild);
     prose.innerHTML = tmp.innerHTML;
+
+    // Citation linking: scan text nodes inside the prose for "(Author, YYYY)"
+    // patterns and turn them into subtle links to references.html#<slug>.
+    // Slug = lowercased first surname + "-" + year. Falls back to bare
+    // references.html if the slug looks ambiguous.
+    (function linkCitations() {
+      var YEAR_RE = /\(([^()]{1,200}?\b(19|20)\d{2}[a-z]?)\)/g;
+      var walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (n) {
+          // Skip text inside links (already a link), code, headings, mark, sup
+          var p = n.parentElement;
+          while (p && p !== prose) {
+            var t = p.tagName;
+            if (t === 'A' || t === 'CODE' || t === 'PRE' || t === 'H1' || t === 'H2' || t === 'H3' || t === 'H4' || t === 'MARK' || t === 'SUP') {
+              return NodeFilter.FILTER_REJECT;
+            }
+            p = p.parentElement;
+          }
+          return YEAR_RE.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+        },
+      });
+      var targets = [];
+      var n;
+      while ((n = walker.nextNode())) targets.push(n);
+      targets.forEach(function (tn) {
+        var raw = tn.nodeValue;
+        YEAR_RE.lastIndex = 0;
+        var frag = document.createDocumentFragment();
+        var last = 0; var m;
+        while ((m = YEAR_RE.exec(raw)) !== null) {
+          if (m.index > last) frag.appendChild(document.createTextNode(raw.slice(last, m.index)));
+          // Inner content may contain multiple semicolon-separated cites.
+          var inner = m[1];
+          var parts = inner.split(/;\s*/);
+          frag.appendChild(document.createTextNode('('));
+          parts.forEach(function (part, i) {
+            var ym = part.match(/(\b(19|20)\d{2})\b/);
+            var year = ym ? ym[1] : null;
+            // Take first capitalized word as surname guess (skip "et", "al")
+            var surnameMatch = part.match(/\b([A-Z][A-Za-zÄÖÜäöü-]{2,})\b/);
+            var surname = surnameMatch ? surnameMatch[1].toLowerCase() : null;
+            var href = (surname && year) ? ('references.html#' + surname + '-' + year) : 'references.html';
+            var a = document.createElement('a');
+            a.className = 'hb-cite';
+            a.setAttribute('href', href);
+            a.setAttribute('title', 'See references');
+            a.textContent = part;
+            frag.appendChild(a);
+            if (i < parts.length - 1) frag.appendChild(document.createTextNode('; '));
+          });
+          frag.appendChild(document.createTextNode(')'));
+          last = m.index + m[0].length;
+        }
+        if (last < raw.length) frag.appendChild(document.createTextNode(raw.slice(last)));
+        tn.parentNode.replaceChild(frag, tn);
+      });
+    })();
 
     // Build TOC from rendered headings (H2/H3/H4 after demotion). Map the
     // tag name to a stable depth class (is-h1/h2/h3) so the existing CSS

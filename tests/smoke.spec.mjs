@@ -219,6 +219,41 @@ test('28. search dropdown surfaces matches across the site', async ({ page }) =>
   await expect(panel).toBeHidden();
 });
 
+test('33. sitemap.xml + robots.txt are served and reference each other', async ({ request }) => {
+  const sm = await request.get(BASE + '/sitemap.xml');
+  expect(sm.status()).toBe(200);
+  const xml = await sm.text();
+  expect(xml).toContain('<urlset');
+  expect(xml).toContain('teachplay.dev/handbook.html');
+  expect(xml).toContain('teachplay.dev/rubrics.html');
+  const rb = await request.get(BASE + '/robots.txt');
+  expect(rb.status()).toBe(200);
+  const txt = await rb.text();
+  expect(txt).toContain('Sitemap: https://teachplay.dev/sitemap.xml');
+  expect(txt).toContain('Disallow: /admin.html');
+});
+
+test('34. references.html li items have anchor IDs (citation deep-linking)', async ({ page }) => {
+  await page.goto(BASE + '/references.html');
+  // All 29 li now have id="..."
+  const withId = await page.locator('.ref-list li[id]').count();
+  expect(withId).toBe(29);
+  // A known ID resolves
+  await expect(page.locator('#plass-2015')).toHaveCount(1);
+});
+
+test('35. handbook.html renders citations as clickable hb-cite spans', async ({ page }) => {
+  await page.goto(BASE + '/handbook.html');
+  // The v2 prose contains many "(Author, YYYY)" patterns. Wait for render + post-process.
+  await page.waitForFunction(() => document.querySelectorAll('a.hb-cite').length > 5, null, { timeout: 8000 });
+  const count = await page.locator('a.hb-cite').count();
+  expect(count).toBeGreaterThan(5);
+  // Hover one — should have a crimson dotted underline (visual style validated indirectly: href set)
+  const first = page.locator('a.hb-cite').first();
+  const href = await first.getAttribute('href');
+  expect(href).toContain('references.html');
+});
+
 test('31. achievements list grew to 12 with handbook + search + Spot the Loop', async ({ page }) => {
   await page.goto(BASE + '/index.html');
   // Public API exposes the full list

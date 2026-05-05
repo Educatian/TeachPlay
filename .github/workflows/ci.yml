@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build (nav sync + search index + sitemap)
+        run: |
+          node tools/sync-nav.mjs
+          node tools/build-search-index.mjs
+          node tools/build-sitemap.mjs
+
+      - name: Verify generated artifacts didn't drift from committed copies
+        # If a contributor edits content but forgets to rebuild, this surfaces it.
+        run: |
+          if ! git diff --quiet -- search-index.json sitemap.xml; then
+            echo "::warning::search-index.json or sitemap.xml is out of date — run 'npm run build'"
+            git diff --stat -- search-index.json sitemap.xml
+          fi
+
+      - name: Start static server
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 &
+          # Wait for server to be ready
+          for i in 1 2 3 4 5; do
+            if curl -sf http://127.0.0.1:8765/index.html >/dev/null; then break; fi
+            sleep 1
+          done
+
+      - name: Smoke + audit
+        run: npx playwright test --reporter=list
+        env:
+          CI: 'true'
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

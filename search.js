@@ -118,7 +118,15 @@
       '  cursor: pointer;',
       '}',
       '.hb-search-row:last-child { border-bottom: 0; }',
-      '.hb-search-row:hover, .hb-search-row.is-active { background: #faf9f7; }',
+      '.hb-search-row:hover { background: #faf9f7; }',
+      '.hb-search-row.is-active {',
+      '  background: #fff7e6;',
+      '  box-shadow: inset 4px 0 0 var(--crimson, #be1a2f);',
+      '}',
+      '.hb-search-row:focus-visible {',
+      '  outline: 2px solid var(--crimson, #be1a2f);',
+      '  outline-offset: -2px;',
+      '}',
       '.hb-search-row__title { font-size: 14px; font-weight: 700; color: #1a1a1a; line-height: 1.3; }',
       '.hb-search-row__url   { font-size: 11px; color: #be1a2f; margin-top: 2px; font-family: var(--font-mono, monospace); }',
       '.hb-search-row__snip  { font-size: 12.5px; color: #555; margin-top: 4px; line-height: 1.45; }',
@@ -214,6 +222,10 @@
         input.blur();
       }
       rows.forEach(function (r, i) { r.classList.toggle('is-active', i === activeIdx); });
+      // Scroll the active row into view inside the panel (long lists)
+      if (activeIdx >= 0 && rows[activeIdx]) {
+        rows[activeIdx].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
     });
 
     document.addEventListener('click', function (e) {

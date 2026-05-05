@@ -446,8 +446,8 @@ should measure right now" list is 5–6.</p>
 </div>
 
 <figure>
-  <img src="assets/generated/perception-efficacy-matrix.webp"
-       alt="Two perpendicular planes — cream and crimson — meeting at an axis with five marker points" class="bleed" />
+  <img src="assets/generated/perception-efficacy-quadrant.svg"
+       alt="Quadrant chart with five labeled construct markers — UMUX, AI-use SE, Credential Value, Designer Identity, Teaching Efficacy Contagion — plotted on perception (x) × efficacy (y)" class="bleed" />
   <figcaption>Perception × efficacy quadrant. Five constructs land where the
   in-app self-assessment doesn't already cover &mdash; that's the survey's
   footprint.</figcaption>
@@ -494,8 +494,8 @@ forms only.</p>
 </div>
 
 <figure>
-  <img src="assets/generated/item-budget-blocks.webp"
-       alt="Five rectangular cards laid in a row, each with a thin crimson left border and a faint pencil grid" class="bleed" />
+  <img src="assets/generated/item-budget-cards.svg"
+       alt="Five labeled block cards: UMUX Usability (4 items, α .79–.83, Post only) · AI-use SE (4, α .84+, Pre⇄Post) · Credential Value (4, α .78+, Pre→Post) · Designer Identity (4, α .85, Pre⇄Post) · TSE Contagion (3, α .80+, Post only)" class="bleed" />
   <figcaption>Five blocks, 22 substantive items, every construct ≥ 3 to keep
   alpha estimable. Pre/Post share AISE and Designer Identity wording so paired
   d_z is interpretable.</figcaption>
@@ -639,11 +639,11 @@ verify SV_39sdRK7OVJvSiPk:
 </pre>
 
 <figure>
-  <img src="assets/generated/api-call-sequence.webp"
-       alt="Sequence diagram: a single point on the left fans into five rows of geometric nodes and converges to a single endpoint on the right" class="bleed" />
-  <figcaption>Twenty-nine API calls in order: one survey shell, six block adds,
-  twenty-two question adds, one flow PUT, one options PUT. SurveyID resolves
-  at call one and threads through all the rest.</figcaption>
+  <img src="assets/generated/api-call-flow.svg"
+       alt="Five sequential API call cards: POST /survey-definitions ×1 → POST /blocks ×5 → POST /questions ×22 → PUT /flow ×1 → GET-merge-PUT /options ×1, totaling 30 calls per survey" class="bleed" />
+  <figcaption>Thirty API calls per survey, in deterministic order: 1 shell
+  POST → 5 block POSTs → 22 question POSTs → 1 flow PUT → 1 options
+  GET-merge-PUT. SurveyID resolves at call one and threads through the rest.</figcaption>
 </figure>
 
 <figure>
