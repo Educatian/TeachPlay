@@ -1,0 +1,14 @@
+{
+  "post": {
+    "SurveyID": "SV_39sdRK7OVJvSiPk",
+    "blocks": {
+      "0_Tag": "BL_40n7D05Yl1gRTds",
+      "1_Usability_UMUX": "BL_cuMQ6tkzhMZmnGK",
+      "2_AI_Use_Self_Efficacy": "BL_djmtvQcwLYKN9wq",
+      "3_Credential_Value_Perception": "BL_4SjLM2vW6XZnmBg",
+      "4_Designer_Identity": "BL_6txf7aCYbyIA3qu",
+      "5_Teaching_Efficacy_Contagion": "BL_6f1uQ895D4DSkAe"
+    },
+    "item_count": 22
+  }
+}

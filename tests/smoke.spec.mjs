@@ -203,6 +203,23 @@ test('16. 404.html serves and offers four quick-link cards', async ({ page }) =>
   await expect(page.locator('.card-grid .card')).toHaveCount(4);
 });
 
+test('26. reading-time pill appears on long content pages', async ({ page }) => {
+  await asLearner(page);
+  await page.goto(BASE + '/session-03.html');
+  // session-03 has the Crosswalk section + tables + figure → well above 300 words.
+  const pill = page.locator('.hb-rtime');
+  await expect(pill).toHaveCount(1);
+  await expect(pill).toContainText(/min read/);
+});
+
+test('27. credential.html shows the ACHE funding acknowledgment with full name', async ({ page }) => {
+  await page.goto(BASE + '/credential.html');
+  const funding = page.locator('#funding');
+  await expect(funding).toBeVisible();
+  await expect(funding).toContainText('Alabama Commission on Higher Education');
+  await expect(funding).toContainText('All-in-Alabama AI Microcredential');
+});
+
 test('24. handbook.html renders v2 markdown and builds a TOC', async ({ page }) => {
   await page.goto(BASE + '/handbook.html');
   // marked.js fetched the .md and rendered → first H1 of the v2 doc must appear.

@@ -2281,6 +2281,75 @@ a.deliverable:hover {
   .card, .outcomes li, .checklist, .tbl, .callout, .worked, .ticket {
     page-break-inside: avoid;
   }
+
+  /* Hide everything UI-only on every page (added 2026-05-05) */
+  .primary-nav, .handbook-topbar, .hb-strip,
+  .hb-totop, .hb-cursor-dot, .hb-cursor-ring, .hb-cursor-ripple,
+  .hb-anno-toolbar, .hb-anno-popover, .hb-anno-panel, .hb-anno-drawer,
+  .hb-ach-toast, .hb-ach-panel, .hb-ach-badge,
+  #admin-gate-trigger, #hb-anno-toggle, #hb-ach-toggle,
+  .hero__ctas, .hero__wave, .hero__bg::after,
+  .video-card__frame, iframe {
+    display: none !important;
+  }
+
+  /* Hero: shrink + drop background colors */
+  .hero {
+    background: #fff !important; color: #1a1a1a !important;
+    padding: 12px 0 16px; margin-bottom: 16px;
+    border-bottom: 2px solid #be1a2f;
+  }
+  .hero__title { font-size: 28pt !important; color: #1a1a1a !important; margin: 4px 0 8px !important; }
+  .hero__title em { color: #be1a2f !important; }
+  .hero__lede   { font-size: 11pt !important; color: #444 !important; max-width: none !important; }
+  .hero__eyebrow { color: #888 !important; }
+
+  /* Section spacing — flatter for paper */
+  .section { padding: 12px 0 !important; }
+  .section--tint, .section--crimson { background: #fff !important; }
+  .section--crimson * { color: #1a1a1a !important; }
+  .section__title { color: #1a1a1a !important; font-size: 18pt !important; }
+  .section__lede  { color: #444 !important; font-size: 10.5pt !important; max-width: none !important; }
+
+  /* Card grids — turn into a clean stacked list on paper */
+  .card-grid, .showcase-grid, .video-grid, .video-stack { display: block !important; }
+  .card, .showcase-card, .video-card {
+    display: block !important; box-shadow: none !important;
+    border: 1px solid #ccc !important; padding: 10px 14px !important;
+    margin: 0 0 12px !important; page-break-inside: avoid;
+    background: #fff !important;
+  }
+  .showcase-card__media { display: none !important; }
+  .video-card__featured-tag { background: #be1a2f !important; }
+
+  /* Showcase + handbook prose */
+  .hb-layout { display: block !important; padding: 0 !important; }
+  .hb-toc { display: none !important; }
+  .hb-prose { max-width: none !important; font-size: 11pt !important; }
+  .hb-prose h1 { font-size: 22pt !important; }
+  .hb-prose h2 { font-size: 16pt !important; color: #be1a2f !important; }
+  .hb-prose h3 { font-size: 13pt !important; }
+  .hb-prose pre { white-space: pre-wrap !important; }
+
+  /* Quickcheck — keep questions, drop the score widget */
+  .quickcheck__score { display: none !important; }
+  .quickcheck__card { border: 1px solid #ccc !important; box-shadow: none !important; }
+  .quickcheck__choices button { border: 1px solid #ccc !important; }
+
+  /* References + traceability tables */
+  .ref-list li { padding: 8px 12px 8px 48px !important; font-size: 10pt; }
+  .ref-list li::before { background: #fff !important; }
+  .traceability { font-size: 10pt; }
+
+  /* All links — print the URL inline so a paper reader can recover them */
+  a[href^="http"]::after, a[href^="https"]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt; color: #666; word-break: break-all;
+  }
+  a[href^="http"]:not([href*="teachplay"])::after { /* keep external only — internal cluttery */ }
+
+  /* Hide the "Print / PDF" button itself when printing */
+  [data-print] { display: none !important; }
 }
 
 /* ─── Responsive ─────────────────────────────────────────────── */
