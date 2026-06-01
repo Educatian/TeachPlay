@@ -37,6 +37,44 @@ test('1b. React learner platform is reachable from the handbook domain', async (
   await expect(page.locator('body')).toContainText('AI-Enhanced Educational Game Design');
 });
 
+test('1c. React create account registers through the TeachPlay enrollment API', async ({ page }) => {
+  const learnerId = 'react-signup-test-learner';
+  const email = 'react-signup@example.edu';
+  let enrollPayload = null;
+
+  await page.route('**/api/enroll', async (route) => {
+    enrollPayload = route.request().postDataJSON();
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        learner_id: learnerId,
+        name: enrollPayload.name,
+        cohort: enrollPayload.cohort,
+        cred_status: 'none',
+      }),
+    });
+  });
+
+  await page.goto(BASE + '/index.html');
+  await page.getByRole('button', { name: /Sign In/i }).click();
+  await page.getByRole('button', { name: 'Sign Up' }).click();
+  await page.locator('#auth-name').fill('React Signup');
+  await page.locator('#auth-email').fill(email);
+  await page.locator('#auth-password').fill('password123');
+  await page.getByRole('button', { name: /Create Account/i }).click();
+
+  await expect(page.getByRole('button', { name: /Sign Out/i })).toBeVisible({ timeout: 8000 });
+  expect(enrollPayload).toEqual({
+    name: 'React Signup',
+    email,
+    cohort: '2026-spring',
+  });
+  const storedLearner = await page.evaluate(() => localStorage.getItem('hb:learner_id'));
+  expect(storedLearner).toBe(learnerId);
+});
+
 test('2. handbook reference layer remains reachable from the unified site', async ({ page }) => {
   await page.goto(BASE + '/handbook.html');
   await expect(page.locator('h1')).toContainText('Course Handbook');
