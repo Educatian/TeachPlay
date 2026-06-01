@@ -157,11 +157,11 @@
     const header = document.createElement('div');
     header.className = 'tp12-header';
     header.innerHTML = `
-      <p>Complete 12-module pathway</p>
-      <h2 id="tp12-heading-${variant}">AI-Enhanced Educational Game Design, 12 modules</h2>
+      <p>Microcredential curriculum</p>
+      <h2 id="tp12-heading-${variant}">AI-Enhanced Educational Game Design, embedded 12-module sequence</h2>
       <div class="tp12-summary">
         <span>12 modules</span>
-        <span>5 portfolio deliverables</span>
+        <span>Grouped into portfolio milestones</span>
         <span>Space Invaders and Chalk and Chance case studies</span>
         <span>Beginner-ready AI build prompts</span>
       </div>
@@ -169,7 +169,7 @@
 
     const intro = document.createElement('p');
     intro.className = 'tp12-intro';
-    intro.textContent = 'The guided course is organized into three portfolio milestones, but the learner-facing curriculum still needs all twelve modules. This pathway shows the full sequence students should follow from initial framing to final credential defense.';
+    intro.textContent = 'Students move through these twelve modules as the main learning sequence. The existing portfolio milestones stay in place as checkpoints for evidence submission, completion review, and certificate readiness.';
 
     const grid = document.createElement('div');
     grid.className = 'tp12-grid';
@@ -184,12 +184,62 @@
     note.className = 'tp12-sidebar-note';
     note.dataset.teachplayBridge = '12-module-sidebar-note';
     note.innerHTML = `
-      <p class="tp12-sidebar-kicker">Full course map</p>
-      <h2>12 modules, grouped into 3 portfolio milestones</h2>
-      <p>The milestone list below is a compressed progress view. Use the 12-module pathway in the main panel for the complete student learning sequence.</p>
-      <a href="/docs/screenshots/activity-content/" aria-label="Open activity and content screenshot gallery">View evidence gallery</a>
+      <p class="tp12-sidebar-kicker">Course structure</p>
+      <h2>12 modules drive the learning. Milestones collect the evidence.</h2>
+      <p>Use the module sequence in the main panel for weekly learning work. Use the milestone checkpoints for portfolio submission and completion review.</p>
+      <nav class="tp12-sidebar-modules" aria-label="12-module curriculum sequence">
+        ${modules.map((module) => `<a href="${module.href}"><span>${module.n}</span>${module.title}</a>`).join('')}
+      </nav>
+      <p class="tp12-sidebar-checkpoint">The three items below are portfolio checkpoints, not the full curriculum.</p>
+      <a class="tp12-sidebar-guide-link" href="/guides/student-completion-guide.html" aria-label="Open student completion guide">Open student guide</a>
     `;
     return note;
+  };
+
+  const relabelPortfolioCheckpoints = () => {
+    if (!hasText('COURSE PROGRESS') && !hasText('Course Progress')) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const replacements = [
+      ['Module 1', 'Checkpoint 1'],
+      ['Module 2', 'Checkpoint 2'],
+      ['Module 3', 'Checkpoint 3']
+    ];
+    let node;
+    while ((node = walker.nextNode())) {
+      let value = node.nodeValue;
+      replacements.forEach(([from, to]) => {
+        value = value.replaceAll(from, to);
+      });
+      if (value !== node.nodeValue) {
+        node.nodeValue = value;
+      }
+    }
+  };
+
+  const formatCheckpointGroups = () => {
+    if (!hasText('COURSE PROGRESS') && !hasText('Course Progress')) return;
+    const groups = [...document.querySelectorAll('aside .flex-grow.overflow-y-auto > div.relative')].slice(0, 3);
+    groups.forEach((group, index) => {
+      group.classList.add('tp12-checkpoint-group');
+      group.dataset.teachplayCheckpoint = String(index + 1);
+
+      const badge = group.querySelector('.w-6.h-6.rounded-full');
+      if (badge) {
+        const badgeText = `C${index + 1}`;
+        if (badge.textContent !== badgeText) {
+          badge.textContent = badgeText;
+        }
+        badge.setAttribute('aria-label', `Portfolio checkpoint ${index + 1}`);
+      }
+
+      const heading = group.querySelector('h3');
+      if (heading && !heading.querySelector('.tp12-checkpoint-label')) {
+        const label = document.createElement('span');
+        label.className = 'tp12-checkpoint-label';
+        label.textContent = `Portfolio checkpoint ${index + 1}`;
+        heading.prepend(label);
+      }
+    });
   };
 
   const injectHomeOrCredential = () => {
@@ -404,11 +454,73 @@
         font-size: 12px;
         line-height: 1.5;
       }
-      .tp12-sidebar-note a {
+      .tp12-sidebar-modules {
+        display: grid;
+        gap: 6px;
+        margin: 12px 0;
+        border-top: 1px solid #e7edf5;
+        border-bottom: 1px solid #e7edf5;
+        padding: 10px 0;
+      }
+      .tp12-sidebar-modules a {
+        display: grid;
+        grid-template-columns: 24px minmax(0, 1fr);
+        gap: 8px;
+        align-items: start;
+        border-radius: 6px;
+        padding: 7px 8px;
+        color: #344054;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.25;
+        text-decoration: none;
+      }
+      .tp12-sidebar-modules a:hover,
+      .tp12-sidebar-modules a:focus {
+        background: #f8fafc;
+        color: #7f1024;
+      }
+      .tp12-sidebar-modules span {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #7f1024;
+        font-size: 10px;
+        font-weight: 900;
+      }
+      .tp12-sidebar-note .tp12-sidebar-checkpoint {
+        margin: 0 0 12px;
+        border-left: 3px solid #9e1b32;
+        padding-left: 10px;
+        color: #475467;
+        font-weight: 700;
+      }
+      .tp12-sidebar-guide-link {
         color: #7f1024;
         font-size: 12px;
         font-weight: 800;
         text-decoration: none;
+      }
+      .tp12-checkpoint-group {
+        border: 1px solid #e7edf5;
+        border-radius: 8px;
+        background: #fbfcfe;
+        padding: 10px;
+      }
+      .tp12-checkpoint-group h3 {
+        display: grid;
+        gap: 2px;
+      }
+      .tp12-checkpoint-label {
+        color: #7f1024;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        line-height: 1.1;
+        text-transform: uppercase;
       }
       @media (max-width: 980px) {
         .tp12-grid {
@@ -436,6 +548,8 @@
     injectStyles();
     injectHomeOrCredential();
     injectGuidedCourse();
+    relabelPortfolioCheckpoints();
+    formatCheckpointGroups();
   };
 
   window.addEventListener('DOMContentLoaded', run);

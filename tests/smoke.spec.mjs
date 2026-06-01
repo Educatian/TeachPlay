@@ -544,6 +544,19 @@ test('48. learner workspace exposes student guide and walkthrough links', async 
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
 });
 
+test('49. guided course integrates 12 modules as curriculum and relabels milestones as checkpoints', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  await page.getByRole('button', { name: /Start learning/i }).click();
+  await page.getByRole('button', { name: /Enter guided course/i }).click();
+  await expect(page.getByRole('heading', { name: /embedded 12-module sequence/i })).toBeVisible();
+  await expect(page.locator('.tp12-course .tp12-module-card')).toHaveCount(12);
+  await expect(page.locator('.tp12-sidebar-modules a')).toHaveCount(12);
+  await expect(page.getByText('Portfolio checkpoint 1')).toBeVisible();
+  await expect(page.getByText('Portfolio checkpoint 2')).toBeVisible();
+  await expect(page.getByText('Portfolio checkpoint 3')).toBeVisible();
+  await expect(page.getByText('The three items below are portfolio checkpoints, not the full curriculum.')).toBeVisible();
+});
+
 test.skip('10. legacy Spot the Loop mini-game was removed from the canonical learner landing', async ({ page }) => {
   await page.goto(BASE + '/index.html');
   // For each of the 3 cards, click the button that has data-correct="true".
