@@ -595,6 +595,10 @@ test('47. completed preview learner can reach certificate handoff', async ({ pag
 
 test('48. learner workspace exposes student guide and walkthrough links', async ({ page }) => {
   await page.goto(BASE + '/index.html');
+  await expect(page.locator('nav .tp-student-guide-links')).toHaveCount(0);
+  await expect(page.locator('nav')).not.toContainText('Student walkthrough');
+  await expect(page.locator('nav')).not.toContainText('Sign In / Create Account');
+  await expect(page.locator('nav button', { hasText: /^Sign In$/ })).toHaveCount(1);
   await expect(page.locator('a[href="/guides/student-completion-guide.html"]')).toHaveCount(1);
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);

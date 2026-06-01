@@ -1,7 +1,7 @@
-Start by creating your TeachPlay learner account. Use the same name and email for the whole credential, because this is how progress and certificate records stay connected.
-After registration, open Session 01 and begin the learning path. Each session has the same simple rhythm: read, try the activity, save your notes, and mark the session complete.
-The full credential is twelve modules. The portfolio checkpoints do not replace the modules; they collect the evidence you build across the pathway.
-As you move through the course, TeachPlay saves local progress immediately and sends completion events to the platform when you are signed in. That means the progress page can pick up where you left off.
-When all twelve sessions are complete, Session 12 opens the credential request form. Enter the same name and email you used when you registered.
-Submitting the form does not instantly award an official certificate. It sends your evidence packet to instructor review, which protects the value of the microcredential.
-After approval, the learner receives the certificate handoff and signed credential evidence. That is the full path: create account, learn, submit evidence, pass review, and claim the certificate.
+First, create your TeachPlay learner account. Use the name and email you want on your credential, because that is what keeps your progress and certificate record connected.
+Once you are signed in, open Session 01. The rhythm is pretty simple: read the short guide, try the activity, save anything you need, and mark the session complete when you are done.
+TeachPlay has twelve modules. The portfolio checkpoints are not extra busywork. They are where you collect the evidence you are already building as you move through the course.
+As you work, TeachPlay saves progress in the browser and sends completion events when you are signed in. So if you come back later, the dashboard can pick up the pathway again.
+After you finish all twelve sessions, go to Session 12 and open the credential request form. Use the same name and email from your account so the review record matches.
+Submitting the form sends your evidence packet to instructor review. It is not an instant auto-certificate, and that is intentional. The review step is what makes the microcredential worth trusting.
+After approval, you receive the certificate handoff and the signed credential evidence. So the full path is: create an account, work through the modules, submit your evidence, pass review, and claim the certificate.

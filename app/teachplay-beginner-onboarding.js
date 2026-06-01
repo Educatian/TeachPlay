@@ -47,8 +47,6 @@
       .find((button) => /^sign in$/i.test(normalize(button.textContent)));
     if (!signIn || signIn.dataset.tpBeginnerCopy === 'true') return;
     signIn.dataset.tpBeginnerCopy = 'true';
-    const label = signIn.querySelector('span') || signIn;
-    label.textContent = 'Sign In / Create Account';
     signIn.setAttribute('aria-label', 'Sign in or create a TeachPlay learner account');
   };
 

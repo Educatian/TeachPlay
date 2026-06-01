@@ -72,10 +72,10 @@ async function main() {
     };
 
     const draw = () => {
-      if (!video.ended) {
+      if (video.readyState >= 2) {
         ctx.drawImage(video, 0, 0, width, height);
-        requestAnimationFrame(draw);
       }
+      if (!audio.ended) requestAnimationFrame(draw);
     };
 
     recorder.start(1000);
@@ -86,17 +86,13 @@ async function main() {
     draw();
 
     await new Promise((resolve) => {
-      const maxMs = Math.ceil(Math.max(video.duration || 0, audio.duration || 0, 90) * 1000) + 3000;
+      const fallbackDuration = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 90;
+      const maxMs = Math.ceil(fallbackDuration * 1000) + 5000;
       const timeout = setTimeout(resolve, maxMs);
-      const check = () => {
-        if (video.ended && audio.ended) {
-          clearTimeout(timeout);
-          resolve();
-        } else {
-          setTimeout(check, 250);
-        }
-      };
-      check();
+      audio.addEventListener('ended', () => {
+        clearTimeout(timeout);
+        resolve();
+      }, { once: true });
     });
 
     await new Promise((resolve) => {

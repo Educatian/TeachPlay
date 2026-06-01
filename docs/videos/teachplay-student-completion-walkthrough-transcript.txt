@@ -1,9 +1,9 @@
 TeachPlay Student Completion Walkthrough
 
-1. 00:00:00.000 - 00:00:07.000: Start by creating your TeachPlay learner account. Use the same name and email for the whole credential, because this is how progress and certificate records stay connected.
-2. 00:00:07.000 - 00:00:16.000: After registration, open Session 01 and begin the learning path. Each session has the same simple rhythm: read, try the activity, save your notes, and mark the session complete.
-3. 00:00:16.000 - 00:00:27.000: The full credential is twelve modules. The portfolio checkpoints do not replace the modules; they collect the evidence you build across the pathway.
-4. 00:00:27.000 - 00:00:39.000: As you move through the course, TeachPlay saves local progress immediately and sends completion events to the platform when you are signed in. That means the progress page can pick up where you left off.
-5. 00:00:39.000 - 00:00:51.000: When all twelve sessions are complete, Session 12 opens the credential request form. Enter the same name and email you used when you registered.
-6. 00:00:51.000 - 00:01:03.000: Submitting the form does not instantly award an official certificate. It sends your evidence packet to instructor review, which protects the value of the microcredential.
-7. 00:01:03.000 - 00:01:16.000: After approval, the learner receives the certificate handoff and signed credential evidence. That is the full path: create account, learn, submit evidence, pass review, and claim the certificate.
+1. 00:00:00.000 - 00:00:10.500: First, create your TeachPlay learner account. Use the name and email you want on your credential, because that is what keeps your progress and certificate record connected.
+2. 00:00:10.500 - 00:00:22.000: Once you are signed in, open Session 01. The rhythm is pretty simple: read the short guide, try the activity, save anything you need, and mark the session complete when you are done.
+3. 00:00:22.000 - 00:00:34.000: TeachPlay has twelve modules. The portfolio checkpoints are not extra busywork. They are where you collect the evidence you are already building as you move through the course.
+4. 00:00:34.000 - 00:00:47.500: As you work, TeachPlay saves progress in the browser and sends completion events when you are signed in. So if you come back later, the dashboard can pick up the pathway again.
+5. 00:00:47.500 - 00:01:00.000: After you finish all twelve sessions, go to Session 12 and open the credential request form. Use the same name and email from your account so the review record matches.
+6. 00:01:00.000 - 00:01:13.500: Submitting the form sends your evidence packet to instructor review. It is not an instant auto-certificate, and that is intentional. The review step is what makes the microcredential worth trusting.
+7. 00:01:13.500 - 00:01:26.700: After approval, you receive the certificate handoff and the signed credential evidence. So the full path is: create an account, work through the modules, submit your evidence, pass review, and claim the certificate.
