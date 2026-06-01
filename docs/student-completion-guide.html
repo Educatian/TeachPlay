@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TeachPlay Student Completion Guide</title>
+  <style>
+    :root {
+      --crimson: #9e1b32;
+      --ink: #101828;
+      --muted: #475467;
+      --line: #d9e2ec;
+      --paper: #ffffff;
+      --soft: #f6f8fb;
+      --navy: #1f3a5f;
+      --teal: #2f8f83;
+      --gold: #b88a2d;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+      color: var(--ink);
+      font: 16px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a { color: var(--crimson); font-weight: 800; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .toc {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      padding: 28px 20px;
+    }
+
+    .toc .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 26px;
+      font-weight: 900;
+    }
+
+    .ua {
+      display: inline-grid;
+      place-items: center;
+      width: 36px;
+      height: 28px;
+      border-radius: 4px;
+      background: var(--crimson);
+      color: white;
+      font-family: Georgia, serif;
+      font-weight: 900;
+    }
+
+    .toc a {
+      display: block;
+      border-radius: 8px;
+      padding: 9px 10px;
+      color: #344054;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    main {
+      padding: 0 0 80px;
+    }
+
+    .hero {
+      background:
+        linear-gradient(135deg, rgba(158, 27, 50, .92), rgba(31, 58, 95, .9)),
+        url("../og-image-v3.png") center / cover;
+      color: white;
+      padding: clamp(48px, 7vw, 92px);
+    }
+
+    .hero p.kicker,
+    .section-kicker {
+      margin: 0 0 10px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      max-width: 980px;
+      margin: 0;
+      font: 900 clamp(42px, 7vw, 84px)/.98 Georgia, "Times New Roman", serif;
+      letter-spacing: 0;
+    }
+
+    .hero .lede {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: rgba(255,255,255,.88);
+      font-size: 19px;
+      line-height: 1.65;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .hero-actions a {
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 8px;
+      background: rgba(255,255,255,.12);
+      color: white;
+      padding: 12px 16px;
+    }
+
+    section.content {
+      width: min(1120px, calc(100% - 40px));
+      margin: 34px auto 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: clamp(24px, 4vw, 42px);
+      box-shadow: 0 20px 60px rgba(15, 23, 42, .08);
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font: 900 clamp(28px, 4vw, 46px)/1.08 Georgia, "Times New Roman", serif;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    p { color: var(--muted); }
+    .section-kicker { color: var(--crimson); }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr);
+      gap: 18px;
+      align-items: start;
+      margin-top: 22px;
+    }
+
+    video,
+    audio {
+      width: 100%;
+      border-radius: 8px;
+      background: #0b1220;
+    }
+
+    video {
+      border: 1px solid #0b1220;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, .18);
+    }
+
+    .asset-card,
+    .step,
+    .faq details,
+    .callout {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 18px;
+    }
+
+    .asset-card ul,
+    .checklist {
+      margin: 14px 0 0;
+      padding-left: 20px;
+      color: var(--muted);
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .step {
+      min-height: 230px;
+    }
+
+    .step .num {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: var(--crimson);
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .step h3 { margin-top: 14px; }
+    .step p { margin-bottom: 0; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .callout {
+      border-color: #f0c7cf;
+      background: #fff5f7;
+      color: #7f1024;
+    }
+
+    .callout p {
+      color: #7f1024;
+      margin-bottom: 0;
+    }
+
+    .faq {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .faq summary {
+      cursor: pointer;
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .download-grid a {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 16px;
+      color: var(--ink);
+    }
+
+    .download-grid span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 980px) {
+      .shell { grid-template-columns: 1fr; }
+      .toc {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .media-grid,
+      .two-col,
+      .download-grid { grid-template-columns: 1fr; }
+      .workflow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .workflow { grid-template-columns: 1fr; }
+      .hero { padding: 40px 22px; }
+      section.content { width: calc(100% - 24px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="toc" aria-label="Guide navigation">
+      <div class="brand"><span class="ua">UA</span><span>TeachPlay Guide</span></div>
+      <a href="#video">Walkthrough Video</a>
+      <a href="#workflow">Student Workflow</a>
+      <a href="#completion">Completion And Certificate</a>
+      <a href="#instructor">Instructor Notes</a>
+      <a href="#faq">FAQ</a>
+      <a href="#downloads">Downloads</a>
+    </aside>
+
+    <main>
+      <header class="hero">
+        <p class="kicker">Student onboarding guide</p>
+        <h1>From sign-in to certificate in TeachPlay</h1>
+        <p class="lede">A practical student-facing guide for accessing the AI-Enhanced Educational Game Design microcredential, learning through the guided course, submitting evidence, and understanding the certificate handoff.</p>
+        <div class="hero-actions">
+          <a href="../index.html">Open TeachPlay</a>
+          <a href="#video">Watch walkthrough</a>
+          <a href="#downloads">Download assets</a>
+        </div>
+      </header>
+
+      <section class="content" id="video">
+        <p class="section-kicker">Screen recording</p>
+        <h2>Watch the complete learner journey</h2>
+        <p>The recording was captured with Playwright from the TeachPlay learner workspace. Captions are embedded as a VTT track and the narration audio is provided as a separate WAV file for reuse in LMS pages or edited video exports.</p>
+        <div class="media-grid">
+          <div>
+            <video controls preload="metadata" poster="../docs/screenshots/activity-content/21-react-12-module-pathway.png">
+              <source src="videos/teachplay-student-completion-walkthrough.webm" type="video/webm" />
+              <track src="videos/teachplay-student-completion-walkthrough.vtt" kind="captions" srclang="en" label="English captions" default />
+              Your browser does not support the video element.
+            </video>
+          </div>
+          <aside class="asset-card">
+            <h3>Narration audio</h3>
+            <audio controls preload="metadata">
+              <source src="videos/teachplay-student-completion-walkthrough-narration.wav" type="audio/wav" />
+            </audio>
+            <ul>
+              <li>English screen captions are visible in the video.</li>
+              <li>The VTT file can be uploaded with the video in an LMS.</li>
+              <li>The WAV narration can be mixed into an MP4 export later.</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="content" id="workflow">
+        <p class="section-kicker">Student workflow</p>
+        <h2>What students do, in order</h2>
+        <div class="workflow">
+          <article class="step">
+            <span class="num">01</span>
+            <h3>Sign in</h3>
+            <p>Use the course account provided by the instructor or continuing education unit. Signed-in progress is required for official evidence review and certificate issuance.</p>
+          </article>
+          <article class="step">
+            <span class="num">02</span>
+            <h3>Review the credential</h3>
+            <p>Open the credential page, confirm duration, CEU value, evidence requirements, and the portfolio products expected at the end.</p>
+          </article>
+          <article class="step">
+            <span class="num">03</span>
+            <h3>Learn through 12 modules</h3>
+            <p>Move through the complete pathway: framing, learner context, crosswalk, mechanics, facilitation, prototype, interaction spec, playtest, audit, revision, and final defense.</p>
+          </article>
+          <article class="step">
+            <span class="num">04</span>
+            <h3>Submit evidence</h3>
+            <p>Use the final submission editor to assemble context, alignment, GenAI design documentation, evidence, and reflection into one reviewable packet.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="content" id="completion">
+        <p class="section-kicker">Completion model</p>
+        <h2>How certificate handoff works</h2>
+        <div class="two-col">
+          <div class="asset-card">
+            <h3>Official learner path</h3>
+            <ul class="checklist">
+              <li>Student signs in with a course account.</li>
+              <li>Student completes the guided course and portfolio worksheets.</li>
+              <li>Student submits evidence for instructor review.</li>
+              <li>Instructor approves the submission against the rubric.</li>
+              <li>TeachPlay exposes the certificate and credential evidence.</li>
+            </ul>
+          </div>
+          <div class="callout">
+            <h3>Preview mode note</h3>
+            <p>The screen recording uses a demo learner path so the orientation video can show the full journey without exposing a real student account. The certificate shown in preview mode is clearly labeled and points to sample credential JSON.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="content" id="instructor">
+        <p class="section-kicker">Instructor setup</p>
+        <h2>What to tell students before they start</h2>
+        <div class="two-col">
+          <div class="asset-card">
+            <h3>Minimum instructions</h3>
+            <ul>
+              <li>Use the same email account for every TeachPlay session.</li>
+              <li>Do not submit the final packet until all required evidence artifacts are ready.</li>
+              <li>Keep AI prompts, outputs, edits, and rejected ideas in the provenance log.</li>
+              <li>Use the 12-module pathway as the learning sequence, not only the three milestone labels.</li>
+            </ul>
+          </div>
+          <div class="asset-card">
+            <h3>Evidence packet</h3>
+            <ul>
+              <li>D1 learner/context and learning problem</li>
+              <li>D2 objective-to-mechanic crosswalk</li>
+              <li>D3 prototype and facilitation guide</li>
+              <li>D4 playtest and audit evidence</li>
+              <li>D5 final defense and implementation packet</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="content" id="faq">
+        <p class="section-kicker">FAQ</p>
+        <h2>Common student questions</h2>
+        <div class="faq">
+          <details open>
+            <summary>Do I need to code a full game?</summary>
+            <p>No. A paper prototype, low-code prototype, or implementation specification can satisfy the credential if the learning loop, facilitation logic, AI governance, playtest evidence, and revision rationale are reviewable.</p>
+          </details>
+          <details>
+            <summary>Why are there 12 modules if the course sidebar has three milestones?</summary>
+            <p>The three milestones organize the portfolio. The 12-module pathway is the learning sequence students follow to produce that portfolio.</p>
+          </details>
+          <details>
+            <summary>When do I receive the certificate?</summary>
+            <p>The official certificate is available after authenticated submission and instructor approval. Preview mode can show the handoff screen for orientation, but it is not an official award.</p>
+          </details>
+          <details>
+            <summary>What should I do if my certificate says not found?</summary>
+            <p>First confirm that you are signed in with the same account used for the course. Then confirm that your final evidence packet was submitted and approved. If both are true, contact the instructor or program administrator.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="content" id="downloads">
+        <p class="section-kicker">Assets</p>
+        <h2>Download or reuse the walkthrough materials</h2>
+        <div class="download-grid">
+          <a href="videos/teachplay-student-completion-walkthrough.webm">Screen recording <span>Playwright-captured WebM walkthrough.</span></a>
+          <a href="videos/teachplay-student-completion-walkthrough.vtt">Captions <span>English VTT subtitle file.</span></a>
+          <a href="videos/teachplay-student-completion-walkthrough-narration.wav">Narration WAV <span>Generated English narration audio.</span></a>
+          <a href="videos/teachplay-student-completion-walkthrough-transcript.txt">Transcript <span>Timestamped narration transcript.</span></a>
+          <a href="videos/teachplay-student-completion-walkthrough-narration.txt">Narration script <span>Plain text narration script.</span></a>
+          <a href="../credential/assertion-example-v3.json">Sample credential JSON <span>Example Open Badges 3.0 credential evidence.</span></a>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

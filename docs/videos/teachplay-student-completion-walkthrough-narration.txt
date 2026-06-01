@@ -1,0 +1,7 @@
+﻿Start at TeachPlay. Students use the catalog, dashboard, and sign-in entry from one consistent learner workspace.
+Use the course account sign-in when official progress and certificate records need to persist.
+Open the credential, review the outcomes, and enter the guided course.
+The guided course shows the complete twelve-module pathway, with case studies and beginner AI build prompts.
+Complete lessons, watch narrated mini-lectures, draft worksheets, and mark progress.
+Open the final submission, add context and evidence, then submit the portfolio for review.
+After completion, the certificate handoff shows the credential summary and downloadable credential evidence.

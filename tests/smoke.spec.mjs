@@ -512,6 +512,30 @@ test('13. og-image-v3 is referenced in meta tags and reachable', async ({ page, 
   expect(resp.status()).toBe(200);
 });
 
+test('46. student completion guide embeds video, captions, narration, and downloads', async ({ page }) => {
+  await page.goto(BASE + '/docs/student-completion-guide.html');
+  await expect(page.getByRole('heading', { name: /From sign-in to certificate/i })).toBeVisible();
+  await expect(page.locator('video source[src="videos/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
+  await expect(page.locator('track[src="videos/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
+  await expect(page.locator('audio source[src="videos/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
+  await expect(page.locator('#downloads a')).toHaveCount(6);
+});
+
+test('47. completed preview learner can reach certificate handoff', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  await page.getByRole('button', { name: /Start learning/i }).click();
+  await page.getByRole('button', { name: /Enter guided course/i }).click();
+  for (let i = 0; i < 8; i++) {
+    const complete = page.getByRole('button', { name: /Mark Complete|Next Lesson/i }).first();
+    if ((await complete.count()) === 0) break;
+    await complete.click();
+  }
+  await expect(page.getByRole('button', { name: /Get Certificate/i })).toBeVisible();
+  await page.getByRole('button', { name: /Get Certificate/i }).click();
+  await expect(page.getByText('Certificate of Completion')).toBeVisible();
+  await expect(page.getByText('TP-PREVIEW-2026')).toBeVisible();
+});
+
 test.skip('10. legacy Spot the Loop mini-game was removed from the canonical learner landing', async ({ page }) => {
   await page.goto(BASE + '/index.html');
   // For each of the 3 cards, click the button that has data-correct="true".
