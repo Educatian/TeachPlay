@@ -63,7 +63,7 @@ test('1c. React create account registers through the TeachPlay enrollment API', 
   await expect(page.getByRole('heading', { name: /Start here: create an account/i })).toBeVisible();
   await expect(page.getByText('The account step is what connects your progress')).toBeVisible();
   await page.locator('.tp-beginner-hero-cue [data-tp-action="hero-create-account"]').click();
-  await expect(page.getByRole('heading', { name: 'Create Account' })).toBeVisible();
+  await expect(page.locator('#auth-modal-title')).toHaveText('Create Account');
   await page.locator('#auth-name').fill('React Signup');
   await page.locator('#auth-email').fill(email);
   await page.locator('#auth-password').fill('password123');
