@@ -42,6 +42,23 @@ The repository is also a **reference implementation** of a credential stack — 
 
 ---
 
+## Current platform screenshots
+
+The updated learner platform screenshots are tracked in [`docs/screenshots/`](docs/screenshots/). The larger activity and content gallery is in [`docs/screenshots/activity-content/`](docs/screenshots/activity-content/).
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/01-home-desktop.png" alt="TeachPlay learner workspace home page" /></td>
+    <td width="50%"><img src="docs/screenshots/03-credential-detail.png" alt="TeachPlay credential detail page" /></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/activity-content/03-react-guided-course-shell.png" alt="TeachPlay guided course shell" /></td>
+    <td width="50%"><img src="docs/screenshots/activity-content/08-session-03-crosswalk-case.png" alt="TeachPlay D2 crosswalk case study" /></td>
+  </tr>
+</table>
+
+---
+
 ## In the handbook
 
 <table>
