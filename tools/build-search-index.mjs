@@ -9,7 +9,7 @@
  * Excludes: utility/legacy pages that aren't navigated by users (admin,
  * claim, progress, read, module-video, the old two-host primer pages).
  */
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const SKIP = new Set([
@@ -106,11 +106,30 @@ for (const file of files) {
 }
 
 // Wrap the index in an envelope with a version stamp so the runtime can
-// surface a hint when the served index pre-dates the deploy. Version is
-// the current build's UTC timestamp, written into both search-index.json
-// and a small search-index-version.txt that index.html can fetch HEAD on.
+// surface a hint when the served index pre-dates the deploy. Reuse the existing
+// stamp when the generated page payload is identical; otherwise CI would report
+// drift on every run just because the timestamp changed.
+function existingGeneratedStamp(rootDir, nextIndex) {
+  const file = join(rootDir, 'search-index.json');
+  if (!existsSync(file)) return null;
+  try {
+    const existing = JSON.parse(readFileSync(file, 'utf8'));
+    if (
+      existing &&
+      existing.generated &&
+      existing.count === nextIndex.length &&
+      JSON.stringify(existing.pages) === JSON.stringify(nextIndex)
+    ) {
+      return existing.generated;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 var envelope = {
-  generated: new Date().toISOString(),
+  generated: existingGeneratedStamp(root, index) || new Date().toISOString(),
   count: index.length,
   pages: index,
 };
