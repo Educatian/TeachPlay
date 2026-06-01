@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#be1a2f" />
+    <script>
+      (() => {
+        const lockThemeColor = () => {
+          const meta = document.querySelector('meta[name="theme-color"]');
+          if (meta && meta.getAttribute('content') !== '#be1a2f') meta.setAttribute('content', '#be1a2f');
+        };
+        lockThemeColor();
+        new MutationObserver(lockThemeColor).observe(document.head, { childList: true, subtree: true, attributes: true });
+      })();
+    </script>
     <meta
       name="description"
       content="TeachPlay is the learner workspace for the AI-Enhanced Educational Game Design microcredential."
