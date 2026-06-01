@@ -19,9 +19,9 @@
       note: 'English VTT captions for LMS upload or video editing.'
     },
     {
-      href: '/media/student-completion/teachplay-student-completion-walkthrough-narration.wav',
+      href: '/media/student-completion/teachplay-student-completion-walkthrough-narration.mp3',
       label: 'Download narration',
-      note: 'English narration audio for reuse in an edited MP4 or LMS module.'
+      note: 'ElevenLabs neural English narration audio for reuse in an edited MP4 or LMS module.'
     }
   ];
 

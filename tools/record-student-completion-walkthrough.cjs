@@ -7,13 +7,13 @@ const OUT_DIR = path.join(ROOT, 'docs', 'videos');
 const BASE = 'http://127.0.0.1:8765';
 
 const cues = [
-  [0, 5, 'Here is the basic student path in TeachPlay. Everything starts from the same learner workspace.'],
-  [5, 12, 'If this is for real course credit, students should sign in first so progress and certificate records can be saved.'],
-  [12, 18, 'From the credential card, students review the expectations, then enter the guided course.'],
-  [18, 27, 'Inside the course, the 12 modules are the main learning path. The portfolio checkpoints are where students collect evidence for review.'],
-  [27, 36, 'Students work through the lessons, use the case studies, try the beginner AI prompts, and mark progress as they go.'],
-  [36, 44, 'When the portfolio is ready, students open the final submission, add their context and evidence, and send it for review.'],
-  [44, 52, 'After completion, the certificate handoff shows what was earned and where the downloadable credential evidence lives.']
+  [0, 7, 'Start by creating your TeachPlay learner account. Use the same name and email for the whole credential, because this is how progress and certificate records stay connected.'],
+  [7, 16, 'After registration, open Session 01 and begin the learning path. Each session has the same simple rhythm: read, try the activity, save your notes, and mark the session complete.'],
+  [16, 27, 'The full credential is twelve modules. The portfolio checkpoints do not replace the modules; they collect the evidence you build across the pathway.'],
+  [27, 39, 'As you move through the course, TeachPlay saves local progress immediately and sends completion events to the platform when you are signed in. That means the progress page can pick up where you left off.'],
+  [39, 51, 'When all twelve sessions are complete, Session 12 opens the credential request form. Enter the same name and email you used when you registered.'],
+  [51, 63, 'Submitting the form does not instantly award an official certificate. It sends your evidence packet to instructor review, which protects the value of the microcredential.'],
+  [63, 76, 'After approval, the learner receives the certificate handoff and signed credential evidence. That is the full path: create account, learn, submit evidence, pass review, and claim the certificate.']
 ];
 
 function mkdirp(dir) {
@@ -88,6 +88,15 @@ async function click(page, name, timeout = 5000) {
   await button.click({ force: true });
 }
 
+async function answerVisibleQuiz(page) {
+  await page.evaluate(() => {
+    document.querySelectorAll('.quiz__item').forEach((item) => {
+      const option = item.querySelector('.quiz__opt:not([disabled])');
+      if (option) option.click();
+    });
+  });
+}
+
 async function main() {
   mkdirp(OUT_DIR);
   writeTextAssets();
@@ -99,65 +108,108 @@ async function main() {
   });
   const page = await context.newPage();
 
-  await page.goto(BASE, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(1200);
+  const learnerEmail = 'student@example.edu';
+  await page.route('**/api/enroll', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        learner_id: 'walkthrough-learner',
+        name: 'Demo Learner',
+        cohort: '2026-spring',
+        cred_status: 'none'
+      })
+    });
+  });
+  await page.route('**/api/xapi', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, stored: 1 })
+    });
+  });
+  await page.route('**/api/completion-check?**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, complete: false, count: 0, sessions: [] })
+    });
+  });
+  await page.route('**/api/email-request', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        message: 'Request received. Your instructor will review and send your credential link by email.'
+      })
+    });
+  });
+
+  await page.goto(`${BASE}/session-01.html`, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(1000);
   await setCaption(page, cues[0][2]);
-  await pause(4500);
+  await page.locator('#hb-enroll-name').fill('Demo Learner');
+  await page.waitForTimeout(600);
+  await page.locator('#hb-enroll-email').fill(learnerEmail);
+  await page.waitForTimeout(700);
+  await page.locator('#hb-enroll-btn').click();
+  await page.waitForTimeout(1200);
 
   await setCaption(page, cues[1][2]);
-  await click(page, '^Sign In$');
-  await page.waitForTimeout(600);
-  await page.locator('input[type="email"]').fill('student@example.edu');
-  await page.locator('input[type="password"]').fill('course-password');
-  await pause(3000);
-  await page.keyboard.press('Escape');
-  const closeSignIn = page.getByRole('button', { name: /Close sign in dialog/i }).first();
-  if (await closeSignIn.count()) await closeSignIn.click();
-  await page.waitForTimeout(800);
+  await page.mouse.wheel(0, 760);
+  await page.waitForTimeout(1500);
+  await answerVisibleQuiz(page);
+  await page.locator('[data-mark-done]').first().click({ force: true });
+  await page.waitForTimeout(1200);
 
   await setCaption(page, cues[2][2]);
-  await click(page, 'Start learning');
-  await page.waitForTimeout(1000);
-  await click(page, 'Enter guided course');
+  await page.goto(`${BASE}/index.html`, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(1200);
-
-  await setCaption(page, cues[3][2]);
-  await page.mouse.wheel(0, 820);
-  await page.waitForTimeout(1600);
+  await page.goto(`${BASE}/session-03.html`, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(900);
   await page.mouse.wheel(0, 900);
-  await page.waitForTimeout(1600);
-  await page.mouse.wheel(0, -1200);
-  await page.waitForTimeout(1000);
-
-  await setCaption(page, cues[4][2]);
-  for (let i = 0; i < 7; i += 1) {
-    const complete = page.getByRole('button', { name: /Mark Complete|Next Lesson/i }).first();
-    if (!(await complete.count())) break;
-    await complete.click();
-    await page.waitForTimeout(500);
-  }
-  await page.waitForTimeout(1200);
-
-  await setCaption(page, cues[5][2]);
-  await click(page, 'Open final submission');
-  await page.waitForTimeout(1000);
-  await page.locator('input[placeholder*="7th Grade"]').fill('Graduate educators designing AI-supported learning games');
-  await page.locator('textarea[placeholder*="hybrid classroom"]').fill('A 3-4 week online studio where learners build a serious-game prototype, document AI use, collect playtest evidence, and prepare a final credential packet.');
-  await pause(1200);
-  await click(page, 'Next Section');
-  await page.waitForTimeout(900);
-  await click(page, 'Evidence');
-  await page.waitForTimeout(900);
-  await click(page, 'Submit for Review');
+  await page.waitForTimeout(1500);
+  await page.mouse.wheel(0, 1200);
   await page.waitForTimeout(1300);
 
+  await setCaption(page, cues[3][2]);
+  for (let i = 2; i <= 12; i += 1) {
+    const num = String(i).padStart(2, '0');
+    await page.goto(`${BASE}/session-${num}.html`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(260);
+    await answerVisibleQuiz(page);
+    const complete = page.locator('[data-mark-done]').first();
+    if (await complete.count()) await complete.click({ force: true });
+  }
+  await page.goto(`${BASE}/progress.html`, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(2800);
+
+  await setCaption(page, cues[4][2]);
+  await page.evaluate(() => {
+    const done = Array.from({ length: 12 }, (_, index) => index + 1);
+    localStorage.setItem('hb:done', JSON.stringify(done));
+    done.forEach((sessionNumber) => {
+      localStorage.setItem(`hb:session_complete:s${String(sessionNumber).padStart(2, '0')}`, 'true');
+    });
+  });
+  await page.goto(`${BASE}/session-12.html#claim-credential`, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(1000);
+  await page.locator('#claim-name').fill('Demo Learner');
+  await page.waitForTimeout(600);
+  await page.locator('#claim-email').fill(learnerEmail);
+  await page.waitForTimeout(600);
+
+  await setCaption(page, cues[5][2]);
+  await page.locator('#claim-submit').click();
+  await page.waitForTimeout(2800);
+
   await setCaption(page, cues[6][2]);
-  await click(page, 'My Dashboard');
-  await page.waitForTimeout(900);
-  await click(page, 'Continue Learning');
-  await page.waitForTimeout(900);
-  await click(page, 'Get Certificate');
-  await page.waitForTimeout(3200);
+  await page.goto(`${BASE}/credential.html`, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(2800);
+  await page.goto(`${BASE}/verifier.html`, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(2600);
 
   const video = page.video();
   await context.close();

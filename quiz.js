@@ -212,7 +212,7 @@ const Quiz = (() => {
 
       var noticeEl = document.createElement('p');
       noticeEl.className = 'quiz__gate-notice';
-      noticeEl.textContent = '네 문항을 모두 풀면 다음 세션으로 이동할 수 있습니다.';
+      noticeEl.textContent = 'Answer all four questions to unlock session completion and the next session.';
       summaryEl.appendChild(noticeEl);
     }
 

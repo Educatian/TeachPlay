@@ -518,8 +518,8 @@ test('46. student completion guide embeds video, captions, narration, and downlo
   await expect(page.locator('video[poster="/media/student-completion/teachplay-12-module-pathway.png"]')).toHaveCount(1);
   await expect(page.locator('video source[src="/media/student-completion/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
   await expect(page.locator('track[src="/media/student-completion/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
-  await expect(page.locator('audio source[src="/media/student-completion/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
-  await expect(page.getByText('The WebM includes narration audio')).toBeVisible();
+  await expect(page.locator('audio source[src="/media/student-completion/teachplay-student-completion-walkthrough-narration.mp3"]')).toHaveCount(1);
+  await expect(page.getByText('The WebM includes ElevenLabs neural narration audio')).toBeVisible();
   await expect(page.getByText('Use the 12-module sequence as the learning path.')).toBeVisible();
   await expect(page.locator('body')).toContainText('Portfolio checkpoints collect the evidence');
   await expect(page.locator('#downloads a')).toHaveCount(6);
@@ -527,7 +527,7 @@ test('46. student completion guide embeds video, captions, narration, and downlo
     '/media/student-completion/teachplay-12-module-pathway.png',
     '/media/student-completion/teachplay-student-completion-walkthrough.webm',
     '/media/student-completion/teachplay-student-completion-walkthrough.vtt',
-    '/media/student-completion/teachplay-student-completion-walkthrough-narration.wav'
+    '/media/student-completion/teachplay-student-completion-walkthrough-narration.mp3'
   ]) {
     const response = await request.get(BASE + asset);
     expect(response.status(), asset).toBe(200);
@@ -554,7 +554,7 @@ test('48. learner workspace exposes student guide and walkthrough links', async 
   await expect(page.locator('a[href="/guides/student-completion-guide.html"]')).toHaveCount(1);
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
-  await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
+  await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough-narration.mp3"]')).toHaveCount(1);
 });
 
 test('49. guided course integrates 12 modules as curriculum and relabels milestones as checkpoints', async ({ page }) => {
@@ -571,6 +571,96 @@ test('49. guided course integrates 12 modules as curriculum and relabels milesto
   await expect(page.getByText('Portfolio checkpoint 2')).toBeVisible();
   await expect(page.getByText('Portfolio checkpoint 3')).toBeVisible();
   await expect(page.getByText('The three items below are portfolio checkpoints, not the full curriculum.')).toBeVisible();
+});
+
+test('50. registered learner can complete sessions and request the credential', async ({ page }) => {
+  const learnerId = 'journey-test-learner';
+  const email = 'journey-test@example.edu';
+
+  await page.route('**/api/enroll', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        learner_id: learnerId,
+        name: 'Journey Test',
+        cohort: '2026-spring',
+        cred_status: 'none',
+      }),
+    });
+  });
+
+  await page.route('**/api/xapi', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, stored: 1 }),
+    });
+  });
+
+  await page.route('**/api/completion-check?**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, complete: false, count: 0, sessions: [] }),
+    });
+  });
+
+  await page.route('**/api/email-request', async (route) => {
+    const body = route.request().postDataJSON();
+    expect(body.email).toBe(email);
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        message: 'Request received. Your instructor will review and send your credential link by email.',
+      }),
+    });
+  });
+
+  await page.goto(BASE + '/session-01.html');
+  await expect(page.getByRole('heading', { name: /Register to track your progress/i })).toBeVisible();
+  await page.locator('#hb-enroll-name').fill('Journey Test');
+  await page.locator('#hb-enroll-email').fill(email);
+  await page.locator('#hb-enroll-btn').click();
+  await expect(page.locator('#hb-enroll-overlay')).toHaveCount(0);
+
+  for (let i = 1; i <= 12; i++) {
+    const num = String(i).padStart(2, '0');
+    await page.goto(BASE + `/session-${num}.html`);
+    await page.evaluate(() => {
+      document.querySelectorAll('.quiz__item').forEach((item) => {
+        const option = item.querySelector('.quiz__opt:not([disabled])');
+        if (option) option.click();
+      });
+    });
+    const markDone = page.locator('[data-mark-done]').first();
+    await expect(markDone).toBeVisible();
+    await expect(markDone).not.toHaveClass(/quiz-gated-btn/);
+    if (!(await markDone.textContent()).includes('Session complete')) {
+      await markDone.click({ force: true });
+    }
+  }
+
+  await expect(page.locator('#primary-cta')).toContainText(/Claim Credential/i);
+  const completionState = await page.evaluate(() => ({
+    done: JSON.parse(localStorage.getItem('hb:done') || '[]'),
+    mirrored: localStorage.getItem('hb:session_complete:s12'),
+    learnerId: localStorage.getItem('hb:learner_id'),
+  }));
+  expect(completionState.learnerId).toBe(learnerId);
+  expect(completionState.done).toHaveLength(12);
+  expect(completionState.mirrored).toBe('true');
+
+  await page.goto(BASE + '/session-12.html#claim-credential');
+  await expect(page.locator('#claim-ready')).toBeVisible();
+  await expect(page.locator('#claim-gate')).toBeHidden();
+  await page.locator('#claim-name').fill('Journey Test');
+  await page.locator('#claim-email').fill(email);
+  await page.locator('#claim-submit').click();
+  await expect(page.locator('#claim-msg')).toContainText('Request received');
 });
 
 test.skip('10. legacy Spot the Loop mini-game was removed from the canonical learner landing', async ({ page }) => {

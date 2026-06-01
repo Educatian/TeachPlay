@@ -327,8 +327,14 @@
   //   - learner, no credential  → "Resume Session NN →" (→ next incomplete)
   // Falls back to "Begin Session 01" if we don't know progress.
   function highestCompleteSession() {
+    var done = [];
+    try { done = JSON.parse(localStorage.getItem('hb:done') || '[]').map(Number); }
+    catch (_) { done = []; }
     for (var i = 12; i >= 1; i--) {
-      if (localStorage.getItem('hb:session_complete:s' + String(i).padStart(2, '0')) === 'true') {
+      if (
+        localStorage.getItem('hb:session_complete:s' + String(i).padStart(2, '0')) === 'true' ||
+        done.indexOf(i) !== -1
+      ) {
         return i;
       }
     }
@@ -398,6 +404,7 @@
       enrolled: function () { return !!localStorage.getItem(LEARNER_KEY); },
     };
     wirePrimaryCta();
+    window.addEventListener('hb:progress-updated', wirePrimaryCta);
   }
 
   // Run after DOM is interactive

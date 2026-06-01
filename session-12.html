@@ -447,8 +447,10 @@ Flag any claim that is not supported by my artifacts.</span></pre>
           ];
 
           function showGate(missingSessions) {
-            document.getElementById('claim-gate').style.display = '';
+            document.getElementById('claim-gate').style.display = 'block';
+            document.getElementById('claim-ready').style.display = 'none';
             var list = document.getElementById('claim-gate-list');
+            list.innerHTML = '';
             missingSessions.forEach(function(n) {
               var li = document.createElement('li');
               var num = n < 10 ? '0' + n : '' + n;
@@ -458,39 +460,68 @@ Flag any claim that is not supported by my artifacts.</span></pre>
           }
 
           function showForm() {
-            document.getElementById('claim-ready').style.display = '';
+            document.getElementById('claim-ready').style.display = 'block';
+            document.getElementById('claim-gate').style.display = 'none';
           }
 
           // Server-side check (enrolled learners) — authoritative
-          var learnerId = localStorage.getItem('hb:learner_id');
-          if (learnerId) {
-            fetch('/api/completion-check?learner_id=' + encodeURIComponent(learnerId))
-              .then(function(r) { return r.json(); })
-              .then(function(data) {
-                if (!data.ok) { fallbackToLocalStorage(); return; }
-                if (data.complete) {
-                  showForm();
-                } else {
-                  var doneSessions = new Set((data.sessions || []).map(function(s) {
-                    var m = s.match(/s0?(\d+)$/); return m ? parseInt(m[1], 10) : null;
-                  }).filter(Boolean));
-                  var missing = [];
-                  for (var i = 1; i <= 12; i++) if (!doneSessions.has(i)) missing.push(i);
-                  showGate(missing);
-                }
-              })
-              .catch(function() { fallbackToLocalStorage(); });
-          } else {
-            fallbackToLocalStorage();
+          function localDoneSet() {
+            var done = [];
+            try { done = JSON.parse(localStorage.getItem('hb:done') || '[]'); }
+            catch (_) { done = []; }
+            var set = new Set(done.map(Number));
+            for (var i = 1; i <= 12; i++) {
+              var sid = i < 10 ? '0' + i : '' + i;
+              if (localStorage.getItem('hb:session_complete:s' + sid) === 'true') set.add(i);
+            }
+            return set;
+          }
+
+          function missingFromSet(doneSet) {
+            var missing = [];
+            for (var i = 1; i <= 12; i++) if (!doneSet.has(i)) missing.push(i);
+            return missing;
           }
 
           function fallbackToLocalStorage() {
-            var done    = JSON.parse(localStorage.getItem('hb:done') || '[]');
-            var doneSet = new Set(done.map(Number));
-            var missing = [];
-            for (var i = 1; i <= 12; i++) if (!doneSet.has(i)) missing.push(i);
+            var missing = missingFromSet(localDoneSet());
             if (missing.length === 0) showForm(); else showGate(missing);
           }
+
+          function refreshClaimGate() {
+            var localMissingAtLoad = missingFromSet(localDoneSet());
+            if (localMissingAtLoad.length === 0) {
+              showForm();
+              return;
+            }
+
+            var learnerId = localStorage.getItem('hb:learner_id');
+            if (learnerId) {
+              if (window.xapi && typeof window.xapi.flush === 'function') window.xapi.flush();
+              fetch('/api/completion-check?learner_id=' + encodeURIComponent(learnerId))
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                  if (!data.ok) { fallbackToLocalStorage(); return; }
+                  var doneSessions = localDoneSet();
+                  (data.sessions || []).forEach(function(s) {
+                    var m = s.match(/s0?(\d+)$/);
+                    if (m) doneSessions.add(parseInt(m[1], 10));
+                  });
+                  var missing = missingFromSet(doneSessions);
+                  if (data.complete || missing.length === 0) {
+                    showForm();
+                  } else {
+                    showGate(missing);
+                  }
+                })
+                .catch(function() { fallbackToLocalStorage(); });
+            } else {
+              fallbackToLocalStorage();
+            }
+          }
+
+          refreshClaimGate();
+          window.addEventListener('hb:progress-updated', refreshClaimGate);
 
           var form = document.getElementById('claim-form');
           if (form) {

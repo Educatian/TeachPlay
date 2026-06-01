@@ -30,6 +30,14 @@
   }
   function saveDoneSet(set) {
     localStorage.setItem(LS_DONE, JSON.stringify([...set]));
+    for (let i = 1; i <= SESSIONS.length; i++) {
+      const key = `hb:session_complete:s${String(i).padStart(2, '0')}`;
+      if (set.has(i)) localStorage.setItem(key, 'true');
+      else localStorage.removeItem(key);
+    }
+    window.dispatchEvent(new CustomEvent('hb:progress-updated', {
+      detail: { completed: [...set] }
+    }));
   }
 
   function currentSession() {
@@ -105,6 +113,9 @@
         window.xapi.activities.session(n),
         { result: { completion: nowDone } }
       );
+      if (nowDone && localStorage.getItem('hb:learner_id') && typeof window.xapi.flush === 'function') {
+        window.xapi.flush();
+      }
     }
     // refresh sidebar if present
     const sb = document.querySelector('[data-sidebar]');

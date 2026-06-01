@@ -1,7 +1,7 @@
-Here is the basic student path in TeachPlay. Everything starts from the same learner workspace.
-If this is for real course credit, students should sign in first so progress and certificate records can be saved.
-From the credential card, students review the expectations, then enter the guided course.
-Inside the course, the 12 modules are the main learning path. The portfolio checkpoints are where students collect evidence for review.
-Students work through the lessons, use the case studies, try the beginner AI prompts, and mark progress as they go.
-When the portfolio is ready, students open the final submission, add their context and evidence, and send it for review.
-After completion, the certificate handoff shows what was earned and where the downloadable credential evidence lives.
+Start by creating your TeachPlay learner account. Use the same name and email for the whole credential, because this is how progress and certificate records stay connected.
+After registration, open Session 01 and begin the learning path. Each session has the same simple rhythm: read, try the activity, save your notes, and mark the session complete.
+The full credential is twelve modules. The portfolio checkpoints do not replace the modules; they collect the evidence you build across the pathway.
+As you move through the course, TeachPlay saves local progress immediately and sends completion events to the platform when you are signed in. That means the progress page can pick up where you left off.
+When all twelve sessions are complete, Session 12 opens the credential request form. Enter the same name and email you used when you registered.
+Submitting the form does not instantly award an official certificate. It sends your evidence packet to instructor review, which protects the value of the microcredential.
+After approval, the learner receives the certificate handoff and signed credential evidence. That is the full path: create account, learn, submit evidence, pass review, and claim the certificate.

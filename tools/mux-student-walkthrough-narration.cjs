@@ -5,7 +5,8 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..');
 const BASE = process.env.BASE || 'http://127.0.0.1:8765';
 const VIDEO_URL = `${BASE}/docs/videos/teachplay-student-completion-walkthrough.webm`;
-const AUDIO_URL = `${BASE}/docs/videos/teachplay-student-completion-walkthrough-narration.wav`;
+const AUDIO_FILE = process.env.AUDIO_FILE || 'teachplay-student-completion-walkthrough-narration.mp3';
+const AUDIO_URL = `${BASE}/docs/videos/${AUDIO_FILE}`;
 const OUT = path.join(ROOT, 'docs', 'videos', 'teachplay-student-completion-walkthrough.integrated.webm');
 
 async function main() {
