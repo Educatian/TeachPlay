@@ -18,7 +18,10 @@
     try { if (localStorage.getItem('hb:admin') === '1') return; } catch (_) {}
     fetch('/api/xapi', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Learner-ID': payload.learner_id || localStorage.getItem(LEARNER_KEY) || '',
+      },
       body: JSON.stringify(payload),
       keepalive: true,
     });
@@ -306,6 +309,8 @@
           var learnerId = data.learner_id;
           if (!learnerId) throw new Error('No learner_id in response.');
           localStorage.setItem(LEARNER_KEY, learnerId);
+          localStorage.setItem('hb:learner_name', name);
+          localStorage.setItem('hb:learner_email', email.toLowerCase());
           removeModal(overlay);
           startTracking(learnerId);
         })

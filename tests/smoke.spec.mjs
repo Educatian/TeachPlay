@@ -630,6 +630,7 @@ test('49. guided course integrates 12 modules as curriculum and relabels milesto
 test('50. registered learner can complete sessions and request the credential', async ({ page }) => {
   const learnerId = 'journey-test-learner';
   const email = 'journey-test@example.edu';
+  const xapiRequests = [];
 
   await page.route('**/api/enroll', async (route) => {
     await route.fulfill({
@@ -646,6 +647,10 @@ test('50. registered learner can complete sessions and request the credential', 
   });
 
   await page.route('**/api/xapi', async (route) => {
+    xapiRequests.push({
+      learnerHeader: route.request().headers()['x-learner-id'] || '',
+      body: route.request().postDataJSON(),
+    });
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -703,10 +708,16 @@ test('50. registered learner can complete sessions and request the credential', 
     done: JSON.parse(localStorage.getItem('hb:done') || '[]'),
     mirrored: localStorage.getItem('hb:session_complete:s12'),
     learnerId: localStorage.getItem('hb:learner_id'),
+    learnerName: localStorage.getItem('hb:learner_name'),
+    learnerEmail: localStorage.getItem('hb:learner_email'),
   }));
   expect(completionState.learnerId).toBe(learnerId);
+  expect(completionState.learnerName).toBe('Journey Test');
+  expect(completionState.learnerEmail).toBe(email);
   expect(completionState.done).toHaveLength(12);
   expect(completionState.mirrored).toBe('true');
+  expect(xapiRequests.some((req) => req.learnerHeader === learnerId)).toBe(true);
+  expect(xapiRequests.some((req) => req.body?.learner_id === learnerId)).toBe(true);
 
   await page.goto(BASE + '/session-12.html#claim-credential');
   await expect(page.locator('#claim-ready')).toBeVisible();

@@ -83,15 +83,21 @@ AI-enhanced Educational Game Design microcredential.</p>
 export async function handleXapiCollect(request, env) {
   if (request.method !== 'POST') return json({ error: 'Method Not Allowed' }, 405);
 
-  const learner_id = request.headers.get('x-learner-id');
-  if (!learner_id) return json({ error: 'Missing X-Learner-ID header' }, 401);
-
   let body;
   try { body = await request.json(); }
   catch { return json({ error: 'Invalid JSON body' }, 400); }
 
   const rawStatements = Array.isArray(body) ? body : [body];
   if (!rawStatements.length) return json({ error: 'No statements provided' }, 400);
+
+  const bodyLearnerIds = rawStatements
+    .map(stmt => stmt && typeof stmt === 'object' && stmt.learner_id ? String(stmt.learner_id).trim() : '')
+    .filter(Boolean);
+  const learner_id = request.headers.get('x-learner-id') || bodyLearnerIds[0] || '';
+  if (!learner_id) return json({ error: 'Missing learner id' }, 401);
+  if (bodyLearnerIds.some(id => id !== learner_id)) {
+    return json({ error: 'Mismatched learner_id in statement batch' }, 400);
+  }
 
   const db = env.DB;
   const learnerRow = await db.prepare('SELECT id FROM learners WHERE id = ?').bind(learner_id).first();
