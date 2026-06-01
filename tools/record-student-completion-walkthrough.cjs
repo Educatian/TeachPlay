@@ -7,13 +7,13 @@ const OUT_DIR = path.join(ROOT, 'docs', 'videos');
 const BASE = 'http://127.0.0.1:8765';
 
 const cues = [
-  [0, 7, 'Start at TeachPlay. Students use the catalog, dashboard, and sign-in entry from one consistent learner workspace.'],
-  [7, 15, 'Use the course account sign-in when official progress and certificate records need to persist.'],
-  [15, 25, 'Open the credential, review the outcomes, and enter the guided course.'],
-  [25, 38, 'The guided course shows the complete 12-module pathway, with case studies and beginner AI build prompts.'],
-  [38, 52, 'Complete lessons, watch narrated mini-lectures, draft worksheets, and mark progress.'],
-  [52, 66, 'Open the final submission, add context and evidence, then submit the portfolio for review.'],
-  [66, 82, 'After completion, the certificate handoff shows the credential summary and downloadable credential evidence.']
+  [0, 5, 'Here is the basic student path in TeachPlay. Everything starts from the same learner workspace.'],
+  [5, 12, 'If this is for real course credit, students should sign in first so progress and certificate records can be saved.'],
+  [12, 18, 'From the credential card, students review the expectations, then enter the guided course.'],
+  [18, 27, 'Inside the course, the 12 modules are the main learning path. The portfolio checkpoints are where students collect evidence for review.'],
+  [27, 36, 'Students work through the lessons, use the case studies, try the beginner AI prompts, and mark progress as they go.'],
+  [36, 44, 'When the portfolio is ready, students open the final submission, add their context and evidence, and send it for review.'],
+  [44, 52, 'After completion, the certificate handoff shows what was earned and where the downloadable credential evidence lives.']
 ];
 
 function mkdirp(dir) {
@@ -47,6 +47,7 @@ function writeTextAssets() {
 
   fs.writeFileSync(path.join(OUT_DIR, 'teachplay-student-completion-walkthrough.vtt'), vtt);
   fs.writeFileSync(path.join(OUT_DIR, 'teachplay-student-completion-walkthrough-transcript.txt'), transcript);
+  fs.writeFileSync(path.join(OUT_DIR, 'teachplay-student-completion-walkthrough-narration.txt'), cues.map(([, , text]) => text).join('\n'));
 }
 
 async function pause(ms) {
@@ -84,7 +85,7 @@ async function setCaption(page, text) {
 async function click(page, name, timeout = 5000) {
   const button = page.getByRole('button', { name: new RegExp(name, 'i') }).first();
   await button.waitFor({ state: 'visible', timeout });
-  await button.click();
+  await button.click({ force: true });
 }
 
 async function main() {

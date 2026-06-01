@@ -80,7 +80,7 @@
     .hero {
       background:
         linear-gradient(135deg, rgba(158, 27, 50, .92), rgba(31, 58, 95, .9)),
-        url("../og-image-v3.png") center / cover;
+        url("/media/student-completion/teachplay-12-module-pathway.png") center / cover;
       color: white;
       padding: clamp(48px, 7vw, 92px);
     }
@@ -314,10 +314,10 @@
       <section class="content" id="video">
         <p class="section-kicker">Screen recording</p>
         <h2>Watch the complete learner journey</h2>
-        <p>The recording was captured with Playwright from the TeachPlay learner workspace. Captions are embedded as a VTT track and the narration audio is provided as a separate WAV file for reuse in LMS pages or edited video exports.</p>
+        <p>The recording was captured with Playwright from the TeachPlay learner workspace. The WebM includes narration audio, captions are attached as a VTT track, and the separate WAV file remains available for LMS reuse or later edits.</p>
         <div class="media-grid">
           <div>
-            <video controls preload="metadata" poster="../docs/screenshots/activity-content/21-react-12-module-pathway.png">
+            <video controls preload="metadata" poster="/media/student-completion/teachplay-12-module-pathway.png">
               <source src="/media/student-completion/teachplay-student-completion-walkthrough.webm" type="video/webm" />
               <track src="/media/student-completion/teachplay-student-completion-walkthrough.vtt" kind="captions" srclang="en" label="English captions" default />
               Your browser does not support the video element.
@@ -329,9 +329,10 @@
               <source src="/media/student-completion/teachplay-student-completion-walkthrough-narration.wav" type="audio/wav" />
             </audio>
             <ul>
-              <li>English screen captions are visible in the video.</li>
+              <li>English narration is integrated into the WebM video.</li>
+              <li>English screen captions are available through the video track.</li>
               <li>The VTT file can be uploaded with the video in an LMS.</li>
-              <li>The WAV narration can be mixed into an MP4 export later.</li>
+              <li>The WAV narration can still be reused for an MP4 export later.</li>
             </ul>
           </aside>
         </div>
@@ -395,7 +396,7 @@
               <li>Use the same email account for every TeachPlay session.</li>
               <li>Do not submit the final packet until all required evidence artifacts are ready.</li>
               <li>Keep AI prompts, outputs, edits, and rejected ideas in the provenance log.</li>
-              <li>Use the 12-module pathway as the learning sequence, not only the three milestone labels.</li>
+              <li>Use the 12-module sequence as the learning path. Use the portfolio checkpoints for evidence submission and completion review.</li>
             </ul>
           </div>
           <div class="asset-card">
@@ -420,8 +421,8 @@
             <p>No. A paper prototype, low-code prototype, or implementation specification can satisfy the credential if the learning loop, facilitation logic, AI governance, playtest evidence, and revision rationale are reviewable.</p>
           </details>
           <details>
-            <summary>Why are there 12 modules if the course sidebar has three milestones?</summary>
-            <p>The three milestones organize the portfolio. The 12-module pathway is the learning sequence students follow to produce that portfolio.</p>
+            <summary>Why do I see 12 modules and portfolio checkpoints?</summary>
+            <p>The 12-module sequence is the learning path. Portfolio checkpoints collect the evidence students produce across those modules for submission, review, and certificate readiness.</p>
           </details>
           <details>
             <summary>When do I receive the certificate?</summary>
@@ -438,7 +439,7 @@
         <p class="section-kicker">Assets</p>
         <h2>Download or reuse the walkthrough materials</h2>
         <div class="download-grid">
-          <a href="/media/student-completion/teachplay-student-completion-walkthrough.webm">Screen recording <span>Playwright-captured WebM walkthrough.</span></a>
+          <a href="/media/student-completion/teachplay-student-completion-walkthrough.webm">Narrated screen recording <span>Playwright-captured WebM walkthrough with integrated narration.</span></a>
           <a href="/media/student-completion/teachplay-student-completion-walkthrough.vtt">Captions <span>English VTT subtitle file.</span></a>
           <a href="/media/student-completion/teachplay-student-completion-walkthrough-narration.wav">Narration WAV <span>Generated English narration audio.</span></a>
           <a href="/media/student-completion/teachplay-student-completion-walkthrough-transcript.txt">Transcript <span>Timestamped narration transcript.</span></a>

@@ -129,10 +129,11 @@
   const makeModuleCard = (module) => {
     const article = document.createElement('article');
     article.className = 'tp12-module-card';
+    article.id = `tp12-module-${module.n}`;
     article.innerHTML = `
       <div class="tp12-module-topline">
         <span>${module.n}</span>
-        <a href="${module.href}" aria-label="Open module ${module.n}: ${module.title}">Open module</a>
+        <a href="#tp12-module-${module.n}" aria-label="Focus module ${module.n}: ${module.title}">Focus module</a>
       </div>
       <h3>${module.title}</h3>
       <p class="tp12-outcome">${module.outcome}</p>
@@ -144,6 +145,7 @@
         <summary>Beginner Codex or Claude Code prompt</summary>
         <p>${module.prompt}</p>
       </details>
+      <a class="tp12-reference-link" href="${module.href}" target="_blank" rel="noopener" aria-label="Open handbook reference for module ${module.n}: ${module.title}">Handbook reference</a>
     `;
     return article;
   };
@@ -188,7 +190,7 @@
       <h2>12 modules drive the learning. Milestones collect the evidence.</h2>
       <p>Use the module sequence in the main panel for weekly learning work. Use the milestone checkpoints for portfolio submission and completion review.</p>
       <nav class="tp12-sidebar-modules" aria-label="12-module curriculum sequence">
-        ${modules.map((module) => `<a href="${module.href}"><span>${module.n}</span>${module.title}</a>`).join('')}
+        ${modules.map((module) => `<a href="#tp12-module-${module.n}"><span>${module.n}</span>${module.title}</a>`).join('')}
       </nav>
       <p class="tp12-sidebar-checkpoint">The three items below are portfolio checkpoints, not the full curriculum.</p>
       <a class="tp12-sidebar-guide-link" href="/guides/student-completion-guide.html" aria-label="Open student completion guide">Open student guide</a>
@@ -382,6 +384,23 @@
         font-size: 12px;
         font-weight: 800;
         text-decoration: none;
+      }
+      .tp12-reference-link {
+        align-self: end;
+        margin-top: 2px;
+        color: #1f3a5f;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .tp12-reference-link::after {
+        content: " (opens reference)";
+        color: #667085;
+        font-weight: 700;
+      }
+      .tp12-module-card:target {
+        border-color: #9e1b32;
+        box-shadow: 0 0 0 3px rgba(158, 27, 50, 0.12);
       }
       .tp12-module-card h3 {
         margin: 0;

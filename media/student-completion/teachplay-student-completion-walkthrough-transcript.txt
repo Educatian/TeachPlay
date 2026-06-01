@@ -1,9 +1,9 @@
 TeachPlay Student Completion Walkthrough
 
-1. 00:00:00.000 - 00:00:07.000: Start at TeachPlay. Students use the catalog, dashboard, and sign-in entry from one consistent learner workspace.
-2. 00:00:07.000 - 00:00:15.000: Use the course account sign-in when official progress and certificate records need to persist.
-3. 00:00:15.000 - 00:00:25.000: Open the credential, review the outcomes, and enter the guided course.
-4. 00:00:25.000 - 00:00:38.000: The guided course shows the complete 12-module pathway, with case studies and beginner AI build prompts.
-5. 00:00:38.000 - 00:00:52.000: Complete lessons, watch narrated mini-lectures, draft worksheets, and mark progress.
-6. 00:00:52.000 - 00:01:06.000: Open the final submission, add context and evidence, then submit the portfolio for review.
-7. 00:01:06.000 - 00:01:22.000: After completion, the certificate handoff shows the credential summary and downloadable credential evidence.
+1. 00:00:00.000 - 00:00:05.000: Here is the basic student path in TeachPlay. Everything starts from the same learner workspace.
+2. 00:00:05.000 - 00:00:12.000: If this is for real course credit, students should sign in first so progress and certificate records can be saved.
+3. 00:00:12.000 - 00:00:18.000: From the credential card, students review the expectations, then enter the guided course.
+4. 00:00:18.000 - 00:00:27.000: Inside the course, the 12 modules are the main learning path. The portfolio checkpoints are where students collect evidence for review.
+5. 00:00:27.000 - 00:00:36.000: Students work through the lessons, use the case studies, try the beginner AI prompts, and mark progress as they go.
+6. 00:00:36.000 - 00:00:44.000: When the portfolio is ready, students open the final submission, add their context and evidence, and send it for review.
+7. 00:00:44.000 - 00:00:52.000: After completion, the certificate handoff shows what was earned and where the downloadable credential evidence lives.

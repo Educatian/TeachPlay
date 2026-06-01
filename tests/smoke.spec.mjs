@@ -512,13 +512,26 @@ test('13. og-image-v3 is referenced in meta tags and reachable', async ({ page, 
   expect(resp.status()).toBe(200);
 });
 
-test('46. student completion guide embeds video, captions, narration, and downloads', async ({ page }) => {
+test('46. student completion guide embeds video, captions, narration, and downloads', async ({ page, request }) => {
   await page.goto(BASE + '/guides/student-completion-guide.html');
   await expect(page.getByRole('heading', { name: /From sign-in to certificate/i })).toBeVisible();
+  await expect(page.locator('video[poster="/media/student-completion/teachplay-12-module-pathway.png"]')).toHaveCount(1);
   await expect(page.locator('video source[src="/media/student-completion/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
   await expect(page.locator('track[src="/media/student-completion/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
   await expect(page.locator('audio source[src="/media/student-completion/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
+  await expect(page.getByText('The WebM includes narration audio')).toBeVisible();
+  await expect(page.getByText('Use the 12-module sequence as the learning path.')).toBeVisible();
+  await expect(page.locator('body')).toContainText('Portfolio checkpoints collect the evidence');
   await expect(page.locator('#downloads a')).toHaveCount(6);
+  for (const asset of [
+    '/media/student-completion/teachplay-12-module-pathway.png',
+    '/media/student-completion/teachplay-student-completion-walkthrough.webm',
+    '/media/student-completion/teachplay-student-completion-walkthrough.vtt',
+    '/media/student-completion/teachplay-student-completion-walkthrough-narration.wav'
+  ]) {
+    const response = await request.get(BASE + asset);
+    expect(response.status(), asset).toBe(200);
+  }
 });
 
 test('47. completed preview learner can reach certificate handoff', async ({ page }) => {
@@ -551,6 +564,9 @@ test('49. guided course integrates 12 modules as curriculum and relabels milesto
   await expect(page.getByRole('heading', { name: /embedded 12-module sequence/i })).toBeVisible();
   await expect(page.locator('.tp12-course .tp12-module-card')).toHaveCount(12);
   await expect(page.locator('.tp12-sidebar-modules a')).toHaveCount(12);
+  await expect(page.locator('.tp12-sidebar-modules a[href^="#tp12-module-"]')).toHaveCount(12);
+  await expect(page.locator('.tp12-course .tp12-module-card a', { hasText: 'Focus module' })).toHaveCount(12);
+  await expect(page.locator('.tp12-course .tp12-module-card a', { hasText: 'Handbook reference' })).toHaveCount(12);
   await expect(page.getByText('Portfolio checkpoint 1')).toBeVisible();
   await expect(page.getByText('Portfolio checkpoint 2')).toBeVisible();
   await expect(page.getByText('Portfolio checkpoint 3')).toBeVisible();
