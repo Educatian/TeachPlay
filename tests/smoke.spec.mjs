@@ -536,6 +536,14 @@ test('47. completed preview learner can reach certificate handoff', async ({ pag
   await expect(page.getByText('TP-PREVIEW-2026')).toBeVisible();
 });
 
+test('48. learner workspace exposes student guide and walkthrough links', async ({ page }) => {
+  await page.goto(BASE + '/index.html');
+  await expect(page.locator('a[href="/docs/student-completion-guide.html"]')).toHaveCount(1);
+  await expect(page.locator('a[href="/docs/videos/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
+  await expect(page.locator('a[href="/docs/videos/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
+  await expect(page.locator('a[href="/docs/videos/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
+});
+
 test.skip('10. legacy Spot the Loop mini-game was removed from the canonical learner landing', async ({ page }) => {
   await page.goto(BASE + '/index.html');
   // For each of the 3 cards, click the button that has data-correct="true".
