@@ -1,0 +1,445 @@
+(() => {
+  const modules = [
+    {
+      n: '01',
+      title: 'Framing: the engagement trap',
+      outcome: 'Name the learning behavior before choosing a game genre.',
+      deliverable: 'D1 learning problem statement',
+      caseUse: 'Use Space Invaders only to see how a familiar arcade form can be reframed around physics reasoning.',
+      prompt: 'I am a beginner. Help me turn one real learning problem into a game-design brief with learner, context, constraint, target behavior, and evidence.',
+      href: '/session-01.html'
+    },
+    {
+      n: '02',
+      title: 'Learner, context, and constraints',
+      outcome: 'Describe the learner and setting tightly enough to guide design decisions.',
+      deliverable: 'D1 learner and context profile',
+      caseUse: 'Scope the game around one learner group, one setting, and one constraint.',
+      prompt: 'Ask me five concrete questions about my learners and constraints, then draft a one-page learner profile for my educational game.',
+      href: '/session-02.html'
+    },
+    {
+      n: '03',
+      title: 'Objectives and crosswalk',
+      outcome: 'Map objective, player action, feedback, evidence, and claim.',
+      deliverable: 'D2 objective-to-mechanic crosswalk',
+      caseUse: 'Use Space Invaders Physics Lab for trajectory, gravity, vector reasoning, and telemetry evidence.',
+      prompt: 'Build one crosswalk row for my game: learning objective, player action, system feedback, observable evidence, and reviewer claim.',
+      href: '/session-03.html'
+    },
+    {
+      n: '04',
+      title: 'Mechanics I: challenge and feedback',
+      outcome: 'Design failure so it teaches the learner what to revise.',
+      deliverable: 'D2 feedback loop sketch',
+      caseUse: 'Use shot prediction, miss feedback, and retry logic as the smallest teachable loop.',
+      prompt: 'Help me design a predict, act, feedback, revise loop where wrong answers produce useful information rather than punishment.',
+      href: '/session-04.html'
+    },
+    {
+      n: '05',
+      title: 'Mechanics II: role and narrative',
+      outcome: 'Use role as a design constraint, not as decoration.',
+      deliverable: 'D2 role-as-mechanic rationale',
+      caseUse: 'Use Chalk and Chance to study how teacher moves, classroom roles, and AI students create practice pressure.',
+      prompt: 'Help me write a role card for my game: what the learner can do, what the role prevents, and what decisions become visible.',
+      href: '/session-05.html'
+    },
+    {
+      n: '06',
+      title: 'Facilitator design',
+      outcome: 'Make the activity runnable by someone other than the designer.',
+      deliverable: 'D3 facilitation guide',
+      caseUse: 'Document setup, timing, materials, recovery moves, and debrief questions.',
+      prompt: 'Turn my game idea into a run-ready facilitator guide with setup, timing, instructions, troubleshooting, and debrief.',
+      href: '/session-06.html'
+    },
+    {
+      n: '07',
+      title: 'Low-fi prototyping',
+      outcome: 'Prototype the core learning loop before building the full game.',
+      deliverable: 'D3 paper or low-code prototype',
+      caseUse: 'Keep only the playable slice that proves the learning loop.',
+      prompt: 'Help me scope a five-minute playable slice with only the minimum screens, rules, choices, and feedback needed for a test.',
+      href: '/session-07.html'
+    },
+    {
+      n: '08',
+      title: 'Interaction specification',
+      outcome: 'Specify states, events, feedback, and data traces before coding.',
+      deliverable: 'D3 interaction spec',
+      caseUse: 'Use Space Invaders and Chalk and Chance as state-machine examples at a reduced learner-buildable scope.',
+      prompt: 'Write a beginner-friendly state machine for my game: states, player actions, system responses, failure states, and saved evidence.',
+      href: '/session-08.html'
+    },
+    {
+      n: '09',
+      title: 'Playtest design',
+      outcome: 'Test the riskiest learning claim with a small but useful protocol.',
+      deliverable: 'D4 playtest protocol',
+      caseUse: 'Collect traces, one explanation, and one breakdown signal instead of a large dashboard.',
+      prompt: 'Create a small playtest plan with task, participant, three traces, one debrief question, and a decision rule for revision.',
+      href: '/session-09.html'
+    },
+    {
+      n: '10',
+      title: 'Audit: access, ethics, and data',
+      outcome: 'Audit load, accessibility, incentives, AI risk, and data use.',
+      deliverable: 'D4 audit memo',
+      caseUse: 'Check whether the game rewards the intended learning behavior and whether AI use is bounded.',
+      prompt: 'Audit my prototype for cognitive load, accessibility, AI risk, privacy, and reward alignment. Give me fixes ranked by severity.',
+      href: '/session-10.html'
+    },
+    {
+      n: '11',
+      title: 'Revision studio',
+      outcome: 'Rank revisions by learning impact, effort, and evidence strength.',
+      deliverable: 'D5 revision rationale',
+      caseUse: 'Connect each revision to a trace, learner explanation, or observed breakdown.',
+      prompt: 'Turn my playtest notes into a revision table with problem, evidence, fix, expected learning impact, and effort.',
+      href: '/session-11.html'
+    },
+    {
+      n: '12',
+      title: 'Final defense and portfolio',
+      outcome: 'Make a defensible claim about what was built, why it teaches, and what evidence supports it.',
+      deliverable: 'D5 final implementation packet',
+      caseUse: 'Assemble the blueprint, prototype, AI provenance, playtest evidence, audit, and revision story.',
+      prompt: 'Help me prepare a final defense: claim, evidence, limits, AI disclosure, implementation plan, and next revision.',
+      href: '/session-12.html'
+    }
+  ];
+
+  const root = document.getElementById('root');
+  if (!root) return;
+
+  const normalize = (text) => (text || '').replace(/\s+/g, ' ').trim();
+
+  const hasText = (text) => normalize(document.body.textContent).includes(text);
+
+  const findElement = (predicate) => {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (predicate(node)) return node;
+    }
+    return null;
+  };
+
+  const makeModuleCard = (module) => {
+    const article = document.createElement('article');
+    article.className = 'tp12-module-card';
+    article.innerHTML = `
+      <div class="tp12-module-topline">
+        <span>${module.n}</span>
+        <a href="${module.href}" aria-label="Open module ${module.n}: ${module.title}">Open module</a>
+      </div>
+      <h3>${module.title}</h3>
+      <p class="tp12-outcome">${module.outcome}</p>
+      <dl>
+        <div><dt>Evidence</dt><dd>${module.deliverable}</dd></div>
+        <div><dt>Case use</dt><dd>${module.caseUse}</dd></div>
+      </dl>
+      <details>
+        <summary>Beginner Codex or Claude Code prompt</summary>
+        <p>${module.prompt}</p>
+      </details>
+    `;
+    return article;
+  };
+
+  const buildPathway = (variant = 'default') => {
+    const section = document.createElement('section');
+    section.className = `tp12-pathway tp12-${variant}`;
+    section.setAttribute('aria-labelledby', `tp12-heading-${variant}`);
+    section.dataset.teachplayBridge = '12-module-pathway';
+
+    const header = document.createElement('div');
+    header.className = 'tp12-header';
+    header.innerHTML = `
+      <p>Complete 12-module pathway</p>
+      <h2 id="tp12-heading-${variant}">AI-Enhanced Educational Game Design, 12 modules</h2>
+      <div class="tp12-summary">
+        <span>12 modules</span>
+        <span>5 portfolio deliverables</span>
+        <span>Space Invaders and Chalk and Chance case studies</span>
+        <span>Beginner-ready AI build prompts</span>
+      </div>
+    `;
+
+    const intro = document.createElement('p');
+    intro.className = 'tp12-intro';
+    intro.textContent = 'The guided course is organized into three portfolio milestones, but the learner-facing curriculum still needs all twelve modules. This pathway shows the full sequence students should follow from initial framing to final credential defense.';
+
+    const grid = document.createElement('div');
+    grid.className = 'tp12-grid';
+    modules.forEach((module) => grid.appendChild(makeModuleCard(module)));
+
+    section.append(header, intro, grid);
+    return section;
+  };
+
+  const buildSidebarNote = () => {
+    const note = document.createElement('div');
+    note.className = 'tp12-sidebar-note';
+    note.dataset.teachplayBridge = '12-module-sidebar-note';
+    note.innerHTML = `
+      <p class="tp12-sidebar-kicker">Full course map</p>
+      <h2>12 modules, grouped into 3 portfolio milestones</h2>
+      <p>The milestone list below is a compressed progress view. Use the 12-module pathway in the main panel for the complete student learning sequence.</p>
+      <a href="/docs/screenshots/activity-content/" aria-label="Open activity and content screenshot gallery">View evidence gallery</a>
+    `;
+    return note;
+  };
+
+  const injectHomeOrCredential = () => {
+    if (document.querySelector('.tp12-default')) return;
+    const body = normalize(document.body.textContent);
+    const isRelevant =
+      body.includes('Build serious learning games educators can actually defend') ||
+      body.includes('TeachPlay: AI-Enhanced Educational Game Design') ||
+      body.includes('Student Access Guide');
+    if (!isRelevant) return;
+
+    const anchor =
+      findElement((node) => normalize(node.textContent) === 'A professional credential, not a loose collection of activities.') ||
+      findElement((node) => normalize(node.textContent) === 'Competencies');
+
+    const section = buildPathway('default');
+    if (anchor) {
+      const container = anchor.closest('section, div');
+      container?.insertAdjacentElement('beforebegin', section);
+    } else {
+      root.appendChild(section);
+    }
+  };
+
+  const injectGuidedCourse = () => {
+    if (!hasText('COURSE PROGRESS') && !hasText('Course Progress')) return;
+
+    if (!document.querySelector('.tp12-course')) {
+      const mainPanel = document.querySelector('main.flex-grow .max-w-4xl') || document.querySelector('main .max-w-4xl');
+      if (mainPanel) {
+        mainPanel.insertAdjacentElement('afterbegin', buildPathway('course'));
+      }
+    }
+
+    if (!document.querySelector('.tp12-sidebar-note')) {
+      const asideList = document.querySelector('aside .flex-grow.overflow-y-auto');
+      if (asideList) {
+        asideList.insertAdjacentElement('afterbegin', buildSidebarNote());
+      }
+    }
+  };
+
+  const injectStyles = () => {
+    if (document.getElementById('tp12-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'tp12-styles';
+    style.textContent = `
+      .tp12-pathway {
+        width: min(1120px, calc(100% - 32px));
+        margin: 40px auto;
+        padding: 28px;
+        border: 1px solid #d7dee8;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #172033;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      }
+      .tp12-course {
+        width: 100%;
+        margin: 0 0 32px;
+        box-shadow: none;
+      }
+      .tp12-header {
+        display: grid;
+        gap: 10px;
+        border-bottom: 1px solid #e7edf5;
+        padding-bottom: 18px;
+      }
+      .tp12-header p {
+        margin: 0;
+        color: #9e1b32;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .tp12-header h2 {
+        margin: 0;
+        color: #111827;
+        font-size: clamp(24px, 3vw, 38px);
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+      .tp12-summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .tp12-summary span {
+        border: 1px solid #dbe4ee;
+        border-radius: 999px;
+        padding: 7px 10px;
+        background: #f8fafc;
+        color: #344054;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .tp12-intro {
+        margin: 18px 0 22px;
+        max-width: 880px;
+        color: #475467;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+      .tp12-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .tp12-module-card {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+        min-height: 320px;
+        border: 1px solid #dbe4ee;
+        border-radius: 8px;
+        background: #fbfcfe;
+        padding: 16px;
+      }
+      .tp12-module-topline {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+      .tp12-module-topline span {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #9e1b32;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .tp12-module-topline a {
+        color: #7f1024;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .tp12-module-card h3 {
+        margin: 0;
+        color: #111827;
+        font-size: 18px;
+        line-height: 1.25;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+      .tp12-outcome,
+      .tp12-module-card dd,
+      .tp12-module-card details p {
+        margin: 0;
+        color: #475467;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .tp12-module-card dl {
+        display: grid;
+        gap: 9px;
+        margin: 0;
+      }
+      .tp12-module-card dt {
+        margin: 0 0 2px;
+        color: #667085;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .tp12-module-card details {
+        margin-top: 2px;
+        border-top: 1px solid #e7edf5;
+        padding-top: 10px;
+      }
+      .tp12-module-card summary {
+        color: #1f3a5f;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .tp12-module-card details[open] summary {
+        margin-bottom: 8px;
+      }
+      .tp12-sidebar-note {
+        margin-bottom: 16px;
+        border: 1px solid #dbe4ee;
+        border-radius: 8px;
+        background: #ffffff;
+        padding: 14px;
+        color: #344054;
+      }
+      .tp12-sidebar-kicker {
+        margin: 0 0 6px;
+        color: #9e1b32;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .tp12-sidebar-note h2 {
+        margin: 0 0 8px;
+        color: #111827;
+        font-size: 14px;
+        line-height: 1.25;
+        font-weight: 800;
+      }
+      .tp12-sidebar-note p {
+        margin: 0 0 10px;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .tp12-sidebar-note a {
+        color: #7f1024;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      @media (max-width: 980px) {
+        .tp12-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 640px) {
+        .tp12-pathway {
+          width: calc(100% - 20px);
+          margin: 24px auto;
+          padding: 18px;
+        }
+        .tp12-grid {
+          grid-template-columns: 1fr;
+        }
+        .tp12-module-card {
+          min-height: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  };
+
+  const run = () => {
+    injectStyles();
+    injectHomeOrCredential();
+    injectGuidedCourse();
+  };
+
+  window.addEventListener('DOMContentLoaded', run);
+  window.addEventListener('load', run);
+  const observer = new MutationObserver(run);
+  observer.observe(root, { childList: true, subtree: true });
+})();
