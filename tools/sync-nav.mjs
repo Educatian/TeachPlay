@@ -123,7 +123,7 @@ function buildNav(currentFile) {
 
 // ─── File rewrite strategies ─────────────────────────────────────────
 
-const NAV_RE = /<nav class="primary-nav"[^>]*>[\s\S]*?<\/nav>/;
+const NAV_RE = /^[ \t]*<nav class="primary-nav"[^>]*>[\s\S]*?<\/nav>/m;
 
 /** Handbook pages: replace the existing <nav class="primary-nav"> in-place. */
 function rewriteHandbookPage(src, file) {
