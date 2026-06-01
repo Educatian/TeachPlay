@@ -34,12 +34,18 @@ const PAGES = [
 // alarm to fix them.
 const MAX_VIOLATIONS = 0;
 
+async function gotoReady(page, path) {
+  await page.goto(BASE + path, { waitUntil: 'domcontentloaded' });
+  await page.locator('body').waitFor({ state: 'attached' });
+  await page.locator('main, h1').first().waitFor({ state: 'visible' });
+}
+
 for (const path of PAGES) {
   test(`a11y · ${path}`, async ({ page }) => {
     await page.addInitScript(() => {
       try { localStorage.setItem('hb:learner_id', 'a11y-audit'); } catch (_) {}
     });
-    await page.goto(BASE + path, { waitUntil: 'networkidle' });
+    await gotoReady(page, path);
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])

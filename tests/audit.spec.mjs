@@ -37,6 +37,13 @@ function note(page, severity, kind, msg) {
   ISSUES.push({ page, severity, kind, msg });
 }
 
+async function gotoReady(page, page_) {
+  const nav = await page.goto(BASE + '/' + page_, { waitUntil: 'domcontentloaded', timeout: 12000 });
+  await page.locator('body').waitFor({ state: 'attached' });
+  await page.locator('main, h1').first().waitFor({ state: 'visible' });
+  return nav;
+}
+
 test.describe.configure({ mode: 'serial' });
 
 // Mobile pages to spot-check at 390×844 (iPhone 14 Pro). Full traversal
@@ -84,7 +91,7 @@ for (const page_ of HTML_PAGES) {
 
     let nav;
     try {
-      nav = await page.goto(BASE + '/' + page_, { waitUntil: 'networkidle', timeout: 12000 });
+      nav = await gotoReady(page, page_);
     } catch (e) {
       note(page_, 'error', 'navigation', e.message);
       return;
@@ -176,7 +183,7 @@ for (const page_ of HTML_PAGES) {
       if (seen.has(href)) continue;
       seen.add(href);
       // Strip query + hash for HEAD check
-      const path = href.split('#')[0].split('?')[0];
+      const path = href.split('#')[0].split('?')[0].replace(/^\/+/, '');
       if (!path || !path.endsWith('.html') && !path.endsWith('.md') && !path.endsWith('.json') && !path.endsWith('.svg') && !path.endsWith('.png') && !path.endsWith('.webp')) continue;
       try {
         const resp = await page.request.get(BASE + '/' + path);
@@ -225,7 +232,7 @@ for (const page_ of MOBILE_SAMPLE) {
     await page.setViewportSize({ width: 390, height: 844 });
     let nav;
     try {
-      nav = await page.goto(BASE + '/' + page_, { waitUntil: 'networkidle', timeout: 12000 });
+      nav = await gotoReady(page, page_);
     } catch (e) {
       note(page_, 'error', 'mobile-nav', e.message);
       return;

@@ -80,7 +80,7 @@
       '.hb-ach-toast.is-open { transform: translateY(0); opacity: 1; }',
       '.hb-ach-toast__emoji { font-size: 32px; line-height: 1; }',
       '.hb-ach-toast__body { flex: 1; min-width: 0; }',
-      '.hb-ach-toast__eye  { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #f0c44a; margin-bottom: 2px; }',
+      '.hb-ach-toast__eye  { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #ffffff; margin-bottom: 2px; }',
       '.hb-ach-toast__title { font-size: 14px; font-weight: 700; line-height: 1.2; }',
       '.hb-ach-toast__desc  { font-size: 12px; opacity: 0.85; margin-top: 3px; line-height: 1.4; }',
 

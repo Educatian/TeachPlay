@@ -94,6 +94,8 @@
         };
 
         const improveLearnerEntry = () => {
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#be1a2f');
+
           document.querySelectorAll('button').forEach((button) => {
             const label = button.textContent.replace(/\s+/g, ' ').trim();
             if (label === 'Review the credential') button.textContent = 'Start learning';
