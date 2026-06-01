@@ -4,22 +4,22 @@
 
   const links = [
     {
-      href: '/docs/student-completion-guide.html',
+      href: '/guides/student-completion-guide.html',
       label: 'Open student completion guide',
       note: 'Step-by-step guide from sign-in to learning, evidence submission, completion, and certificate handoff.'
     },
     {
-      href: '/docs/videos/teachplay-student-completion-walkthrough.webm',
+      href: '/media/student-completion/teachplay-student-completion-walkthrough.webm',
       label: 'Watch walkthrough recording',
       note: 'Playwright screen recording with the complete learner journey.'
     },
     {
-      href: '/docs/videos/teachplay-student-completion-walkthrough.vtt',
+      href: '/media/student-completion/teachplay-student-completion-walkthrough.vtt',
       label: 'Download captions',
       note: 'English VTT captions for LMS upload or video editing.'
     },
     {
-      href: '/docs/videos/teachplay-student-completion-walkthrough-narration.wav',
+      href: '/media/student-completion/teachplay-student-completion-walkthrough-narration.wav',
       label: 'Download narration',
       note: 'English narration audio for reuse in an edited MP4 or LMS module.'
     }

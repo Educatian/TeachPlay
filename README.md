@@ -44,7 +44,7 @@ The repository is also a **reference implementation** of a credential stack — 
 
 ## Current platform screenshots
 
-The updated learner platform screenshots are tracked in [`docs/screenshots/`](docs/screenshots/). The larger activity and content gallery is in [`docs/screenshots/activity-content/`](docs/screenshots/activity-content/). The end-to-end student onboarding guide, with screen recording, captions, narration, and certificate handoff notes, is in [`docs/student-completion-guide.html`](docs/student-completion-guide.html).
+The updated learner platform screenshots are tracked in [`docs/screenshots/`](docs/screenshots/). The larger activity and content gallery is in [`docs/screenshots/activity-content/`](docs/screenshots/activity-content/). The end-to-end student onboarding guide, with screen recording, captions, narration, and certificate handoff notes, is in [`docs/student-completion-guide.html`](docs/student-completion-guide.html) for repo review and published at [`/guides/student-completion-guide.html`](https://www.teachplay.dev/guides/student-completion-guide.html).
 
 <table>
   <tr>

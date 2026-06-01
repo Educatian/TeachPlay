@@ -513,11 +513,11 @@ test('13. og-image-v3 is referenced in meta tags and reachable', async ({ page, 
 });
 
 test('46. student completion guide embeds video, captions, narration, and downloads', async ({ page }) => {
-  await page.goto(BASE + '/docs/student-completion-guide.html');
+  await page.goto(BASE + '/guides/student-completion-guide.html');
   await expect(page.getByRole('heading', { name: /From sign-in to certificate/i })).toBeVisible();
-  await expect(page.locator('video source[src="videos/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
-  await expect(page.locator('track[src="videos/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
-  await expect(page.locator('audio source[src="videos/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
+  await expect(page.locator('video source[src="/media/student-completion/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
+  await expect(page.locator('track[src="/media/student-completion/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
+  await expect(page.locator('audio source[src="/media/student-completion/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
   await expect(page.locator('#downloads a')).toHaveCount(6);
 });
 
@@ -538,10 +538,10 @@ test('47. completed preview learner can reach certificate handoff', async ({ pag
 
 test('48. learner workspace exposes student guide and walkthrough links', async ({ page }) => {
   await page.goto(BASE + '/index.html');
-  await expect(page.locator('a[href="/docs/student-completion-guide.html"]')).toHaveCount(1);
-  await expect(page.locator('a[href="/docs/videos/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
-  await expect(page.locator('a[href="/docs/videos/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
-  await expect(page.locator('a[href="/docs/videos/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
+  await expect(page.locator('a[href="/guides/student-completion-guide.html"]')).toHaveCount(1);
+  await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
+  await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
+  await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough-narration.wav"]')).toHaveCount(1);
 });
 
 test.skip('10. legacy Spot the Loop mini-game was removed from the canonical learner landing', async ({ page }) => {
