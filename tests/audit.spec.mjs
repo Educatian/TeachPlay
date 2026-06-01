@@ -71,7 +71,9 @@ for (const page_ of HTML_PAGES) {
     });
     page.on('requestfailed', req => {
       const u = req.url();
-      if (!isLocalDevStub(u)) {
+      const failureText = req.failure()?.errorText || '';
+      const isBrowserMediaFallbackAbort = req.resourceType() === 'media' && failureText.includes('ERR_ABORTED');
+      if (!isLocalDevStub(u) && !isBrowserMediaFallbackAbort) {
         netFailures.push({ url: u, status: 'FAILED:' + req.failure()?.errorText });
       }
     });

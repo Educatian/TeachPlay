@@ -1,0 +1,15 @@
+TeachPlay Student Walkthrough
+
+Welcome to TeachPlay, the University of Alabama microcredential for AI-enhanced educational game design.
+
+Students begin in the catalog, where the microcredential is presented with the time commitment, CEU value, and evidence expectations.
+
+Open the credential page to review what you will produce: a design blueprint, playable prototype, AI provenance log, playtest report, and revision rationale.
+
+The access guide summarizes the full learner path: start from the catalog, enter the guided course, build evidence, and submit for review.
+
+When you enter the guided course, the curriculum sidebar shows modules, lesson progress, bookmarks, and discussion access in one workspace.
+
+Work through each lesson, mark it complete, and continue. Your progress updates as you move through the credential sequence.
+
+When the evidence packet is ready, submit it for instructor review. Feedback and credential status are managed through the platform workflow.

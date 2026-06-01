@@ -23,15 +23,15 @@
 </div>
 
 <div class="handbook-topbar">
-                                <nav class="primary-nav" data-primary-nav>
-    <div class="primary-nav__group" data-nav-group>
+                                                <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
-        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
-        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
-        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
-        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
-        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">The 1,046-line source doc</span></a>
+        <a href="index.html" role="menuitem">Start Learning<span class="sub">Interactive learner workspace</span></a>
+        <a href="start.html" role="menuitem">Orientation<span class="sub">5-minute tour</span></a>
+        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">Reference document</span></a>
+        <a href="session-01.html" role="menuitem">Session Guides<span class="sub">Printable weekly guides</span></a>
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Assessment criteria</span></a>
       </div>
     </div>
     <div class="primary-nav__group" data-nav-group>
@@ -170,6 +170,44 @@
               End on the claim. The claim is why the panel is here; "thanks for watching" is for conference
               talks. Your close slide is evaluated; the thank-you slide is not.
             </p>
+          </div>
+        </div>
+
+        <div class="aitool" style="margin-top: 24px;">
+          <div class="aitool__head">
+            <span class="aitool__tag aitool__tag--codex">Claude Code / Codex</span>
+            <h3 class="aitool__title">Beginner prompt · turn the build history into an evidence-backed final deck</h3>
+            <span class="aitool__hint">Use after D5 package is assembled</span>
+          </div>
+          <div class="aitool__body">
+            <div class="aitool__usecase">Prompt</div>
+            <pre class="prompt"><span class="usr">Help me prepare my final 8-slide presentation from my project artifacts. Do not invent evidence.
+
+Artifacts I have:
+- D1 problem statement: [paste or summarize]
+- D2 crosswalk: [paste]
+- D3 prototype notes: [paste]
+- D4 playtest findings: [paste]
+- D5 repo snapshot or file list: [paste]
+
+Create an 8-slide outline using this structure:
+1. Claim
+2. Problem and learner
+3. Crosswalk
+4. Smallest playable loop
+5. Live demo setup
+6. Playtest evidence
+7. Audit and limits
+8. One claim, one artifact
+
+For each slide, write:
+- title
+- 2-3 bullets maximum
+- artifact or evidence to show
+- one sentence I can say out loud
+- one likely reviewer question
+
+Flag any claim that is not supported by my artifacts.</span></pre>
           </div>
         </div>
       </section>

@@ -29,13 +29,13 @@ const GROUPS = [
   {
     key: 'course',
     label: 'Course',
-    pages: ['index.html', 'handbook.html', 'start.html'],
+    pages: ['index.html', 'handbook.html', 'start.html', 'session-01.html', 'session-02.html', 'session-03.html', 'session-04.html', 'session-05.html', 'session-06.html', 'session-07.html', 'session-08.html', 'session-09.html', 'session-10.html', 'session-11.html', 'session-12.html'],
     items: [
-      ['Start here',       'start.html',               '5-minute orientation tour'],
-      ['Overview',         'index.html',               'The handbook at a glance'],
-      ['Sessions',         'index.html#sessions',      'Twelve weekly units'],
-      ['Deliverables',     'index.html#deliverables',  'Five artifacts you ship'],
-      ['Full Handbook v2', 'handbook.html',            'The 1,046-line source doc'],
+      ['Start Learning',   'index.html',      'Interactive learner workspace'],
+      ['Orientation',      'start.html',      '5-minute tour'],
+      ['Full Handbook v2', 'handbook.html',   'Reference document'],
+      ['Session Guides',   'session-01.html', 'Printable weekly guides'],
+      ['Rubrics',          'rubrics.html',    'Assessment criteria'],
     ],
   },
   {

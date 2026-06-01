@@ -23,15 +23,15 @@
 </div>
 
 <div class="handbook-topbar">
-                                <nav class="primary-nav" data-primary-nav>
-    <div class="primary-nav__group" data-nav-group>
+                                                <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
-        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
-        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
-        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
-        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
-        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">The 1,046-line source doc</span></a>
+        <a href="index.html" role="menuitem">Start Learning<span class="sub">Interactive learner workspace</span></a>
+        <a href="start.html" role="menuitem">Orientation<span class="sub">5-minute tour</span></a>
+        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">Reference document</span></a>
+        <a href="session-01.html" role="menuitem">Session Guides<span class="sub">Printable weekly guides</span></a>
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Assessment criteria</span></a>
       </div>
     </div>
     <div class="primary-nav__group" data-nav-group>
@@ -330,6 +330,63 @@
             <tr><td><strong>Scoring complexity</strong></td><td>Learner asks "how am I doing?" and cannot tell from the HUD.</td><td>Reduce score dimensions; delay scoring to end-of-round.</td></tr>
           </tbody>
         </table>
+
+        <div class="case-study" id="field-case-audit">
+          <div class="case-study__header">
+            <span class="case-study__tag">Field case · audit lens · accessibility, load, data</span>
+            <h3 class="case-study__title">A professional build names what it collects and what it excludes</h3>
+          </div>
+          <div class="case-study__body">
+            <figure class="asset-figure">
+              <img class="asset-figure__img" src="assets/case-studies/space-invaders-physics-lab.png" alt="Space Invaders Physics Lab with gravity field overlay and curved shots near planets." loading="lazy" />
+              <figcaption class="asset-figure__cap">
+                <strong>Physics Lab audit.</strong>
+                The trajectory overlay reduces invisible-physics load, but the shooter control scheme still creates motor and device assumptions.
+              </figcaption>
+            </figure>
+
+            <table class="tbl tbl--compact">
+              <thead>
+                <tr><th>Audit question</th><th>Space Invaders: Physics Lab</th><th>Chalk &amp; Chance</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Extraneous load</td><td>Fast arcade combat can crowd out the gravity reasoning unless Physics Lab slows the loop and foregrounds prediction.</td><td>Dialogue, movement, timer, and classroom state can overload novice teachers unless the debrief isolates one teaching move at a time.</td></tr>
+                <tr><td>Accessibility floor</td><td>Mouse/keyboard aiming and timing demands need alternate controls or a documented device floor.</td><td>Free-text dialogue and reading-heavy feedback need plain-language support and non-text cues where possible.</td></tr>
+                <tr><td>Data ethics</td><td>Telemetry should stay tied to learning claims: shots, retries, gravity-assist hits, and trajectory changes.</td><td>Dialogue logs and competency estimates are sensitive; learner consent and retention rules must be explicit.</td></tr>
+              </tbody>
+            </table>
+
+            <div class="aitool" style="margin-top: 18px;">
+              <div class="aitool__head">
+                <span class="aitool__tag aitool__tag--codex">Claude Code / Codex</span>
+                <h3 class="aitool__title">Beginner prompt · audit the prototype without redesigning it</h3>
+                <span class="aitool__hint">Use after the first runnable slice</span>
+              </div>
+              <div class="aitool__body">
+                <div class="aitool__usecase">Prompt</div>
+                <pre class="prompt"><span class="usr">Audit my educational-game prototype. Do not add new features unless a fix is necessary for the audit.
+
+Learning objective:
+[paste one objective]
+
+Prototype behavior:
+[describe the playable loop]
+
+Review for:
+1. Cognitive load: what is confusing or unnecessary?
+2. Accessibility: who might be excluded by controls, reading, color, audio, timing, or device assumptions?
+3. Data ethics: what does the prototype collect, and is each field tied to a learning or debugging need?
+4. Reward alignment: does the game reward the target behavior or just activity?
+
+Output:
+- a short issue list ranked high / medium / low
+- one beginner-sized fix for each high issue
+- what to document as a known limit instead of fixing now
+- no broad refactor</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="block" id="access">

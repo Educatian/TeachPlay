@@ -1,0 +1,15 @@
+TeachPlay Avatar Mini-Lecture: Start with the Learning Problem
+
+Let us start in the right place. Not with the game genre, but with the learning problem your students actually have.
+
+Think about the learner first. A seventh grader learning vectors and a teacher practicing wait time need totally different kinds of play.
+
+Now zoom in on the setting. Time, tools, classroom constraints, and assessment expectations all shape the game you can defend.
+
+And be careful with engagement claims. Fun is great, but fun by itself is not evidence that learning happened.
+
+Here is the move: turn the problem into one observable learner action that can show up inside the game loop.
+
+Keep the first target narrow. One strong learning action is easier to prototype, test, and explain than a giant feature list.
+
+Once that target is clear, the next step is much easier: connect it to a mechanic, feedback, and evidence.

@@ -23,15 +23,15 @@
 </div>
 
 <div class="handbook-topbar">
-                                <nav class="primary-nav" data-primary-nav>
-    <div class="primary-nav__group" data-nav-group>
+                                                <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
-        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
-        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
-        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
-        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
-        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">The 1,046-line source doc</span></a>
+        <a href="index.html" role="menuitem">Start Learning<span class="sub">Interactive learner workspace</span></a>
+        <a href="start.html" role="menuitem">Orientation<span class="sub">5-minute tour</span></a>
+        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">Reference document</span></a>
+        <a href="session-01.html" role="menuitem">Session Guides<span class="sub">Printable weekly guides</span></a>
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Assessment criteria</span></a>
       </div>
     </div>
     <div class="primary-nav__group" data-nav-group>
@@ -182,6 +182,79 @@
               A second pass can be more explicit about terminal states and recovery paths.
             </figcaption>
           </figure>
+        </div>
+
+        <div class="case-study" id="field-case-state-machine">
+          <div class="case-study__header">
+            <span class="case-study__tag">Field case · implementation spec · two state machines</span>
+            <h3 class="case-study__title">Same spec discipline, different kinds of play</h3>
+          </div>
+          <div class="case-study__body">
+            <div class="asset-grid asset-grid--2">
+              <figure class="asset-figure">
+                <img class="asset-figure__img" src="assets/case-studies/space-invaders-orbital-gunner.png" alt="Space Invaders Orbital Gunner scene with angle and power controls for a gravity-bent shot." loading="lazy" />
+                <figcaption class="asset-figure__cap">
+                  <strong>Space Invaders.</strong>
+                  Shot setup -> trajectory preview -> fire -> curve through gravity wells -> hit, miss, or retry.
+                </figcaption>
+              </figure>
+              <figure class="asset-figure">
+                <img class="asset-figure__img" src="assets/case-studies/chalk-chance-competency.png" alt="Chalk and Chance competency readout after classroom practice." loading="lazy" />
+                <figcaption class="asset-figure__cap">
+                  <strong>Chalk &amp; Chance.</strong>
+                  Read classroom state -> choose teaching move -> observe student response -> debrief competency evidence.
+                </figcaption>
+              </figure>
+            </div>
+
+            <table class="tbl tbl--compact">
+              <thead>
+                <tr><th>Spec field</th><th>Space Invaders: Physics Lab</th><th>Chalk &amp; Chance</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Entry condition</td><td>Physics mode active; target and gravity wells spawned.</td><td>Scenario loaded; student misconception and classroom attention state initialized.</td></tr>
+                <tr><td>Player action</td><td>Set aim/power and fire one shot.</td><td>Select or compose a teaching move under time and attention constraints.</td></tr>
+                <tr><td>Feedback event</td><td>Curved path, hit/miss, gravity-assist telemetry, retry.</td><td>Student response, attention shift, competency signal, coached debrief.</td></tr>
+                <tr><td>State mutation</td><td>Shot log, wave state, target progress.</td><td>Student trust/reasoning state, classroom disruption, badge progress.</td></tr>
+              </tbody>
+            </table>
+
+            <div class="aitool" style="margin-top: 18px;">
+              <div class="aitool__head">
+                <span class="aitool__tag aitool__tag--codex">Claude Code / Codex</span>
+                <h3 class="aitool__title">Beginner prompt · build one playable slice</h3>
+                <span class="aitool__hint">Use for first implementation</span>
+              </div>
+              <div class="aitool__body">
+                <div class="aitool__usecase">Prompt</div>
+                <pre class="prompt"><span class="usr">You are helping me build only one playable educational-game slice. I am a beginner, so keep the architecture simple and explain what files you change.
+
+Prototype slice:
+[Example: a gravity-shot scene where the player sets angle and power, fires once, sees the curved path, and retries]
+
+Learning objective:
+[paste one D2 objective]
+
+States:
+1. Setup
+2. Player chooses action
+3. System shows feedback
+4. Player retries or advances
+
+Build requirements:
+- Use placeholder shapes and text labels.
+- Implement only this loop.
+- Add visible feedback for success and failure.
+- Log one event for each attempt with the fields I will need for playtesting.
+- Do not add levels, menus, scoring economies, accounts, or polished art.
+
+After coding, give me:
+1. How to run it
+2. What to click or type to test it
+3. What is intentionally out of scope</span></pre>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

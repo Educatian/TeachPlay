@@ -157,6 +157,141 @@ Out of scope:
 - [List]
 ```
 
+## [ACTION] Stage-By-Stage Beginner Prompts
+
+Use these prompts in order. Do not skip to implementation until D1 and D2 are concrete enough that a peer can explain the learning loop back to you.
+
+### Stage 1: D1 Problem Statement
+
+Use Claude Code or Codex as a thinking partner, not a coder.
+
+```text
+I am a beginner designing one small educational game prototype. Do not write code yet.
+
+Learners:
+[who they are]
+
+Current problem:
+[what they currently struggle to do]
+
+Desired performance:
+[what they should be able to do after practice]
+
+Context:
+[where, when, device, time limit, supervision]
+
+Help me write a one-page D1 problem statement with:
+1. learner
+2. measurable gap
+3. context constraints
+4. why a game is appropriate
+5. what success would look like in observable behavior
+
+If my idea is too broad, shrink it. Do not add features.
+```
+
+### Stage 2: D2 Crosswalk
+
+Translate the learning goal into one mechanic. This is where most scope problems should be caught.
+
+```text
+Use my D1 below to create a D2 crosswalk. Do not code.
+
+D1:
+[paste D1]
+
+Create 2-4 rows. Each row must include:
+- observable learning objective
+- objective type: retrieval, discrimination, procedural fluency, conceptual reasoning, or judgment under uncertainty
+- smallest playable mechanic
+- feedback the learner receives
+- main risk
+- out-of-scope boundary
+
+Then choose the single row I should prototype first and explain why it is beginner-sized.
+```
+
+### Stage 3: D3 First Playable Slice
+
+Ask for one loop only. A good first slice has placeholder visuals and one visible success or failure condition.
+
+```text
+Build one playable browser prototype slice from this D2 row.
+
+D2 row:
+[paste one row]
+
+Requirements:
+- one scene only
+- placeholder shapes are fine
+- one learner action
+- one visible feedback response
+- one retry path
+- simple event log in the browser console or localStorage
+- no accounts, menus, level system, polished art, or extra modes
+
+After implementation, tell me:
+1. files changed
+2. how to run it
+3. how to test the success path
+4. how to test the failure path
+5. what remains out of scope
+```
+
+### Stage 4: D4 Playtest Instrumentation
+
+Before testing with learners, make the prototype able to answer your hypotheses.
+
+```text
+Review this prototype for playtest readiness.
+
+Hypotheses:
+H1: [paste]
+H2: [paste]
+H3: [paste]
+
+Prototype files:
+[paste file list or ask the agent to inspect the repo]
+
+For each hypothesis:
+1. what learner behavior would support it?
+2. what learner behavior would falsify it?
+3. is that behavior currently observable or logged?
+4. what is the smallest logging or observation fix needed?
+
+Do not add a dashboard. I only need enough evidence for a D4 report.
+```
+
+### Stage 5: D5 Package And Presentation
+
+Use the agent to organize evidence, not to inflate claims.
+
+```text
+Prepare my D5 submission package from the artifacts below. Do not invent evidence.
+
+D1:
+[paste]
+
+D2:
+[paste]
+
+D3 prototype summary:
+[paste]
+
+D4 playtest findings:
+[paste]
+
+Repo or file list:
+[paste]
+
+Produce:
+1. a repo README outline
+2. a one-page project summary
+3. an 8-slide final presentation outline
+4. a list of unsupported claims I must remove
+5. a v2 roadmap with only 3 next steps
+```
+
 ## [ACTION] Definition Of Done For A Prototype Slice
 
 | Area | Done Means |

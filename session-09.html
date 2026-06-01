@@ -23,15 +23,15 @@
 </div>
 
 <div class="handbook-topbar">
-                                <nav class="primary-nav" data-primary-nav>
-    <div class="primary-nav__group" data-nav-group>
+                                                <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
-        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
-        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
-        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
-        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
-        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">The 1,046-line source doc</span></a>
+        <a href="index.html" role="menuitem">Start Learning<span class="sub">Interactive learner workspace</span></a>
+        <a href="start.html" role="menuitem">Orientation<span class="sub">5-minute tour</span></a>
+        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">Reference document</span></a>
+        <a href="session-01.html" role="menuitem">Session Guides<span class="sub">Printable weekly guides</span></a>
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Assessment criteria</span></a>
       </div>
     </div>
     <div class="primary-nav__group" data-nav-group>
@@ -220,6 +220,65 @@
             <dt>H2 · Escalation timing</dt><dd>Residents will call the attending within the indicated window on ≥2 of the 3 judgment vignettes. Falsifier: calls delayed past window on ≥2 vignettes.</dd>
             <dt>H3 · Transfer</dt><dd>On the fresh post-test vignette, ≥2 of 3 residents will name a leading diagnosis and two differentials within 3 minutes. Falsifier: learners freeze or produce a differential list without a leading.</dd>
           </dl>
+        </div>
+      </section>
+
+      <section class="block" id="field-case-playtest">
+        <div class="block__kicker">04B · Field case · playtest evidence</div>
+        <h2 class="block__title">Instrument the loop before you ask whether it worked</h2>
+
+        <div class="case-study">
+          <div class="case-study__header">
+            <span class="case-study__tag">Telemetry plus observation · built projects</span>
+            <h3 class="case-study__title">Space Invaders and Chalk &amp; Chance need different evidence trails</h3>
+          </div>
+          <div class="case-study__body">
+            <p>
+              The physics game can log shot vectors, gravity-assisted hits, trajectory retries, and accuracy by
+              wave. The teacher simulation needs tagged teaching moves, student-response changes, classroom-state
+              shifts, and debrief explanations. In both cases, the D4 report is stronger when the event stream is
+              planned before the first target learner plays.
+            </p>
+
+            <table class="tbl tbl--compact">
+              <thead>
+                <tr><th>Hypothesis type</th><th>Space Invaders observable</th><th>Chalk &amp; Chance observable</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Mechanic fit</td><td>Players use the trajectory preview less often while gravity-assist hit rate increases.</td><td>Players shift from telling/modeling toward eliciting, revoicing, and waiting.</td></tr>
+                <tr><td>Failure loop</td><td>Misses are followed by changed angle or power, not repeated identical shots.</td><td>Student resistance is followed by a different teaching move, not repeated lecture.</td></tr>
+                <tr><td>Transfer signal</td><td>On a fresh planet layout, players predict which well will bend the shot more.</td><td>On a fresh classroom prompt, players name the student reasoning they need to surface.</td></tr>
+              </tbody>
+            </table>
+
+            <div class="aitool" style="margin-top: 18px;">
+              <div class="aitool__head">
+                <span class="aitool__tag aitool__tag--codex">Claude Code / Codex</span>
+                <h3 class="aitool__title">Beginner prompt · prepare the playtest instrumentation</h3>
+                <span class="aitool__hint">Use before target learners play</span>
+              </div>
+              <div class="aitool__body">
+                <div class="aitool__usecase">Prompt</div>
+                <pre class="prompt"><span class="usr">Review my prototype as a playtest instrument, not as a finished game.
+
+My D4 hypotheses:
+H1: [paste]
+H2: [paste]
+H3: [paste]
+
+Prototype files:
+[paste file list or tell me to inspect the repo]
+
+For each hypothesis:
+1. Identify the learner behavior that would support it.
+2. Identify the learner behavior that would falsify it.
+3. Check whether the current prototype logs that behavior.
+4. If not, add the smallest event log needed.
+
+Keep the log beginner-readable: timestamp, event name, state, player action, system feedback, success/failure, and optional note. Do not add a dashboard yet.</span></pre>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -1,0 +1,15 @@
+TeachPlay Avatar Mini-Lecture: Governance Packet and Final Defense
+
+Your final submission is not just a folder of files. It is a design argument someone can review.
+
+Start with the learning problem. Who are the learners, and what performance should become stronger?
+
+Then show the mechanic. How does the player action carry the learning objective?
+
+Bring in the AI governance trail. What did AI help with, what did you edit, and what risks did you check?
+
+Use playtest evidence to explain what changed. Do not just summarize feedback; connect evidence to revision.
+
+Organize the packet so the rubric is easy to verify: alignment, provenance, evidence quality, and revision rationale.
+
+The goal is not a perfect commercial game. The goal is a serious learning-game prototype an educator can defend.

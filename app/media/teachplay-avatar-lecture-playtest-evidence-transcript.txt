@@ -1,0 +1,15 @@
+TeachPlay Avatar Mini-Lecture: Playtest Evidence and Revision
+
+A playtest does not have to be big. It has to give you evidence you can actually use.
+
+Before anyone plays, define the task, the observable traces, and one debrief question that really matters.
+
+In Space Invaders, shot angle, trajectory revision, gravity-assist hits, and misses can point to physics reasoning.
+
+In Chalk and Chance, the debrief can focus on teaching moves like elicit, extend, redirect, wait, or revoice.
+
+Do not collect data just because the system can log it. Every trace should help you make a revision decision.
+
+Rank revisions by learning impact. A clearer feedback message may matter more than a huge new feature.
+
+Your final portfolio should show what changed after the playtest and why that change should improve learning.

@@ -1183,6 +1183,8 @@ p strong { color: #111; font-weight: 600; }
 }
 .case-study__body p { margin-bottom: 14px; line-height: 1.65; }
 .case-study__body p:last-child { margin-bottom: 0; }
+.case-study + .case-study { margin-top: 24px; }
+.case-study .asset-figure { margin: 16px 0 18px; }
 
 /* worksheet inside details */
 .case-study__worksheet {

@@ -23,15 +23,15 @@
 </div>
 
 <div class="handbook-topbar">
-                                <nav class="primary-nav" data-primary-nav>
-    <div class="primary-nav__group" data-nav-group>
+                                                <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
-        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
-        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
-        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
-        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
-        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">The 1,046-line source doc</span></a>
+        <a href="index.html" role="menuitem">Start Learning<span class="sub">Interactive learner workspace</span></a>
+        <a href="start.html" role="menuitem">Orientation<span class="sub">5-minute tour</span></a>
+        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">Reference document</span></a>
+        <a href="session-01.html" role="menuitem">Session Guides<span class="sub">Printable weekly guides</span></a>
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Assessment criteria</span></a>
       </div>
     </div>
     <div class="primary-nav__group" data-nav-group>
@@ -185,6 +185,71 @@
             <tr><td><strong>Judgment under uncertainty</strong></td><td>Branching scenarios with delayed feedback; resource trade-off economies; role play with partial info.</td><td>Branching that telegraphs the right answer. No real trade-off → no real judgment.</td></tr>
           </tbody>
         </table>
+
+        <div class="case-study" id="field-case-crosswalk">
+          <div class="case-study__header">
+            <span class="case-study__tag">Field case · D2 crosswalk · built projects</span>
+            <h3 class="case-study__title">Two real builds, two different objective-to-mechanic commitments</h3>
+          </div>
+          <div class="case-study__body">
+            <p>
+              Use these as calibration cases before you fill your own D2. Both projects are game-like, but they
+              teach through different objective types. The design work is not naming the genre; it is naming the
+              learning behavior the loop forces.
+            </p>
+
+            <table class="tbl tbl--compact">
+              <thead>
+                <tr><th>Project</th><th>Objective type</th><th>Mechanic commitment</th><th>Explicit scope control</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Space Invaders: Physics Lab</strong></td>
+                  <td>Conceptual reasoning + procedural fluency</td>
+                  <td>Prediction-then-test sandbox: aim a shot, inspect the trajectory curve, revise angle and power under inverse-square gravity.</td>
+                  <td>It does not try to teach all astronomy. The build narrows to gravity, vectors, mass, distance, and trajectory evidence.</td>
+                </tr>
+                <tr>
+                  <td><strong>Chalk &amp; Chance</strong></td>
+                  <td>Judgment under uncertainty</td>
+                  <td>Read-act-observe encounters: choose a teaching move, watch how a student responds, and adjust before the classroom state deteriorates.</td>
+                  <td>It does not simulate the entire profession. The build narrows to high-leverage practice moves, classroom attention, and debriefable decisions.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="aitool" style="margin-top: 18px;">
+              <div class="aitool__head">
+                <span class="aitool__tag aitool__tag--codex">Claude Code / Codex</span>
+                <h3 class="aitool__title">Beginner prompt · turn a game idea into a D2 crosswalk</h3>
+                <span class="aitool__hint">Use before coding</span>
+              </div>
+              <div class="aitool__body">
+                <div class="aitool__usecase">Prompt</div>
+                <pre class="prompt"><span class="usr">I am a beginner building an educational game prototype. Do not write code yet.
+
+My game idea:
+[2-3 sentence idea]
+
+Target learners:
+[who they are]
+
+What I want them to learn:
+[2-4 candidate objectives]
+
+Help me make a D2 crosswalk table with these columns:
+1. Observable learning objective
+2. Objective type: retrieval, discrimination, procedural fluency, conceptual reasoning, or judgment under uncertainty
+3. Smallest playable mechanic
+4. Why the mechanic fits
+5. Main risk
+6. What is out of scope for this build
+
+Keep the scope beginner-sized. If an objective is too broad, rewrite it smaller instead of accepting it.</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <figure class="asset-figure">
           <img class="asset-figure__img" src="assets/generated/s03-crosswalk-visual.png" alt="Objective-to-mechanic crosswalk visual with strong matches, partial matches, and out-of-scope objective." loading="lazy" />

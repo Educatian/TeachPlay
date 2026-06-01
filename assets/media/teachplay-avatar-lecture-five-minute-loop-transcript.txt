@@ -1,0 +1,15 @@
+TeachPlay Avatar Mini-Lecture: Scope a Five-Minute Play Loop
+
+A five-minute loop is not a tiny version of the whole game. It is the smallest cycle that can prove the learning idea works.
+
+Start with a prediction. Ask the learner what they think will happen before they act.
+
+Then make the action matter. The player should have to use the target concept, not just click through content.
+
+Next, make feedback readable. The learner should see what changed and why it changed.
+
+Then create a chance to revise. That second try is where learning becomes much easier to see.
+
+Cut the extra systems for now. Bosses, upgrades, cosmetics, and side quests can wait until the core loop teaches.
+
+At the end, you should be able to say exactly what your five-minute loop teaches and what evidence it creates.

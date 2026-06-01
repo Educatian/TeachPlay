@@ -23,52 +23,32 @@ async function asLearner(page) {
   });
 }
 
-test('1. landing page loads and hero typewriter reveals headline', async ({ page }) => {
+test('1. root landing loads the React learner workspace', async ({ page }) => {
   await page.goto(BASE + '/index.html');
-  const h1 = page.locator('h1.hero__title[data-typewriter]');
-  await expect(h1).toBeVisible();
-  // After the typewriter completes (~2s), data-done flips to true.
-  await expect(h1).toHaveAttribute('data-done', 'true', { timeout: 6000 });
-  // The original text must be present.
-  await expect(h1).toContainText('Design a game');
-  await expect(h1).toContainText('teaches');
+  await expect(page.locator('#root')).not.toBeEmpty({ timeout: 8000 });
+  await expect(page.locator('body')).toContainText('TeachPlay', { timeout: 8000 });
+  await expect(page.locator('body')).toContainText('AI-Enhanced Educational Game Design');
 });
 
-test('2. game showcase + Google AI Studio sections render with cards', async ({ page }) => {
-  await page.goto(BASE + '/index.html');
-  await expect(page.locator('#live-examples .showcase-card')).toHaveCount(8);
-  await expect(page.locator('#ai-studio .showcase-card')).toHaveCount(8);
-  // Featured workflow video is full-width with the ribbon.
-  await expect(page.locator('#watch .video-card--featured')).toBeVisible();
-  await expect(page.locator('#watch .video-card__featured-tag')).toContainText('Watch first');
-  // Three YouTube iframes total.
-  await expect(page.locator('#watch iframe')).toHaveCount(3);
+test('1b. React learner platform is reachable from the handbook domain', async ({ page }) => {
+  await page.goto(BASE + '/app/');
+  await expect(page.locator('#root')).not.toBeEmpty({ timeout: 8000 });
+  await expect(page.locator('body')).toContainText('TeachPlay', { timeout: 8000 });
+  await expect(page.locator('body')).toContainText('AI-Enhanced Educational Game Design');
 });
 
-test('2b. live game showcase links point to individual playable examples', async ({ page }) => {
-  await page.goto(BASE + '/index.html');
-  const expected = new Map([
-    ['Asteroid Game', 'https://gpt5-coding-examples.vercel.app/asteroid-game-5.2'],
-    ['Escape the Maze', 'https://gpt5-coding-examples.vercel.app/escape-the-maze'],
-    ['Falling Fruit Catcher', 'https://gpt5-coding-examples.vercel.app/falling-object-catcher'],
-    ['Solar System Explorer', 'https://gpt5-coding-examples.vercel.app/solar-system-explorer-5.2'],
-    ['Ocean Wave Simulation', 'https://gpt5-coding-examples.vercel.app/ocean-wave-simulation-5.2'],
-    ['Target Click Challenge', 'https://gpt5-coding-examples.vercel.app/target-clicker'],
-    ['Festival Lights', 'https://gpt5-coding-examples.vercel.app/festival-lights-show'],
-  ]);
-
-  for (const [title, href] of expected) {
-    const card = page.locator('#live-examples .showcase-card', { hasText: title });
-    await expect(card).toHaveAttribute('href', href);
-  }
-
-  await expect(page.locator('#live-examples .showcase-card[href="https://gpt5-coding-examples.vercel.app/"]')).toHaveCount(0);
+test('2. handbook reference layer remains reachable from the unified site', async ({ page }) => {
+  await page.goto(BASE + '/handbook.html');
+  await expect(page.locator('h1')).toContainText('Course Handbook');
+  await expect(page.locator('.primary-nav a[href="index.html"]')).toContainText('Start Learning');
+  await expect(page.locator('.primary-nav a[href="session-01.html"]')).toContainText('Session Guides');
 });
 
 test('3. lightbox opens on figure-image click and Escape closes', async ({ page }) => {
   await asLearner(page);
   await page.goto(BASE + '/session-03.html');
   const fig = page.locator('img.asset-figure__img').first();
+  await fig.scrollIntoViewIfNeeded();
   await expect(fig).toBeVisible();
   await fig.click();
   const overlay = page.locator('.hb-lightbox');
@@ -82,7 +62,9 @@ test('3. lightbox opens on figure-image click and Escape closes', async ({ page 
 test('4. lightbox bug-fix: page is clickable after closing the overlay', async ({ page }) => {
   await asLearner(page);
   await page.goto(BASE + '/session-03.html');
-  await page.locator('img.asset-figure__img').first().click();
+  const fig = page.locator('img.asset-figure__img').first();
+  await fig.scrollIntoViewIfNeeded();
+  await fig.click();
   await expect(page.locator('.hb-lightbox')).toHaveAttribute('data-open', 'true');
   await page.keyboard.press('Escape');
   // After close, an unrelated click on a header link should reach its target.
@@ -95,26 +77,14 @@ test('4. lightbox bug-fix: page is clickable after closing the overlay', async (
 
 test('5. custom cursor mounts (dot + ring elements present)', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto(BASE + '/index.html');
+  await page.goto(BASE + '/handbook.html');
   // hover-capable + viewport ≥ 720 + no reduced-motion: cursor should mount.
   await expect(page.locator('body.hb-cursor-on')).toHaveCount(1, { timeout: 3000 });
   await expect(page.locator('.hb-cursor-dot')).toHaveCount(1);
   await expect(page.locator('.hb-cursor-ring')).toHaveCount(1);
 });
 
-test('6. admin gate accepts the code and redirects into Session 01', async ({ page }) => {
-  await page.goto(BASE + '/index.html');
-  page.once('dialog', async (d) => {
-    expect(d.type()).toBe('prompt');
-    await d.accept('immersivebama');
-  });
-  await page.locator('#admin-gate-trigger').click();
-  await page.waitForURL(/session-01\.html$/, { timeout: 5000 });
-  // Synthetic learner planted; enrollment modal should NOT appear.
-  await expect(page.locator('#hb-enroll-overlay')).toHaveCount(0);
-  // hb:admin flag set.
-  expect(await page.evaluate(() => localStorage.getItem('hb:admin'))).toBe('1');
-});
+test.skip('6. legacy admin gate is no longer on the canonical learner landing', async () => {});
 
 test('7. annotation flow: select → highlight → persists across reload', async ({ page }) => {
   await asLearner(page);
@@ -224,7 +194,7 @@ test('16. 404.html serves and offers four quick-link cards', async ({ page }) =>
 });
 
 test('28. search dropdown surfaces matches across the site', async ({ page }) => {
-  await page.goto(BASE + '/index.html');
+  await page.goto(BASE + '/handbook.html');
   const input = page.locator('form.site-header__search input').first();
   // Trigger fetch + type
   await input.focus();
@@ -253,7 +223,7 @@ test('43. print stylesheet hides UI chrome and shows main content', async ({ pag
 });
 
 test('44. focus-trap util is loaded site-wide', async ({ page }) => {
-  await page.goto(BASE + '/index.html');
+  await page.goto(BASE + '/handbook.html');
   const has = await page.evaluate(() => typeof window.hbFocusTrap === 'object' && typeof window.hbFocusTrap.trap === 'function');
   expect(has).toBe(true);
 });
@@ -289,7 +259,7 @@ test('37. privacy.html lists local + server data + FERPA notice + retention', as
 });
 
 test('38. skip-to-content link auto-injected on every page sample', async ({ page }) => {
-  for (const path of ['/index.html', '/rubrics.html', '/handbook.html', '/session-03.html']) {
+  for (const path of ['/rubrics.html', '/handbook.html', '/session-03.html']) {
     await page.goto(BASE + path);
     const skip = page.locator('a.hb-skip').first();
     await expect(skip).toHaveCount(1);
@@ -299,14 +269,14 @@ test('38. skip-to-content link auto-injected on every page sample', async ({ pag
 });
 
 test('39. footer auto-injects accessibility + privacy + source links', async ({ page }) => {
-  await page.goto(BASE + '/index.html');
+  await page.goto(BASE + '/handbook.html');
   const links = page.locator('.hb-footer-meta-links a');
   await expect(links).toHaveCount(3);
   await expect(page.locator('.hb-footer-meta-links a[href="accessibility.html"]')).toHaveCount(1);
   await expect(page.locator('.hb-footer-meta-links a[href="privacy.html"]')).toHaveCount(1);
 });
 
-test('40. Spot the Loop bank: reroll surfaces a fresh trio', async ({ page }) => {
+test.skip('40. legacy Spot the Loop bank was removed from the canonical learner landing', async ({ page }) => {
   await page.goto(BASE + '/index.html');
   // Capture the first set of question IDs (data-id on cards)
   await expect(page.locator('.quickcheck__card')).toHaveCount(3);
@@ -328,7 +298,7 @@ test('40. Spot the Loop bank: reroll surfaces a fresh trio', async ({ page }) =>
 });
 
 test('41. achievements panel shows §6.2 caveat + mute toggle', async ({ page }) => {
-  await page.goto(BASE + '/index.html');
+  await page.goto(BASE + '/handbook.html');
   // Click the 🏆 badge to open the panel
   await page.locator('#hb-ach-toggle').click();
   await expect(page.locator('.hb-ach-panel.is-open')).toBeVisible();
@@ -380,7 +350,7 @@ test('35. handbook.html renders citations as clickable hb-cite spans', async ({ 
 });
 
 test('31. achievements list grew to 12 with handbook + search + Spot the Loop', async ({ page }) => {
-  await page.goto(BASE + '/index.html');
+  await page.goto(BASE + '/handbook.html');
   // Public API exposes the full list
   const ids = await page.evaluate(() => window.hbAchievements.all().map(a => a.id));
   expect(ids).toContain('first_search');
@@ -401,7 +371,7 @@ test('32. opening handbook.html unlocks the handbook_reader achievement', async 
 test('30. search hits text inside figure captions (e.g. "v1 v2 v3")', async ({ page }) => {
   // session-10's figcaption mentions "v1 → v2 → v3" — only reachable if the
   // index now includes figcaption text.
-  await page.goto(BASE + '/index.html');
+  await page.goto(BASE + '/handbook.html');
   const input = page.locator('form.site-header__search input').first();
   await input.focus();
   await input.fill('revision cycle');
@@ -497,7 +467,7 @@ test('22. facilitator.html now includes the workload + cohort sizing block', asy
 });
 
 test('23. nav has new Resources entries on every regenerated page', async ({ page }) => {
-  for (const path of ['/index.html', '/rubrics.html', '/session-03.html']) {
+  for (const path of ['/handbook.html', '/rubrics.html', '/session-03.html']) {
     await page.goto(BASE + path);
     // Menu items are present in DOM but hidden until the dropdown opens — use count + href.
     const items = page.locator('.primary-nav__group:nth-child(2) .primary-nav__panel a');
@@ -542,7 +512,7 @@ test('13. og-image-v3 is referenced in meta tags and reachable', async ({ page, 
   expect(resp.status()).toBe(200);
 });
 
-test('10. Spot the Loop mini-game scores 3/3 when correct buttons clicked', async ({ page }) => {
+test.skip('10. legacy Spot the Loop mini-game was removed from the canonical learner landing', async ({ page }) => {
   await page.goto(BASE + '/index.html');
   // For each of the 3 cards, click the button that has data-correct="true".
   const cards = page.locator('.quickcheck__card');

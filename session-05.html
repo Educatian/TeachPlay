@@ -23,15 +23,15 @@
 </div>
 
 <div class="handbook-topbar">
-                                <nav class="primary-nav" data-primary-nav>
-    <div class="primary-nav__group" data-nav-group>
+                                                <nav class="primary-nav" data-primary-nav>
+    <div class="primary-nav__group is-active" data-nav-group>
       <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
-        <a href="start.html" role="menuitem">Start here<span class="sub">5-minute orientation tour</span></a>
-        <a href="index.html" role="menuitem">Overview<span class="sub">The handbook at a glance</span></a>
-        <a href="index.html#sessions" role="menuitem">Sessions<span class="sub">Twelve weekly units</span></a>
-        <a href="index.html#deliverables" role="menuitem">Deliverables<span class="sub">Five artifacts you ship</span></a>
-        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">The 1,046-line source doc</span></a>
+        <a href="index.html" role="menuitem">Start Learning<span class="sub">Interactive learner workspace</span></a>
+        <a href="start.html" role="menuitem">Orientation<span class="sub">5-minute tour</span></a>
+        <a href="handbook.html" role="menuitem">Full Handbook v2<span class="sub">Reference document</span></a>
+        <a href="session-01.html" role="menuitem">Session Guides<span class="sub">Printable weekly guides</span></a>
+        <a href="rubrics.html" role="menuitem">Rubrics<span class="sub">Assessment criteria</span></a>
       </div>
     </div>
     <div class="primary-nav__group" data-nav-group>
@@ -195,6 +195,63 @@
               Give the learner a role one step closer to their future self than where they are today. Too close
               and role adds nothing. Too far and they cannot stay in character under pressure.
             </p>
+          </div>
+        </div>
+
+        <div class="case-study" id="field-case-role">
+          <div class="case-study__header">
+            <span class="case-study__tag">Field case · role as mechanic · Chalk &amp; Chance</span>
+            <h3 class="case-study__title">A first-year teacher role makes the target behavior playable</h3>
+          </div>
+          <div class="case-study__body">
+            <figure class="asset-figure">
+              <img class="asset-figure__img" src="assets/case-studies/chalk-chance-encounter.png" alt="Chalk and Chance encounter screen with a student dialogue and teaching-move choices." loading="lazy" />
+              <figcaption class="asset-figure__cap">
+                <strong>Encounter screen.</strong>
+                The learner is not answering a quiz about pedagogy. They are acting as a novice teacher who must elicit, revoice, wait, redirect, or extend.
+              </figcaption>
+            </figure>
+
+            <p>
+              Chalk &amp; Chance uses role as a behavior scaffold. The player is close enough to the future
+              professional identity to care, but far enough away that mistakes are safe to inspect. The role
+              is not decorative. It changes which actions become thinkable: scanning the room, moving closer,
+              choosing a least-intrusive redirect, or holding wait time before speaking.
+            </p>
+            <p>
+              For your D2, copy the structure, not the classroom theme. Write the role in one sentence, then
+              name the one behavior the role makes easier to attempt. If the role only changes the costume,
+              it is wrapper narrative, not mechanic.
+            </p>
+
+            <div class="aitool" style="margin-top: 18px;">
+              <div class="aitool__head">
+                <span class="aitool__tag aitool__tag--codex">Claude Code / Codex</span>
+                <h3 class="aitool__title">Beginner prompt · design the player role without overbuilding</h3>
+                <span class="aitool__hint">Use after D2, before assets</span>
+              </div>
+              <div class="aitool__body">
+                <div class="aitool__usecase">Prompt</div>
+                <pre class="prompt"><span class="usr">I have a D2 crosswalk row and need a player role for one small prototype.
+
+Learning objective:
+[paste one objective]
+
+Smallest playable mechanic:
+[paste mechanic]
+
+Target learner:
+[paste learner]
+
+Suggest three possible player roles. For each role, give:
+- one-sentence role brief written for the learner
+- the behavior this role makes easier to try
+- the risk if the role becomes decorative
+- one line of in-game feedback that fits the role
+
+Then recommend one role for a beginner prototype and explain what NOT to build yet.</span></pre>
+              </div>
+            </div>
           </div>
         </div>
       </section>
