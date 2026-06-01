@@ -36,6 +36,14 @@
     return null;
   };
 
+  const isInsideNav = (node) => !!node?.closest?.('nav, [role="navigation"]');
+
+  const safeSection = (node) => {
+    const section = node?.closest?.('section, main > div, #root > div > div');
+    if (!section || isInsideNav(section)) return null;
+    return section;
+  };
+
   const isRelevantPage = () => {
     const body = normalize(document.body.textContent);
     return (
@@ -52,7 +60,7 @@
     section.dataset.teachplayStudentGuideLinks = 'true';
     section.innerHTML = `
       <div class="tp-guide-copy">
-        <p>Student support links</p>
+        <p>Student walkthrough</p>
         <h2>Use the completion guide before starting the credential.</h2>
         <span>The guide, recording, captions, and narration are now published as linkable course assets.</span>
       </div>
@@ -72,23 +80,28 @@
     if (!isRelevantPage()) return;
 
     const existing = document.querySelector('.tp-student-guide-links');
-    if (existing) return;
-
     const studentGuideHeading = findExactTextElement('How students access, learn, and submit the microcredential.');
     const certificateHeading = findExactTextElement('Certificate of Completion');
-    const dashboardHeading = findExactTextElement('My Dashboard');
 
     const anchor =
-      studentGuideHeading?.closest('section, div') ||
-      certificateHeading?.closest('section, div') ||
-      dashboardHeading?.closest('section, div');
+      safeSection(studentGuideHeading) ||
+      safeSection(certificateHeading);
+
+    if (!anchor) return;
+
+    if (existing) {
+      const isPlaced =
+        certificateHeading
+          ? existing.previousElementSibling === anchor
+          : existing.nextElementSibling === anchor;
+      if (!isPlaced && (isInsideNav(existing) || !anchor.contains(existing))) {
+        anchor.insertAdjacentElement(certificateHeading ? 'afterend' : 'beforebegin', existing);
+      }
+      return;
+    }
 
     const panel = buildPanel(certificateHeading ? 'certificate' : 'default');
-    if (anchor) {
-      anchor.insertAdjacentElement(certificateHeading ? 'afterend' : 'beforebegin', panel);
-    } else {
-      root.appendChild(panel);
-    }
+    anchor.insertAdjacentElement(certificateHeading ? 'afterend' : 'beforebegin', panel);
   };
 
   const injectStyles = () => {
