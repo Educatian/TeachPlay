@@ -138,6 +138,8 @@
         <tr><td><code>hb:visited:s##</code></td><td>Which sessions you've opened.</td></tr>
         <tr><td><code>hb:games-clicked</code></td><td>Which game-showcase cards you've opened.</td></tr>
         <tr><td><code>hb:role</code></td><td><code>student</code> or <code>instructor</code> — the role-switch view toggle.</td></tr>
+        <tr><td><code>hb:learner_id</code></td><td>Your enrolled learner identifier after account creation.</td></tr>
+        <tr><td><code>hb:learner_name</code>, <code>hb:learner_email</code></td><td>Name and email you entered at enrollment, used to prefill certificate and survey forms.</td></tr>
         <tr><td><code>hb:no-gamify</code></td><td>Achievement system mute state.</td></tr>
         <tr><td><code>hb:cursor-off</code></td><td>Custom cursor opt-out state.</td></tr>
         <tr><td><code>hb:quickcheck:seen</code></td><td>Spot the Loop item bank cooldown timestamps.</td></tr>
@@ -165,7 +167,7 @@
         <tr><td><code>started</code></td>          <td>First load of a session page</td>           <td>activity_id (<code>session/s03</code>), timestamp</td></tr>
         <tr><td><code>experienced</code> / <code>viewed</code></td><td>A section block scrolls into view ≥ 40% for ≥ 2 s</td><td>activity_id (<code>section/s03/core</code>), timestamp</td></tr>
         <tr><td><code>heartbeat</code></td>        <td>Every 60 s while the session-page tab is active</td><td>activity_id, timestamp (used to compute time-on-task)</td></tr>
-        <tr><td><code>attempted</code> / <code>answered</code> / <code>responded</code></td><td>Quiz item interactions</td><td>activity_id, response value, correctness</td></tr>
+        <tr><td><code>attempted</code> / <code>answered</code> / <code>responded</code></td><td>Quiz, self-assessment, and exit-ticket interactions</td><td>activity_id, response value, score or correctness when applicable</td></tr>
         <tr><td><code>scored</code></td>           <td>End-of-quiz score</td>                       <td>activity_id, raw score, percentage</td></tr>
         <tr><td><code>completed</code></td>        <td>"Mark session complete" click</td>           <td>activity_id, timestamp</td></tr>
         <tr><td><code>submitted</code></td>        <td>Deliverable upload</td>                      <td>activity_id, file hash (SHA-256 — no file body)</td></tr>
@@ -191,7 +193,8 @@
         <tr><td><code>cohort</code></td><td>The cohort slug (e.g. <code>2026-spring</code>).</td></tr>
         <tr><td><code>enrolled_at</code></td><td>Timestamp.</td></tr>
         <tr><td><code>cred_status</code></td><td><code>none</code> / <code>pending</code> / <code>issued</code>.</td></tr>
-        <tr><td>xAPI events</td><td>One row per learning event: <code>started</code>, <code>heartbeat</code>, <code>viewed</code>, <code>answered</code>, <code>completed</code>. Includes <code>activity_id</code> and timestamp; does <strong>not</strong> include free-text notes or annotations.</td></tr>
+        <tr><td>xAPI events</td><td>One row per learning event: <code>started</code>, <code>heartbeat</code>, <code>viewed</code>, <code>answered</code>, <code>responded</code>, <code>scored</code>, and <code>completed</code>. Includes <code>activity_id</code>, timestamp, score, correctness, or short response value when applicable; does <strong>not</strong> include free-text notes or annotations.</td></tr>
+        <tr><td>Post-completion survey</td><td>After certificate request, optional survey responses about module clarity, usefulness, workload, media and reading support, case-study usefulness, artifacts completed, AI tools used, transfer plans, barriers, and follow-up consent. Research reporting uses only responses with de-identified research permission.</td></tr>
       </tbody>
     </table>
     <div class="pp-callout">
@@ -265,6 +268,9 @@
       <li><strong>Enrollment + xAPI records</strong>: kept for the active grant period
         plus three years (per ACHE record-retention guidance) for evaluation
         reporting, then aggregated and the per-learner rows deleted.</li>
+      <li><strong>Post-completion survey rows</strong>: kept with enrollment records
+        for program evaluation. De-identified research use is limited to responses
+        where the learner explicitly grants that permission.</li>
       <li><strong>Issued credentials</strong>: the signed VC + status-list bit remain
         live indefinitely so verifiers can check the credential. Per FERPA, learners
         may request that the credential be revoked (status-list bit flipped); the
@@ -304,7 +310,7 @@
       <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Cloudflare's privacy policy</a>.</p>
   </div>
   <p style="font-size: 12px; color: #888; max-width: 880px; margin-top: 16px;">
-    Statement last reviewed 2026-05-05. Revised whenever a new data field is added or a
+    Statement last reviewed 2026-06-01. Revised whenever a new data field is added or a
     storage location changes.
   </p>
 </section>

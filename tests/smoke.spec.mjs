@@ -90,7 +90,7 @@ test('2. handbook reference layer remains reachable from the unified site', asyn
 
 test('3. lightbox opens on figure-image click and Escape closes', async ({ page }) => {
   await asLearner(page);
-  await page.goto(BASE + '/session-03.html');
+  await page.goto(BASE + '/session-03.html', { waitUntil: 'domcontentloaded' });
   const fig = page.locator('img.asset-figure__img').first();
   await fig.scrollIntoViewIfNeeded();
   await expect(fig).toBeVisible();
@@ -105,7 +105,7 @@ test('3. lightbox opens on figure-image click and Escape closes', async ({ page 
 
 test('4. lightbox bug-fix: page is clickable after closing the overlay', async ({ page }) => {
   await asLearner(page);
-  await page.goto(BASE + '/session-03.html');
+  await page.goto(BASE + '/session-03.html', { waitUntil: 'domcontentloaded' });
   const fig = page.locator('img.asset-figure__img').first();
   await fig.scrollIntoViewIfNeeded();
   await fig.click();
@@ -300,6 +300,9 @@ test('37. privacy.html lists local + server data + FERPA notice + retention', as
   // FERPA reference + retention
   await expect(page.locator('body')).toContainText(/FERPA/);
   await expect(page.locator('body')).toContainText(/retention/i);
+  await expect(page.locator('body')).toContainText('hb:learner_id');
+  await expect(page.locator('body')).toContainText('Post-completion survey');
+  await expect(page.locator('body')).toContainText('de-identified research permission');
 });
 
 test('38. skip-to-content link auto-injected on every page sample', async ({ page }) => {
