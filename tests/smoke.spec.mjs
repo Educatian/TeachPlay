@@ -591,6 +591,7 @@ test('47. completed preview learner can reach certificate handoff', async ({ pag
   await page.getByRole('button', { name: /Get Certificate/i }).click();
   await expect(page.getByText('Certificate of Completion')).toBeVisible();
   await expect(page.getByText('TP-PREVIEW-2026')).toBeVisible();
+  await expect(page.locator('a[href="/guides/post-completion-survey.html?source=certificate-preview"]')).toHaveCount(1);
 });
 
 test('48. learner workspace exposes student guide and walkthrough links', async ({ page }) => {
@@ -603,6 +604,7 @@ test('48. learner workspace exposes student guide and walkthrough links', async 
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough-narration.mp3"]')).toHaveCount(1);
+  await expect(page.locator('a[href="/guides/post-completion-survey.html?source=learner-workspace"]')).toHaveCount(1);
 });
 
 test('49. guided course integrates 12 modules as curriculum and relabels milestones as checkpoints', async ({ page }) => {
@@ -713,9 +715,68 @@ test('50. registered learner can complete sessions and request the credential', 
   await page.locator('#claim-email').fill(email);
   await page.locator('#claim-submit').click();
   await expect(page.locator('#claim-msg')).toContainText('Request received');
+  await expect(page.locator('#claim-survey')).toBeVisible();
+  await expect(page.locator('#claim-survey-link')).toHaveAttribute('href', /post-completion-survey\.html/);
 });
 
-test('51. mobile learner can move from course structure to the first lesson', async ({ page }) => {
+test('51. post-completion survey collects research-ready learner feedback', async ({ page }) => {
+  await page.route('**/api/post-completion-survey', async (route) => {
+    const body = route.request().postDataJSON();
+    expect(body.email).toBe('journey-test@example.edu');
+    expect(body.consent_program_evaluation).toBe(true);
+    expect(body.consent_deidentified_research).toBe(true);
+    expect(body.learning_outcomes.align_objective_mechanic).toBe(5);
+    expect(body.module_ratings).toHaveLength(12);
+    expect(body.module_support_needed).toContain('module-03');
+    expect(body.media_reading.space_invaders_case).toBe(5);
+    expect(body.artifact_evidence.artifacts).toContain('D2 objective-to-mechanic crosswalk');
+    expect(body.transfer.transfer_intention).toBe(5);
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        survey_id: 'survey-test',
+        message: 'Survey submitted. Thank you for helping improve the TeachPlay credential.',
+      }),
+    });
+  });
+
+  await page.goto(BASE + '/guides/post-completion-survey.html?source=smoke&email=journey-test@example.edu');
+  await expect(page.getByRole('heading', { name: /Help improve the TeachPlay credential/i })).toBeVisible();
+  await expect(page.locator('[data-module-row]')).toHaveCount(12);
+  await page.locator('input[name="name"]').fill('Journey Test');
+  await expect(page.locator('input[name="email"]')).toHaveValue('journey-test@example.edu');
+  await page.locator('select[name="role"]').selectOption({ label: 'Graduate student' });
+  await page.locator('input[name="consent_program_evaluation"]').check();
+  await page.locator('input[name="consent_deidentified_research"]').check();
+  await page.locator('select[name="align_objective_mechanic"]').selectOption('5');
+  await page.locator('select[name="scope_five_minute_loop"]').selectOption('4');
+  await page.locator('select[name="document_ai_provenance"]').selectOption('5');
+  await page.locator('select[name="plan_playtest"]').selectOption('4');
+  await page.locator('select[name="revise_from_evidence"]').selectOption('5');
+  await page.locator('select[name="explain_governance"]').selectOption('4');
+  await page.locator('#module-rating-grid select').evaluateAll((selects) => {
+    selects.forEach((select) => { select.value = '4'; select.dispatchEvent(new Event('change', { bubbles: true })); });
+  });
+  await page.locator('input[name="module_support_needed"][value="module-03"]').check();
+  await page.locator('select[name="walkthrough_clarity"]').selectOption('5');
+  await page.locator('select[name="narration_quality"]').selectOption('4');
+  await page.locator('select[name="captions_transcripts"]').selectOption('4');
+  await page.locator('select[name="readings_support"]').selectOption('4');
+  await page.locator('select[name="space_invaders_case"]').selectOption('5');
+  await page.locator('select[name="chalk_chance_case"]').selectOption('4');
+  await page.locator('input[name="artifact"][value="D2 objective-to-mechanic crosswalk"]').check();
+  await page.locator('input[name="ai_tools_used"]').fill('Codex, ChatGPT, ElevenLabs');
+  await page.locator('select[name="transfer_intention"]').selectOption('5');
+  await page.locator('select[name="recommendation"]').selectOption('5');
+  await page.locator('select[name="next_step_clarity"]').selectOption('4');
+  await page.locator('textarea[name="apply_first"]').fill('I will revise a course activity into a five-minute learning loop.');
+  await page.getByRole('button', { name: /Submit post-completion survey/i }).click();
+  await expect(page.locator('#survey-status')).toContainText('Survey submitted');
+});
+
+test('52. mobile learner can move from course structure to the first lesson', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await page.addInitScript(() => {
     localStorage.setItem('hb:learner_id', 'mobile-beginner');

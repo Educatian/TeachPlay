@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TeachPlay Post-Completion Survey</title>
+  <meta name="description" content="Post-completion survey for TeachPlay certificate recipients, including learner experience, module ratings, research consent, and transfer planning." />
+  <style>
+    :root {
+      --crimson: #9e1b32;
+      --ink: #101828;
+      --muted: #475467;
+      --line: #d9e2ec;
+      --paper: #ffffff;
+      --soft: #f6f8fb;
+      --navy: #1f3a5f;
+      --teal: #2f8f83;
+      --gold: #b88a2d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f6f8fb;
+      color: var(--ink);
+      font: 16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--crimson); font-weight: 800; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .shell {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    .toc {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, .9);
+      padding: 28px 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 26px;
+      font-weight: 900;
+    }
+    .ua {
+      display: inline-grid;
+      place-items: center;
+      width: 36px;
+      height: 28px;
+      border-radius: 4px;
+      background: var(--crimson);
+      color: #fff;
+      font-family: Georgia, serif;
+      font-weight: 900;
+    }
+    .toc a {
+      display: block;
+      border-radius: 8px;
+      padding: 9px 10px;
+      color: #344054;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    main { padding-bottom: 80px; }
+    .hero {
+      background:
+        linear-gradient(135deg, rgba(158, 27, 50, .94), rgba(31, 58, 95, .88)),
+        url("/media/student-completion/teachplay-12-module-pathway.png") center / cover;
+      color: #fff;
+      padding: clamp(46px, 7vw, 90px);
+    }
+    .kicker,
+    .section-kicker {
+      margin: 0 0 10px;
+      color: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      max-width: 980px;
+      margin: 0;
+      font: 900 clamp(40px, 7vw, 78px)/1 Georgia, "Times New Roman", serif;
+      letter-spacing: 0;
+    }
+    .hero .lede {
+      max-width: 780px;
+      margin: 22px 0 0;
+      color: rgba(255, 255, 255, .9);
+      font-size: 19px;
+    }
+    section.content {
+      width: min(1120px, calc(100% - 40px));
+      margin: 34px auto 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: clamp(24px, 4vw, 42px);
+      box-shadow: 0 20px 60px rgba(15, 23, 42, .08);
+    }
+    h2 {
+      margin: 0 0 14px;
+      font: 900 clamp(28px, 4vw, 44px)/1.08 Georgia, "Times New Roman", serif;
+      letter-spacing: 0;
+    }
+    h3 { margin: 0 0 10px; font-size: 19px; line-height: 1.3; }
+    p { color: var(--muted); }
+    .section-kicker { color: var(--crimson); }
+    .note {
+      border: 1px solid #f0c7cf;
+      border-radius: 8px;
+      background: #fff5f7;
+      padding: 16px;
+      color: #7f1024;
+    }
+    .note p { margin: 0; color: #7f1024; }
+    form { display: grid; gap: 22px; }
+    fieldset {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 20px;
+    }
+    legend {
+      padding: 0 8px;
+      color: #101828;
+      font-size: 17px;
+      font-weight: 900;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    label {
+      display: grid;
+      gap: 6px;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      color: #101828;
+      padding: 11px 12px;
+      font: inherit;
+      font-size: 15px;
+    }
+    textarea { min-height: 112px; resize: vertical; }
+    .check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .check input { width: 18px; height: 18px; margin-top: 2px; flex: 0 0 auto; }
+    .likert-grid,
+    .module-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .likert-row,
+    .module-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 160px;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid #e5eaf0;
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+    .module-row {
+      grid-template-columns: minmax(220px, 1.2fr) repeat(3, minmax(118px, .35fr));
+    }
+    .module-row strong { color: #101828; }
+    .hint {
+      display: block;
+      margin-top: 4px;
+      color: #667085;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    button[type="submit"] {
+      border: 0;
+      border-radius: 8px;
+      background: var(--crimson);
+      color: #fff;
+      cursor: pointer;
+      padding: 14px 22px;
+      font-size: 15px;
+      font-weight: 900;
+    }
+    button[type="submit"]:disabled { opacity: .65; cursor: wait; }
+    #survey-status {
+      margin: 0;
+      color: #475467;
+      font-weight: 800;
+    }
+    @media (max-width: 980px) {
+      .shell { grid-template-columns: 1fr; }
+      .toc { position: static; height: auto; }
+      .module-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .grid,
+      .three,
+      .checkbox-grid,
+      .likert-row { grid-template-columns: 1fr; }
+      section.content { width: calc(100% - 24px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="toc" aria-label="Survey sections">
+      <div class="brand"><span class="ua">UA</span><span>TeachPlay</span></div>
+      <a href="../index.html">Back to TeachPlay</a>
+      <a href="#consent">Consent And Matching</a>
+      <a href="#background">Background</a>
+      <a href="#outcomes">Learning Outcomes</a>
+      <a href="#modules">Module Experience</a>
+      <a href="#media">Media And Readings</a>
+      <a href="#evidence">Evidence And AI Use</a>
+      <a href="#transfer">Transfer And Follow-Up</a>
+    </aside>
+
+    <main>
+      <header class="hero">
+        <p class="kicker">Post-completion survey</p>
+        <h1>Help improve the TeachPlay credential.</h1>
+        <p class="lede">Complete this after requesting or receiving your certificate. The survey captures what worked, where students needed more support, and which learning artifacts can inform program evaluation and future research.</p>
+      </header>
+
+      <section class="content">
+        <div class="note">
+          <p><strong>Estimated time:</strong> 6 to 8 minutes. Required fields support certificate matching and program improvement. Research use is separated so you can choose whether de-identified responses may be used in publications or presentations, when permitted by institutional review.</p>
+        </div>
+      </section>
+
+      <section class="content">
+        <form id="post-survey-form">
+          <fieldset id="consent">
+            <legend>Consent and matching</legend>
+            <div class="grid">
+              <label>Full name
+                <input name="name" autocomplete="name" required />
+              </label>
+              <label>Email used for TeachPlay
+                <input name="email" type="email" autocomplete="email" required />
+              </label>
+              <label>Cohort
+                <input name="cohort" value="2026-spring" />
+              </label>
+              <label>Current role
+                <select name="role" required>
+                  <option value="">Select one</option>
+                  <option>Undergraduate student</option>
+                  <option>Graduate student</option>
+                  <option>K-12 teacher</option>
+                  <option>Higher education instructor</option>
+                  <option>Instructional designer</option>
+                  <option>Other education professional</option>
+                </select>
+              </label>
+            </div>
+            <p class="check">
+              <input type="checkbox" name="consent_program_evaluation" required />
+              <span>I understand that my response will be used for certificate follow-up and TeachPlay program improvement.</span>
+            </p>
+            <p class="check">
+              <input type="checkbox" name="consent_deidentified_research" />
+              <span>I agree that my de-identified responses may be used for research reporting, conference presentations, or publications when permitted by institutional review.</span>
+            </p>
+          </fieldset>
+
+          <fieldset id="background">
+            <legend>Background before TeachPlay</legend>
+            <div class="grid three">
+              <label>Game design experience before this credential
+                <select name="prior_game_design">
+                  <option>None</option>
+                  <option>Some classroom activities</option>
+                  <option>One prototype or course project</option>
+                  <option>Multiple games or prototypes</option>
+                </select>
+              </label>
+              <label>AI tool experience before this credential
+                <select name="prior_ai_experience">
+                  <option>None</option>
+                  <option>Basic prompting</option>
+                  <option>Regular use for teaching or design</option>
+                  <option>Advanced workflow or agent use</option>
+                </select>
+              </label>
+              <label>Programming or prototyping experience
+                <select name="prior_technical_experience">
+                  <option>None</option>
+                  <option>Low-code or no-code tools</option>
+                  <option>HTML, JavaScript, Python, or similar basics</option>
+                  <option>Comfortable building interactive prototypes</option>
+                </select>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset id="outcomes">
+            <legend>Learning outcomes after completion</legend>
+            <p class="hint">Use 1 = strongly disagree and 5 = strongly agree.</p>
+            <div class="likert-grid" data-likert-group="learning_outcomes">
+              <div class="likert-row"><span>I can align a learning objective, game mechanic, feedback signal, and evidence claim.</span><select name="align_objective_mechanic" required></select></div>
+              <div class="likert-row"><span>I can scope a playable five-minute learning loop without overbuilding the game.</span><select name="scope_five_minute_loop" required></select></div>
+              <div class="likert-row"><span>I can document AI prompts, outputs, revisions, rejected ideas, and human decisions.</span><select name="document_ai_provenance" required></select></div>
+              <div class="likert-row"><span>I can plan a small playtest and collect evidence that informs revision.</span><select name="plan_playtest" required></select></div>
+              <div class="likert-row"><span>I can revise a game concept based on learner evidence rather than preference alone.</span><select name="revise_from_evidence" required></select></div>
+              <div class="likert-row"><span>I can explain accessibility, ethics, privacy, and implementation risks in my design.</span><select name="explain_governance" required></select></div>
+            </div>
+          </fieldset>
+
+          <fieldset id="modules">
+            <legend>Module experience across the 12-session sequence</legend>
+            <p class="hint">Rate each module for clarity, usefulness, and workload fit. These items help identify where beginners need additional support.</p>
+            <div class="module-grid" id="module-rating-grid"></div>
+            <h3 style="margin-top:22px;">Which modules need more support?</h3>
+            <div class="checkbox-grid" id="module-support-grid"></div>
+          </fieldset>
+
+          <fieldset id="media">
+            <legend>Video, readings, and case studies</legend>
+            <div class="likert-grid" data-likert-group="media_reading">
+              <div class="likert-row"><span>The walkthrough video made the login, learning, completion, and certificate flow clear.</span><select name="walkthrough_clarity" required></select></div>
+              <div class="likert-row"><span>The narration sounded natural and helped me follow the student journey.</span><select name="narration_quality" required></select></div>
+              <div class="likert-row"><span>Captions and transcripts were useful for review or accessibility.</span><select name="captions_transcripts" required></select></div>
+              <div class="likert-row"><span>Module readings and references gave enough support without feeling overloaded.</span><select name="readings_support" required></select></div>
+              <div class="likert-row"><span>The Space Invaders case helped me understand objective-to-mechanic alignment.</span><select name="space_invaders_case" required></select></div>
+              <div class="likert-row"><span>The Chalk and Chance case helped me understand role, narrative, uncertainty, or facilitation design.</span><select name="chalk_chance_case" required></select></div>
+            </div>
+          </fieldset>
+
+          <fieldset id="evidence">
+            <legend>Evidence artifacts and AI use</legend>
+            <div class="checkbox-grid">
+              <label class="check"><input type="checkbox" name="artifact" value="D1 learner context and learning problem" />D1 learner context and learning problem</label>
+              <label class="check"><input type="checkbox" name="artifact" value="D2 objective-to-mechanic crosswalk" />D2 objective-to-mechanic crosswalk</label>
+              <label class="check"><input type="checkbox" name="artifact" value="D3 prototype or implementation specification" />D3 prototype or implementation specification</label>
+              <label class="check"><input type="checkbox" name="artifact" value="D4 playtest and audit evidence" />D4 playtest and audit evidence</label>
+              <label class="check"><input type="checkbox" name="artifact" value="D5 final defense and implementation packet" />D5 final defense and implementation packet</label>
+              <label class="check"><input type="checkbox" name="artifact" value="AI provenance log" />AI provenance log</label>
+            </div>
+            <div class="grid" style="margin-top:16px;">
+              <label>Primary AI tools used
+                <input name="ai_tools_used" placeholder="Example: ChatGPT, Claude Code, Codex, Gemini, ElevenLabs" />
+              </label>
+              <label>Total time spent on the credential
+                <select name="time_spent">
+                  <option>Less than 10 hours</option>
+                  <option>10 to 20 hours</option>
+                  <option>21 to 35 hours</option>
+                  <option>36 to 50 hours</option>
+                  <option>More than 50 hours</option>
+                </select>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset id="transfer">
+            <legend>Transfer, barriers, and follow-up</legend>
+            <div class="likert-grid" data-likert-group="transfer">
+              <div class="likert-row"><span>I can apply this design process to a real course, workshop, or learner support context.</span><select name="transfer_intention" required></select></div>
+              <div class="likert-row"><span>I would recommend this credential to another educator or designer.</span><select name="recommendation" required></select></div>
+              <div class="likert-row"><span>I know what next step I would take to continue developing my game or design packet.</span><select name="next_step_clarity" required></select></div>
+            </div>
+            <div class="grid" style="margin-top:16px;">
+              <label>What will you apply first?
+                <textarea name="apply_first" placeholder="Describe one concrete teaching, design, or research use."></textarea>
+              </label>
+              <label>What barrier would most likely stop you from using this work?
+                <textarea name="barrier" placeholder="Example: time, technical setup, assessment uncertainty, accessibility, institutional support."></textarea>
+              </label>
+            </div>
+            <p class="check">
+              <input type="checkbox" name="followup_consent" />
+              <span>I am willing to be contacted for a short 3- or 6-month follow-up about whether I used the design process or artifact after the credential.</span>
+            </p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Open feedback</legend>
+            <label>What should the TeachPlay team change before the next cohort?
+              <textarea name="open_feedback" placeholder="Be specific. Mention pages, modules, videos, readings, assignments, or confusing steps."></textarea>
+            </label>
+          </fieldset>
+
+          <div class="actions">
+            <button type="submit">Submit post-completion survey</button>
+            <p id="survey-status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var modules = [
+        '01 Framing the learning problem',
+        '02 Learner context and constraints',
+        '03 Objectives and crosswalk',
+        '04 Mechanics and feedback',
+        '05 Role, narrative, and uncertainty',
+        '06 Facilitation and classroom setup',
+        '07 Low-fi prototype',
+        '08 Interaction specification',
+        '09 Playtest design',
+        '10 Audit and evidence review',
+        '11 Revision studio',
+        '12 Final defense and certificate handoff'
+      ];
+      var likertLabels = ['1 Strongly disagree', '2 Disagree', '3 Not sure', '4 Agree', '5 Strongly agree'];
+      var fitLabels = ['1 Poor fit', '2 Needs support', '3 Acceptable', '4 Good fit', '5 Excellent fit'];
+
+      function fillSelect(select, labels) {
+        select.innerHTML = '<option value="">Select</option>' + labels.map(function (label, i) {
+          return '<option value="' + (i + 1) + '">' + label + '</option>';
+        }).join('');
+      }
+
+      document.querySelectorAll('[data-likert-group] select').forEach(function (select) {
+        fillSelect(select, likertLabels);
+      });
+
+      var moduleGrid = document.getElementById('module-rating-grid');
+      moduleGrid.innerHTML = modules.map(function (title, index) {
+        var id = 'module_' + String(index + 1).padStart(2, '0');
+        return '<div class="module-row" data-module-row="' + id + '">' +
+          '<strong>' + title + '<span class="hint">Think about what a first-time learner would need to succeed.</span></strong>' +
+          '<label>Clarity<select name="' + id + '_clarity" required></select></label>' +
+          '<label>Usefulness<select name="' + id + '_usefulness" required></select></label>' +
+          '<label>Workload fit<select name="' + id + '_workload" required></select></label>' +
+        '</div>';
+      }).join('');
+      moduleGrid.querySelectorAll('select').forEach(function (select) { fillSelect(select, fitLabels); });
+
+      document.getElementById('module-support-grid').innerHTML = modules.map(function (title, index) {
+        var value = 'module-' + String(index + 1).padStart(2, '0');
+        return '<label class="check"><input type="checkbox" name="module_support_needed" value="' + value + '" />' + title + '</label>';
+      }).join('');
+
+      var params = new URLSearchParams(location.search);
+      try {
+        var name = localStorage.getItem('hb:learner_name') || localStorage.getItem('tp:learner_name') || '';
+        var email = params.get('email') || localStorage.getItem('hb:learner_email') || localStorage.getItem('tp:learner_email') || '';
+        if (name) document.querySelector('[name="name"]').value = name;
+        if (email) document.querySelector('[name="email"]').value = email;
+      } catch (_) {}
+
+      function groupValues(form, groupName) {
+        var out = {};
+        form.querySelectorAll('[data-likert-group="' + groupName + '"] select').forEach(function (select) {
+          out[select.name] = Number(select.value || 0);
+        });
+        return out;
+      }
+
+      function moduleRatings(form) {
+        return modules.map(function (title, index) {
+          var id = 'module_' + String(index + 1).padStart(2, '0');
+          return {
+            module: String(index + 1).padStart(2, '0'),
+            title: title,
+            clarity: Number(form.elements[id + '_clarity'].value || 0),
+            usefulness: Number(form.elements[id + '_usefulness'].value || 0),
+            workload: Number(form.elements[id + '_workload'].value || 0)
+          };
+        });
+      }
+
+      function checkedValues(form, name) {
+        return Array.from(form.querySelectorAll('input[name="' + name + '"]:checked')).map(function (input) {
+          return input.value;
+        });
+      }
+
+      document.getElementById('post-survey-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        var form = event.currentTarget;
+        var button = form.querySelector('button[type="submit"]');
+        var status = document.getElementById('survey-status');
+        var payload = {
+          learner_id: localStorage.getItem('hb:learner_id') || '',
+          name: form.elements.name.value.trim(),
+          email: form.elements.email.value.trim(),
+          cohort: form.elements.cohort.value.trim() || '2026-spring',
+          source: params.get('source') || 'post-completion-survey',
+          consent_program_evaluation: form.elements.consent_program_evaluation.checked,
+          consent_deidentified_research: form.elements.consent_deidentified_research.checked,
+          followup_consent: form.elements.followup_consent.checked,
+          background: {
+            role: form.elements.role.value,
+            prior_game_design: form.elements.prior_game_design.value,
+            prior_ai_experience: form.elements.prior_ai_experience.value,
+            prior_technical_experience: form.elements.prior_technical_experience.value
+          },
+          learning_outcomes: groupValues(form, 'learning_outcomes'),
+          module_ratings: moduleRatings(form),
+          module_support_needed: checkedValues(form, 'module_support_needed'),
+          media_reading: groupValues(form, 'media_reading'),
+          artifact_evidence: {
+            artifacts: checkedValues(form, 'artifact'),
+            ai_tools_used: form.elements.ai_tools_used.value.trim(),
+            time_spent: form.elements.time_spent.value
+          },
+          transfer: Object.assign(groupValues(form, 'transfer'), {
+            apply_first: form.elements.apply_first.value.trim(),
+            barrier: form.elements.barrier.value.trim()
+          }),
+          open_feedback: form.elements.open_feedback.value.trim()
+        };
+
+        button.disabled = true;
+        button.textContent = 'Submitting...';
+        status.textContent = '';
+
+        try {
+          var response = await fetch('/api/post-completion-survey', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          var data = await response.json();
+          if (!response.ok || !data.ok) throw new Error(data.error || 'Survey submission failed.');
+          status.style.color = '#1a6e2e';
+          status.textContent = data.message;
+          button.textContent = 'Survey submitted';
+        } catch (error) {
+          status.style.color = '#9e1b32';
+          status.textContent = error.message || 'Survey submission failed. Please try again.';
+          button.disabled = false;
+          button.textContent = 'Submit post-completion survey';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

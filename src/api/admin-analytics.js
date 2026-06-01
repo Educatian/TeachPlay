@@ -9,6 +9,7 @@
  *   funnel          — per-session completion counts
  *   hardest_questions — per-question error rate, worst 20 first
  *   skills_growth   — pre/post self-assessment averages per skill
+ *   survey_summary  — post-credential survey counts and consent status
  */
 
 function json(body, status = 200) {
@@ -85,6 +86,36 @@ export async function handleAdminAnalytics(request, env) {
       ]);
 
     const learners = learnersResult.results ?? [];
+    let surveySummary = {
+      total: 0,
+      research_consented: 0,
+      followup_consented: 0,
+      latest_at: null,
+    };
+    let surveyRecent = [];
+
+    try {
+      const [summaryResult, recentResult] = await db.batch([
+        db.prepare(`
+          SELECT
+            COUNT(*) AS total,
+            SUM(CASE WHEN consent_deidentified_research = 1 THEN 1 ELSE 0 END) AS research_consented,
+            SUM(CASE WHEN followup_consent = 1 THEN 1 ELSE 0 END) AS followup_consented,
+            MAX(created_at) AS latest_at
+          FROM post_completion_surveys
+        `),
+        db.prepare(`
+          SELECT name, email, cohort, consent_deidentified_research, followup_consent, created_at
+          FROM post_completion_surveys
+          ORDER BY created_at DESC
+          LIMIT 10
+        `),
+      ]);
+      surveySummary = summaryResult.results?.[0] ?? surveySummary;
+      surveyRecent = recentResult.results ?? [];
+    } catch {
+      // Older D1 instances may not have the survey migration yet.
+    }
 
     return json({
       ok: true,
@@ -93,6 +124,8 @@ export async function handleAdminAnalytics(request, env) {
       funnel: funnelResult.results ?? [],
       hardest_questions: hardestResult.results ?? [],
       skills_growth: skillsResult.results ?? [],
+      survey_summary: surveySummary,
+      survey_recent: surveyRecent,
     });
   } catch (e) {
     return json({ ok: false, error: 'Database error', message: e.message }, 500);

@@ -22,6 +22,11 @@
       href: '/media/student-completion/teachplay-student-completion-walkthrough-narration.mp3',
       label: 'Download narration',
       note: 'ElevenLabs neural English narration audio for reuse in an edited MP4 or LMS module.'
+    },
+    {
+      href: '/guides/post-completion-survey.html?source=learner-workspace',
+      label: 'Complete post-credential survey',
+      note: 'Module-level feedback, learning outcomes, transfer plans, and optional de-identified research consent.'
     }
   ];
 
@@ -148,7 +153,7 @@
       }
       .tp-guide-link-grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
         gap: 12px;
       }
       .tp-guide-link-grid a {

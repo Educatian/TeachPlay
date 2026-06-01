@@ -114,6 +114,7 @@
       <div class="kpi"><div class="kpi__val" id="kpi-complete">—</div><div class="kpi__label">Completed all 12</div></div>
       <div class="kpi"><div class="kpi__val" id="kpi-pending">—</div><div class="kpi__label">Credential pending</div></div>
       <div class="kpi"><div class="kpi__val" id="kpi-issued">—</div><div class="kpi__label">Credentials issued</div></div>
+      <div class="kpi"><div class="kpi__val" id="kpi-surveys">—</div><div class="kpi__label">Surveys received</div></div>
     </div>
 
     <!-- Completion funnel -->
@@ -132,6 +133,13 @@
     <div class="card" id="card-questions" style="display:none;">
       <h2>Hardest quiz questions (lowest correct rate)</h2>
       <div id="questions-rows"></div>
+    </div>
+
+    <!-- Post-completion survey -->
+    <div class="card" id="card-survey" style="display:none;">
+      <h2>Post-completion survey</h2>
+      <div id="survey-summary"></div>
+      <div id="survey-recent" style="margin-top:16px;"></div>
     </div>
 
     <!-- Learner table -->
@@ -194,6 +202,8 @@
     var funnel   = data.funnel   || [];
     var hq       = data.hardest_questions || [];
     var skills   = data.skills_growth || [];
+    var surveySummary = data.survey_summary || {};
+    var surveyRecent = data.survey_recent || [];
 
     var complete = learners.filter(function (l) { return l.sessions_done >= 12; }).length;
     var pending  = learners.filter(function (l) { return l.cred_status === 'pending'; }).length;
@@ -203,11 +213,13 @@
     document.getElementById('kpi-complete').textContent = complete;
     document.getElementById('kpi-pending').textContent  = pending;
     document.getElementById('kpi-issued').textContent   = issued;
+    document.getElementById('kpi-surveys').textContent  = surveySummary.total || 0;
     document.getElementById('kpi-row').style.display = '';
 
     renderFunnel(funnel, learners.length);
     renderSkills(skills);
     renderQuestions(hq);
+    renderSurvey(surveySummary, surveyRecent);
     renderLearners(learners);
   }
 
@@ -266,6 +278,32 @@
     }).join('');
     document.getElementById('questions-rows').innerHTML = html;
     document.getElementById('card-questions').style.display = '';
+  }
+
+  function renderSurvey(summary, recent) {
+    var total = Number(summary.total || 0);
+    if (!total) return;
+    var research = Number(summary.research_consented || 0);
+    var followup = Number(summary.followup_consented || 0);
+    document.getElementById('survey-summary').innerHTML =
+      '<div class="kpi-row" style="grid-template-columns:repeat(3,minmax(0,1fr));display:grid;">' +
+        '<div class="kpi"><div class="kpi__val">' + total + '</div><div class="kpi__label">Submitted</div></div>' +
+        '<div class="kpi"><div class="kpi__val">' + research + '</div><div class="kpi__label">Research use consent</div></div>' +
+        '<div class="kpi"><div class="kpi__val">' + followup + '</div><div class="kpi__label">Follow-up consent</div></div>' +
+      '</div>';
+    document.getElementById('survey-recent').innerHTML = '<table class="learner-table"><thead><tr>' +
+      '<th>Name</th><th>Email</th><th>Cohort</th><th>Research</th><th>Follow-up</th><th>Submitted</th>' +
+      '</tr></thead><tbody>' + (recent || []).map(function (r) {
+        return '<tr>' +
+          '<td>' + esc(r.name || '-') + '</td>' +
+          '<td>' + esc(r.email || '-') + '</td>' +
+          '<td>' + esc(r.cohort || '-') + '</td>' +
+          '<td>' + (r.consent_deidentified_research ? 'Yes' : 'No') + '</td>' +
+          '<td>' + (r.followup_consent ? 'Yes' : 'No') + '</td>' +
+          '<td>' + esc((r.created_at || '').slice(0, 16)) + '</td>' +
+        '</tr>';
+      }).join('') + '</tbody></table>';
+    document.getElementById('card-survey').style.display = '';
   }
 
   function renderLearners(learners) {
