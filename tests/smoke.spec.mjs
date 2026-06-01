@@ -599,7 +599,7 @@ test('48. learner workspace exposes student guide and walkthrough links', async 
   await expect(page.locator('nav')).not.toContainText('Student walkthrough');
   await expect(page.locator('nav')).not.toContainText('Sign In / Create Account');
   await expect(page.locator('nav button', { hasText: /^Sign In$/ })).toHaveCount(1);
-  await expect(page.locator('a[href="/guides/student-completion-guide.html"]')).toHaveCount(1);
+  await expect(page.locator('.tp-student-guide-links a[href="/guides/student-completion-guide.html"]')).toHaveCount(1);
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.webm"]')).toHaveCount(1);
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough.vtt"]')).toHaveCount(1);
   await expect(page.locator('a[href="/media/student-completion/teachplay-student-completion-walkthrough-narration.mp3"]')).toHaveCount(1);
@@ -614,7 +614,11 @@ test('49. guided course integrates 12 modules as curriculum and relabels milesto
   await expect(page.locator('.tp12-sidebar-modules a')).toHaveCount(12);
   await expect(page.locator('.tp12-sidebar-modules a[href^="#tp12-module-"]')).toHaveCount(12);
   await expect(page.locator('.tp12-course .tp12-module-card a', { hasText: 'Focus module' })).toHaveCount(12);
-  await expect(page.locator('.tp12-course .tp12-module-card a', { hasText: 'Handbook reference' })).toHaveCount(12);
+  await expect(page.locator('.tp12-course .tp12-module-card a', { hasText: 'Module reading' })).toHaveCount(12);
+  await expect(page.locator('.tp12-course .tp12-module-card a', { hasText: 'Supporting reference' })).toHaveCount(12);
+  await expect(page.locator('.tp12-course .tp12-module-card dt', { hasText: 'Reading' })).toHaveCount(12);
+  await expect(page.locator('.tp12-course .tp12-module-card dt', { hasText: 'Video anchor' })).toHaveCount(12);
+  await expect(page.locator('.tp12-course .tp12-module-card dt', { hasText: 'Connection' })).toHaveCount(12);
   await expect(page.getByText('Portfolio checkpoint 1')).toBeVisible();
   await expect(page.getByText('Portfolio checkpoint 2')).toBeVisible();
   await expect(page.getByText('Portfolio checkpoint 3')).toBeVisible();
