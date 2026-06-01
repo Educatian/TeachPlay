@@ -58,14 +58,20 @@ test('1c. React create account registers through the TeachPlay enrollment API', 
   });
 
   await page.goto(BASE + '/index.html');
-  await page.getByRole('button', { name: /Sign In/i }).click();
-  await page.getByRole('button', { name: 'Sign Up' }).click();
+  await expect(page.locator('.tp-beginner-hero-cue')).toContainText('First time here?');
+  await expect(page.locator('.tp-beginner-hero-cue')).toContainText('certificate requests are saved');
+  await expect(page.getByRole('heading', { name: /Start here: create an account/i })).toBeVisible();
+  await expect(page.getByText('The account step is what connects your progress')).toBeVisible();
+  await page.locator('.tp-beginner-hero-cue [data-tp-action="hero-create-account"]').click();
+  await expect(page.getByRole('heading', { name: 'Create Account' })).toBeVisible();
   await page.locator('#auth-name').fill('React Signup');
   await page.locator('#auth-email').fill(email);
   await page.locator('#auth-password').fill('password123');
-  await page.getByRole('button', { name: /Create Account/i }).click();
+  await page.locator('form button[type="submit"]').click();
 
   await expect(page.getByRole('button', { name: /Sign Out/i })).toBeVisible({ timeout: 8000 });
+  await expect(page.getByText('Account connected.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Continue from the same learner workspace/i })).toBeVisible();
   expect(enrollPayload).toEqual({
     name: 'React Signup',
     email,
