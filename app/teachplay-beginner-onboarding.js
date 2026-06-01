@@ -173,6 +173,10 @@
   };
 
   const showSignedInHint = () => {
+    if (/COURSE PROGRESS|Course Progress/.test(document.body.textContent || '')) {
+      document.querySelector('.tp-beginner-toast')?.remove();
+      return;
+    }
     if (!isSignedIn() || document.querySelector('.tp-beginner-toast')) return;
     try {
       if (sessionStorage.getItem('tp:beginner-toast-shown') === 'true') return;

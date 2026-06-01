@@ -711,6 +711,20 @@ test('50. registered learner can complete sessions and request the credential', 
   await expect(page.locator('#claim-msg')).toContainText('Request received');
 });
 
+test('51. mobile learner can move from course structure to the first lesson', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.addInitScript(() => {
+    localStorage.setItem('hb:learner_id', 'mobile-beginner');
+  });
+  await page.goto(BASE + '/index.html');
+  await page.getByRole('button', { name: /Start learning/i }).click();
+  await page.getByRole('button', { name: /Enter guided course/i }).click();
+  await expect(page.locator('.tp12-sidebar-start')).toBeVisible();
+  await expect(page.locator('.tp-beginner-toast')).toHaveCount(0);
+  await page.locator('.tp12-sidebar-start').click();
+  await expect(page.getByRole('heading', { name: 'Start with the Learning Problem', exact: true })).toBeVisible();
+});
+
 test.skip('10. legacy Spot the Loop mini-game was removed from the canonical learner landing', async ({ page }) => {
   await page.goto(BASE + '/index.html');
   // For each of the 3 cards, click the button that has data-correct="true".

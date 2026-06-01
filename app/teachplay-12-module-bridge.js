@@ -189,6 +189,7 @@
       <p class="tp12-sidebar-kicker">Course structure</p>
       <h2>12 modules drive the learning. Milestones collect the evidence.</h2>
       <p>Use the module sequence in the main panel for weekly learning work. Use the milestone checkpoints for portfolio submission and completion review.</p>
+      <button class="tp12-sidebar-start" type="button" data-tp12-start-first>Start Session 01</button>
       <nav class="tp12-sidebar-modules" aria-label="12-module curriculum sequence">
         ${modules.map((module) => `<a href="#tp12-module-${module.n}"><span>${module.n}</span>${module.title}</a>`).join('')}
       </nav>
@@ -196,6 +197,23 @@
       <a class="tp12-sidebar-guide-link" href="/guides/student-completion-guide.html" aria-label="Open student completion guide">Open student guide</a>
     `;
     return note;
+  };
+
+  const wireSidebarStart = () => {
+    const start = document.querySelector('[data-tp12-start-first]');
+    if (!start || start.dataset.tp12Wired === 'true') return;
+    start.dataset.tp12Wired = 'true';
+    start.addEventListener('click', () => {
+      const firstLesson = [...document.querySelectorAll('aside button')]
+        .find((button) => /Start with the Learning Problem/i.test(normalize(button.textContent)));
+      firstLesson?.click();
+      const hideSidebar = [...document.querySelectorAll('main button[aria-label]')]
+        .find((button) => /hide course sidebar/i.test(button.getAttribute('aria-label') || ''));
+      if (window.innerWidth < 768) hideSidebar?.click();
+      window.setTimeout(() => {
+        document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 60);
+    });
   };
 
   const relabelPortfolioCheckpoints = () => {
@@ -272,7 +290,7 @@
     if (!document.querySelector('.tp12-course')) {
       const mainPanel = document.querySelector('main.flex-grow .max-w-4xl') || document.querySelector('main .max-w-4xl');
       if (mainPanel) {
-        mainPanel.insertAdjacentElement('afterbegin', buildPathway('course'));
+        mainPanel.insertAdjacentElement('beforeend', buildPathway('course'));
       }
     }
 
@@ -517,6 +535,21 @@
         color: #475467;
         font-weight: 700;
       }
+      .tp12-sidebar-start {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid #9e1b32;
+        border-radius: 8px;
+        background: #9e1b32;
+        color: #ffffff;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 900;
+      }
+      .tp12-sidebar-start:hover,
+      .tp12-sidebar-start:focus {
+        background: #7f1024;
+      }
       .tp12-sidebar-guide-link {
         color: #7f1024;
         font-size: 12px;
@@ -558,6 +591,10 @@
         .tp12-module-card {
           min-height: 0;
         }
+        aside:has(.tp12-sidebar-note) {
+          width: 100vw !important;
+          max-width: 100vw;
+        }
       }
     `;
     document.head.appendChild(style);
@@ -569,6 +606,7 @@
     injectGuidedCourse();
     relabelPortfolioCheckpoints();
     formatCheckpointGroups();
+    wireSidebarStart();
   };
 
   window.addEventListener('DOMContentLoaded', run);
