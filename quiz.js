@@ -41,6 +41,11 @@ const Quiz = (() => {
 .quiz__summary.is-visible { display: block; }
 .quiz__summary--pass { background: #f0fff4; border: 1px solid #2f855a; color: #22543d; }
 .quiz__summary--fail { background: #fff5f5; border: 1px solid var(--crimson, #be1a2f); color: #742a2a; }
+.quiz__summary--progress { background: #fffaf0; border: 1px solid #d69e2e; color: #744210; }
+.quiz__attempt-meta { display: block; margin-top: 8px; font-size: 12px; font-weight: 500; line-height: 1.5; }
+.quiz__complete-btn { margin-top: 12px; border: 0; border-radius: 6px; background: var(--crimson, #be1a2f); color: #fff; font: 700 13px/1.2 var(--font-sans, inherit); padding: 10px 12px; cursor: pointer; }
+.quiz__complete-btn:hover { background: #8f1527; }
+.quiz__complete-btn[disabled] { background: #767676; cursor: default; }
 .quiz__gate-notice { margin-top: 10px; font-size: 12px; color: var(--gray-40, #888); text-align: center; font-family: var(--font-sans, inherit); }
 /* WCAG AA: opacity-based dimming made foreground text composite to colors
    that fail 4.5:1. Use full-strength gray instead so disabled cells stay
@@ -48,11 +53,13 @@ const Quiz = (() => {
 .quiz-gated { pointer-events: none; user-select: none; filter: grayscale(0.6); }
 .quiz-gated, .quiz-gated * { color: #4f4f4f !important; }
 .quiz-gated-btn { background: #767676 !important; border-color: #767676 !important; color: #fff !important; pointer-events: none; cursor: not-allowed; opacity: 1; }
+.quiz-gated[aria-disabled="true"] { cursor: not-allowed; }
 `;
     document.head.appendChild(el);
   }
 
   const LETTERS = ['A', 'B', 'C', 'D'];
+  const STORAGE_VERSION = 1;
 
   // Fisher-Yates in-place shuffle
   function _shuffle(arr) {
@@ -63,18 +70,41 @@ const Quiz = (() => {
     return arr;
   }
 
-  // Returns a new question object with opts+feedback shuffled and ans recalculated
-  function _shuffleQuestion(question) {
+  function _questionSignature(question) {
+    return [question.lo || '', question.q || '', (question.opts || []).join('||')].join('::');
+  }
+
+  function _quizStorageKey(containerEl, options) {
+    if (options && options.storageKey) return options.storageKey;
+    var id = containerEl.id || 'quiz';
+    var page = location.pathname.split('/').pop() || 'index';
+    return 'hb:quiz:' + page + ':' + id + ':v' + STORAGE_VERSION;
+  }
+
+  function _loadState(key) {
+    try { return JSON.parse(localStorage.getItem(key) || 'null'); }
+    catch (_) { return null; }
+  }
+
+  function _saveState(key, state) {
+    try { localStorage.setItem(key, JSON.stringify(state)); }
+    catch (_) {}
+  }
+
+  function _defaultOrder(question) {
+    return (question.opts || []).map(function (_, i) { return i; });
+  }
+
+  // Returns a new question object with opts+feedback ordered and ans recalculated
+  function _orderQuestion(question, indices) {
     const correctText = question.opts[question.ans];
-    // build index pairs [0,1,2,3] and shuffle them
-    const indices = _shuffle([0, 1, 2, 3]);
     const newOpts = indices.map(function (i) { return question.opts[i]; });
     const newFeedback = indices.map(function (i) { return question.feedback[i]; });
     const newAns = newOpts.indexOf(correctText);
     return Object.assign({}, question, { opts: newOpts, feedback: newFeedback, ans: newAns });
   }
 
-  function _buildItem(question, index, onAnswered) {
+  function _buildItem(question, index, priorSelected, onAnswered) {
     const { lo, q, opts, ans, feedback } = question;
 
     const item = document.createElement('div');
@@ -97,7 +127,29 @@ const Quiz = (() => {
     // options + per-option feedback (interleaved in DOM)
     const optionsEl = document.createElement('div');
     optionsEl.className = 'quiz__options';
-    let answered = false;
+    let answered = priorSelected !== null && priorSelected !== undefined && priorSelected >= 0;
+
+    function renderAnswer(selectedIndex) {
+      const isCorrect = (selectedIndex === ans);
+      const allBtns = optionsEl.querySelectorAll('.quiz__opt');
+
+      allBtns.forEach(function (b, j) {
+        b.setAttribute('disabled', '');
+        if (j === selectedIndex) {
+          b.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
+        } else if (j === ans && !isCorrect) {
+          b.classList.add('is-revealed');
+        }
+      });
+
+      const fbEl = item.querySelector('[data-fb="' + selectedIndex + '"]');
+      if (fbEl) {
+        fbEl.classList.add('is-visible');
+        fbEl.classList.add(isCorrect ? 'quiz__feedback--correct' : 'quiz__feedback--wrong');
+      }
+
+      return isCorrect;
+    }
 
     opts.forEach(function (optText, i) {
       const btn = document.createElement('button');
@@ -117,24 +169,7 @@ const Quiz = (() => {
         if (answered) return;
         answered = true;
 
-        const isCorrect = (i === ans);
-        const allBtns = optionsEl.querySelectorAll('.quiz__opt');
-
-        allBtns.forEach(function (b, j) {
-          b.setAttribute('disabled', '');
-          if (j === i) {
-            b.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
-          } else if (j === ans && !isCorrect) {
-            b.classList.add('is-revealed');
-          }
-        });
-
-        // show feedback for chosen option only
-        const fbEl = item.querySelector('[data-fb="' + i + '"]');
-        if (fbEl) {
-          fbEl.classList.add('is-visible');
-          fbEl.classList.add(isCorrect ? 'quiz__feedback--correct' : 'quiz__feedback--wrong');
-        }
+        const isCorrect = renderAnswer(i);
 
         // xAPI statement
         if (window.xapi) {
@@ -148,7 +183,7 @@ const Quiz = (() => {
           );
         }
 
-        onAnswered(isCorrect);
+        onAnswered(isCorrect, i);
       });
 
       optionsEl.appendChild(btn);
@@ -161,16 +196,35 @@ const Quiz = (() => {
       optionsEl.appendChild(fbEl);
     });
 
+    if (answered) renderAnswer(priorSelected);
+
     item.appendChild(optionsEl);
     return item;
   }
 
-  function _applyGate(gatedEls) {
+  function _applyGate(gatedEls, message) {
     gatedEls.forEach(function (el) {
+      if (!el.dataset.quizGateOriginalTitle) {
+        el.dataset.quizGateOriginalTitle = el.getAttribute('title') || '';
+      }
+      el.setAttribute('title', message);
+      el.setAttribute('aria-disabled', 'true');
       if (el.tagName === 'BUTTON') {
         el.classList.add('quiz-gated-btn');
+        el.disabled = true;
       } else {
         el.classList.add('quiz-gated');
+        if (!el.dataset.quizGateOriginalTabindex) {
+          el.dataset.quizGateOriginalTabindex = el.getAttribute('tabindex') || '';
+        }
+        el.setAttribute('tabindex', '-1');
+        if (!el.__quizGateHandler) {
+          el.__quizGateHandler = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          };
+          el.addEventListener('click', el.__quizGateHandler);
+        }
       }
     });
   }
@@ -178,6 +232,25 @@ const Quiz = (() => {
   function _releaseGate(gatedEls) {
     gatedEls.forEach(function (el) {
       el.classList.remove('quiz-gated', 'quiz-gated-btn');
+      el.removeAttribute('aria-disabled');
+      if (el.dataset.quizGateOriginalTitle !== undefined) {
+        if (el.dataset.quizGateOriginalTitle) el.setAttribute('title', el.dataset.quizGateOriginalTitle);
+        else el.removeAttribute('title');
+        delete el.dataset.quizGateOriginalTitle;
+      }
+      if (el.tagName === 'BUTTON') {
+        el.disabled = false;
+      } else {
+        if (el.dataset.quizGateOriginalTabindex !== undefined) {
+          if (el.dataset.quizGateOriginalTabindex) el.setAttribute('tabindex', el.dataset.quizGateOriginalTabindex);
+          else el.removeAttribute('tabindex');
+          delete el.dataset.quizGateOriginalTabindex;
+        }
+        if (el.__quizGateHandler) {
+          el.removeEventListener('click', el.__quizGateHandler);
+          delete el.__quizGateHandler;
+        }
+      }
     });
   }
 
@@ -186,10 +259,36 @@ const Quiz = (() => {
     options = options || {};
     _injectStyles();
 
-    // apply shuffle if requested
-    var processedQuestions = questions.map(function (q) {
-      return options.shuffle ? _shuffleQuestion(q) : q;
+    var storageKey = _quizStorageKey(containerEl, options);
+    var signatures = questions.map(_questionSignature);
+    var state = _loadState(storageKey);
+    var shouldReset = !state ||
+      state.version !== STORAGE_VERSION ||
+      state.total !== questions.length ||
+      JSON.stringify(state.signatures || []) !== JSON.stringify(signatures);
+
+    if (shouldReset) {
+      state = {
+        version: STORAGE_VERSION,
+        total: questions.length,
+        signatures: signatures,
+        order: [],
+        selections: {},
+        completed: false,
+        startedAt: new Date().toISOString(),
+      };
+    }
+
+    // apply shuffle once, then persist the order so refresh cannot create a new attempt
+    var processedQuestions = questions.map(function (q, index) {
+      var order = state.order[index];
+      if (!Array.isArray(order) || order.length !== q.opts.length) {
+        order = options.shuffle ? _shuffle(_defaultOrder(q)) : _defaultOrder(q);
+        state.order[index] = order;
+      }
+      return _orderQuestion(q, order);
     });
+    _saveState(storageKey, state);
 
     const quizEl = document.createElement('div');
     quizEl.className = 'quiz';
@@ -197,6 +296,13 @@ const Quiz = (() => {
     let answeredCount = 0;
     let correctCount = 0;
     const total = processedQuestions.length;
+    processedQuestions.forEach(function (question, index) {
+      var selected = state.selections[index];
+      if (selected !== null && selected !== undefined && selected >= 0) {
+        answeredCount++;
+        if (selected === question.ans) correctCount++;
+      }
+    });
 
     const summaryEl = document.createElement('div');
     summaryEl.className = 'quiz__summary';
@@ -208,54 +314,115 @@ const Quiz = (() => {
       var nextNavLink = document.querySelector('.session-nav__next');
       if (markDoneBtn) gatedEls.push(markDoneBtn);
       if (nextNavLink) gatedEls.push(nextNavLink);
-      _applyGate(gatedEls);
+      if (answeredCount < total) {
+        _applyGate(gatedEls, 'Answer all quiz questions to unlock session completion and the next session.');
+      }
+    }
 
-      var noticeEl = document.createElement('p');
-      noticeEl.className = 'quiz__gate-notice';
-      noticeEl.textContent = 'Answer all four questions to unlock session completion and the next session.';
-      summaryEl.appendChild(noticeEl);
+    function updateCompletionButton(btn) {
+      var markDone = document.querySelector('[data-mark-done]');
+      var isDone = !!(markDone && markDone.classList.contains('is-done'));
+      btn.textContent = isDone ? 'Session already marked complete' : 'Mark this session complete';
+      btn.disabled = isDone;
+    }
+
+    function renderSummary() {
+      summaryEl.innerHTML = '';
+      if (answeredCount <= 0) {
+        summaryEl.className = 'quiz__summary';
+        if (options.gate === 'attempt') {
+          var noticeEl = document.createElement('p');
+          noticeEl.className = 'quiz__gate-notice';
+          noticeEl.textContent = 'Answer all ' + total + ' questions once to unlock session completion and the next session. Your first attempt is saved, so refreshing will not reset it.';
+          summaryEl.appendChild(noticeEl);
+        }
+        return;
+      }
+
+      if (answeredCount < total) {
+        summaryEl.className = 'quiz__summary is-visible quiz__summary--progress';
+        summaryEl.innerHTML = '<strong>' + answeredCount + ' of ' + total + ' answered.</strong>';
+        var progressMeta = document.createElement('span');
+        progressMeta.className = 'quiz__attempt-meta';
+        progressMeta.textContent = 'Your selections are saved in this browser. Finish the remaining questions to unlock completion and Next.';
+        summaryEl.appendChild(progressMeta);
+        return;
+      }
+
+      const allCorrect = (correctCount === total);
+      summaryEl.className = 'quiz__summary is-visible ' + (allCorrect ? 'quiz__summary--pass' : 'quiz__summary--fail');
+      var msg = document.createElement('span');
+      msg.innerHTML = allCorrect
+        ? '<strong>All correct.</strong> You are ready to move on.'
+        : '<strong>' + correctCount + ' of ' + total + ' correct.</strong> Review the highlighted answers before continuing.';
+      summaryEl.appendChild(msg);
+
+      var meta = document.createElement('span');
+      meta.className = 'quiz__attempt-meta';
+      meta.textContent = 'Attempt saved. Refreshing this page will restore this result instead of starting a new attempt.';
+      summaryEl.appendChild(meta);
+
+      if (options.gate === 'attempt') {
+        var completeBtn = document.createElement('button');
+        completeBtn.type = 'button';
+        completeBtn.className = 'quiz__complete-btn';
+        updateCompletionButton(completeBtn);
+        completeBtn.addEventListener('click', function () {
+          var markDone = document.querySelector('[data-mark-done]');
+          if (markDone && !markDone.classList.contains('is-done')) markDone.click();
+          updateCompletionButton(completeBtn);
+        });
+        window.addEventListener('hb:progress-updated', function () {
+          updateCompletionButton(completeBtn);
+        }, { once: true });
+        summaryEl.appendChild(completeBtn);
+      }
     }
 
     processedQuestions.forEach(function (question, index) {
-      const item = _buildItem(question, index, function (isCorrect) {
+      var priorSelected = state.selections[index];
+      const item = _buildItem(question, index, priorSelected, function (isCorrect, selectedIndex) {
         answeredCount++;
         if (isCorrect) correctCount++;
+        state.selections[index] = selectedIndex;
+        state.updatedAt = new Date().toISOString();
+        _saveState(storageKey, state);
 
         if (answeredCount === total) {
-          const allCorrect = (correctCount === total);
-          var cls = 'quiz__summary is-visible ' + (allCorrect ? 'quiz__summary--pass' : 'quiz__summary--fail');
-          summaryEl.className = cls;
-
-          var msg = document.createElement('span');
-          msg.innerHTML = allCorrect
-            ? '<strong>All correct.</strong> You are ready to move on.'
-            : '<strong>' + correctCount + ' of ' + total + ' correct.</strong> Review the highlighted answers before continuing.';
-          summaryEl.insertBefore(msg, summaryEl.firstChild);
-
-          // release gate on all-answered
+          state.completed = true;
+          state.completedAt = state.completedAt || new Date().toISOString();
+          _saveState(storageKey, state);
           if (options.gate === 'attempt') {
             _releaseGate(gatedEls);
-            var notice = summaryEl.querySelector('.quiz__gate-notice');
-            if (notice) notice.remove();
           }
+          renderSummary();
 
           // xAPI session-level score
           if (window.xapi) {
-            window.xapi.emit(
-              'scored',
-              window.xapi.activities.obj('quiz', containerEl.id || 'quiz', 'Quiz \u00B7 ' + (containerEl.id || 'quiz')),
-              {
-                result: {
-                  score: { raw: correctCount, min: 0, max: total, scaled: correctCount / total },
-                  success: allCorrect,
-                },
-              }
-            );
+            try {
+              window.xapi.emit(
+                'scored',
+                window.xapi.activities.obj('quiz', containerEl.id || 'quiz', 'Quiz \u00B7 ' + (containerEl.id || 'quiz')),
+                {
+                  result: {
+                    score: { raw: correctCount, min: 0, max: total, scaled: correctCount / total },
+                    success: correctCount === total,
+                  },
+                }
+              );
+            } catch (_) {}
           }
+          return;
         }
+        renderSummary();
       });
       quizEl.appendChild(item);
     });
+
+    if (answeredCount >= total && options.gate === 'attempt') {
+      _releaseGate(gatedEls);
+    }
+    renderSummary();
 
     quizEl.appendChild(summaryEl);
     containerEl.appendChild(quizEl);

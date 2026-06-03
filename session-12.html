@@ -495,7 +495,22 @@ Flag any claim that is not supported by my artifacts.</span></pre>
             if (missing.length === 0) showForm(); else showGate(missing);
           }
 
-          function refreshClaimGate() {
+          function flushXapiWhenReady() {
+            function flushNow() {
+              if (window.xapi && typeof window.xapi.flush === 'function') {
+                return window.xapi.flush().catch(function() {});
+              }
+              return Promise.resolve();
+            }
+            if (window.xapi && typeof window.xapi.flush === 'function') return flushNow();
+            return new Promise(function(resolve) {
+              window.addEventListener('load', function() {
+                flushNow().then(resolve).catch(resolve);
+              }, { once: true });
+            });
+          }
+
+          async function refreshClaimGate() {
             var localMissingAtLoad = missingFromSet(localDoneSet());
             if (localMissingAtLoad.length === 0) {
               showForm();
@@ -504,7 +519,7 @@ Flag any claim that is not supported by my artifacts.</span></pre>
 
             var learnerId = localStorage.getItem('hb:learner_id');
             if (learnerId) {
-              if (window.xapi && typeof window.xapi.flush === 'function') window.xapi.flush();
+              await flushXapiWhenReady();
               fetch('/api/completion-check?learner_id=' + encodeURIComponent(learnerId))
                 .then(function(r) { return r.json(); })
                 .then(function(data) {

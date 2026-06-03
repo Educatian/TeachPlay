@@ -733,6 +733,98 @@ test('50. registered learner can complete sessions and request the credential', 
   await expect(page.locator('#claim-survey-link')).toHaveAttribute('href', /post-completion-survey\.html/);
 });
 
+test('50b. quiz attempt survives refresh and unlocks visible completion controls', async ({ page }) => {
+  await page.route('**/api/xapi', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, stored: 1 }),
+    });
+  });
+  await asLearner(page);
+  await page.goto(BASE + '/session-01.html');
+
+  const next = page.locator('.session-nav__next');
+  await expect(next).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('.quiz__gate-notice')).toContainText('Your first attempt is saved');
+
+  const questionCount = await page.locator('.quiz__item').count();
+  expect(questionCount).toBe(4);
+  for (let i = 0; i < questionCount; i++) {
+    const options = page.locator('.quiz__item').nth(i).locator('.quiz__opt:not([disabled])');
+    await expect(options.first()).toBeVisible();
+    await options.first().click({ force: true });
+  }
+
+  await expect(next).not.toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('.quiz__summary')).toContainText('Attempt saved');
+  const storedAttempt = await page.evaluate(() => {
+    const key = Object.keys(localStorage).find((k) => k.startsWith('hb:quiz:session-01.html:s01-quiz'));
+    return key ? JSON.parse(localStorage.getItem(key)) : null;
+  });
+  expect(storedAttempt?.completed).toBe(true);
+  expect(Object.keys(storedAttempt?.selections || {})).toHaveLength(4);
+
+  await page.reload();
+  await expect(page.locator('.quiz__summary')).toContainText('Attempt saved');
+  await expect(next).not.toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('.quiz__opt[disabled]')).toHaveCount(16);
+
+  await page.getByRole('button', { name: /Mark this session complete/i }).click();
+  await expect(page.locator('[data-mark-done]').first()).toContainText(/Session complete/i);
+  const done = await page.evaluate(() => JSON.parse(localStorage.getItem('hb:done') || '[]'));
+  expect(done).toContain(1);
+});
+
+test('50c. Session 12 waits for queued xAPI before checking credential readiness', async ({ page }) => {
+  const calls = [];
+  await page.route('**/api/xapi', async (route) => {
+    calls.push('xapi-start');
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    calls.push('xapi-end');
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, stored: 12 }),
+    });
+  });
+  await page.route('**/api/completion-check?**', async (route) => {
+    calls.push('completion-check');
+    expect(calls).toContain('xapi-end');
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        complete: true,
+        count: 12,
+        sessions: Array.from({ length: 12 }, (_, i) => `session/s${i + 1}`),
+      }),
+    });
+  });
+
+  await page.addInitScript(() => {
+    localStorage.setItem('hb:learner_id', 'flush-test-learner');
+    localStorage.setItem('hb:xapi:queue', JSON.stringify(Array.from({ length: 12 }, (_, i) => ({
+      id: `queued-${i + 1}`,
+      actor: { objectType: 'Agent', account: { homePage: 'https://teachplay.dev/', name: 'flush-test-learner' } },
+      verb: { id: 'http://adlnet.gov/expapi/verbs/completed', display: { 'en-US': 'completed' } },
+      object: {
+        id: `https://teachplay.dev/activities/session/s${i + 1}`,
+        definition: { type: 'http://adlnet.gov/expapi/activities/session' },
+      },
+      timestamp: new Date().toISOString(),
+    }))));
+  });
+
+  await page.goto(BASE + '/session-12.html#claim-credential');
+  await expect(page.locator('#claim-ready')).toBeVisible({ timeout: 8000 });
+  await expect(page.locator('#claim-gate')).toBeHidden();
+  const completionIndex = calls.indexOf('completion-check');
+  expect(completionIndex).toBeGreaterThan(0);
+  expect(calls.slice(0, completionIndex)).toContain('xapi-end');
+});
+
 test('51. post-completion survey collects research-ready learner feedback', async ({ page }) => {
   await page.route('**/api/post-completion-survey', async (route) => {
     const body = route.request().postDataJSON();
