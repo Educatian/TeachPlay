@@ -238,16 +238,16 @@
     var body = shell(mount, {
       kicker: '06 · Minigame — 5 min',
       title: '90 seconds. Build the prototype.',
-      subtitle: 'A playtest starts in 90 seconds. Drag the parts you need onto the table. You can only fit seven. Miss a critical part and the playtest fails — but over-engineer and you run out of time.',
+      subtitle: 'A playtest starts in 90 seconds. Tap the parts you need to move them onto the table. You can only fit seven. Miss a critical part and the playtest fails — but over-engineer and you run out of time.',
       mgTitle: 'Paper prototype stress test',
-      hint: '90-sec timer · drag & drop'
+      hint: '90-sec timer · tap to add'
     });
 
     body.innerHTML =
-      '<p class="minigame__lede">Parts are below. Drag <strong>exactly seven</strong> onto the table before the timer runs out. Then click <em>Start playtest</em>. Each part is scored by whether it was essential for the test you were about to run.</p>' +
+      '<p class="minigame__lede">Parts are below. Tap <strong>exactly seven</strong> to move them onto the table before the timer runs out (tap a part on the table to send it back). Then click <em>Start playtest</em>. Each part is scored by whether it was essential for the test you were about to run.</p>' +
       '<div class="paper-proto">' +
         '<div class="paper-proto__bar"><div class="timer"><div class="timer__fill" id="s07-timer-fill"></div><div class="timer__label" id="s07-timer-label">90</div></div><div class="pp-count"><span id="s07-count">0</span> / 7 on table</div><button class="btn" id="s07-start" disabled>Start playtest</button></div>' +
-        '<div class="paper-proto__table" id="s07-table"><div class="pp-empty">Drag parts here</div></div>' +
+        '<div class="paper-proto__table" id="s07-table"><div class="pp-empty">Tap parts to add them here</div></div>' +
         '<div class="paper-proto__tray" id="s07-tray"></div>' +
         '<div class="pp-verdict" id="s07-verdict" style="display:none;"></div>' +
       '</div>';
@@ -498,6 +498,23 @@
         return;
       }
 
+      // The AI evaluator depends on the in-page `window.claude` bridge, which is
+      // only present in the authoring sandbox. On the live site it is absent, so
+      // degrade to the self-score path instead of surfacing a raw TypeError.
+      function showSelfScore() {
+        result.style.display = 'block';
+        result.innerHTML = '<div class="verdict-label">Self-score this round</div>' +
+          '<p>The AI evaluator is not available in this environment, so score yourself against the same rubric the committee uses. ' +
+          'For each question, did you give a <em>specific</em> behavior, <em>specific</em> evidence, and acknowledge a <em>specific</em> limit? ' +
+          'An answer that does all three is a 4–5; one that does two is a 3; aspiration without evidence is a 0–2.</p>' +
+          '<p class="defense-hint">Your answers stay on this page. You can revise them and re-score at any time.</p>';
+      }
+
+      if (!window.claude || typeof window.claude.complete !== 'function') {
+        showSelfScore();
+        return;
+      }
+
       result.style.display = 'block';
       result.innerHTML = '<div class="verdict-label">Evaluator thinking…</div><div class="defense-loading">Reading your defense…</div>';
 
@@ -527,9 +544,10 @@
         html += '</div>';
         result.innerHTML = html;
       } catch (err) {
-        result.innerHTML = '<div class="verdict-label">Evaluator unavailable</div><p>The AI evaluator did not return a usable response this time. You can still self-score: ' +
-          'for each question, did you give a <em>specific</em> behavior, <em>specific</em> evidence, and acknowledge a <em>specific</em> limit? Rerun submission to try again.</p>' +
-          '<p class="defense-error"><small>' + (err.message || err) + '</small></p>';
+        // Network drop, malformed JSON, or a missing bridge: log for diagnostics
+        // but degrade to the self-score path rather than surfacing a raw error.
+        if (window.console && console.warn) console.warn('S12 evaluator unavailable:', err);
+        showSelfScore();
       }
     });
   }

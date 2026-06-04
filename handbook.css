@@ -1212,6 +1212,26 @@ p strong { color: #111; font-weight: 600; }
   width: 100%;
 }
 .fill-line--tall { min-height: 56px; }
+/* Editable worksheet fields */
+.fill-line[contenteditable] {
+  cursor: text;
+  padding: 3px 4px;
+  border-radius: 3px 3px 0 0;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.fill-line[contenteditable]:hover { background: #f7f7f7; }
+.fill-line[contenteditable]:focus {
+  outline: none;
+  background: #fffef5;
+  border-bottom: 2px solid var(--crimson, #9E1B32);
+}
+.fill-line[contenteditable]:empty:before {
+  content: attr(data-placeholder);
+  color: #aaa;
+}
+@media print {
+  .fill-line[contenteditable]:focus { background: transparent; }
+}
 .tbl--compact td, .tbl--compact th { padding: 7px 10px; font-size: 13px; }
 .tbl--form td:first-child { width: 42%; font-size: 13px; color: var(--capstone-gray); }
 .tbl--form td:last-child { width: 58%; }

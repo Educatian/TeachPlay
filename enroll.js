@@ -16,6 +16,8 @@
     // Admin preview mode (set by admin-gate.js) browses sessions without
     // generating real telemetry. Short-circuit before the network call.
     try { if (localStorage.getItem('hb:admin') === '1') return; } catch (_) {}
+    // fire-and-forget telemetry — swallow rejection so a dropped network call
+    // never surfaces as an unhandled promise rejection in the learner's console.
     fetch('/api/xapi', {
       method: 'POST',
       headers: {
@@ -24,8 +26,7 @@
       },
       body: JSON.stringify(payload),
       keepalive: true,
-    });
-    // fire-and-forget — intentionally no await / .catch
+    }).catch(function () {});
   }
 
   // Derive "s01", "s02", … from the current pathname, or null if not a session page.
