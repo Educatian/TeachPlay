@@ -6,19 +6,12 @@
  * not, the failure is library compatibility, not Worker setup.
  */
 export async function handleHealth(request, env, ctx) {
+  // Public, unauthenticated liveness check. Intentionally discloses nothing
+  // about secret configuration or the request's edge location.
   const body = {
     ok: true,
     runtime: 'cloudflare-workers',
     time: new Date().toISOString(),
-    // Surfaces whether the secret landed, without echoing its value.
-    env: {
-      ISSUER_PRIVATE_KEY_JSON: env.ISSUER_PRIVATE_KEY_JSON ? 'set' : 'missing',
-    },
-    url: request.url,
-    cf: {
-      colo: request.cf?.colo || null,
-      country: request.cf?.country || null,
-    },
   };
   return new Response(JSON.stringify(body, null, 2), {
     headers: {

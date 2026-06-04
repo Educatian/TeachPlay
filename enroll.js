@@ -23,6 +23,7 @@
       headers: {
         'Content-Type': 'application/json',
         'X-Learner-ID': payload.learner_id || localStorage.getItem(LEARNER_KEY) || '',
+        'X-Learner-Token': localStorage.getItem('hb:learner_token') || '',
       },
       body: JSON.stringify(payload),
       keepalive: true,
@@ -147,7 +148,7 @@
     ].join(';');
 
     overlay.innerHTML = [
-      '<div style="',
+      '<div id="hb-enroll-dialog" role="dialog" aria-modal="true" aria-labelledby="hb-enroll-title" style="',
         'background:#fff;',
         'border-radius:10px;',
         'box-shadow:0 8px 40px rgba(0,0,0,0.28);',
@@ -166,7 +167,7 @@
         '"></div>',
 
         // Title
-        '<h2 style="',
+        '<h2 id="hb-enroll-title" style="',
           'margin:0 0 8px;',
           'font-size:1.25rem;',
           'font-weight:700;',
@@ -254,14 +255,30 @@
 
     document.body.appendChild(overlay);
 
-    // Focus first field
     var nameInput = document.getElementById('hb-enroll-name');
-    if (nameInput) setTimeout(function () { nameInput.focus(); }, 50);
+    var panel = document.getElementById('hb-enroll-dialog');
+
+    // Trap focus inside the dialog, move focus to the first field, and restore
+    // focus to the trigger on close (WCAG 2.4.3 / 2.1.2 / 4.1.2). Falls back to
+    // a plain focus if the trap helper hasn't loaded.
+    var releaseTrap = (window.hbFocusTrap && panel)
+      ? window.hbFocusTrap.trap(panel, { onEscape: close, initialFocus: nameInput })
+      : (function () { if (nameInput) setTimeout(function () { nameInput.focus(); }, 50); return function () {}; })();
+
+    function close() {
+      releaseTrap();
+      removeModal(overlay);
+    }
+
+    // Close on backdrop click (outside the dialog panel only).
+    overlay.addEventListener('mousedown', function (e) {
+      if (e.target === overlay) close();
+    });
 
     // Skip link
     document.getElementById('hb-enroll-skip').addEventListener('click', function (e) {
       e.preventDefault();
-      removeModal(overlay);
+      close();
     });
 
     // Hover effect on button
@@ -273,19 +290,34 @@
     document.getElementById('hb-enroll-form').addEventListener('submit', function (e) {
       e.preventDefault();
 
-      var name  = (document.getElementById('hb-enroll-name').value  || '').trim();
-      var email = (document.getElementById('hb-enroll-email').value || '').trim();
+      var nameEl  = document.getElementById('hb-enroll-name');
+      var emailEl = document.getElementById('hb-enroll-email');
+      var name  = (nameEl.value  || '').trim();
+      var email = (emailEl.value || '').trim();
       var errorEl = document.getElementById('hb-enroll-error');
 
-      function showError(msg) {
+      // Clear any prior invalid state before re-validating.
+      [nameEl, emailEl].forEach(function (f) {
+        f.removeAttribute('aria-invalid');
+        f.removeAttribute('aria-describedby');
+      });
+
+      function showError(msg, field) {
         errorEl.textContent = msg;
         errorEl.style.display = 'block';
+        if (field) {
+          // Tie the field to the error message and move focus to it so screen
+          // readers announce the problem and the user lands on the bad input.
+          field.setAttribute('aria-invalid', 'true');
+          field.setAttribute('aria-describedby', 'hb-enroll-error');
+          field.focus();
+        }
       }
 
-      if (!name)  { showError('Please enter your full name.'); return; }
-      if (!email) { showError('Please enter your email address.'); return; }
+      if (!name)  { showError('Please enter your full name.', nameEl); return; }
+      if (!email) { showError('Please enter your email address.', emailEl); return; }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showError('Please enter a valid email address.');
+        showError('Please enter a valid email address.', emailEl);
         return;
       }
 
@@ -312,7 +344,8 @@
           localStorage.setItem(LEARNER_KEY, learnerId);
           localStorage.setItem('hb:learner_name', name);
           localStorage.setItem('hb:learner_email', email.toLowerCase());
-          removeModal(overlay);
+          if (data.session_token) localStorage.setItem('hb:learner_token', data.session_token);
+          close();
           startTracking(learnerId);
         })
         .catch(function (err) {
@@ -369,10 +402,15 @@
     if (!enrolled) {
       cta.textContent = 'Register \u2192';
       cta.setAttribute('href', '#');
-      cta.addEventListener('click', function (e) {
-        e.preventDefault();
-        showModal();
-      });
+      // wirePrimaryCta re-runs on every hb:progress-updated; attach the click
+      // handler only once so repeated calls don't stack duplicate listeners.
+      if (!cta.dataset.enrollWired) {
+        cta.dataset.enrollWired = '1';
+        cta.addEventListener('click', function (e) {
+          e.preventDefault();
+          showModal();
+        });
+      }
       return;
     }
 

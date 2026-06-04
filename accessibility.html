@@ -129,10 +129,11 @@
   <div class="a11y-section">
     <p>
       The site targets <strong>WCAG 2.1 Level AA</strong>. That means meaningful image
-      alt text, captioned video, color-contrast ratios above 4.5:1 for body text, all
-      functionality available via keyboard, no reliance on color alone, and no content
-      that could induce seizures. We do not yet claim full conformance. The known gaps
-      below describe where we fall short and what we plan to fix.
+      alt text, captioned video, color-contrast ratios above 4.5:1 for body text,
+      keyboard operability for core navigation and content, no reliance on color alone,
+      and no content that could induce seizures. We do not yet claim full conformance:
+      a few interactive minigames are still being brought to full keyboard support (see
+      below). The known gaps below describe where we fall short and what we plan to fix.
     </p>
   </div>
 
@@ -144,10 +145,12 @@
   </div>
 
   <div class="a11y-section">
-    <h3><span class="a11y-status a11y-status--ok">Conforms</span>Keyboard navigation</h3>
-    <p>The primary nav, search dropdown (↑↓ + Enter + Esc), Spot the Loop choices,
-       lightbox close (Esc), Note drawer Save/Cancel (Cmd/Ctrl + Enter, Esc), and the
-       achievements panel are all reachable and operable from the keyboard.</p>
+    <h3><span class="a11y-status a11y-status--partial">Partial</span>Keyboard navigation</h3>
+    <p>The primary nav, search dropdown (↑↓ + Enter + Esc), lightbox close (Esc), Note
+       drawer Save/Cancel (Cmd/Ctrl + Enter, Esc), and the achievements panel are all
+       reachable and operable from the keyboard. Two interactive minigames (the
+       Session 7 paper-prototype and Session 11 revision-triage activities) are
+       currently mouse-only; full keyboard support for them is in progress.</p>
   </div>
 
   <div class="a11y-section">
@@ -171,12 +174,11 @@
   </div>
 
   <div class="a11y-section">
-    <h3><span class="a11y-status a11y-status--partial">Partial</span>Modal focus management</h3>
+    <h3><span class="a11y-status a11y-status--ok">Conforms</span>Modal focus management</h3>
     <p>The lightbox, note drawer, and achievements panel each <em>open</em> with focus
-       moved into them and <em>close</em> by returning focus to the trigger element. We
-       do not yet implement full focus-trap (where Tab cycles within the modal); a
-       motivated keyboard user can Tab past the modal into the underlying page. Tracked
-       as a known issue.</p>
+       moved into them, <em>trap</em> focus so Tab cycles within the modal, and
+       <em>close</em> by returning focus to the trigger element. The enrollment modal's
+       focus management is being brought up to the same standard.</p>
   </div>
 
   <div class="a11y-section">

@@ -188,10 +188,14 @@ const Quiz = (() => {
 
       optionsEl.appendChild(btn);
 
-      // per-option feedback div (hidden until this option is chosen)
+      // per-option feedback div (hidden until this option is chosen).
+      // aria-live: empty + in-DOM at build time, so revealing it on answer
+      // is announced politely to screen readers (WCAG 4.1.3 status messages).
       const fbEl = document.createElement('div');
       fbEl.className = 'quiz__feedback';
       fbEl.setAttribute('data-fb', String(i));
+      fbEl.setAttribute('aria-live', 'polite');
+      fbEl.setAttribute('aria-atomic', 'true');
       fbEl.innerHTML = (feedback && feedback[i]) ? feedback[i] : '';
       optionsEl.appendChild(fbEl);
     });
@@ -306,6 +310,11 @@ const Quiz = (() => {
 
     const summaryEl = document.createElement('div');
     summaryEl.className = 'quiz__summary';
+    // aria-live: this element persists in the DOM and only its text changes
+    // on each answer, so screen readers announce progress/score updates
+    // politely (WCAG 4.1.3 status messages).
+    summaryEl.setAttribute('aria-live', 'polite');
+    summaryEl.setAttribute('aria-atomic', 'true');
 
     // gate: 'attempt' — lock next-nav and mark-done until all answered
     var gatedEls = [];

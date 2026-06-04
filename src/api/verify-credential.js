@@ -13,12 +13,24 @@ import { DataIntegrityProof } from '@digitalbazaar/data-integrity';
 import * as vc from '@digitalbazaar/vc';
 import { contexts as vcContexts } from '@digitalbazaar/credentials-context';
 import { decodeBitstring, getBit } from '../lib/status-list.js';
+import { getClientIp, rateLimit } from '../lib/security.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body, null, 2), {
     status,
     headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
   });
+}
+
+// Only our own origin may be fetched for a status list. Without this, the
+// attacker-supplied `statusListCredential` URL turns the verifier into an
+// SSRF egress to arbitrary hosts.
+function isAllowedFetchUrl(u) {
+  try {
+    const url = new URL(u);
+    return url.protocol === 'https:' &&
+      (url.hostname === 'teachplay.dev' || url.hostname === 'www.teachplay.dev');
+  } catch { return false; }
 }
 
 const DID_DOC = {
@@ -43,9 +55,10 @@ const documentLoader = async (url) => {
   if (url === 'did:web:teachplay.dev' || url.startsWith('did:web:teachplay.dev#')) {
     return { documentUrl: url, document: DID_DOC, contextUrl: null };
   }
-  const res = await fetch(url, { headers: { accept: 'application/ld+json, application/json' } });
-  if (!res.ok) throw new Error(`documentLoader: ${url} → HTTP ${res.status}`);
-  return { documentUrl: url, document: await res.json(), contextUrl: null };
+  // All teachplay-issued credentials embed their @context locally and resolve
+  // their issuer via the did:web above. Refuse to dereference any other URL so
+  // a crafted credential can't drive the Worker to fetch arbitrary hosts.
+  throw new Error(`documentLoader: refusing to fetch external resource ${url}`);
 };
 
 async function checkStatus(credential) {
@@ -55,6 +68,9 @@ async function checkStatus(credential) {
   const index = parseInt(cs.statusListIndex, 10);
   if (!listUrl || !Number.isFinite(index)) {
     return { checked: false, reason: 'Malformed credentialStatus' };
+  }
+  if (!isAllowedFetchUrl(listUrl)) {
+    return { checked: false, reason: 'Status list URL is not on an allowed host' };
   }
   try {
     const res = await fetch(listUrl, { headers: { accept: 'application/json' } });
@@ -72,6 +88,11 @@ async function checkStatus(credential) {
 
 export async function handleVerifyCredential(request, env) {
   if (request.method !== 'POST') return json({ error: 'POST required' }, 405);
+
+  // Each call runs Ed25519 verify + RDFC canonicalization — cap per IP so it
+  // can't be used for unauthenticated CPU amplification.
+  const limit = await rateLimit(env, 'verify', getClientIp(request), 30, 60);
+  if (!limit.ok) return json({ error: 'Too many requests' }, 429);
 
   let credential;
   try { credential = await request.json(); }

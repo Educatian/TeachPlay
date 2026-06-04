@@ -396,14 +396,16 @@ test('35. handbook.html renders citations as clickable hb-cite spans', async ({ 
   expect(href).toContain('references.html');
 });
 
-test('31. achievements list grew to 12 with handbook + search + Spot the Loop', async ({ page }) => {
+test('31. achievements list includes handbook + search badges', async ({ page }) => {
   await page.goto(BASE + '/handbook.html');
   // Public API exposes the full list
   const ids = await page.evaluate(() => window.hbAchievements.all().map(a => a.id));
   expect(ids).toContain('first_search');
   expect(ids).toContain('handbook_reader');
-  expect(ids).toContain('spot_the_loop');
-  expect(ids.length).toBeGreaterThanOrEqual(12);
+  // 'spot_the_loop' was removed — its trigger markup never shipped on the live
+  // React homepage, so the badge could never unlock.
+  expect(ids).not.toContain('spot_the_loop');
+  expect(ids.length).toBeGreaterThanOrEqual(11);
 });
 
 test('32. opening handbook.html unlocks the handbook_reader achievement', async ({ page }) => {

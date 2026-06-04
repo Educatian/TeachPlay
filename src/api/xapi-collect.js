@@ -9,6 +9,8 @@
  * and sends the instructor a notification email if so (one-time, via Resend).
  */
 
+import { escapeHtml, getClientIp, rateLimit, learnerTokenDecision } from '../lib/security.js';
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body, null, 2), {
     status,
@@ -59,7 +61,7 @@ async function checkAndNotifyCompletion(env, learner_id) {
     if (!env.RESEND_API_KEY || !env.INSTRUCTOR_EMAIL) return;
 
     const html = `<p>Hi,</p>
-<p><strong>${learner.name}</strong> (${learner.email}) has completed all 12 sessions of the
+<p><strong>${escapeHtml(learner.name)}</strong> (${escapeHtml(learner.email)}) has completed all 12 sessions of the
 AI-enhanced Educational Game Design microcredential.</p>
 <p>Log in to <a href="https://teachplay.dev/admin.html">admin.html</a> to review and issue their credential.</p>`;
 
@@ -83,6 +85,10 @@ AI-enhanced Educational Game Design microcredential.</p>
 export async function handleXapiCollect(request, env) {
   if (request.method !== 'POST') return json({ error: 'Method Not Allowed' }, 405);
 
+  // Generous per-IP cap (telemetry is chatty: heartbeats + section views).
+  const limit = await rateLimit(env, 'xapi', getClientIp(request), 240, 60);
+  if (!limit.ok) return json({ error: 'Too many requests' }, 429);
+
   let body;
   try { body = await request.json(); }
   catch { return json({ error: 'Invalid JSON body' }, 400); }
@@ -100,8 +106,19 @@ export async function handleXapiCollect(request, env) {
   }
 
   const db = env.DB;
-  const learnerRow = await db.prepare('SELECT id FROM learners WHERE id = ?').bind(learner_id).first();
+  const learnerRow = await db.prepare('SELECT id, session_token FROM learners WHERE id = ?').bind(learner_id).first();
   if (!learnerRow) return json({ error: 'Learner not found' }, 403);
+
+  // A known learner_id is no longer enough — require the per-learner token so
+  // it can't be replayed to forge another learner's completion telemetry.
+  // Legacy rows (no token yet) bind the first token they present (TOFU).
+  const providedToken = request.headers.get('x-learner-token') || '';
+  const decision = learnerTokenDecision(learnerRow.session_token, providedToken);
+  if (decision === 'reject') return json({ error: 'Invalid session token' }, 403);
+  if (decision === 'bind') {
+    await db.prepare('UPDATE learners SET session_token = ? WHERE id = ? AND session_token IS NULL')
+      .bind(providedToken, learner_id).run();
+  }
 
   const statements = rawStatements.map(stmt => {
     const isFull = stmt && typeof stmt === 'object' &&

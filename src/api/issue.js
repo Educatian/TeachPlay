@@ -53,12 +53,9 @@ export async function handleIssue(request, env, ctx) {
     const { signed, statusIndex } = await issueCredential(parsed.value, env, request.url);
     return json({ ok: true, signed, statusIndex });
   } catch (e) {
-    return json({
-      ok: false,
-      error: 'issueCredential failed',
-      name: e.name,
-      message: e.message,
-      stack: e.stack?.split('\n').slice(0, 8).join('\n'),
-    }, 500);
+    // Log full detail server-side; return a generic error to the caller so the
+    // stack / library internals aren't disclosed.
+    console.error('issueCredential failed', e);
+    return json({ ok: false, error: 'Credential issuance failed.' }, 500);
   }
 }

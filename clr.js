@@ -64,7 +64,10 @@
   function achievementsForDeliverables(statements) {
     // One Achievement per deliverable the learner has evidence for.
     const byDeliv = groupBy(
-      statements.filter(s => s.object && s.object.id && s.object.id.includes('/deliverable/')),
+      statements.filter(s => {
+        if (!(s.object && s.object.id && s.object.id.includes('/deliverable/'))) return false;
+        return /deliverable\/([^/?#]+)/.test(s.object.id);
+      }),
       s => s.object.id.match(/deliverable\/([^/?#]+)/)[1]
     );
     const achievements = [];

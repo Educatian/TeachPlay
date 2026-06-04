@@ -148,7 +148,8 @@
         method: 'POST',
         headers: Object.assign(
           { 'Content-Type': 'application/json', 'X-Experience-API-Version': '1.0.3',
-            'X-Learner-ID': localStorage.getItem('hb:learner_id') || '' },
+            'X-Learner-ID': localStorage.getItem('hb:learner_id') || '',
+            'X-Learner-Token': localStorage.getItem('hb:learner_token') || '' },
           CONFIG.authHeader ? { Authorization: CONFIG.authHeader } : {},
         ),
         body: JSON.stringify(q),

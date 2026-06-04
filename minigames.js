@@ -13,6 +13,19 @@
     return e;
   }
 
+  // Make a non-button element behave like a button for keyboard users:
+  // click + Enter/Space both fire the handler. Used for rich cards that
+  // can't be a real <button> without nesting block content illegally.
+  function onActivate(node, fn) {
+    node.addEventListener('click', fn);
+    node.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        fn(e);
+      }
+    });
+  }
+
   function shell(mount, opts) {
     // Build the classic .minigame shell and return the body element.
     var sec = el('section', 'block');
@@ -49,8 +62,8 @@
     body.innerHTML =
       '<p class="minigame__lede">A <strong>persona</strong> names specific, observable traits (context, prior knowledge, constraints). A <strong>stereotype</strong> asserts a group trait as given. An <strong>unfalsifiable</strong> claim cannot be checked by any evidence.</p>' +
       '<div class="classifier" id="s02-classifier"></div>' +
-      '<div class="minigame__score" id="s02-score" style="display:none;"><span class="score-label">Score</span><span class="score-value"><span id="s02-correct">0</span> / <span id="s02-total">0</span></span><span class="score-note" id="s02-note"></span></div>' +
-      '<div class="minigame__verdict" id="s02-verdict" style="display:none;"><div class="verdict-label">Takeaway</div><div class="verdict-body" id="s02-verdict-body"></div></div>';
+      '<div class="minigame__score" id="s02-score" style="display:none;" aria-live="polite" aria-atomic="true"><span class="score-label">Score</span><span class="score-value"><span id="s02-correct">0</span> / <span id="s02-total">0</span></span><span class="score-note" id="s02-note"></span></div>' +
+      '<div class="minigame__verdict" id="s02-verdict" style="display:none;" aria-live="polite"><div class="verdict-label">Takeaway</div><div class="verdict-body" id="s02-verdict-body"></div></div>';
 
     var ITEMS = [
       { prompt: '“Gen-Z learners have short attention spans and prefer TikTok-style content.”', answer: 'stereotype', why: 'A group trait assigned by age cohort, with no source or observable behavior. Design from stereotypes and you design for no one.' },
@@ -137,8 +150,8 @@
           '<div class="dial"><label>Stakes<output id="s05-v-stakes">High</output></label><input type="range" id="s05-stakes" min="0" max="2" step="1" value="2"/><div class="dial-scale"><span>Low</span><span>High</span></div></div>' +
         '</div>' +
         '<div class="loop-tuner__viz">' +
-          '<div class="loop-chart"><canvas id="s05-chart" width="420" height="200"></canvas></div>' +
-          '<div class="loop-tuner__readout"><div class="readout-label">Final mastery</div><div class="readout-value" id="s05-mastery">—</div><div class="readout-verdict" id="s05-verdict">Move the dials.</div></div>' +
+          '<div class="loop-chart"><canvas id="s05-chart" width="420" height="200" role="img" aria-label="Learning-curve chart. Adjust the dials to update."></canvas></div>' +
+          '<div class="loop-tuner__readout" aria-live="polite"><div class="readout-label">Final mastery</div><div class="readout-value" id="s05-mastery">—</div><div class="readout-verdict" id="s05-verdict">Move the dials.</div></div>' +
         '</div>' +
       '</div>';
 
@@ -227,6 +240,11 @@
       else if (final < 85) v = '<strong>Good loop.</strong> Immediate + diagnostic + moderate stakes. This is the zone where feedback actually teaches.';
       else v = '<strong>Tight loop.</strong> Your design now has the ingredients. Next: make sure the feedback is legible <em>during</em> play, not buried in a post-round screen.';
       verdictEl.innerHTML = v;
+      // Keep the canvas's accessible name in sync with the simulated result so
+      // screen-reader users get the trajectory summary the chart conveys visually.
+      canvas.setAttribute('aria-label',
+        'Learning-curve chart. Delay ' + vDelay.textContent + ', specificity ' + vSpec.textContent +
+        ', stakes ' + vStakes.textContent + '. Final mastery after 12 attempts: ' + Math.round(final) + '%.');
     }
 
     [delay, spec, stakes].forEach(function(r) { r.addEventListener('input', draw); });
@@ -246,10 +264,10 @@
     body.innerHTML =
       '<p class="minigame__lede">Parts are below. Tap <strong>exactly seven</strong> to move them onto the table before the timer runs out (tap a part on the table to send it back). Then click <em>Start playtest</em>. Each part is scored by whether it was essential for the test you were about to run.</p>' +
       '<div class="paper-proto">' +
-        '<div class="paper-proto__bar"><div class="timer"><div class="timer__fill" id="s07-timer-fill"></div><div class="timer__label" id="s07-timer-label">90</div></div><div class="pp-count"><span id="s07-count">0</span> / 7 on table</div><button class="btn" id="s07-start" disabled>Start playtest</button></div>' +
-        '<div class="paper-proto__table" id="s07-table"><div class="pp-empty">Tap parts to add them here</div></div>' +
-        '<div class="paper-proto__tray" id="s07-tray"></div>' +
-        '<div class="pp-verdict" id="s07-verdict" style="display:none;"></div>' +
+        '<div class="paper-proto__bar"><div class="timer" role="timer" aria-label="Time remaining to build the prototype"><div class="timer__fill" id="s07-timer-fill"></div><div class="timer__label" id="s07-timer-label">90</div></div><div class="pp-count" aria-live="polite" aria-atomic="true"><span id="s07-count">0</span> / 7 on table</div><button class="btn" id="s07-start" disabled>Start playtest</button></div>' +
+        '<div class="paper-proto__table" id="s07-table" role="group" aria-label="Table — parts you have selected"><div class="pp-empty">Tap parts to add them here</div></div>' +
+        '<div class="paper-proto__tray" id="s07-tray" role="group" aria-label="Available parts"></div>' +
+        '<div class="pp-verdict" id="s07-verdict" style="display:none;" aria-live="polite"></div>' +
       '</div>';
 
     var PARTS = [
@@ -281,9 +299,13 @@
     var verdictEl = document.getElementById('s07-verdict');
 
     PARTS.forEach(function(p) {
-      var t = el('div', 'pp-part');
+      // Real <button> so the part is keyboard-operable (Tab + Enter/Space) and
+      // exposed to assistive tech as a toggle. aria-pressed tracks on-table state.
+      var t = el('button', 'pp-part');
+      t.type = 'button';
       t.dataset.id = p.id;
       t.textContent = p.label;
+      t.setAttribute('aria-pressed', 'false');
       t.addEventListener('click', function() { togglePart(p.id, t); });
       tray.appendChild(t);
     });
@@ -294,11 +316,13 @@
       if (onTable.has(id)) {
         onTable.delete(id);
         node.classList.remove('is-on-table');
+        node.setAttribute('aria-pressed', 'false');
         tray.appendChild(node);
       } else {
         if (onTable.size >= 7) return;
         onTable.add(id);
         node.classList.add('is-on-table');
+        node.setAttribute('aria-pressed', 'true');
         if (emptyMsg.parentNode) emptyMsg.remove();
         table.appendChild(node);
       }
@@ -358,7 +382,7 @@
       '<div class="revision-triage">' +
         '<div class="rt-col rt-col--backlog"><div class="rt-col__head">Backlog · <span id="s11-backlog-count">12</span></div><div class="rt-list" id="s11-backlog"></div></div>' +
         '<div class="rt-col rt-col--keep"><div class="rt-col__head">Next sprint · <span id="s11-keep-count">0</span> / 4</div><div class="rt-list" id="s11-keep"></div></div>' +
-        '<div class="rt-col rt-col--consequences"><div class="rt-col__head">Consequences of cuts</div><div class="rt-cons" id="s11-cons"><em>Start choosing to see tradeoffs.</em></div></div>' +
+        '<div class="rt-col rt-col--consequences"><div class="rt-col__head">Consequences of cuts</div><div class="rt-cons" id="s11-cons" aria-live="polite"><em>Start choosing to see tradeoffs.</em></div></div>' +
       '</div>';
 
     var ITEMS = [
@@ -392,6 +416,13 @@
 
       ITEMS.forEach(function(it) {
         var card = el('div', 'rt-card' + (it._keep ? ' is-keep' : ''));
+        // Keyboard-operable toggle: role=button + tabindex, aria-pressed tracks
+        // whether the item is in the Next-sprint column. The label/state are
+        // surfaced via an accessible name so AT users hear what they're toggling.
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-pressed', it._keep ? 'true' : 'false');
+        card.setAttribute('aria-label', it.label + ' — ' + it.tag + (it._keep ? '. In next sprint.' : '. In backlog.'));
         card.innerHTML =
           '<div class="rt-card__tag">' + it.tag + '</div>' +
           '<div class="rt-card__label">' + it.label + '</div>' +
@@ -400,7 +431,7 @@
             bar('Equity', it.impact.equity) +
             bar('Ship', it.impact.shipability) +
           '</div>';
-        card.addEventListener('click', function() {
+        onActivate(card, function() {
           if (it._keep) { it._keep = false; render(); return; }
           if (keepIds.size >= 4) return;
           it._keep = true; render();
@@ -468,7 +499,7 @@
       '<div class="defense-room">' +
         '<div id="s12-questions"></div>' +
         '<div class="defense-actions"><button class="btn" id="s12-submit">Submit for evaluation</button><span class="defense-hint">Answers stay on this page; no data leaves the session.</span></div>' +
-        '<div class="defense-result" id="s12-result" style="display:none;"></div>' +
+        '<div class="defense-result" id="s12-result" style="display:none;" aria-live="polite"></div>' +
       '</div>';
 
     var QUESTIONS = [
@@ -483,7 +514,7 @@
     QUESTIONS.forEach(function(q, i) {
       var block = el('div', 'defense-q');
       block.innerHTML =
-        '<label class="defense-q__label"><span class="defense-q__num">' + (i+1) + '</span>' + q.prompt + '</label>' +
+        '<label class="defense-q__label" for="'+q.id+'"><span class="defense-q__num">' + (i+1) + '</span>' + q.prompt + '</label>' +
         '<textarea class="defense-q__input" id="'+q.id+'" rows="3" placeholder="Type your answer..."></textarea>';
       host.appendChild(block);
     });

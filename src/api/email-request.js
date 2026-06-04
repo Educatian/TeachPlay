@@ -9,6 +9,7 @@
  */
 
 import { sendEmail } from '../lib/email.js';
+import { escapeHtml, getClientIp, rateLimit } from '../lib/security.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -23,7 +24,7 @@ async function sendRequestAckEmail(env, { to, name }) {
   const html = `
   <h1 style="font-size:22px;margin:0 0 16px;line-height:1.3;">Request received.</h1>
   <p style="font-size:16px;line-height:1.6;margin:0 0 16px;color:#333;">
-    Hi ${name}, we've received your request for the
+    Hi ${escapeHtml(name)}, we've received your request for the
     <strong>AI-enhanced Educational Game Design</strong> microcredential.
   </p>
   <p style="font-size:15px;line-height:1.6;margin:0 0 16px;color:#555;">
@@ -38,6 +39,9 @@ async function sendRequestAckEmail(env, { to, name }) {
 
 export async function handleEmailRequest(request, env) {
   if (request.method !== 'POST') return json({ error: 'POST required' }, 405);
+
+  const limit = await rateLimit(env, 'email-request', getClientIp(request), 10, 3600);
+  if (!limit.ok) return json({ error: 'Too many requests. Please try again later.' }, 429);
 
   let body;
   try { body = await request.json(); }

@@ -13,10 +13,11 @@
  */
 import { sha256Hex } from '../lib/issue.js';
 import { sendEmail } from '../lib/email.js';
+import { escapeHtml, randomToken, getClientIp, rateLimit } from '../lib/security.js';
 
 async function sendWelcomeEmail(env, { to, name }) {
   const html = `
-  <h1 style="font-size:24px;margin:0 0 16px;line-height:1.3;">Welcome, ${name}.</h1>
+  <h1 style="font-size:24px;margin:0 0 16px;line-height:1.3;">Welcome, ${escapeHtml(name)}.</h1>
   <p style="font-size:16px;line-height:1.6;margin:0 0 20px;color:#333;">
     You are enrolled in <strong>AI-enhanced Educational Game Design</strong>, a
     twelve-session microcredential from the University of Alabama College of
@@ -58,6 +59,11 @@ export async function handleEnroll(request, env) {
     return json({ error: 'Method Not Allowed' }, 405);
   }
 
+  // Abuse control: cap enrolments per IP so the welcome-email path can't be
+  // used to spam arbitrary addresses from our domain.
+  const limit = await rateLimit(env, 'enroll', getClientIp(request), 20, 3600);
+  if (!limit.ok) return json({ error: 'Too many requests. Please try again later.' }, 429);
+
   let body;
   try { body = await request.json(); }
   catch { return json({ error: 'Invalid JSON body' }, 400); }
@@ -83,16 +89,17 @@ export async function handleEnroll(request, env) {
 
   const email_hash = await sha256Hex(cohort + email);
   const id = crypto.randomUUID();
+  const token = randomToken();
 
   try {
     const db = env.DB;
 
     const insertResult = await db
       .prepare(
-        `INSERT OR IGNORE INTO learners (id, email, email_hash, name, cohort, enrolled_at)
-         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
+        `INSERT OR IGNORE INTO learners (id, email, email_hash, name, cohort, enrolled_at, session_token)
+         VALUES (?, ?, ?, ?, ?, datetime('now'), ?)`,
       )
-      .bind(id, email, email_hash, name, cohort)
+      .bind(id, email, email_hash, name, cohort, token)
       .run();
 
     // meta.changes === 1 → row actually inserted (first-time enrolment).
@@ -100,9 +107,9 @@ export async function handleEnroll(request, env) {
     // (e.g. re-registration from another device) don't spam the user.
     const isNewEnrollment = insertResult?.meta?.changes === 1;
 
-    const row = await db
+    let row = await db
       .prepare(
-        `SELECT id, name, cohort, enrolled_at, cred_status
+        `SELECT id, name, cohort, enrolled_at, cred_status, session_token
          FROM learners WHERE email = ?`,
       )
       .bind(email)
@@ -112,6 +119,14 @@ export async function handleEnroll(request, env) {
       return json({ error: 'Enrolment failed: learner not found after insert' }, 500);
     }
 
+    // Legacy row enrolled before tokens existed: bind one now so this device
+    // (and the returning learner) gets an authenticated session.
+    if (!row.session_token) {
+      await db.prepare('UPDATE learners SET session_token = ? WHERE id = ? AND session_token IS NULL')
+        .bind(token, row.id).run();
+      row = { ...row, session_token: token };
+    }
+
     if (isNewEnrollment) {
       sendWelcomeEmail(env, { to: email, name: row.name });
     }
@@ -119,11 +134,14 @@ export async function handleEnroll(request, env) {
     return json({
       ok: true,
       learner_id: row.id,
+      session_token: row.session_token,
       name: row.name,
       cohort: row.cohort,
       cred_status: row.cred_status,
     });
   } catch (e) {
-    return json({ ok: false, error: 'Database error', message: e.message }, 500);
+    // Log server-side; don't leak DB internals to the client.
+    console.error('enroll error', e);
+    return json({ ok: false, error: 'Enrolment failed. Please try again.' }, 500);
   }
 }

@@ -95,6 +95,18 @@
     'Mechanics I','Mechanics II','Facilitator design','Paper prototyping',
     'Interaction spec','Playtest design','Audit','Revision studio','Final presentations'];
 
+  // Recovery link from the "resume progress" email: ?lid=<id>&t=<token>.
+  // Re-seed this device's session, then strip the params from the URL.
+  try {
+    var qp = new URLSearchParams(location.search);
+    var lid = qp.get('lid'), tok = qp.get('t');
+    if (lid) {
+      localStorage.setItem('hb:learner_id', lid);
+      if (tok) localStorage.setItem('hb:learner_token', tok);
+      history.replaceState(null, '', location.pathname);
+    }
+  } catch (e) {}
+
   var learnerId = localStorage.getItem('hb:learner_id');
 
   if (learnerId) {
@@ -118,12 +130,24 @@
     try {
       var res, data;
       if (method === 'GET') {
-        res  = await fetch('/api/progress?learner_id=' + encodeURIComponent(id));
+        res  = await fetch('/api/progress?learner_id=' + encodeURIComponent(id), {
+          headers: { 'X-Learner-Token': localStorage.getItem('hb:learner_token') || '' },
+        });
         data = await res.json();
       } else {
         res  = await fetch('/api/progress', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email }) });
         data = await res.json();
-        if (res.ok && data.ok) localStorage.setItem('hb:learner_id', data.learner.id);
+        // Recovery is intentionally email-only (no profile data is returned by
+        // email, to prevent enumeration). Show the generic confirmation.
+        if (res.ok && data.recovery) {
+          var note = document.getElementById('lookup-error');
+          note.style.color = '#1a7f37';
+          note.textContent = data.message || 'Check your email for a link to resume your progress.';
+          note.style.display = '';
+          document.getElementById('lookup-btn').disabled = false;
+          document.getElementById('lookup-btn').textContent = 'Look up my progress →';
+          return;
+        }
       }
 
       if (!res.ok || !data.ok) {
@@ -147,7 +171,11 @@
     document.getElementById('lookup-section').style.display = 'none';
     document.getElementById('progress-section').style.display = '';
 
-    var doneSessions = new Set((data.completion.sessions || []).map(function (s) {
+    var completion = data.completion || {};
+    var quiz = data.quiz || {};
+    var learner = data.learner || {};
+
+    var doneSessions = new Set((completion.sessions || []).map(function (s) {
       var m = s.match(/s(\d+)$/);
       return m ? parseInt(m[1], 10) : null;
     }).filter(Boolean));
@@ -163,24 +191,24 @@
       grid.appendChild(cell);
     }
     document.getElementById('session-label').textContent =
-      data.completion.count + ' of 12 sessions completed' +
-      (data.completion.complete ? ' — all done!' : '');
+      completion.count + ' of 12 sessions completed' +
+      (completion.complete ? ' — all done!' : '');
 
     // Stats
-    document.getElementById('stat-sessions').textContent = data.completion.count + '/12';
-    var qPct = data.quiz.attempts > 0 ? Math.round((data.quiz.correct / data.quiz.attempts) * 100) + '%' : '—';
+    document.getElementById('stat-sessions').textContent = completion.count + '/12';
+    var qPct = quiz.attempts > 0 ? Math.round((quiz.correct / quiz.attempts) * 100) + '%' : '—';
     document.getElementById('stat-quiz').textContent = qPct;
-    var days = data.learner.enrolled_at
-      ? Math.floor((Date.now() - new Date(data.learner.enrolled_at).getTime()) / 86400000)
+    var days = learner.enrolled_at
+      ? Math.floor((Date.now() - new Date(learner.enrolled_at).getTime()) / 86400000)
       : '—';
     document.getElementById('stat-enrolled').textContent = days;
 
     // Credential status
     var banner = document.getElementById('cred-banner');
-    var status = data.learner.cred_status;
+    var status = learner.cred_status;
     banner.className = 'cred-banner cred-banner--' + (status || 'none');
     var messages = {
-      none:    data.completion.complete
+      none:    completion.complete
         ? 'You\'ve completed all sessions. Go to <a href="session-12.html#claim-credential">Session 12</a> to request your credential.'
         : 'Complete all 12 sessions to request your credential.',
       pending: 'Your credential request is pending instructor review. You\'ll receive an email once approved.',

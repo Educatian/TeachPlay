@@ -8,6 +8,8 @@
  * with the claim link, and updates cred_status → 'issued'.
  */
 
+import { escapeHtml } from '../lib/security.js';
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body, null, 2), {
     status,
@@ -25,7 +27,7 @@ async function sendClaimEmail(env, { to, name, token }) {
   </p>
   <h1 style="font-size:26px;margin:0 0 16px;line-height:1.2;">Your credential is ready.</h1>
   <p style="font-size:16px;line-height:1.6;margin:0 0 24px;color:#333;">
-    Hi ${name},<br/><br/>
+    Hi ${escapeHtml(name)},<br/><br/>
     Your instructor has approved your <strong>AI-enhanced Educational Game Design</strong>
     microcredential. Click below to claim your signed credential. The link expires in 48 hours.
   </p>

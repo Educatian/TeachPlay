@@ -6,6 +6,7 @@
  * for the learner-facing survey page, not for analytics export.
  */
 import { sendEmail } from '../lib/email.js';
+import { escapeHtml } from '../lib/security.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_JSON_CHARS = 24000;
@@ -58,18 +59,18 @@ async function ensureSurveyTable(env) {
 async function sendInstructorNotice(env, survey) {
   if (!env.INSTRUCTOR_EMAIL || !env.RESEND_API_KEY) return;
 
-  const modulesNeedingSupport = (survey.module_support_needed || [])
+  const modulesNeedingSupport = escapeHtml((survey.module_support_needed || [])
     .filter(Boolean)
     .slice(0, 8)
-    .join(', ') || 'None selected';
+    .join(', ')) || 'None selected';
 
   const html = `
   <h1 style="font-size:22px;margin:0 0 16px;line-height:1.3;">Post-credential survey received.</h1>
   <p style="font-size:15px;line-height:1.6;margin:0 0 12px;color:#333;">
-    <strong>${survey.name || 'Learner'}</strong> (${survey.email}) submitted the TeachPlay post-completion survey.
+    <strong>${escapeHtml(survey.name || 'Learner')}</strong> (${escapeHtml(survey.email)}) submitted the TeachPlay post-completion survey.
   </p>
   <ul style="font-size:14px;line-height:1.7;color:#444;margin:0 0 16px;padding-left:18px;">
-    <li>Cohort: ${survey.cohort || '2026-spring'}</li>
+    <li>Cohort: ${escapeHtml(survey.cohort || '2026-spring')}</li>
     <li>De-identified research permission: ${survey.consent_deidentified_research ? 'yes' : 'no'}</li>
     <li>Follow-up consent: ${survey.followup_consent ? 'yes' : 'no'}</li>
     <li>Modules needing support: ${modulesNeedingSupport}</li>

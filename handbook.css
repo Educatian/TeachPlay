@@ -384,7 +384,9 @@ select:focus-visible,
 textarea:focus-visible,
 [tabindex]:focus-visible,
 [role="button"]:focus-visible,
-[role="menuitem"]:focus-visible {
+[role="menuitem"]:focus-visible,
+[role="textbox"]:focus-visible,
+[contenteditable]:focus-visible {
   outline: 2px solid #be1a2f;
   outline-offset: 2px;
   border-radius: 3px;
@@ -1221,13 +1223,10 @@ p strong { color: #111; font-weight: 600; }
 }
 .fill-line[contenteditable]:hover { background: #f7f7f7; }
 .fill-line[contenteditable]:focus {
-  outline: none;
+  outline: 2px solid var(--crimson, #9E1B32);
+  outline-offset: 2px;
   background: #fffef5;
   border-bottom: 2px solid var(--crimson, #9E1B32);
-}
-.fill-line[contenteditable]:empty:before {
-  content: attr(data-placeholder);
-  color: #aaa;
 }
 @media print {
   .fill-line[contenteditable]:focus { background: transparent; }

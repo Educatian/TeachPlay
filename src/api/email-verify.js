@@ -10,6 +10,7 @@
  */
 import { issueCredential } from '../lib/issue.js';
 import { sendEmail } from '../lib/email.js';
+import { escapeHtml } from '../lib/security.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -33,7 +34,7 @@ async function sendClaimReceiptEmail(env, { to, name, credentialId, signed }) {
   const html = `
   <h1 style="font-size:22px;margin:0 0 16px;line-height:1.3;">Credential claimed.</h1>
   <p style="font-size:16px;line-height:1.6;margin:0 0 16px;color:#333;">
-    Hi ${name}, your <strong>AI-enhanced Educational Game Design</strong>
+    Hi ${escapeHtml(name)}, your <strong>AI-enhanced Educational Game Design</strong>
     credential has been issued and signed. A copy is attached to this email
     as <code>teachplay-credential.json</code> — keep it somewhere safe.
   </p>
