@@ -77,8 +77,16 @@ test('1c. React create account registers through the TeachPlay enrollment API', 
     email,
     cohort: '2026-spring',
   });
-  const storedLearner = await page.evaluate(() => localStorage.getItem('hb:learner_id'));
-  expect(storedLearner).toBe(learnerId);
+  const storedLearner = await page.evaluate(() => ({
+    id: localStorage.getItem('hb:learner_id'),
+    identity: window.TeachPlayLearnerIdentity.current(),
+  }));
+  expect(storedLearner.id).toBe(learnerId);
+  expect(storedLearner.identity).toMatchObject({
+    id: learnerId,
+    name: 'React Signup',
+    email,
+  });
 });
 
 test('2. handbook reference layer remains reachable from the unified site', async ({ page }) => {
@@ -584,6 +592,15 @@ test('46. student completion guide embeds video, captions, narration, and downlo
 });
 
 test('47. completed preview learner can reach certificate handoff', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('hb:learner_id', 'preview-learner');
+    localStorage.setItem('hb:learner_name', 'Jordan Preview');
+    localStorage.setItem('hb:learner_email', 'jordan.preview@example.edu');
+    localStorage.setItem('tp:evidence-submitted-v1', JSON.stringify({
+      submittedAt: new Date().toISOString(),
+      draft: { fields: { targetAudience: 'Preview learner', contextBrief: 'Preview context' } },
+    }));
+  });
   await page.goto(BASE + '/index.html');
   await page.getByRole('button', { name: /Start learning/i }).click();
   await page.getByRole('button', { name: /Enter guided course/i }).click();
@@ -595,7 +612,8 @@ test('47. completed preview learner can reach certificate handoff', async ({ pag
   await expect(page.getByRole('button', { name: /Get Certificate/i })).toBeVisible();
   await page.getByRole('button', { name: /Get Certificate/i }).click();
   await expect(page.getByText('Certificate of Completion')).toBeVisible();
-  await expect(page.getByText('TP-PREVIEW-2026')).toBeVisible();
+  await expect(page.locator('.tp-cert-name')).toHaveText('Jordan Preview');
+  await expect(page.getByText('TP-PREVIEW-LEARNER-2026')).toBeVisible();
   await expect(page.locator('a[href="/guides/post-completion-survey.html?source=certificate-preview"]')).toHaveCount(1);
 });
 
