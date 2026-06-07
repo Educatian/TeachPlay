@@ -218,3 +218,37 @@ test('refined landing layout does not overflow on desktop or mobile', async ({ p
   const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(mobileOverflow).toBe(false);
 });
+
+test('handbook pages use the unified TeachPlay product shell', async ({ page }) => {
+  await page.goto('/rubrics.html');
+
+  await expect(page.locator('.utility__brand')).toContainText('TeachPlay');
+  await expect(page.locator('.utility__brand')).toContainText('AI Game Design Microcredential');
+  await expect(page.locator('.primary-nav__trigger').first()).toContainText('Catalog');
+  await expect(page.locator('.primary-nav__trigger', { hasText: 'Instructor tools' })).toHaveCount(1);
+  await expect(page.locator('.site-header__search-btn svg')).toHaveCount(1);
+  await expect(page.locator('.primary-nav__cta')).toContainText(/Create account|Claim Credential|Resume|View|Begin Session/i);
+
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
+});
+
+test('credential page promotes verification, sharing, and stackable pathway evidence', async ({ page, request }) => {
+  const response = await request.get('/credential.html');
+  expect(response.ok()).toBe(true);
+  await page.setContent(await response.text());
+  await page.addScriptTag({ path: 'handbook-polish.js' });
+
+  await expect(page.locator('.tp-credential-trust-panel')).toBeVisible();
+  await expect(page.locator('.tp-credential-trust-panel')).toContainText('Portable proof');
+  await expect(page.locator('.tp-credential-trust-panel')).toContainText('Recipient identity');
+  await expect(page.locator('.tp-credential-trust-panel')).toContainText('Machine-readable');
+  await expect(page.locator('.tp-credential-trust-panel')).toContainText('Stackable pathway');
+  await expect(page.getByRole('link', { name: 'Verify credential' })).toHaveAttribute('href', 'verifier.html');
+  await expect(page.getByRole('link', { name: 'Share to LinkedIn' })).toHaveAttribute('href', /linkedin\.com/);
+
+  const legacyEmojiControls = await page.locator('button, a').evaluateAll((nodes) =>
+    nodes.filter((node) => /[🌙☀️🏆🔍]/u.test(node.textContent || '')).map((node) => node.textContent.trim())
+  );
+  expect(legacyEmojiControls).toEqual([]);
+});

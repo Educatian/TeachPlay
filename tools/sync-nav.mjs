@@ -28,7 +28,7 @@ import { join } from 'node:path';
 const GROUPS = [
   {
     key: 'course',
-    label: 'Course',
+    label: 'Catalog',
     pages: ['index.html', 'handbook.html', 'start.html', 'session-01.html', 'session-02.html', 'session-03.html', 'session-04.html', 'session-05.html', 'session-06.html', 'session-07.html', 'session-08.html', 'session-09.html', 'session-10.html', 'session-11.html', 'session-12.html'],
     items: [
       ['Start Learning',   'index.html',      'Interactive learner workspace'],
@@ -64,7 +64,7 @@ const GROUPS = [
   },
   {
     key: 'instructor',
-    label: 'Instructor',
+    label: 'Instructor tools',
     pages: ['facilitator.html', 'calibration.html', 'analytics.html'],
     instructorOnly: true,
     items: [
@@ -77,7 +77,8 @@ const GROUPS = [
 
 // CTA is rendered by enroll.js at runtime based on localStorage; nav emits
 // a placeholder anchor with id="primary-cta" so JS can target it.
-const CTA_PLACEHOLDER_LABEL = 'Register →';
+const CTA_PLACEHOLDER_LABEL = 'Create account';
+const POLISH_SCRIPT = '<script src="handbook-polish.js"></script>';
 
 // ─── Markup builder ──────────────────────────────────────────────────
 
@@ -128,7 +129,7 @@ const NAV_RE = /^[ \t]*<nav class="primary-nav"[^>]*>[\s\S]*?<\/nav>/m;
 /** Handbook pages: replace the existing <nav class="primary-nav"> in-place. */
 function rewriteHandbookPage(src, file) {
   if (!NAV_RE.test(src)) return null;
-  return src.replace(NAV_RE, buildNav(file));
+  return ensurePolishScript(src.replace(NAV_RE, buildNav(file)));
 }
 
 /** Session pages: currently have .utility followed by .shell.
@@ -138,18 +139,18 @@ const SESSION_INSERT_RE = /(<div class="utility">[\s\S]*?<\/div>)\s*\n\s*(<div c
 function rewriteSessionPage(src, file) {
   if (NAV_RE.test(src)) {
     // Already has a nav — just refresh it.
-    return src.replace(NAV_RE, buildNav(file));
+    return ensurePolishScript(src.replace(NAV_RE, buildNav(file)));
   }
   if (!SESSION_INSERT_RE.test(src)) return null;
   const navBlock = `$1\n\n<div class="handbook-topbar">\n${buildNav(file)}\n</div>\n\n$2`;
-  return src.replace(SESSION_INSERT_RE, navBlock);
+  return ensurePolishScript(src.replace(SESSION_INSERT_RE, navBlock));
 }
 
 /** Verifier page: standalone, no .utility bar. Inject at top of <body>. */
 const BODY_OPEN_RE = /(<body[^>]*>)\s*\n/;
 
 function rewriteVerifierPage(src, file) {
-  if (NAV_RE.test(src)) return src.replace(NAV_RE, buildNav(file));
+  if (NAV_RE.test(src)) return ensurePolishScript(src.replace(NAV_RE, buildNav(file)));
   // Inject utility + nav at body start. Also inject handbook.css link if missing.
   let out = src;
   if (!/href="handbook\.css"/.test(out)) {
@@ -166,7 +167,15 @@ function rewriteVerifierPage(src, file) {
     '</div>',
     '',
   ].join('\n');
-  return out.replace(BODY_OPEN_RE, `$1\n${topStrip}\n`);
+  return ensurePolishScript(out.replace(BODY_OPEN_RE, `$1\n${topStrip}\n`));
+}
+
+function ensurePolishScript(src) {
+  const bodyClose = src.lastIndexOf('</body>');
+  if (bodyClose === -1) return src;
+  const nearBodyClose = src.slice(Math.max(0, bodyClose - 400));
+  if (/src=["']handbook-polish\.js["']/.test(nearBodyClose)) return src;
+  return `${src.slice(0, bodyClose)}${POLISH_SCRIPT}\n${src.slice(bodyClose)}`;
 }
 
 // ─── Runner ─────────────────────────────────────────────────────────

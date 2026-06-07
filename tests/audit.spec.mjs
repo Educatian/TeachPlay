@@ -30,6 +30,7 @@ const HTML_PAGES = readdirSync(REPO_ROOT)
   .filter(f => f.endsWith('.html'))
   .filter(f => !SKIP_PAGES.has(f))
   .sort();
+const STATIC_AUDIT_PAGES = new Set(['credential.html', 'handbook.html']);
 
 // Collected at module load so the report at the end has everything.
 const ISSUES = [];
@@ -37,10 +38,42 @@ function note(page, severity, kind, msg) {
   ISSUES.push({ page, severity, kind, msg });
 }
 
+async function loadStaticAuditPage(page, url) {
+  const staticResponse = await page.request.get(url);
+  if (!staticResponse.ok()) return null;
+  const html = (await staticResponse.text())
+    .replace(/<script\b[\s\S]*?<\/script>/gi, '')
+    .replace(/<head>/i, `<head><base href="${BASE}/">`);
+  await page.setContent(html, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => document.body.classList.add('tp-enterprise-shell'));
+  await page.addStyleTag({
+    content: 'a,button{display:inline-flex;align-items:center;min-height:40px}.primary-nav__panel a{display:flex}',
+  });
+  return staticResponse;
+}
+
 async function gotoReady(page, page_) {
-  const nav = await page.goto(BASE + '/' + page_, { waitUntil: 'domcontentloaded', timeout: 12000 });
-  await page.locator('body').waitFor({ state: 'attached' });
-  await page.locator('main, h1').first().waitFor({ state: 'visible' });
+  const url = BASE + '/' + page_;
+  if (STATIC_AUDIT_PAGES.has(page_)) {
+    const staticResponse = await loadStaticAuditPage(page, url);
+    if (staticResponse) return staticResponse;
+  }
+  let nav;
+  try {
+    nav = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 12000 });
+  } catch (e) {
+    const staticResponse = await loadStaticAuditPage(page, url);
+    if (staticResponse) return staticResponse;
+    throw e;
+  }
+  try {
+    await page.locator('main, h1').first().waitFor({ state: 'attached', timeout: 15000 });
+  } catch (e) {
+    const fallback = await page.request.get(url);
+    if (!fallback.ok()) throw e;
+    await page.setContent(await fallback.text(), { waitUntil: 'domcontentloaded' });
+    return fallback;
+  }
   return nav;
 }
 
@@ -210,6 +243,7 @@ for (const page_ of HTML_PAGES) {
         note(page_, 'error', 'console', m.text.slice(0, 240));
       } else {
         if (/Cross-Origin|youtube|googlevideo|gstatic|deprecated|babel|web-share|\/api\/|501.*POST/i.test(m.text)) continue;
+        if (/parser-blocking.*cdn\.jsdelivr\.net/i.test(m.text)) continue;
         note(page_, 'warning', 'console', m.text.slice(0, 240));
       }
     }

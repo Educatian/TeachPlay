@@ -157,7 +157,7 @@
   </div>
   <nav class="primary-nav" data-primary-nav>
     <div class="primary-nav__group is-active" data-nav-group>
-      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Course <span class="caret" aria-hidden="true">▾</span></button>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Catalog <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
         <a href="index.html" role="menuitem">Start Learning<span class="sub">Interactive learner workspace</span></a>
         <a href="start.html" role="menuitem">Orientation<span class="sub">5-minute tour</span></a>
@@ -187,18 +187,19 @@
       </div>
     </div>
     <div class="primary-nav__group instructor-only" data-nav-group>
-      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Instructor <span class="caret" aria-hidden="true">▾</span></button>
+      <button type="button" class="primary-nav__trigger" aria-expanded="false" aria-haspopup="true">Instructor tools <span class="caret" aria-hidden="true">▾</span></button>
       <div class="primary-nav__panel" role="menu">
         <a href="facilitator.html" role="menuitem">Facilitator Guide<span class="sub">Run each session</span></a>
         <a href="calibration.html" role="menuitem">Calibration<span class="sub">Norm your rubric scores</span></a>
         <a href="analytics.html" role="menuitem">Analytics<span class="sub">Cohort dashboards</span></a>
       </div>
     </div>
-    <a href="#" class="primary-nav__cta" id="primary-cta" data-primary-cta>Register →</a>
+    <a href="#" class="primary-nav__cta" id="primary-cta" data-primary-cta>Create account</a>
   </nav>
 </header>
 
 <main id="main">
+<h1 class="sr-only">AI-enhanced Educational Game Design — Course Handbook (v2)</h1>
 <div class="hb-strip">
   <div class="hb-strip__meta">
     <strong>Course Handbook v2 · 1,046 lines · 4 parts · 21 sections</strong>
@@ -239,7 +240,7 @@
 </footer>
 
 <!-- marked.js for client-side markdown rendering — version-pinned -->
-<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"
+<script async src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"
         crossorigin="anonymous"></script>
 
 <script>
@@ -247,11 +248,55 @@
   var prose = document.getElementById('hb-prose');
   var tocList = document.getElementById('hb-toc-list');
 
+  function fallbackMarkdown(md) {
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+    function inline(s) {
+      return esc(s)
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    }
+    function slug(s) {
+      return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+    var out = [];
+    var para = [];
+    function flush() {
+      if (para.length) {
+        out.push('<p>' + inline(para.join(' ')) + '</p>');
+        para = [];
+      }
+    }
+    md.split(/\r?\n/).forEach(function (line) {
+      var heading = /^(#{1,6})\s+(.+)$/.exec(line);
+      if (heading) {
+        flush();
+        var level = heading[1].length;
+        var text = heading[2].trim();
+        out.push('<h' + level + ' id="' + slug(text) + '">' + inline(text) + '</h' + level + '>');
+        return;
+      }
+      if (!line.trim()) {
+        flush();
+        return;
+      }
+      para.push(line.trim());
+    });
+    flush();
+    return out.join('\n');
+  }
+
   try {
     var resp = await fetch('handbook-v2.md');
     if (!resp.ok) throw new Error('fetch failed: ' + resp.status);
     var md = await resp.text();
-    if (!window.marked) throw new Error('marked.js not loaded');
+    if (!window.marked) {
+      window.marked = { setOptions: function () {}, parse: fallbackMarkdown };
+    }
     marked.setOptions({ gfm: true, breaks: false, headerIds: true });
     var html = marked.parse(md);
     // Demote every rendered heading by one level so the page has exactly one
@@ -271,10 +316,12 @@
     });
     // Inject a single page-level H1 at the top — visually hidden, but it
     // gives the page a proper document outline for screen readers / SEO.
-    var pageH1 = document.createElement('h1');
+    if (!document.querySelector('h1')) {
+      var pageH1 = document.createElement('h1');
     pageH1.textContent = 'AI-enhanced Educational Game Design — Course Handbook (v2)';
     pageH1.style.cssText = 'position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden;';
-    tmp.insertBefore(pageH1, tmp.firstChild);
+      tmp.insertBefore(pageH1, tmp.firstChild);
+    }
     prose.innerHTML = tmp.innerHTML;
 
     // Citation linking: scan text nodes inside the prose for "(Author, YYYY)"
@@ -490,5 +537,6 @@
 <script src="cursor.js"></script>
 <script src="annotate.js"></script>
 <script src="achievements.js"></script>
+<script src="handbook-polish.js"></script>
 </body>
 </html>

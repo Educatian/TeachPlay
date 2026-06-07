@@ -50,7 +50,7 @@
     rail.innerHTML = `
       <div class="tp-credential-rail__lead">
         <p>Credential readiness</p>
-        <button type="button" data-tp-primary-account-cta aria-label="Create a TeachPlay learner account">Create account first</button>
+        <button type="button" data-tp-primary-account-cta aria-label="Create a TeachPlay learner account">Create learner account</button>
       </div>
       <div class="tp-credential-rail__items">
         <div><strong>Identity</strong><span>real learner account</span></div>
@@ -177,8 +177,31 @@
     document.head.appendChild(style);
   };
 
+  const iconifyThemeControls = () => {
+    [...document.querySelectorAll('button')].forEach((button) => {
+      const label = normalize(button.textContent);
+      if (!/^(🌙|☀️|ðŸŒ™|â˜€ï¸)$/.test(label) || button.dataset.tpThemeIconified) return;
+      button.dataset.tpThemeIconified = 'true';
+      button.setAttribute('aria-label', 'Toggle color theme');
+      button.innerHTML = `
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3v2"></path>
+          <path d="M12 19v2"></path>
+          <path d="M4.22 4.22l1.42 1.42"></path>
+          <path d="M18.36 18.36l1.42 1.42"></path>
+          <path d="M3 12h2"></path>
+          <path d="M19 12h2"></path>
+          <path d="M4.22 19.78l1.42-1.42"></path>
+          <path d="M18.36 5.64l1.42-1.42"></path>
+          <circle cx="12" cy="12" r="4"></circle>
+        </svg>
+      `;
+    });
+  };
+
   const run = () => {
     injectStyles();
+    iconifyThemeControls();
     promoteSignedOutAction();
     injectCredentialRail();
   };
