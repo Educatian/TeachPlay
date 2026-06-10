@@ -28,6 +28,9 @@ for (const f of files) {
   const toInsert = [];
   if (!/src="nav\.js"/.test(src))    toInsert.push('<script src="nav.js"></script>');
   if (!/src="enroll\.js"/.test(src)) toInsert.push('<script src="enroll.js"></script>');
+  // survey-gate-ui.js shows the consent-to-start / survey-to-claim CTAs.
+  // It feature-detects OFF when the gate is inactive, so it is safe everywhere.
+  if (!/src="survey-gate-ui\.js"/.test(src)) toInsert.push('<script src="survey-gate-ui.js"></script>');
 
   if (toInsert.length === 0) { skipped++; continue; }
 
