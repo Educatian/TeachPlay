@@ -25,6 +25,8 @@ import { handleVerifyCredential } from './api/verify-credential.js';
 import { handleEnroll } from './api/enroll.js';
 import { handleXapiCollect } from './api/xapi-collect.js';
 import { handleAdminAnalytics } from './api/admin-analytics.js';
+import { handleAdminPsychometrics } from './api/admin-psychometrics.js';
+import { handleAdminExport } from './api/admin-export.js';
 import { handleAdminApprove } from './api/admin-approve.js';
 import { handleCompletionCheck } from './api/completion-check.js';
 import { handleProgress } from './api/progress.js';
@@ -51,6 +53,8 @@ export default {
     if (p === '/api/enroll')             return handleEnroll(request, env, ctx);
     if (p === '/api/xapi')               return handleXapiCollect(request, env, ctx);
     if (p === '/api/admin/analytics')    return handleAdminAnalytics(request, env, ctx);
+    if (p === '/api/admin/psychometrics') return handleAdminPsychometrics(request, env, ctx);
+    if (p === '/api/admin/export')       return handleAdminExport(request, env, ctx);
     if (p === '/api/admin/approve')      return handleAdminApprove(request, env, ctx);
     if (p === '/api/admin/evidence')     return handleAdminEvidence(request, env, ctx);
     if (p === '/api/admin/score')        return handleAdminScore(request, env, ctx);

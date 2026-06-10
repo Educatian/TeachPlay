@@ -39,6 +39,9 @@ docs/
 eval/
 patches/
 
+# Offline psychometrics kit (Python; reads /api/admin/export). Never a public asset.
+analysis/
+
 # OS / editor noise.
 .DS_Store
 Thumbs.db
