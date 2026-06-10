@@ -12,8 +12,12 @@ import { cryptosuite as eddsaRdfc2022 } from '@digitalbazaar/eddsa-rdfc-2022-cry
 import { DataIntegrityProof } from '@digitalbazaar/data-integrity';
 import * as vc from '@digitalbazaar/vc';
 import { contexts as vcContexts } from '@digitalbazaar/credentials-context';
+import obV3Context from '../lib/contexts/ob-v3p0.js';
 import { decodeBitstring, getBit } from '../lib/status-list.js';
 import { getClientIp, rateLimit } from '../lib/security.js';
+
+// OpenBadges v3 context URL teachplay credentials embed in their @context.
+const OB_V3_URL = 'https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body, null, 2), {
@@ -47,13 +51,31 @@ const DID_DOC = {
 };
 
 const embeddedContexts = new Map(vcContexts);
+// Vendored so verification resolves the OB v3 context without a network fetch.
+embeddedContexts.set(OB_V3_URL, obV3Context);
 
 const documentLoader = async (url) => {
   if (embeddedContexts.has(url)) {
     return { documentUrl: url, document: embeddedContexts.get(url), contextUrl: null };
   }
-  if (url === 'did:web:teachplay.dev' || url.startsWith('did:web:teachplay.dev#')) {
+  if (url === 'did:web:teachplay.dev') {
     return { documentUrl: url, document: DID_DOC, contextUrl: null };
+  }
+  // A fragment URL resolves to the single verification method (with its
+  // publicKeyMultibase), not the whole DID document — the cryptosuite needs
+  // the key shape, not the profile.
+  if (url.startsWith('did:web:teachplay.dev#')) {
+    const vm = (DID_DOC.verificationMethod || []).find(v => v.id === url);
+    if (!vm) throw new Error(`Unknown verification method ${url}`);
+    return {
+      documentUrl: url,
+      document: {
+        '@context': 'https://w3id.org/security/multikey/v1',
+        id: vm.id, type: vm.type, controller: vm.controller,
+        publicKeyMultibase: vm.publicKeyMultibase,
+      },
+      contextUrl: null,
+    };
   }
   // All teachplay-issued credentials embed their @context locally and resolve
   // their issuer via the did:web above. Refuse to dereference any other URL so
@@ -107,7 +129,14 @@ export async function handleVerifyCredential(request, env) {
   const sigCheck = { name: 'signature', ok: false, detail: '' };
   try {
     const suite = new DataIntegrityProof({ cryptosuite: eddsaRdfc2022 });
-    const result = await vc.verify({ credential: structuredClone(credential), suite, documentLoader });
+    // verifyCredential (NOT verify — that path is for Verifiable Presentations and
+    // throws "a presentation property is required"). Revocation + dates are checked
+    // separately below, so stub checkStatus to satisfy the credentialStatus-present
+    // requirement; this also runs CredentialIssuancePurpose (issuer↔VM binding).
+    const result = await vc.verifyCredential({
+      credential: structuredClone(credential), suite, documentLoader,
+      checkStatus: async () => ({ verified: true }),
+    });
     sigCheck.ok = result.verified;
     sigCheck.detail = result.verified
       ? 'Ed25519 signature valid (eddsa-rdfc-2022)'

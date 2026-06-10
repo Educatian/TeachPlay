@@ -12,6 +12,9 @@
  *   survey_summary  — post-credential survey counts and consent status
  */
 
+import { checkAdminAuth } from '../lib/auth.js';
+import { getClientIp, rateLimit } from '../lib/security.js';
+
 function json(body, status = 200) {
   return new Response(JSON.stringify(body, null, 2), {
     status,
@@ -27,11 +30,14 @@ export async function handleAdminAnalytics(request, env) {
     return json({ error: 'Method Not Allowed' }, 405);
   }
 
-  const authHeader = request.headers.get('authorization') || '';
-  const match = authHeader.match(/^Bearer\s+(.+)$/i);
-  if (!match || match[1] !== env.ISSUER_API_KEY) {
-    return json({ error: 'Unauthorized' }, 401);
-  }
+  // Cap auth attempts per IP — defense-in-depth on the admin secret.
+  const limit = await rateLimit(env, 'admin', getClientIp(request), 30, 60);
+  if (!limit.ok) return json({ error: 'Too many requests' }, 429);
+
+  // Constant-time, shared admin gate (same as /api/issue, /api/revoke, …) so
+  // this PII-returning endpoint exposes no per-byte timing oracle on the key.
+  const auth = checkAdminAuth(request, env);
+  if (!auth.ok) return json(auth.body, auth.code);
 
   const db = env.DB;
 
@@ -128,6 +134,7 @@ export async function handleAdminAnalytics(request, env) {
       survey_recent: surveyRecent,
     });
   } catch (e) {
-    return json({ ok: false, error: 'Database error', message: e.message }, 500);
+    console.error('admin-analytics query failed', e);
+    return json({ ok: false, error: 'Database error' }, 500);
   }
 }

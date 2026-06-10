@@ -19,8 +19,13 @@ import { cryptosuite as eddsaRdfc2022 } from '@digitalbazaar/eddsa-rdfc-2022-cry
 import { DataIntegrityProof } from '@digitalbazaar/data-integrity';
 import * as vc from '@digitalbazaar/vc';
 import { contexts as vcContexts } from '@digitalbazaar/credentials-context';
+import obV3Context from './contexts/ob-v3p0.js';
 
 const embeddedContexts = new Map(vcContexts);
+// Every OpenBadgeCredential embeds the OB v3 context; pin it so issuance
+// canonicalizes deterministically instead of fetching purl.imsglobal.org on
+// the signing critical path. Other contexts still fall through to fetch below.
+embeddedContexts.set('https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json', obV3Context);
 
 export const documentLoader = async (url) => {
   if (embeddedContexts.has(url)) {

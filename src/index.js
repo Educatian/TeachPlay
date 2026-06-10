@@ -29,6 +29,7 @@ import { handleAdminApprove } from './api/admin-approve.js';
 import { handleCompletionCheck } from './api/completion-check.js';
 import { handleProgress } from './api/progress.js';
 import { handlePostCompletionSurvey } from './api/post-completion-survey.js';
+import { handleLog } from './api/log.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -50,6 +51,8 @@ export default {
     if (p === '/api/admin/analytics')    return handleAdminAnalytics(request, env, ctx);
     if (p === '/api/admin/approve')      return handleAdminApprove(request, env, ctx);
     if (p === '/api/completion-check')   return handleCompletionCheck(request, env, ctx);
+    if (p === '/api/log/conversation')   return handleLog(request, env, ctx, 'conversation');
+    if (p === '/api/log/gameplay')       return handleLog(request, env, ctx, 'gameplay');
     if (p === '/api/progress')           return handleProgress(request, env, ctx);
     if (p === '/api/post-completion-survey') return handlePostCompletionSurvey(request, env, ctx);
 

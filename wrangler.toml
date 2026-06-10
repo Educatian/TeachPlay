@@ -21,13 +21,13 @@ enabled = true
 directory = "./"
 binding = "ASSETS"
 
-# KV for per-cohort BitstringStatusList state.
-# STATUS_BITS   — key = cohort slug, value = raw bitstring bytes (size/8 bytes).
-# STATUS_INDEX  — key = cohort slug, value = decimal ASCII of the next free
-#                 index. Incremented on every /api/issue call. Workers KV has
-#                 no compare-and-swap, so simultaneous issuances may collide
-#                 on the same index; for a demo-scale Worker this is
-#                 acceptable — production should use a Durable Object or D1.
+# DEPRECATED — per-cohort BitstringStatusList state moved to D1 (migration
+# 0007). Workers KV has no compare-and-swap, so the old get→put index
+# allocation and read-modify-write revocation could race and conflate two
+# learners onto one revocation bit. Status now lives in the status_alloc /
+# status_revocations / status_index_map tables on the DB binding below, where
+# every statement is atomic (see src/lib/status-list.js). These two namespaces
+# are retained only so the bindings stay valid; no runtime code reads them.
 [[kv_namespaces]]
 binding = "STATUS_BITS"
 id = "3b37b02eed3d45139759460ce7b32819"

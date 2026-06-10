@@ -86,11 +86,9 @@ export async function handleClaim(request, env, ctx) {
       },
     });
   } catch (e) {
-    return json({
-      ok: false,
-      error: 'issueCredential failed',
-      name: e.name,
-      message: e.message,
-    }, 500);
+    // Public endpoint — log full detail server-side, return a generic error so
+    // crypto/library internals aren't disclosed (matches /api/issue).
+    console.error('claim issueCredential failed', e);
+    return json({ ok: false, error: 'Credential issuance failed.' }, 500);
   }
 }

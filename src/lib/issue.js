@@ -109,7 +109,10 @@ export async function issueCredential(payload, env, originUrl) {
   let statusIndex = null;
   let statusEntry = null;
   if (!noStatus) {
-    statusIndex = await allocateIndex(env, cohort, DEFAULT_BITSTRING_SIZE);
+    statusIndex = await allocateIndex(env, cohort, DEFAULT_BITSTRING_SIZE, {
+      credential_id: `https://teachplay.dev/credential/assertions-v3/${id}.json`,
+      learner_id: id,
+    });
     statusEntry = buildStatusEntry(cohort, statusIndex);
   }
 

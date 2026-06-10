@@ -1,0 +1,4 @@
+{
+  "//": "Marks the Worker source tree as ES modules so Node (unit tests) loads src/lib/*.js the same way wrangler/esbuild bundles them. Not served — src/ is in .assetsignore.",
+  "type": "module"
+}

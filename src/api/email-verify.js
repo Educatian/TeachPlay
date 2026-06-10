@@ -96,13 +96,17 @@ export async function handleEmailVerify(request, env) {
   try {
     ({ signed } = await issueCredential(payload, env, request.url));
   } catch (e) {
-    return json({ error: 'Signing failed', detail: e.message }, 500);
+    console.error('email-verify signing failed', e);
+    return json({ error: 'Signing failed' }, 500);
   }
 
   claim.used = true;
   claim.issuedId = id;
   claim.issuedAt = new Date().toISOString();
-  await env.CLAIMS_KV.put(`claim:${token}`, JSON.stringify(claim));
+  // Re-put WITH a TTL so the "used" record (which holds name/email/cohort)
+  // still expires instead of living in KV forever — a bare put() would drop
+  // the original 48h TTL set at mint time (admin-approve.js).
+  await env.CLAIMS_KV.put(`claim:${token}`, JSON.stringify(claim), { expirationTtl: 172800 });
 
   sendClaimReceiptEmail(env, { to: claim.email, name: claim.name, credentialId: id, signed });
 

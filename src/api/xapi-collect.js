@@ -127,6 +127,16 @@ export async function handleXapiCollect(request, env) {
     return isFull ? normaliseFullStatement(stmt) : normaliseSimplified(stmt);
   });
 
+  // Credential readiness is counted from COUNT(DISTINCT activity_id) over
+  // verb=completed + activity_type=session rows. Constrain those to the 12 real
+  // session ids so a learner can't fabricate "12 distinct sessions" from
+  // arbitrary activity ids and forge a completion notification. Legitimate
+  // clients always emit session/s1 … session/s12 (see xapi.js activities.session).
+  const SESSION_ID_RE = /^session\/s(0?[1-9]|1[0-2])$/;
+  const forged = statements.find(s =>
+    s.verb === 'completed' && s.activity_type === 'session' && !SESSION_ID_RE.test(s.activity_id));
+  if (forged) return json({ error: 'Unrecognized session activity id' }, 400);
+
   const INSERT_SQL = `INSERT INTO xapi_events
     (learner_id, verb, activity_id, activity_type, score_raw, score_max, success, response, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`;

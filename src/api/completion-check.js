@@ -5,7 +5,13 @@
  * (verb=completed, activity_type=session) according to D1.
  *
  * Response: { ok, complete, count, sessions: ['session/s01', ...] }
+ *
+ * Gated by the per-learner X-Learner-Token (same policy as GET /api/progress):
+ * completion state is the learner's own data, so a bare learner_id must not be
+ * enough to read it. Legacy rows with no token bind on first use (TOFU).
  */
+
+import { learnerTokenDecision } from '../lib/security.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -19,6 +25,19 @@ export async function handleCompletionCheck(request, env) {
   const learner_id = url.searchParams.get('learner_id');
   if (!learner_id) return json({ error: 'learner_id required' }, 400);
   if (!env.DB)     return json({ error: 'DB not configured' }, 500);
+
+  const learner = await env.DB.prepare(
+    'SELECT id, session_token FROM learners WHERE id = ?'
+  ).bind(learner_id).first();
+  if (!learner) return json({ error: 'Learner not found' }, 404);
+
+  const providedToken = request.headers.get('x-learner-token') || '';
+  const decision = learnerTokenDecision(learner.session_token, providedToken);
+  if (decision === 'reject') return json({ error: 'Invalid or missing session token' }, 403);
+  if (decision === 'bind') {
+    await env.DB.prepare('UPDATE learners SET session_token = ? WHERE id = ? AND session_token IS NULL')
+      .bind(providedToken, learner.id).run();
+  }
 
   const rows = await env.DB.prepare(
     `SELECT DISTINCT activity_id FROM xapi_events

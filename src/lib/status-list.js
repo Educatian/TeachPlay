@@ -1,14 +1,18 @@
 /**
- * BitstringStatusList helpers for the teachplay Worker (KV-backed).
+ * BitstringStatusList helpers for the teachplay Worker (D1-backed).
  *
  * Mirrors tools/status-list.mjs but for the V8 isolate runtime:
  *   - gzip via CompressionStream/DecompressionStream (no node:zlib).
  *   - base64url via btoa/atob (no Buffer).
- *   - state lives in two KV namespaces instead of files on disk.
+ *   - state lives in D1 (migration 0007), NOT Workers KV. KV had no
+ *     compare-and-swap, so the old get→put allocation and read-modify-write
+ *     revocation could race; D1 statements are atomic.
  *
- * Layout per cohort slug:
- *   STATUS_BITS[slug]   → raw bitstring bytes (size/8 bytes, binary)
- *   STATUS_INDEX[slug]  → decimal ASCII of the next free index
+ * D1 layout per cohort slug:
+ *   status_alloc(cohort, next_index)        → atomic index counter
+ *   status_revocations(cohort, idx, …)      → one row per revoked index
+ *   status_index_map(cohort, idx, …)        → allocation audit trail
+ * The bitstring is rebuilt from status_revocations on each read.
  *
  * Worker-issued credentials reference the list at the dynamic URL
  *     https://teachplay.dev/api/status-list/<slug>
@@ -77,33 +81,65 @@ export function setBit(bytes, index, value) {
   else bytes[byteIdx] &= ~(1 << (7 - bitIdx));
 }
 
-// ── KV helpers ────────────────────────────────────────────────
-export async function readBits(env, slug, size = DEFAULT_BITSTRING_SIZE) {
-  const buf = await env.STATUS_BITS.get(slug, { type: 'arrayBuffer' });
-  if (!buf) return new Uint8Array(size / 8);
-  return new Uint8Array(buf);
+// ── D1-backed status state (atomic; replaces the KV read-modify-write) ──
+
+// Atomically allocate the next free index for this cohort. The single
+// INSERT … ON CONFLICT … RETURNING statement is atomic in D1, so two
+// concurrent issuances can never receive the same index (the KV path
+// could, via a get→put race).
+export async function allocateIndex(env, slug, size = DEFAULT_BITSTRING_SIZE, meta = {}) {
+  const row = await env.DB.prepare(
+    `INSERT INTO status_alloc (cohort, next_index) VALUES (?, 1)
+     ON CONFLICT(cohort) DO UPDATE SET next_index = next_index + 1
+     RETURNING next_index - 1 AS idx`
+  ).bind(slug).first();
+  const idx = row?.idx ?? 0;
+  if (idx >= size) throw new Error(`Status list '${slug}' is full (${size} indices used)`);
+  // Audit trail: which credential/learner got this index.
+  await env.DB.prepare(
+    `INSERT OR IGNORE INTO status_index_map (cohort, idx, credential_id, learner_id) VALUES (?, ?, ?, ?)`
+  ).bind(slug, idx, meta.credential_id ?? null, meta.learner_id ?? null).run();
+  return idx;
 }
 
-export async function writeBits(env, slug, bytes) {
-  await env.STATUS_BITS.put(slug, bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
+// Revoke (value truthy) or reinstate (value falsy) one index. Both are
+// idempotent single statements — no read-modify-write race like the KV
+// bits blob had. Returns the previous state (1 = was revoked, else 0).
+export async function setRevocation(env, slug, index, value, meta = {}) {
+  const existing = await env.DB.prepare(
+    `SELECT 1 FROM status_revocations WHERE cohort = ? AND idx = ?`
+  ).bind(slug, index).first();
+  const previous = existing ? 1 : 0;
+  if (value) {
+    await env.DB.prepare(
+      `INSERT OR IGNORE INTO status_revocations (cohort, idx, learner_id, credential_id) VALUES (?, ?, ?, ?)`
+    ).bind(slug, index, meta.learner_id ?? null, meta.credential_id ?? null).run();
+  } else {
+    await env.DB.prepare(`DELETE FROM status_revocations WHERE cohort = ? AND idx = ?`)
+      .bind(slug, index).run();
+  }
+  return previous;
 }
 
-// Allocate the next free index for this cohort. Not atomic — two
-// concurrent callers can read the same `next` and both `put(next+1)`,
-// producing one collision. Acceptable for a demo-scale Worker; the
-// real fix is a Durable Object singleton per slug or a D1 UPDATE.
-export async function allocateIndex(env, slug, size = DEFAULT_BITSTRING_SIZE) {
-  const raw = await env.STATUS_INDEX.get(slug);
-  const next = raw == null ? 0 : parseInt(raw, 10);
-  if (!Number.isFinite(next) || next < 0) throw new Error(`status-index[${slug}] corrupt: ${raw}`);
-  if (next >= size) throw new Error(`Status list '${slug}' is full (${size} indices used)`);
-  await env.STATUS_INDEX.put(slug, String(next + 1));
-  return next;
+export async function readRevokedIndices(env, slug) {
+  const res = await env.DB.prepare(`SELECT idx FROM status_revocations WHERE cohort = ?`)
+    .bind(slug).all();
+  return (res.results || []).map(r => r.idx);
 }
 
 // ── status list credential shape ──────────────────────────────
+// Rebuild the raw bitstring for a cohort from its revocation rows. Separated
+// from signing so it can be unit-tested without key material.
+export async function buildStatusBitstring(env, slug, size = DEFAULT_BITSTRING_SIZE) {
+  const bits = new Uint8Array(size / 8);
+  for (const idx of await readRevokedIndices(env, slug)) {
+    if (idx >= 0 && idx < size) setBit(bits, idx, 1);
+  }
+  return bits;
+}
+
 export async function buildSignedStatusList(env, slug, size = DEFAULT_BITSTRING_SIZE) {
-  const bits = await readBits(env, slug, size);
+  const bits = await buildStatusBitstring(env, slug, size);
   const encoded = await encodeBitstring(bits);
   const url = statusListUrl(slug);
   const credential = {

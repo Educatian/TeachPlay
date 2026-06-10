@@ -8,7 +8,8 @@
  * with the claim link, and updates cred_status → 'issued'.
  */
 
-import { escapeHtml } from '../lib/security.js';
+import { escapeHtml, getClientIp, rateLimit } from '../lib/security.js';
+import { checkAdminAuth } from '../lib/auth.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body, null, 2), {
@@ -57,10 +58,14 @@ async function sendClaimEmail(env, { to, name, token }) {
 export async function handleAdminApprove(request, env) {
   if (request.method !== 'POST') return json({ error: 'POST required' }, 405);
 
-  const auth = request.headers.get('authorization') || '';
-  if (!auth.startsWith('Bearer ') || auth.slice(7) !== env.ISSUER_API_KEY) {
-    return json({ error: 'Unauthorized' }, 401);
-  }
+  // Cap auth attempts per IP — defense-in-depth on the admin secret.
+  const limit = await rateLimit(env, 'admin', getClientIp(request), 30, 60);
+  if (!limit.ok) return json({ error: 'Too many requests' }, 429);
+
+  // Shared constant-time admin gate (handles the unset-key 500, case-insensitive
+  // Bearer, and x-api-key fallback) instead of a hand-rolled `!==` compare.
+  const auth = checkAdminAuth(request, env);
+  if (!auth.ok) return json(auth.body, auth.code);
 
   let body;
   try { body = await request.json(); }
@@ -83,7 +88,8 @@ export async function handleAdminApprove(request, env) {
   try {
     await sendClaimEmail(env, { to: learner.email, name: learner.name, token });
   } catch (e) {
-    return json({ error: 'Email failed', detail: e.message }, 500);
+    console.error('admin-approve sendClaimEmail failed', e);
+    return json({ error: 'Email failed' }, 500);
   }
 
   await env.DB.prepare('UPDATE learners SET cred_status = ? WHERE id = ?').bind('issued', learner_id).run();

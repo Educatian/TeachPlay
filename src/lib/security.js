@@ -54,14 +54,18 @@ export async function rateLimit(env, bucket, ip, limit, windowSec) {
  *   providedToken — value of the X-Learner-Token header / body
  * Returns:
  *   'ok'     — token present and matches (constant-time)
- *   'bind'   — legacy row with no token yet; adopt the provided one (TOFU)
- *   'legacy' — legacy row, no token provided; allow (pre-token client)
- *   'reject' — token present but does not match
+ *   'bind'   — tokenless row + a token offered; adopt it (TOFU, for rows somehow
+ *              still NULL despite the 0006 backfill + enroll-time issuance)
+ *   'reject' — token missing, or present but does not match
+ *
+ * Note: after migration 0006 backfills every NULL token, a tokenless row with
+ * no offered token is 'reject' (was 'legacy/allow') — a bare learner_id is no
+ * longer sufficient to read or write a learner's data.
  */
 export function learnerTokenDecision(storedToken, providedToken) {
   if (storedToken) {
     return timingSafeEqualStr(providedToken || '', storedToken) ? 'ok' : 'reject';
   }
   if (providedToken) return 'bind';
-  return 'legacy';
+  return 'reject';
 }

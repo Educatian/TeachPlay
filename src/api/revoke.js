@@ -14,15 +14,14 @@
  * Response (200):
  *   { "ok": true, "cohort": "...", "index": 0, "previous": 0, "current": 1 }
  *
- * The bit write is a KV get → mutate → put. Workers KV offers no
- * compare-and-swap, so two concurrent revocations targeting *different*
- * indexes in the same cohort can race and one write may clobber the
- * other. Acceptable for demo scale; production would use a Durable
- * Object singleton per cohort or D1 with a row-level lock.
+ * Revocation is a single idempotent D1 row write (INSERT OR IGNORE to
+ * revoke, DELETE to reinstate) via setRevocation, so concurrent revokes
+ * of different indexes can no longer clobber each other the way the old
+ * KV read-modify-write bitstring could.
  *
- * Does NOT touch STATUS_INDEX (revocation does not allocate an index).
+ * Does NOT allocate an index (revocation only flips an already-issued one).
  */
-import { readBits, writeBits, getBit, setBit, DEFAULT_BITSTRING_SIZE } from '../lib/status-list.js';
+import { setRevocation, DEFAULT_BITSTRING_SIZE } from '../lib/status-list.js';
 import { checkAdminAuth } from '../lib/auth.js';
 
 const COHORT_PATTERN = /^[a-z0-9-]{2,32}$/;
@@ -63,12 +62,11 @@ export async function handleRevoke(request, env, ctx) {
   const value = body.value == null ? 1 : (body.value ? 1 : 0);
 
   try {
-    const bits = await readBits(env, cohort, DEFAULT_BITSTRING_SIZE);
-    const previous = getBit(bits, index);
-    setBit(bits, index, value);
-    await writeBits(env, cohort, bits);
+    // Atomic single-row INSERT/DELETE in D1 — no read-modify-write race.
+    const previous = await setRevocation(env, cohort, index, value, {});
     return json({ ok: true, cohort, index, previous, current: value });
   } catch (e) {
-    return json({ ok: false, error: 'Revoke failed', message: e.message }, 500);
+    console.error('revoke failed', e);
+    return json({ ok: false, error: 'Revoke failed' }, 500);
   }
 }

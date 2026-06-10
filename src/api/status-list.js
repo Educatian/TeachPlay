@@ -51,11 +51,8 @@ export async function handleStatusList(request, env, ctx, cohort) {
       },
     });
   } catch (e) {
-    return json({
-      ok: false,
-      error: 'status-list sign failed',
-      name: e.name,
-      message: e.message,
-    }, 500);
+    // Public endpoint — log detail server-side, return a generic error.
+    console.error('status-list sign failed', e);
+    return json({ ok: false, error: 'status-list sign failed' }, 500);
   }
 }

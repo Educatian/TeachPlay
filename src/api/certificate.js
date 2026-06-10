@@ -182,7 +182,7 @@ function renderPage({ payload, qrSvgMarkup, verifyUrl, code }) {
 
     <footer>
       <div><span class="label">Issuer DID:</span> ${escapeHtml(ISSUER_DID)}</div>
-      <div><span class="label">Credential ID:</span> urn:uuid:${escapeHtml(learnerId)}</div>
+      <div><span class="label">Subject ID:</span> urn:uuid:${escapeHtml(learnerId)}</div>
     </footer>
   </article>
 </body>
