@@ -19,6 +19,7 @@
  */
 
 import { rubricPassed } from './rubric.js';
+import { postSurveyGateActive, postSurveyCompleted } from './survey-gate.js';
 
 const REQUIRED_SESSIONS = 12;
 
@@ -45,6 +46,19 @@ export async function evaluateCredentialGate(env, learner_id) {
 
   const verdict = await rubricPassed(env, learner_id);
 
+  // ADDITIONAL claim-time condition: the POST completion survey must be
+  // submitted before the certificate can be claimed. Feature-detected — the
+  // gate is INACTIVE (skipped) unless the survey-gate columns (migration 0010)
+  // exist AND the QUALTRICS_* secrets are set, so the live class is never
+  // locked out by deploy alone. This does NOT touch rubricPassed or signing;
+  // it layers on top of whichever assessment branch (completion-only or full
+  // rubric) is in force, so it applies the moment a learner would otherwise be
+  // clear to claim.
+  const surveyActive = await postSurveyGateActive(env);
+  const surveyDone = surveyActive ? await postSurveyCompleted(env, learner_id) : null;
+  const surveyState = { active: surveyActive, completed: surveyActive ? surveyDone : null };
+  const surveyBlocks = surveyActive && !surveyDone;
+
   // Completion is the prerequisite-to-submit signal; it must hold regardless.
   if (!completionComplete) {
     return {
@@ -52,16 +66,27 @@ export async function evaluateCredentialGate(env, learner_id) {
       reason: `sessions incomplete: ${count}/${REQUIRED_SESSIONS} completed`,
       completion: { count, complete: false },
       rubric: verdict,
+      survey: surveyState,
     };
   }
 
-  // Pre-migration: tables absent → completion-only behavior (legacy).
+  // Pre-migration: rubric tables absent → completion-only behavior (legacy).
   if (!verdict.applicable) {
+    if (surveyBlocks) {
+      return {
+        ok: false,
+        reason: 'post-program completion survey not submitted',
+        completion: { count, complete: true },
+        rubric: verdict,
+        survey: surveyState,
+      };
+    }
     return {
       ok: true,
       reason: 'completion-only (rubric gate not yet enabled)',
       completion: { count, complete: true },
       rubric: verdict,
+      survey: surveyState,
     };
   }
 
@@ -71,6 +96,17 @@ export async function evaluateCredentialGate(env, learner_id) {
       reason: verdict.reason, // "portfolio not submitted" / "rubric incomplete: N/25" / ...
       completion: { count, complete: true },
       rubric: verdict,
+      survey: surveyState,
+    };
+  }
+
+  if (surveyBlocks) {
+    return {
+      ok: false,
+      reason: 'post-program completion survey not submitted',
+      completion: { count, complete: true },
+      rubric: verdict,
+      survey: surveyState,
     };
   }
 
@@ -79,5 +115,6 @@ export async function evaluateCredentialGate(env, learner_id) {
     reason: verdict.reason,
     completion: { count, complete: true },
     rubric: verdict,
+    survey: surveyState,
   };
 }

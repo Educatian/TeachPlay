@@ -12,6 +12,10 @@
  */
 
 import { learnerTokenDecision } from '../lib/security.js';
+import {
+  consentGateActive, postSurveyGateActive,
+  consentCompleted, postSurveyCompleted,
+} from '../lib/survey-gate.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -47,5 +51,21 @@ export async function handleCompletionCheck(request, env) {
   const sessions = (rows.results || []).map(r => r.activity_id);
   const count    = sessions.length;
 
-  return json({ ok: true, complete: count >= 12, count, sessions });
+  // Survey gates (feature-detected; INACTIVE unless migration 0010 columns AND
+  // QUALTRICS_* secrets are configured). The UI uses these to decide whether to
+  // show the consent-to-start CTA and the post-survey-to-claim CTA.
+  const consentActive = await consentGateActive(env);
+  const postActive    = await postSurveyGateActive(env);
+  const gate = {
+    consent: {
+      active: consentActive,
+      completed: consentActive ? await consentCompleted(env, learner_id) : null,
+    },
+    survey: {
+      active: postActive,
+      completed: postActive ? await postSurveyCompleted(env, learner_id) : null,
+    },
+  };
+
+  return json({ ok: true, complete: count >= 12, count, sessions, gate });
 }

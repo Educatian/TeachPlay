@@ -34,6 +34,8 @@ import { handleEvidence } from './api/evidence.js';
 import { handleAdminEvidence, handleAdminScore } from './api/admin-evidence.js';
 import { handlePostCompletionSurvey } from './api/post-completion-survey.js';
 import { handleLog } from './api/log.js';
+import { handleSurveyLink } from './api/survey-link.js';
+import { handleConsentComplete, handleSurveyComplete } from './api/survey-complete.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -64,6 +66,9 @@ export default {
     if (p === '/api/log/gameplay')       return handleLog(request, env, ctx, 'gameplay');
     if (p === '/api/progress')           return handleProgress(request, env, ctx);
     if (p === '/api/post-completion-survey') return handlePostCompletionSurvey(request, env, ctx);
+    if (p === '/api/survey-link')        return handleSurveyLink(request, env, ctx);
+    if (p === '/api/consent-complete')   return handleConsentComplete(request, env, ctx);
+    if (p === '/api/survey-complete')    return handleSurveyComplete(request, env, ctx);
 
     // /api/status-list/<cohort> — cohort is a path segment so the URL
     // is stable enough to embed in `credentialStatus.statusListCredential`.
