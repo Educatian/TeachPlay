@@ -10,6 +10,7 @@
 
 import { escapeHtml, getClientIp, rateLimit } from '../lib/security.js';
 import { checkAdminAuth } from '../lib/auth.js';
+import { evaluateCredentialGate } from '../lib/gate.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body, null, 2), {
@@ -80,6 +81,25 @@ export async function handleAdminApprove(request, env) {
 
   if (!learner) return json({ error: 'Learner not found' }, 404);
   if (learner.cred_status === 'issued') return json({ error: 'Already issued' }, 409);
+
+  // Enforce the advertised rigor: refuse to mint a claim token unless BOTH
+  // completion passes AND the 25-criterion non-compensatory rubric passes.
+  // Feature-detected — pre-migration this falls back to completion-only.
+  const gate = await evaluateCredentialGate(env, learner_id);
+  if (!gate.ok) {
+    return json({
+      error: 'Credential gate not satisfied',
+      reason: gate.reason,
+      completion: gate.completion,
+      rubric: {
+        applicable: gate.rubric.applicable,
+        passed: gate.rubric.passed,
+        proficient_count: gate.rubric.proficient_count,
+        total_criteria: gate.rubric.total_criteria,
+        missing_deliverables: gate.rubric.missing_deliverables,
+      },
+    }, 422);
+  }
 
   const token = crypto.randomUUID();
   const claim = { name: learner.name, email: learner.email, cohort: learner.cohort, used: false, created: new Date().toISOString() };

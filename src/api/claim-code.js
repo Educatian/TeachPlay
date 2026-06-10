@@ -26,6 +26,7 @@
  */
 import { normalizeLearnerPayload } from '../lib/issue.js';
 import { checkAdminAuth } from '../lib/auth.js';
+import { evaluateCredentialGate } from '../lib/gate.js';
 
 const DEFAULT_TTL_SECONDS = 3600;          // 1 hour
 const MAX_TTL_SECONDS = 7 * 24 * 3600;     // 1 week — long enough for email flows, short enough to bound exposure
@@ -64,6 +65,37 @@ export async function handleClaimCode(request, env, ctx) {
 
   const parsed = normalizeLearnerPayload(body);
   if (!parsed.ok) return json({ error: parsed.error }, 400);
+
+  // Gate the second credential-minting entry point too. The payload `id` is the
+  // credential subject id; when it resolves to an enrolled learner row, enforce
+  // the same completion + 25-criterion rubric gate as /api/admin/approve. If the
+  // id does not match a learner (internal/test issuance for an arbitrary id),
+  // there is no portfolio to gate on, so mint as before. Feature-detected: the
+  // gate degrades to completion-only pre-migration.
+  if (env.DB) {
+    let learnerRow = null;
+    try {
+      learnerRow = await env.DB.prepare('SELECT id FROM learners WHERE id = ?')
+        .bind(parsed.value.id).first();
+    } catch { /* DB hiccup — do not block minting */ }
+    if (learnerRow) {
+      const gate = await evaluateCredentialGate(env, parsed.value.id);
+      if (!gate.ok) {
+        return json({
+          error: 'Credential gate not satisfied',
+          reason: gate.reason,
+          completion: gate.completion,
+          rubric: {
+            applicable: gate.rubric.applicable,
+            passed: gate.rubric.passed,
+            proficient_count: gate.rubric.proficient_count,
+            total_criteria: gate.rubric.total_criteria,
+            missing_deliverables: gate.rubric.missing_deliverables,
+          },
+        }, 422);
+      }
+    }
+  }
 
   let ttl = Number(body.ttlSeconds);
   if (!Number.isFinite(ttl) || ttl <= 0) ttl = DEFAULT_TTL_SECONDS;
