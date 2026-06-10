@@ -15,7 +15,9 @@
 (function () {
   'use strict';
 
-  var INDEX_URL = 'search-index.json';
+  // Absolute so it resolves from the SPA shell (/, /app/, and client-side
+  // deep routes) as well as the root-served static handbook pages.
+  var INDEX_URL = '/search-index.json';
   var indexPromise = null;
   function loadIndex() {
     if (!indexPromise) {
@@ -254,6 +256,9 @@
   function init() {
     document.querySelectorAll('form.site-header__search').forEach(wire);
   }
+  // Exposed so a late-injected form (e.g. the SPA shell's fixed search pill,
+  // added after this script ran) can request (re)wiring. wire() is idempotent.
+  window.hbSearchInit = init;
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
