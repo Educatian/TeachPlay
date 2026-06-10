@@ -114,6 +114,23 @@
     .verdict-line.pass { color: #0a3622; }
     .verdict-line.fail { color: #856404; }
     .not-submitted { color: #888; font-style: italic; font-size: 13px; padding: 8px 0; }
+    /* ── Measurement & validity ── */
+    .psy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 8px; }
+    .psy-stat { background: #faf9f7; border: 1px solid #e6e3de; border-radius: 8px; padding: 14px 16px; }
+    .psy-stat__label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+    .psy-stat__val { font-size: 26px; font-weight: 700; line-height: 1.1; margin: 4px 0; color: #333; }
+    .psy-stat__val.good { color: #0e6027; } .psy-stat__val.warn { color: #be1a2f; } .psy-stat__val.muted { color: #999; }
+    .psy-stat__note { font-size: 11px; color: #999; }
+    .psy-h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #777; margin: 22px 0 8px; }
+    .psy-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .psy-table th { text-align: left; color: #888; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px; border-bottom: 1px solid #e6e3de; }
+    .psy-table td { padding: 6px 8px; border-bottom: 1px solid #f0eeea; }
+    .psy-flag { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 999px; background: #fce8ea; color: #be1a2f; margin-right: 3px; }
+    .psy-flag.soft { background: #fff3e0; color: #b35900; }
+    .psy-dist { display: flex; height: 12px; border-radius: 3px; overflow: hidden; min-width: 90px; background: #eee; }
+    .psy-dist > span { display: block; height: 100%; }
+    .psy-dist .l0 { background: #d6d3cd; } .psy-dist .l1 { background: #f0b860; } .psy-dist .l2 { background: #5aa469; } .psy-dist .l3 { background: #0e6027; }
+    .psy-insufficient { color: #888; font-style: italic; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -181,6 +198,42 @@
       <div id="survey-recent" style="margin-top:16px;"></div>
     </div>
 
+    <!-- ── Measurement & validity (psychometrics) ── -->
+    <div class="card" id="card-measurement" style="display:none;">
+      <h2>Measurement &amp; validity</h2>
+      <p style="color:#666;font-size:13px;margin:-6px 0 14px;" id="psy-methods"></p>
+
+      <div class="psy-grid">
+        <div class="psy-stat" id="psy-reliability">
+          <div class="psy-stat__label">Quiz reliability (KR-20 / α)</div>
+          <div class="psy-stat__val" id="psy-kr20">—</div>
+          <div class="psy-stat__note" id="psy-kr20-note">conventional bar ≥ 0.70</div>
+        </div>
+        <div class="psy-stat" id="psy-irr">
+          <div class="psy-stat__label">Inter-rater reliability (κ / AC1)</div>
+          <div class="psy-stat__val" id="psy-kappa">—</div>
+          <div class="psy-stat__note" id="psy-kappa-note">conventional bar ≥ 0.60</div>
+        </div>
+        <div class="psy-stat" id="psy-cal">
+          <div class="psy-stat__label">Calibration (self vs measured)</div>
+          <div class="psy-stat__val" id="psy-bias">—</div>
+          <div class="psy-stat__note" id="psy-bias-note">+ overconfident · − underconfident</div>
+        </div>
+      </div>
+
+      <h3 class="psy-h3">Quiz item analysis</h3>
+      <div id="psy-items"></div>
+
+      <h3 class="psy-h3">Rubric criteria</h3>
+      <div id="psy-rubric"></div>
+
+      <div style="margin-top:18px;">
+        <a class="btn btn--outline btn--sm" id="psy-export-jsonl" href="#">Download de-identified export (JSONL)</a>
+        <a class="btn btn--outline btn--sm" id="psy-export-csv" href="#" style="margin-left:8px;">Download CSV</a>
+        <span style="color:#888;font-size:12px;margin-left:8px;">hashed ids · no PII · feeds analysis/psychometrics.py (offline IRT/Rasch + κ CIs)</span>
+      </div>
+    </div>
+
     <!-- Learner table -->
     <div class="card" id="card-learners" style="display:none;">
       <h2>Learners</h2>
@@ -209,6 +262,9 @@
     </div>
     <div class="score-card__foot">
       <span class="verdict-line" id="score-verdict">—</span>
+      <input type="email" id="score-scorer-email" placeholder="your email (optional · enables 2nd-rater IRR)"
+             autocomplete="off" aria-label="Scorer email for inter-rater reliability"
+             style="flex:1 1 220px;min-width:160px;padding:6px 8px;border:1px solid #ccc;border-radius:6px;font-size:12px;" />
       <button class="btn" id="score-save">Save rubric scores</button>
     </div>
   </div>
@@ -249,10 +305,114 @@
       var data = await res.json();
       document.getElementById('loading').style.display = 'none';
       renderAll(data);
+      loadPsychometrics();
     } catch (e) {
       document.getElementById('loading').textContent = 'Error: ' + e.message;
     }
   }
+
+  /* ── Measurement & validity (psychometrics) ── */
+  async function loadPsychometrics() {
+    try {
+      var res = await fetch('/api/admin/psychometrics', { headers: { 'Authorization': 'Bearer ' + apiKey } });
+      var data = await res.json();
+      renderPsychometrics(data);
+    } catch (e) {
+      // Non-fatal: leave the section hidden if it fails.
+    }
+  }
+
+  function fmt(x) { return (x == null || isNaN(x)) ? '—' : Number(x).toFixed(2); }
+
+  function renderPsychometrics(data) {
+    if (!data) return;
+    document.getElementById('psy-methods').textContent = data.methods_note || '';
+
+    // Reliability card
+    var q = data.quiz_item_analysis || {};
+    var kr = document.getElementById('psy-kr20'), krNote = document.getElementById('psy-kr20-note');
+    if (q.status === 'ok' && q.kr20 != null) {
+      kr.textContent = fmt(q.kr20);
+      kr.className = 'psy-stat__val ' + (q.kr20 >= 0.70 ? 'good' : 'warn');
+      krNote.textContent = 'N=' + q.n + ' · ' + q.item_count + ' items · bar ≥ 0.70';
+    } else { kr.textContent = '—'; kr.className = 'psy-stat__val muted'; krNote.textContent = (q.note || 'insufficient data'); }
+
+    // IRR card
+    var irr = (data.rubric && data.rubric.irr) || {};
+    var ka = document.getElementById('psy-kappa'), kaNote = document.getElementById('psy-kappa-note');
+    if (irr.status === 'ok' && irr.overall) {
+      var ck = irr.overall.cohen_kappa, ac = irr.overall.gwet_ac1;
+      var kval = ck && ck.kappa != null ? ck.kappa : null;
+      ka.textContent = (kval != null ? 'κ ' + fmt(kval) : '—') + (ac && ac.ac1 != null ? ' · AC1 ' + fmt(ac.ac1) : '');
+      ka.className = 'psy-stat__val ' + (kval != null && kval >= 0.60 ? 'good' : 'warn');
+      kaNote.textContent = irr.n_raters + ' raters · ' + irr.n_double_scored_cells + ' double-scored cells · bar ≥ 0.60';
+    } else { ka.textContent = 'needs 2nd rater'; ka.className = 'psy-stat__val muted'; kaNote.textContent = (irr.note || 'needs ≥2 raters on the same portfolio'); }
+
+    // Calibration card
+    var cal = data.calibration || {};
+    var bi = document.getElementById('psy-bias'), biNote = document.getElementById('psy-bias-note');
+    var block = (cal.post && cal.post.status === 'ok') ? cal.post : (cal.pre && cal.pre.status === 'ok' ? cal.pre : null);
+    if (block) {
+      var b = block.signed_bias;
+      bi.textContent = (b > 0 ? '+' : '') + fmt(b) + (block.brier != null ? ' · Brier ' + fmt(block.brier) : '');
+      bi.className = 'psy-stat__val ' + (Math.abs(b) <= 0.10 ? 'good' : 'warn');
+      var arrow = b > 0.02 ? 'over-confident' : (b < -0.02 ? 'under-confident' : 'well-calibrated');
+      biNote.textContent = 'n=' + block.n + ' · ' + arrow + (cal.shift && cal.shift.status === 'ok' ? ' · Δbias ' + fmt(cal.shift.bias_change) : '');
+    } else { bi.textContent = '—'; bi.className = 'psy-stat__val muted'; biNote.textContent = 'needs self-assessment + quiz data'; }
+
+    // Item table
+    var itemsEl = document.getElementById('psy-items');
+    if (q.status === 'ok' && q.items && q.items.length) {
+      itemsEl.innerHTML = '<table class="psy-table"><thead><tr><th>Item</th><th>p (difficulty)</th><th>Discrimination (r_pb)</th><th>Flags</th></tr></thead><tbody>' +
+        q.items.map(function (it) {
+          var flags = (it.flags || []).map(function (f) {
+            var soft = (f === 'too-easy' || f === 'too-hard') ? ' soft' : '';
+            return '<span class="psy-flag' + soft + '">' + esc(f) + '</span>';
+          }).join('');
+          return '<tr><td>' + esc(it.item_id) + '</td><td>' + fmt(it.p_value) + '</td><td>' +
+            (it.discrimination == null ? '—' : fmt(it.discrimination)) + '</td><td>' + (flags || '<span style="color:#bbb;">—</span>') + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    } else { itemsEl.innerHTML = '<p class="psy-insufficient">' + esc(q.note || 'Insufficient item-response data.') + '</p>'; }
+
+    // Rubric table
+    var rb = data.rubric || {};
+    var rubEl = document.getElementById('psy-rubric');
+    if (rb.status === 'ok' && rb.criteria && rb.criteria.length) {
+      var redund = (rb.redundant_pairs || []).length;
+      rubEl.innerHTML = (redund ? '<p style="font-size:12px;color:#b35900;margin:0 0 8px;">' + redund + ' near-redundant criterion pair(s) (|r|≥0.9) — may be measuring the same thing.</p>' : '') +
+        '<table class="psy-table"><thead><tr><th>Criterion</th><th>n</th><th>Difficulty (% Proficient+)</th><th>Level distribution</th><th>Flags</th></tr></thead><tbody>' +
+        rb.criteria.map(function (c) {
+          var d = c.distribution || {};
+          var tot = c.n || 1;
+          var bar = '<div class="psy-dist" title="E/D/P/X">' +
+            '<span class="l0" style="width:' + (100 * (d.Emerging || 0) / tot) + '%"></span>' +
+            '<span class="l1" style="width:' + (100 * (d.Developing || 0) / tot) + '%"></span>' +
+            '<span class="l2" style="width:' + (100 * (d.Proficient || 0) / tot) + '%"></span>' +
+            '<span class="l3" style="width:' + (100 * (d.Exemplary || 0) / tot) + '%"></span></div>';
+          var flags = (c.flags || []).map(function (f) { return '<span class="psy-flag soft">' + esc(f) + '</span>'; }).join('');
+          return '<tr><td>' + esc(c.criterion_id) + '</td><td>' + c.n + '</td><td>' +
+            (c.difficulty == null ? '—' : Math.round(c.difficulty * 100) + '%') + '</td><td>' + bar + '</td><td>' +
+            (flags || '<span style="color:#bbb;">—</span>') + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    } else { rubEl.innerHTML = '<p class="psy-insufficient">' + esc(rb.note || 'No rubric scores yet.') + '</p>'; }
+
+    document.getElementById('card-measurement').style.display = '';
+  }
+
+  // Authenticated download helper (export endpoints need the Bearer header).
+  async function downloadExport(format, filename) {
+    try {
+      var res = await fetch('/api/admin/export?format=' + format, { headers: { 'Authorization': 'Bearer ' + apiKey } });
+      if (!res.ok) { alert('Export failed (' + res.status + ')'); return; }
+      var blob = await res.blob();
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+      a.remove(); URL.revokeObjectURL(url);
+    } catch (e) { alert(e.message); }
+  }
+  document.getElementById('psy-export-jsonl').addEventListener('click', function (e) { e.preventDefault(); downloadExport('jsonl', 'teachplay_export.jsonl'); });
+  document.getElementById('psy-export-csv').addEventListener('click', function (e) { e.preventDefault(); downloadExport('csv', 'teachplay_export.csv'); });
 
   /* ── Render ── */
   function renderAll(data) {
@@ -586,9 +746,12 @@
       return { criterion_id: cid, level: scoreState.selections[cid] };
     });
     try {
+      var headers = { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' };
+      var scorer = (document.getElementById('score-scorer-email').value || '').trim();
+      if (scorer) headers['X-Scorer-Email'] = scorer; // records this rater for IRR
       var res = await fetch('/api/admin/score', {
         method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify({ learner_id: scoreState.learnerId, scores: scores }),
       });
       var data = await res.json();
