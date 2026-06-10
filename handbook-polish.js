@@ -88,10 +88,24 @@
     upgradeHeader();
     iconifyUtilityControls();
     wireCopyLinks();
-    new MutationObserver(() => {
-      iconifyUtilityControls();
-      upgradeHeader();
-      wireCopyLinks();
-    }).observe(document.body, { childList: true, subtree: true });
+    // Re-apply polish when new content is inserted. CRITICAL: the callback
+    // mutates the DOM (icons/header/copy-links), so a naive observer re-triggers
+    // itself → infinite mutation storm (severe lag, frozen cursor, dead clicks).
+    // Guard it: coalesce bursts with rAF, and disconnect while we mutate so our
+    // own writes never feed back into the observer.
+    var scheduled = false;
+    var obs = new MutationObserver(function () {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(function () {
+        scheduled = false;
+        obs.disconnect();
+        iconifyUtilityControls();
+        upgradeHeader();
+        wireCopyLinks();
+        obs.observe(document.body, { childList: true, subtree: true });
+      });
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
   });
 })();
