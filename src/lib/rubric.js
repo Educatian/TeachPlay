@@ -119,6 +119,25 @@ export async function rubricTablesExist(env) {
 }
 
 /**
+ * Feature-detect the 0009 multi-rater table. Returns true once that migration
+ * has been applied. Used so /api/admin/score writes rater rows only when the
+ * table exists, and the psychometrics IRR section degrades to "insufficient"
+ * (rather than erroring) on a pre-0009 deployment.
+ */
+export async function ratersTableExists(env) {
+  if (!env || !env.DB) return false;
+  try {
+    const row = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM sqlite_master
+       WHERE type='table' AND name='rubric_scores_raters'`
+    ).first();
+    return !!row && row.n >= 1;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * The verdict rule, in one place.
  *
  * rubricPassed(env, learner_id) resolves to:

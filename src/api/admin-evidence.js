@@ -23,7 +23,7 @@ import { checkAdminAuth } from '../lib/auth.js';
 import { getClientIp, rateLimit } from '../lib/security.js';
 import {
   RUBRIC, LEVELS, PASS_LEVEL, DELIVERABLES, TOTAL_CRITERIA,
-  isValidCriterionId, isValidLevel, rubricTablesExist, rubricPassed,
+  isValidCriterionId, isValidLevel, rubricTablesExist, ratersTableExists, rubricPassed,
 } from '../lib/rubric.js';
 
 function json(body, status = 200) {
@@ -165,10 +165,39 @@ export async function handleAdminScore(request, env) {
     return json({ ok: false, error: 'Could not save scores' }, 500);
   }
 
+  // ADDITIVE multi-rater trail (migration 0009). One row per (criterion, scorer)
+  // so two instructors independently scoring the same portfolio both persist and
+  // an IRR study is possible. This does NOT feed rubricPassed / the issuance gate
+  // — rubric_scores above remains the sole authoritative latest-per-criterion.
+  // Feature-detected: skipped silently if 0009 has not been applied.
+  let raters_recorded = 0;
+  try {
+    if (await ratersTableExists(env)) {
+      // Use a stable, non-empty rater key so two passes with no header still
+      // collide on PK (one anonymous rater) rather than silently double-counting.
+      const rater = scorer_email || 'anonymous';
+      const RATER_UPSERT = `
+        INSERT INTO rubric_scores_raters (learner_id, criterion_id, scorer_email, level, scored_at)
+        VALUES (?, ?, ?, ?, datetime('now'))
+        ON CONFLICT(learner_id, criterion_id, scorer_email) DO UPDATE SET
+          level = excluded.level,
+          scored_at = datetime('now')`;
+      await env.DB.batch(valid.map(v =>
+        env.DB.prepare(RATER_UPSERT).bind(learner_id, v.cid, rater, v.level)
+      ));
+      raters_recorded = valid.length;
+    }
+  } catch (e) {
+    // Non-fatal: the authoritative score already saved; the rater trail is
+    // observational. Never let it brick scoring.
+    console.error('admin-score rater-trail write failed (non-fatal)', e);
+  }
+
   const verdict = await rubricPassed(env, learner_id);
   return json({
     ok: true,
     saved: valid.length,
+    raters_recorded,
     rejected: rejected.length ? rejected : undefined,
     verdict,
   });
