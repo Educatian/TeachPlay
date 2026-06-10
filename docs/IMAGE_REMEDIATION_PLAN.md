@@ -1,6 +1,28 @@
 # Image Remediation Plan — weak AI-generated course images
 
-**Status:** plan for the user to approve / execute. This document does **not**
+**Status: EXECUTED 2026-06-10.** The two weak diffusion PNGs were removed and
+replaced with hand-authored, crisp-labeled SVGs in the house style, rendered and
+visually QA'd. Placement on the specific session page still awaits instructor
+confirmation of the exact concept wording (see each image's checklist), but the
+production work is done:
+- `app/images/course/learning_mechanic_triangle.png` (weak) → **removed**;
+  replacement **`assets/generated/learning-mechanic-triangle.svg`** (real
+  labeled triangle: Learning Objective / Game Mechanic / Evidence of Learning,
+  directed edges alignment-rationale / observable-signal / claim-it-supports).
+- `app/images/course/genai_prototyping_workflow.png` (weak, garbled "CONSTRAIN")
+  → **removed**; replacement **`assets/generated/genai-prototyping-workflow.svg`**
+  (5-step Generate→Verify→Constrain→Iterate→Log cycle around a Human-in-the-loop
+  hub, all text real and correctly spelled).
+- Method used = **hand-authored SVG** (method 1 below), matching `workflow-overview.svg`.
+- Higgsfield/diffusion was used ONLY for the textless atmospheric hero
+  (`assets/hero-bg.jpg`), never for these labeled diagrams — consistent with the
+  finding below.
+
+The original plan (what to replace, with what, why) is preserved below.
+
+---
+
+**Original status:** plan for the user to approve / execute. This document does **not**
 regenerate or replace any image; it specifies what to replace, with what, and by
 which production method.
 

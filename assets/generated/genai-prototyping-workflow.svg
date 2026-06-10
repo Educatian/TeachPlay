@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000"
+     font-family="Inter, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <rect width="1200" height="1000" fill="#fdf8f5"/>
+
+  <!-- title -->
+  <text x="80" y="74" font-size="18" font-weight="700"
+        letter-spacing="0.18em" fill="#9E1B32">FIGURE · AI PROTOTYPING LOOP</text>
+  <text x="80" y="128" font-size="38" font-weight="700" fill="#2c2a29">
+    Generate, but keep the human in the loop
+  </text>
+  <text x="80" y="168" font-size="24" fill="#6e6967">
+    Five steps cycle around a human who keeps judgment at every turn.
+  </text>
+
+  <defs>
+    <marker id="wf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9E1B32"/>
+    </marker>
+  </defs>
+
+  <!-- center hub: Human in the loop (cx=600, cy=580) -->
+  <!-- 5 step nodes evenly around the hub, radius 290; angles start at top -->
+  <!-- node 1 (top)        600,290 -->
+  <!-- node 2 (upper-right)876,470 -->
+  <!-- node 3 (lower-right)770,800 -->
+  <!-- node 4 (lower-left) 430,800 -->
+  <!-- node 5 (upper-left) 324,470 -->
+
+  <!-- directed loop arrows between consecutive steps (clockwise) -->
+  <g stroke="#9E1B32" stroke-width="3" fill="none">
+    <path d="M672,318 A300,300 0 0,1 856,402" marker-end="url(#wf-arrow)"/>
+    <path d="M884,540 A300,300 0 0,1 828,742" marker-end="url(#wf-arrow)"/>
+    <path d="M700,838 A300,300 0 0,1 500,838" marker-end="url(#wf-arrow)"/>
+    <path d="M372,742 A300,300 0 0,1 316,540" marker-end="url(#wf-arrow)"/>
+    <path d="M344,402 A300,300 0 0,1 528,318" marker-end="url(#wf-arrow)"/>
+  </g>
+
+  <!-- spokes to hub (thin) -->
+  <g stroke="#d6cfc8" stroke-width="1.5" stroke-dasharray="3 6">
+    <line x1="600" y1="360" x2="600" y2="500"/>
+    <line x1="820" y1="500" x2="668" y2="560"/>
+    <line x1="730" y1="742" x2="640" y2="640"/>
+    <line x1="470" y1="742" x2="560" y2="640"/>
+    <line x1="380" y1="500" x2="532" y2="560"/>
+  </g>
+
+  <!-- HUB -->
+  <g transform="translate(600,580)" text-anchor="middle">
+    <circle r="92" fill="#9E1B32"/>
+    <circle r="92" fill="none" stroke="#fdf8f5" stroke-width="3"/>
+    <text y="-6" font-size="19" font-weight="800" fill="#fefcfa">HUMAN</text>
+    <text y="22" font-size="19" font-weight="800" fill="#fefcfa">IN THE LOOP</text>
+    <text y="48" font-size="14" fill="#f3cdd2">retains judgment</text>
+  </g>
+
+  <!-- step node template values -->
+  <!-- STEP 01 Generate (top) -->
+  <g transform="translate(600,290)" text-anchor="middle">
+    <circle r="52" fill="#fefcfa" stroke="#9E1B32" stroke-width="2.4"/>
+    <text y="6" font-size="30" font-weight="800" fill="#9E1B32">1</text>
+    <text y="-72" font-size="25" font-weight="700" fill="#2c2a29">Generate</text>
+    <text y="92" font-size="18" fill="#6e6967">draft with AI</text>
+  </g>
+  <!-- STEP 02 Verify (upper-right) -->
+  <g transform="translate(876,470)" text-anchor="middle">
+    <circle r="52" fill="#fefcfa" stroke="#9E1B32" stroke-width="2.4"/>
+    <text y="6" font-size="30" font-weight="800" fill="#9E1B32">2</text>
+    <text y="-70" font-size="25" font-weight="700" fill="#2c2a29">Verify</text>
+    <text y="90" font-size="18" fill="#6e6967">check it is true</text>
+  </g>
+  <!-- STEP 03 Constrain (lower-right) -->
+  <g transform="translate(770,800)" text-anchor="middle">
+    <circle r="52" fill="#fefcfa" stroke="#9E1B32" stroke-width="2.4"/>
+    <text y="6" font-size="30" font-weight="800" fill="#9E1B32">3</text>
+    <text y="92" font-size="25" font-weight="700" fill="#2c2a29">Constrain</text>
+    <text y="120" font-size="18" fill="#6e6967">scope to the goal</text>
+  </g>
+  <!-- STEP 04 Iterate (lower-left) -->
+  <g transform="translate(430,800)" text-anchor="middle">
+    <circle r="52" fill="#fefcfa" stroke="#9E1B32" stroke-width="2.4"/>
+    <text y="6" font-size="30" font-weight="800" fill="#9E1B32">4</text>
+    <text y="92" font-size="25" font-weight="700" fill="#2c2a29">Iterate</text>
+    <text y="120" font-size="18" fill="#6e6967">revise and re-run</text>
+  </g>
+  <!-- STEP 05 Log (upper-left) -->
+  <g transform="translate(324,470)" text-anchor="middle">
+    <circle r="52" fill="#fefcfa" stroke="#9E1B32" stroke-width="2.4"/>
+    <text y="6" font-size="30" font-weight="800" fill="#9E1B32">5</text>
+    <text y="-70" font-size="25" font-weight="700" fill="#2c2a29">Log</text>
+    <text y="90" font-size="18" fill="#6e6967">record provenance</text>
+  </g>
+
+  <!-- footnote -->
+  <text x="80" y="958" font-size="20" fill="#8a8278">
+    The cycle repeats: every AI-generated artifact is verified, constrained, iterated, and logged by a human before it ships.
+  </text>
+</svg>

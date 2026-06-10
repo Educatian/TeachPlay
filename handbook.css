@@ -511,7 +511,7 @@ button[data-d] small,
 .hero__bg::after {
   content: '';
   position: absolute; inset: 0;
-  background: url('assets/hero-bg.png') right bottom / 65% auto no-repeat;
+  background: url('assets/hero-bg.jpg') right bottom / 65% auto no-repeat;
   opacity: 0.22;
   mix-blend-mode: screen;
   pointer-events: none;
