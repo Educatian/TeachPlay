@@ -78,6 +78,42 @@
 
     .error { color: #a50000; font-size: 14px; margin-top: 8px; }
     .loading { color: #888; font-size: 14px; }
+
+    /* Rubric status pill in the learner table */
+    .rubric-pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .rubric-pill--pass { background: #d1e7dd; color: #0a3622; }
+    .rubric-pill--partial { background: #fff3cd; color: #856404; }
+    .rubric-pill--none { background: #f0ede8; color: #888; }
+
+    /* Scoring panel (modal) */
+    #score-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 50; padding: 24px; overflow-y: auto; }
+    #score-modal.open { display: block; }
+    .score-card { background: #fff; border-radius: 10px; max-width: 980px; margin: 0 auto; padding: 0; }
+    .score-card__head { background: #be1a2f; color: #fff; padding: 16px 24px; border-radius: 10px 10px 0 0; display: flex; justify-content: space-between; align-items: center; }
+    .score-card__head h2 { font-size: 16px; font-weight: 700; }
+    .score-card__body { padding: 20px 24px; }
+    .score-card__foot { padding: 16px 24px; border-top: 1px solid #e0ddd8; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .score-close { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.6); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    .deliv-block { border: 1px solid #e0ddd8; border-radius: 8px; margin-bottom: 16px; }
+    .deliv-block__head { padding: 12px 16px; background: #faf9f7; border-bottom: 1px solid #e0ddd8; }
+    .deliv-block__head h3 { font-size: 14px; font-weight: 700; }
+    .deliv-block__head .sub { font-size: 12px; color: #888; }
+    .deliv-block__art { padding: 12px 16px; border-bottom: 1px solid #f0ede8; font-size: 13px; color: #444; }
+    .deliv-block__art dt { font-weight: 600; color: #555; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 8px; }
+    .deliv-block__art dd { margin: 2px 0 0; white-space: pre-wrap; word-break: break-word; }
+    .deliv-block__art .nofile { color: #aaa; font-style: italic; }
+    .crit-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 9px 16px; border-bottom: 1px solid #f4f3f0; }
+    .crit-row:last-child { border-bottom: none; }
+    .crit-row__label { font-size: 13px; }
+    .crit-row__label small { display: block; color: #999; font-size: 11px; }
+    .crit-row__levels { display: flex; gap: 4px; }
+    .lvl-btn { border: 1px solid #ccc; background: #fff; color: #555; border-radius: 6px; padding: 5px 9px; font-size: 12px; cursor: pointer; }
+    .lvl-btn.sel { border-color: #be1a2f; background: #be1a2f; color: #fff; font-weight: 600; }
+    .lvl-btn.sel-pass { border-color: #0e6027; background: #0e6027; color: #fff; }
+    .verdict-line { font-size: 13px; font-weight: 600; }
+    .verdict-line.pass { color: #0a3622; }
+    .verdict-line.fail { color: #856404; }
+    .not-submitted { color: #888; font-style: italic; font-size: 13px; padding: 8px 0; }
   </style>
 </head>
 <body>
@@ -113,7 +149,8 @@
     <!-- KPI row -->
     <div class="kpi-row" id="kpi-row" style="display:none;">
       <div class="kpi"><div class="kpi__val" id="kpi-learners">—</div><div class="kpi__label">Enrolled</div></div>
-      <div class="kpi"><div class="kpi__val" id="kpi-complete">—</div><div class="kpi__label">Completed all 12</div></div>
+      <div class="kpi"><div class="kpi__val" id="kpi-complete">—</div><div class="kpi__label">Eligible to submit (12/12)</div></div>
+      <div class="kpi"><div class="kpi__val" id="kpi-scored">—</div><div class="kpi__label">Portfolio Proficient (25/25)</div></div>
       <div class="kpi"><div class="kpi__val" id="kpi-pending">—</div><div class="kpi__label">Credential pending</div></div>
       <div class="kpi"><div class="kpi__val" id="kpi-issued">—</div><div class="kpi__label">Credentials issued</div></div>
       <div class="kpi"><div class="kpi__val" id="kpi-surveys">—</div><div class="kpi__label">Surveys received</div></div>
@@ -151,7 +188,7 @@
         <table class="learner-table">
           <thead><tr>
             <th>Name</th><th>Email</th><th>Enrolled</th>
-            <th>Sessions</th><th>Quiz avg</th><th>Status</th><th>Action</th>
+            <th>Sessions</th><th>Portfolio (25)</th><th>Quiz avg</th><th>Status</th><th>Action</th>
           </tr></thead>
           <tbody id="learner-tbody"></tbody>
         </table>
@@ -160,9 +197,28 @@
   </div>
 </div>
 
+<!-- Portfolio review + rubric scoring modal -->
+<div id="score-modal" role="dialog" aria-modal="true" aria-labelledby="score-title">
+  <div class="score-card">
+    <div class="score-card__head">
+      <h2 id="score-title">Review portfolio &amp; score</h2>
+      <button class="score-close" id="score-close">Close ✕</button>
+    </div>
+    <div class="score-card__body" id="score-body">
+      <p class="loading">Loading portfolio…</p>
+    </div>
+    <div class="score-card__foot">
+      <span class="verdict-line" id="score-verdict">—</span>
+      <button class="btn" id="score-save">Save rubric scores</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   var apiKey = '';
+  var verdictCache = {};   // learner_id -> verdict {passed, proficient_count, total_criteria, ...}
+  var lastLearners = [];   // most recent learner list, for re-render after scoring
 
   /* ── Auth ── */
   document.getElementById('auth-btn').addEventListener('click', function () {
@@ -211,8 +267,14 @@
     var pending  = learners.filter(function (l) { return l.cred_status === 'pending'; }).length;
     var issued   = learners.filter(function (l) { return l.cred_status === 'issued';  }).length;
 
+    var scoredPass = learners.filter(function (l) {
+      var v = verdictCache[l.id];
+      return v && v.passed;
+    }).length;
+
     document.getElementById('kpi-learners').textContent = data.total_learners || learners.length;
     document.getElementById('kpi-complete').textContent = complete;
+    document.getElementById('kpi-scored').textContent   = scoredPass;
     document.getElementById('kpi-pending').textContent  = pending;
     document.getElementById('kpi-issued').textContent   = issued;
     document.getElementById('kpi-surveys').textContent  = surveySummary.total || 0;
@@ -308,25 +370,40 @@
     document.getElementById('card-survey').style.display = '';
   }
 
+  function rubricPill(l) {
+    var v = verdictCache[l.id];
+    if (!v) return '<span class="rubric-pill rubric-pill--none" title="Open Review &amp; score to load">not loaded</span>';
+    if (v.applicable === false) return '<span class="rubric-pill rubric-pill--none">gate off</span>';
+    var n = v.proficient_count || 0, t = v.total_criteria || 25;
+    if (v.passed) return '<span class="rubric-pill rubric-pill--pass">' + n + '/' + t + ' Proficient</span>';
+    if (v.missing_deliverables && v.missing_deliverables.length === 5) return '<span class="rubric-pill rubric-pill--none">not submitted</span>';
+    return '<span class="rubric-pill rubric-pill--partial">' + n + '/' + t + '</span>';
+  }
+
   function renderLearners(learners) {
+    lastLearners = learners;
     var tbody = document.getElementById('learner-tbody');
     tbody.innerHTML = learners.map(function (l) {
       var bars = '';
       for (var i = 1; i <= 12; i++) bars += '<span class="' + (l.sessions_done >= i ? 'done' : '') + '"></span>';
       var statusBadge = '<span class="badge badge--' + (l.cred_status || 'none') + '">' + (l.cred_status || 'none') + '</span>';
       var quizAvg = l.quiz_avg != null ? parseFloat(l.quiz_avg).toFixed(1) : '—';
-      var action = (l.cred_status === 'pending' || (l.cred_status === 'none' && l.sessions_done >= 12))
-        ? '<button class="btn btn--sm btn--outline" onclick="approveCredential(\'' + esc(l.id) + '\',\'' + esc(l.name) + '\',\'' + esc(l.email) + '\',\'' + esc(l.cohort) + '\',this)">Issue credential</button>'
-        : '';
-      return '<tr>' +
+      var review = '<button class="btn btn--sm btn--outline" onclick="reviewPortfolio(\'' + esc(l.id) + '\',\'' + esc(l.name) + '\')">Review &amp; score</button>';
+      // Issuance is gated server-side on completion AND the 25-criterion rubric.
+      var canTryIssue = (l.cred_status === 'pending' || (l.cred_status !== 'issued' && l.sessions_done >= 12));
+      var action = canTryIssue
+        ? review + ' <button class="btn btn--sm" onclick="approveCredential(\'' + esc(l.id) + '\',\'' + esc(l.name) + '\',\'' + esc(l.email) + '\',\'' + esc(l.cohort) + '\',this)">Issue credential</button>'
+        : review;
+      return '<tr id="row-' + esc(l.id) + '">' +
         '<td>' + esc(l.name || '—') + '</td>' +
         '<td style="color:#555;">' + esc(l.email) + '</td>' +
         '<td style="color:#888;">' + (l.enrolled_at || '').slice(0, 10) + '</td>' +
         '<td><div class="completion-bar">' + bars + '</div> <span style="font-size:11px;color:#888;">' + (l.sessions_done || 0) + '/12</span></td>' +
+        '<td class="portfolio-cell">' + rubricPill(l) + '</td>' +
         '<td>' + quizAvg + '</td>' +
         '<td>' + statusBadge + '</td>' +
         '<td>' + action + '</td></tr>';
-    }).join('') || '<tr><td colspan="7" style="color:#888;text-align:center;padding:24px;">No learners enrolled yet.</td></tr>';
+    }).join('') || '<tr><td colspan="8" style="color:#888;text-align:center;padding:24px;">No learners enrolled yet.</td></tr>';
     document.getElementById('card-learners').style.display = '';
   }
 
@@ -349,6 +426,15 @@
         btn.textContent = '✓ Sent';
         btn.style.color = '#1a6e2e';
         btn.style.borderColor = '#1a6e2e';
+      } else if (res.status === 422) {
+        // Gate not satisfied — completion or the 25-criterion rubric is incomplete.
+        btn.textContent = 'Blocked';
+        btn.disabled = false;
+        var msg = 'Credential blocked: ' + (data.reason || 'gate not satisfied') + '.';
+        if (data.rubric && data.rubric.applicable) {
+          msg += '\n\nThe credential is awarded only when the portfolio is submitted for all five deliverables and all 25 rubric criteria reach Proficient (non-compensatory). Use "Review & score" to complete scoring.';
+        }
+        alert(msg);
       } else {
         btn.textContent = 'Error';
         btn.disabled = false;
@@ -360,6 +446,176 @@
       alert(e.message);
     }
   };
+
+  /* ── Portfolio review + rubric scoring ── */
+  var scoreState = { learnerId: null, meta: null, selections: {} };
+
+  window.reviewPortfolio = async function (learnerId, name) {
+    scoreState = { learnerId: learnerId, meta: null, selections: {} };
+    document.getElementById('score-title').textContent = 'Review portfolio & score · ' + name;
+    document.getElementById('score-body').innerHTML = '<p class="loading">Loading portfolio…</p>';
+    document.getElementById('score-verdict').textContent = '—';
+    document.getElementById('score-modal').classList.add('open');
+    try {
+      var res = await fetch('/api/admin/evidence?learner_id=' + encodeURIComponent(learnerId), {
+        headers: { 'Authorization': 'Bearer ' + apiKey }
+      });
+      var data = await res.json();
+      if (!res.ok || !data.ok) {
+        document.getElementById('score-body').innerHTML = '<p class="error">' + esc(data.error || 'Could not load.') + '</p>';
+        return;
+      }
+      renderScorePanel(data);
+    } catch (e) {
+      document.getElementById('score-body').innerHTML = '<p class="error">' + esc(e.message) + '</p>';
+    }
+  };
+
+  function renderScorePanel(data) {
+    scoreState.meta = data.meta;
+    scoreState.selections = {};
+    var subBy = {};
+    (data.submissions || []).forEach(function (s) { subBy[String(s.deliverable_id).toUpperCase()] = s; });
+    var scores = data.scores || {};
+
+    if (data.enabled === false) {
+      document.getElementById('score-body').innerHTML =
+        '<p class="not-submitted">Server-side evidence + rubric scoring is not enabled yet on this deployment (migration 0008 pending). The 25 criteria are shown below for reference, but scoring is disabled until the database is migrated.</p>';
+    }
+
+    var levels = data.meta.levels;     // [Emerging, Developing, Proficient, Exemplary]
+    var passLevel = data.meta.pass_level; // Proficient
+    var html = '';
+
+    data.meta.rubric.forEach(function (d) {
+      var sub = subBy[d.deliverable] || null;
+      html += '<div class="deliv-block">';
+      html += '<div class="deliv-block__head"><h3>' + esc(d.deliverable) + ' — ' + esc(d.title) + '</h3>' +
+              '<span class="sub">' + (sub ? 'Submitted ' + esc((sub.submitted_at || '').slice(0,16)) : 'No submission yet') + '</span></div>';
+      // Artifact preview
+      if (sub) {
+        var content = {};
+        try { content = JSON.parse(sub.content_json || '{}'); } catch (_) {}
+        html += '<div class="deliv-block__art"><dl>';
+        ['targetAudience','contextBrief','prototypeLink','testingNotes','promptDocumentation'].forEach(function (k) {
+          if (content[k]) html += '<dt>' + esc(k) + '</dt><dd>' + esc(String(content[k]).slice(0, 1200)) + '</dd>';
+        });
+        if (sub.file_name) {
+          html += '<dt>File</dt><dd>' + esc(sub.file_name) + ' (' + (sub.file_size || 0) + ' bytes, ' + esc(sub.file_type || '') + ')' +
+                  (sub.has_file_b64 ? ' — stored inline' : ' — metadata only') + '</dd>';
+        }
+        html += '</dl></div>';
+      } else {
+        html += '<div class="deliv-block__art"><span class="not-submitted">This deliverable has no submitted evidence. The credential cannot be issued until all five are submitted.</span></div>';
+      }
+      // Criteria rows
+      d.criteria.forEach(function (c) {
+        var current = scores[c.id] ? scores[c.id].level : null;
+        if (current) scoreState.selections[c.id] = current;
+        html += '<div class="crit-row" data-crit="' + esc(c.id) + '">' +
+          '<div class="crit-row__label">' + esc(c.label) + '<small>' + esc(c.hint || '') + '</small></div>' +
+          '<div class="crit-row__levels">' +
+          levels.map(function (lv) {
+            var sel = current === lv;
+            var cls = 'lvl-btn' + (sel ? (lv === passLevel || levels.indexOf(lv) > levels.indexOf(passLevel) ? ' sel sel-pass' : ' sel') : '');
+            return '<button type="button" class="' + cls + '" data-crit="' + esc(c.id) + '" data-level="' + esc(lv) + '">' + esc(lv) + '</button>';
+          }).join('') +
+          '</div></div>';
+      });
+      html += '</div>';
+    });
+
+    document.getElementById('score-body').innerHTML = html;
+    updateVerdictLine(data.verdict);
+
+    // Wire level buttons
+    document.getElementById('score-body').querySelectorAll('.lvl-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var crit = btn.getAttribute('data-crit');
+        var level = btn.getAttribute('data-level');
+        scoreState.selections[crit] = level;
+        var levels = scoreState.meta.levels;
+        var passLevel = scoreState.meta.pass_level;
+        var row = document.querySelector('.crit-row[data-crit="' + crit + '"]');
+        row.querySelectorAll('.lvl-btn').forEach(function (b) {
+          b.classList.remove('sel'); b.classList.remove('sel-pass');
+          if (b.getAttribute('data-level') === level) {
+            b.classList.add('sel');
+            if (levels.indexOf(level) >= levels.indexOf(passLevel)) b.classList.add('sel-pass');
+          }
+        });
+        recomputeLocalVerdict();
+      });
+    });
+  }
+
+  function recomputeLocalVerdict() {
+    var meta = scoreState.meta; if (!meta) return;
+    var passIdx = meta.levels.indexOf(meta.pass_level);
+    var prof = 0, total = meta.total_criteria;
+    meta.rubric.forEach(function (d) {
+      d.criteria.forEach(function (c) {
+        var lv = scoreState.selections[c.id];
+        if (lv && meta.levels.indexOf(lv) >= passIdx) prof++;
+      });
+    });
+    var pass = prof === total;
+    var el = document.getElementById('score-verdict');
+    el.textContent = pass ? ('Scored ' + prof + '/' + total + ' Proficient — passes (non-compensatory)') : (prof + '/' + total + ' at Proficient or above');
+    el.className = 'verdict-line ' + (pass ? 'pass' : 'fail');
+  }
+
+  function updateVerdictLine(verdict) {
+    var el = document.getElementById('score-verdict');
+    if (!verdict || verdict.applicable === false) { el.textContent = 'Rubric gate not enabled'; el.className = 'verdict-line fail'; return; }
+    if (verdict.passed) { el.textContent = 'Scored ' + verdict.proficient_count + '/' + verdict.total_criteria + ' Proficient — passes'; el.className = 'verdict-line pass'; }
+    else { el.textContent = (verdict.reason || ''); el.className = 'verdict-line fail'; }
+  }
+
+  document.getElementById('score-close').addEventListener('click', function () {
+    document.getElementById('score-modal').classList.remove('open');
+  });
+  document.getElementById('score-modal').addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+
+  document.getElementById('score-save').addEventListener('click', async function () {
+    if (!scoreState.learnerId) return;
+    var btn = this; btn.disabled = true; btn.textContent = 'Saving…';
+    var scores = Object.keys(scoreState.selections).map(function (cid) {
+      return { criterion_id: cid, level: scoreState.selections[cid] };
+    });
+    try {
+      var res = await fetch('/api/admin/score', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ learner_id: scoreState.learnerId, scores: scores }),
+      });
+      var data = await res.json();
+      if (res.ok && data.ok) {
+        btn.textContent = '✓ Saved';
+        updateVerdictLine(data.verdict);
+        verdictCache[scoreState.learnerId] = data.verdict;
+        // Re-render the table cell + KPI without a full reload.
+        renderLearners(lastLearners);
+        recomputeKpiScored();
+        setTimeout(function () { btn.disabled = false; btn.textContent = 'Save rubric scores'; }, 1200);
+      } else {
+        btn.disabled = false; btn.textContent = 'Save rubric scores';
+        alert(data.error || 'Save failed.');
+      }
+    } catch (e) {
+      btn.disabled = false; btn.textContent = 'Save rubric scores';
+      alert(e.message);
+    }
+  });
+
+  function recomputeKpiScored() {
+    var scoredPass = lastLearners.filter(function (l) {
+      var v = verdictCache[l.id]; return v && v.passed;
+    }).length;
+    document.getElementById('kpi-scored').textContent = scoredPass;
+  }
 
   function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');

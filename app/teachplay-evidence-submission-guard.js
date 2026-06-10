@@ -97,6 +97,63 @@
     return textEvidence || (draft.files || []).length > 0;
   };
 
+  // ── Server submission (system of record) ───────────────────────────────────
+  // The localStorage draft stays as an autosave; the server (D1) is the system
+  // of record. We map the single editor packet onto the five deliverables so the
+  // facilitator can review and rubric-score it. Feature-detected: if /api/evidence
+  // returns 404/503 (pre-migration), we keep today's localStorage-only behavior
+  // so the live class is never blocked.
+  const safeGet = (key) => { try { return localStorage.getItem(key) || ''; } catch (_) { return ''; } };
+
+  const buildServerPayload = () => {
+    const draft = readDraft();
+    const fields = draft.fields || {};
+    const files = draft.files || [];
+    const fileMeta = files[0] ? { name: files[0].name, size: files[0].size, type: files[0].type } : undefined;
+    // The current editor collects one cross-deliverable packet. Attach the whole
+    // structured packet to each deliverable so the instructor sees the full
+    // context per artifact; the instructor scores each deliverable's criteria.
+    const content = {
+      targetAudience: fields.targetAudience || '',
+      contextBrief: fields.contextBrief || '',
+      prototypeLink: fields.prototypeLink || '',
+      testingNotes: fields.testingNotes || '',
+      promptDocumentation: fields.promptDocumentation || '',
+      activeSection: draft.activeSection || '',
+      submittedAt: new Date().toISOString(),
+    };
+    const deliverables = ['D1', 'D2', 'D3', 'D4', 'D5'].map((id) => ({
+      deliverable_id: id,
+      content,
+      file: id === 'D3' && fileMeta ? fileMeta : undefined,
+    }));
+    return {
+      learner_id: safeGet('hb:learner_id'),
+      deliverables,
+    };
+  };
+
+  const postEvidenceToServer = async () => {
+    const learnerId = safeGet('hb:learner_id');
+    if (!learnerId) return { status: 'skipped' }; // no server row to attach to
+    try {
+      const res = await fetch('/api/evidence', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Learner-ID': learnerId,
+          'X-Learner-Token': safeGet('hb:learner_token'),
+        },
+        body: JSON.stringify(buildServerPayload()),
+      });
+      if (res.ok) return { status: 'ok' };
+      if (res.status === 404 || res.status === 503) return { status: 'fallback' }; // pre-migration
+      return { status: 'failed', code: res.status };
+    } catch (_) {
+      return { status: 'failed' };
+    }
+  };
+
   const showNotice = (message, tone = 'error') => {
     const heading = [...document.querySelectorAll('h2,h3')].find((node) => normalize(node.textContent).includes('Evidence Submission'))
       || [...document.querySelectorAll('h3')].find((node) => normalize(node.textContent).includes('Context'));
@@ -117,7 +174,17 @@
       learner: learnerIdentity(),
       draft: readDraft(),
     }));
-    showNotice('Evidence packet saved for instructor review. You can now continue to certificate handoff.', 'success');
+    showNotice('Saving your evidence packet to the server for instructor review…', 'success');
+    // Persist to the server (system of record). Best-effort + feature-detected.
+    postEvidenceToServer().then((result) => {
+      if (result.status === 'ok') {
+        showNotice('Evidence packet submitted to the server for instructor review. Your instructor will score all 25 rubric criteria; the credential is awarded only when every criterion reaches Proficient.', 'success');
+      } else if (result.status === 'fallback' || result.status === 'skipped') {
+        showNotice('Evidence packet saved for instructor review. You can now continue to certificate handoff.', 'success');
+      } else {
+        showNotice('Saved locally, but the server submission did not go through. Please click Submit for Review again so your instructor receives the portfolio.', 'error');
+      }
+    });
     return true;
   };
 
