@@ -115,9 +115,9 @@ Specifications chosen on purpose. Each one does work the next one cannot.
       <p><em>See <a href="xapi.js"><code>xapi.js</code></a>, <a href="analytics.html"><code>analytics.html</code></a>.</em></p>
     </td>
     <td valign="top">
-      <h3>Non-compensatory rubric</h3>
-      <p>One Developing on any criterion blocks the deliverable. <code>scoreGiven</code> is binary (0 or 1); no partial credit buys over a floor. Double-rating on ≥ 20% of submissions feeds κ.</p>
-      <p><em>See <a href="rubrics.html"><code>rubrics.html</code></a>, <a href="docs/L3-evaluation-plan.md"><code>docs/L3-evaluation-plan.md</code></a>.</em></p>
+      <h3>Non-compensatory rubric — server-enforced</h3>
+      <p>The advertised rigor is the <strong>enforced</strong> rigor. Learners submit the D1–D5 portfolio to the server (<code>POST /api/evidence</code> → D1 <code>evidence_submissions</code>); the instructor scores all 25 criteria in <code>admin.html</code> (<code>POST /api/admin/score</code> → <code>rubric_scores</code>). Credential minting (<code>/api/admin/approve</code> and <code>/api/claim-code</code>) is refused unless completion passes <strong>and</strong> every one of the 25 criteria is at Proficient or above — non-compensatory, no averaging. Session completion is now a <em>prerequisite to submit</em>, not the credential criterion.</p>
+      <p><em>See <a href="rubrics.html"><code>rubrics.html</code></a>, <a href="src/lib/rubric.js"><code>src/lib/rubric.js</code></a> (<code>rubricPassed</code>), <a href="src/lib/gate.js"><code>src/lib/gate.js</code></a>, <a href="migrations/0008_evidence_and_rubric.sql"><code>migrations/0008</code></a>. κ / reliability status remains <em>forthcoming</em> — see the validity disclosure in <code>rubrics.html</code>.</em></p>
     </td>
     <td valign="top">
       <h3>Endorsement credentials</h3>
@@ -241,7 +241,7 @@ All learner progress is stored in `localStorage` on the visitor's browser:
 - `hb:xapi:queue` — xAPI statement queue
 - `hb:xapi:actor` — pseudonymous actor (UUID, browser-local)
 
-No server component, no third-party analytics, no identifying data leaves the browser in the reference implementation. Clearing site data resets progress.
+In the **static reference implementation** these stay browser-local. The **live teachplay.dev deployment** additionally runs a Cloudflare Worker + D1 LRS (`src/`, `migrations/`) so the credential can be gated on real, reviewed evidence: session telemetry (`xapi_events`), the submitted D1–D5 portfolio (`evidence_submissions`), and instructor rubric scores (`rubric_scores`). The localStorage evidence draft is an autosave; the server is the system of record. No third-party analytics; credential signing keys and crypto are untouched by the assessment layer.
 
 </details>
 
