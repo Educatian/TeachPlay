@@ -246,6 +246,53 @@ In the **static reference implementation** these stay browser-local. The **live 
 
 </details>
 
+<details>
+<summary><strong>Survey-gated credentialing (PRE consent · POST completion)</strong></summary>
+
+Two Qualtrics touchpoints gate the program, server-side verified. **Gate policy =
+completion/submission, NOT consent-yes**: submitting the form passes the gate; the
+research-data-use questions inside the forms are OPT-IN and never block the
+credential or screen anyone out (ethical for a state microcredential).
+
+- **PRE — consent & start** gates program START (the learner can't begin sessions
+  until the consent form is submitted).
+- **POST — completion survey** gates the certificate CLAIM (the learner can't
+  claim the cert until the survey is submitted; an ADDITIONAL claim-time condition
+  layered on top of `evaluateCredentialGate`, never touching rubric/signing).
+
+**Flow.** `GET /api/survey-link?type=consent|post` (learner-token gated) returns
+the Qualtrics anon link with `?learner_id&sig&cohort` appended, where
+`sig = HMAC-SHA256("<type>:<learner_id>")` keyed on `WORKER_SECRET` (falls back to
+`ISSUER_API_KEY`). The survey captures those as embedded data and, on its
+end-of-survey **redirect**, returns the learner's browser to
+`GET /api/consent-complete` / `GET /api/survey-complete`. Those public endpoints
+(a) verify the HMAC `sig`, (b) server-to-server confirm the Qualtrics response is
+**Finished** and its embedded `learner_id` matches (token stays in the Worker),
+then record completion in D1 and redirect onward. See `src/lib/survey-gate.js`,
+`src/api/survey-link.js`, `src/api/survey-complete.js`, `migrations/0010_survey_gates.sql`,
+and the survey IDs/links in [`tools/teachplay_surveys_spec.md`](tools/teachplay_surveys_spec.md).
+
+**Feature-detect (no lockout).** The gate is INACTIVE — current behavior, live
+class unaffected — unless BOTH the `migrations/0010` columns exist AND the
+`QUALTRICS_*` secrets are set. Deploying the code before configuring the secrets
+is safe.
+
+**Build the surveys.** `python tools/build_teachplay_surveys.py` (reads the
+Qualtrics token programmatically; never echoes it).
+
+**Worker secrets the gate needs (set by the operator):**
+
+```sh
+printf %s 'SV_56GYSEQ2PqvFYTY' | npx wrangler secret put QUALTRICS_CONSENT_SID
+printf %s 'SV_8uoREQqBiHUWvZk' | npx wrangler secret put QUALTRICS_POST_SID
+printf %s '<az1 API token>'    | npx wrangler secret put QUALTRICS_TOKEN
+# optional: QUALTRICS_DC defaults to az1; WORKER_SECRET optional (HMAC falls back to ISSUER_API_KEY)
+```
+
+Apply the migration once: `npx wrangler d1 execute teachplay-lrs --remote --file migrations/0010_survey_gates.sql`.
+
+</details>
+
 ---
 
 ## Design notes
