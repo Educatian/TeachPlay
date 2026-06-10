@@ -164,6 +164,56 @@
     flushTimer = setInterval(flush, CONFIG.flushIntervalMs);
   }
 
+  // ── Content logs (full conversation + gameplay → DB) ────────
+  // These write to the dedicated /api/log/* tables, which preserve the actual
+  // prompt/response text and gameplay detail that the lightweight xAPI queue
+  // does not. Best-effort, learner-scoped, never blocks the UI.
+  function learnerHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      'X-Learner-ID': localStorage.getItem('hb:learner_id') || '',
+      'X-Learner-Token': localStorage.getItem('hb:learner_token') || '',
+    };
+  }
+  function logBase() {
+    return (CONFIG.endpoint || '/api/xapi').replace(/\/[^/]+$/, '') + '/log';
+  }
+  async function postLog(kind, payload) {
+    try {
+      if (!localStorage.getItem('hb:learner_id')) return;      // no server row to attach to
+      if (localStorage.getItem('hb:admin') === '1') return;    // admin preview ≠ research data
+      await fetch(logBase() + '/' + kind, {
+        method: 'POST',
+        headers: learnerHeaders(),
+        body: JSON.stringify(payload || {}),
+        keepalive: true,
+      });
+    } catch (_) { /* best-effort */ }
+  }
+  function logConversation(p) { return postLog('conversation', p); }
+  function logGameplay(p) { return postLog('gameplay', p); }
+
+  // Log when a learner launches one of the bundled labs (orbit-sum-lab,
+  // electric-circuit-lab, …), and accept same-origin postMessage telemetry from
+  // a lab iframe so the SCORM apps can report gameplay later without re-plumbing.
+  function bindLabLogging() {
+    document.addEventListener('click', function (e) {
+      const a = e.target.closest && e.target.closest('a[href*="minigames/"]');
+      if (!a) return;
+      const m = (a.getAttribute('href') || '').match(/minigames\/([^/]+)\//);
+      if (m) logGameplay({ game: m[1], event: 'launch', detail: { href: a.getAttribute('href') } });
+    }, false);
+
+    window.addEventListener('message', function (e) {
+      if (e.origin !== window.location.origin) return;            // same-origin labs only
+      const d = e.data;
+      if (!d || d.__teachplay_gameplay !== true || !d.game || !d.event) return;
+      logGameplay({ game: String(d.game), event: String(d.event), detail: d.detail ?? null,
+        correct: d.correct, score_raw: d.score_raw, score_max: d.score_max, session_id: d.session_id });
+    });
+  }
+  bindLabLogging();
+
   // ── Public API ──────────────────────────────────────────────
   window.xapi = {
     emit,
@@ -176,6 +226,8 @@
     getActorId: () => { const a = getActor(); return a.account.name; },
     flush,
     startAutoFlush,
+    logConversation,
+    logGameplay,
     V,
     CONFIG,
   };

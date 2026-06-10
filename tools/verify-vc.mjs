@@ -118,9 +118,9 @@ const result = await vc.verifyCredential({
   suite,
   documentLoader,
   checkStatus: async () => ({ verified: true }),
-  // Allow verifying example credentials whose validFrom is in the future
-  // (useful pre-cohort-start). Pass `--now=ISO` to override.
-  now: process.argv.find((a) => a.startsWith('--now='))?.split('=')[1] || credential.validFrom
+  // Verify against wall-clock time so expiry / not-yet-valid actually apply.
+  // Pass `--now=ISO` only to test a specific instant (e.g. a future-dated example).
+  now: process.argv.find((a) => a.startsWith('--now='))?.split('=')[1] || new Date().toISOString()
 });
 
 if (result.verified) {

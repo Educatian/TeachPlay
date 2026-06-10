@@ -6,6 +6,7 @@
  */
 import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { execSync } from 'node:child_process';
 
 const SITE = 'https://teachplay.dev';
 
@@ -36,7 +37,15 @@ function priorityFor(file) {
   return '0.6';
 }
 
+// Derive lastmod from git commit history so the sitemap is reproducible across
+// checkouts (filesystem mtime is the clone time on a fresh git checkout, which
+// would claim every page changed today and churn the file on every CI run).
+// Falls back to mtime then today for untracked files.
 function lastmod(file) {
+  try {
+    const out = execSync(`git log -1 --format=%cs -- "${file}"`, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(out)) return out;
+  } catch (_) { /* not a git repo / untracked — fall through */ }
   try {
     return new Date(statSync(join(root, file)).mtime).toISOString().slice(0, 10);
   } catch (_) { return today; }

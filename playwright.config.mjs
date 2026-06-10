@@ -2,6 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  // tests/unit/*.test.mjs are node:test unit tests (run via `npm run test:unit`),
+  // not Playwright specs — keep Playwright from trying to execute them.
+  testIgnore: '**/unit/**',
   timeout: 30_000,
   fullyParallel: false,
   workers: 1,
@@ -17,4 +20,12 @@ export default defineConfig({
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
   ],
+  // Make the gate self-contained: start the same static server the tests
+  // expect. reuseExistingServer keeps a hand-started dev server working too.
+  webServer: {
+    command: 'python -m http.server 8765',
+    url: 'http://127.0.0.1:8765/index.html',
+    reuseExistingServer: true,
+    timeout: 30_000,
+  },
 });

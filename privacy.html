@@ -193,6 +193,8 @@
         <tr><td><code>enrolled_at</code></td><td>Timestamp.</td></tr>
         <tr><td><code>cred_status</code></td><td><code>none</code> / <code>pending</code> / <code>issued</code>.</td></tr>
         <tr><td>xAPI events</td><td>One row per learning event: <code>started</code>, <code>heartbeat</code>, <code>viewed</code>, <code>answered</code>, <code>responded</code>, <code>scored</code>, and <code>completed</code>. Includes <code>activity_id</code>, timestamp, score, correctness, or short response value when applicable; does <strong>not</strong> include free-text notes or annotations.</td></tr>
+        <tr><td>AI conversations</td><td>For each interactive AI touchpoint you run, the <strong>full text of your prompt and the model's response</strong> is stored (with the session, learning-outcome tag, model name, and timing) under your pseudonymous <code>learner_id</code>. Your API key is <strong>never</strong> sent to us — only the conversation content. Used to study how learners use AI in the program.</td></tr>
+        <tr><td>Gameplay events</td><td>Each minigame interaction (which option you chose, correctness, score) and each lab launch is stored under your <code>learner_id</code> for learning-analytics research.</td></tr>
         <tr><td>Post-completion survey</td><td>After certificate request, optional survey responses about module clarity, usefulness, workload, media and reading support, case-study usefulness, artifacts completed, AI tools used, transfer plans, barriers, and follow-up consent. Research reporting uses only responses with de-identified research permission.</td></tr>
       </tbody>
     </table>

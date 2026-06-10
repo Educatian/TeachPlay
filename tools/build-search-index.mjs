@@ -20,6 +20,9 @@ const SKIP = new Set([
   'module-video.html',
   'The Crosswalk.html',
   'The Engagement Trap.html',
+  // 404.html is excluded from the sitemap too — keep it out of search so the
+  // error page never surfaces as a result. (Was drifting between the two builders.)
+  '404.html',
 ]);
 
 // Drop everything inside <script>, <style>, <nav>, <footer>, and within

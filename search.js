@@ -158,9 +158,9 @@
     } else {
       panel.innerHTML = results.map(function (p, i) {
         var snip = snippet(p.body, tokens, 180);
-        return '<a class="hb-search-row" id="hb-search-row-' + i + '" data-idx="' + i + '" href="' + p.url + '" role="option">' +
+        return '<a class="hb-search-row" id="hb-search-row-' + i + '" data-idx="' + i + '" href="' + escapeHtml(p.url) + '" role="option">' +
           '<div class="hb-search-row__title">' + highlight(p.title || p.url, tokens) + '</div>' +
-          '<div class="hb-search-row__url">' + p.url + '</div>' +
+          '<div class="hb-search-row__url">' + escapeHtml(p.url) + '</div>' +
           (snip ? '<div class="hb-search-row__snip">' + highlight(snip, tokens) + '</div>' : '') +
         '</a>';
       }).join('');

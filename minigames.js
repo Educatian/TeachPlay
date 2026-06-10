@@ -26,6 +26,51 @@
     });
   }
 
+  // ─── Gameplay logging (→ /api/log/gameplay via xapi helper) ──
+  function logGameplay(game, event, detail, extra) {
+    try {
+      if (!window.xapi || typeof window.xapi.logGameplay !== 'function') return;
+      var payload = { game: game, event: event, detail: detail || null };
+      extra = extra || {};
+      if (extra.correct != null) payload.correct = extra.correct;
+      if (extra.score_raw != null) payload.score_raw = extra.score_raw;
+      if (extra.score_max != null) payload.score_max = extra.score_max;
+      if (extra.session_id) payload.session_id = extra.session_id;
+      window.xapi.logGameplay(payload);
+    } catch (e) {}
+  }
+
+  // One delegated pass captures every interaction inside any rendered minigame
+  // so each builder need not be hand-instrumented. Bubble phase runs AFTER the
+  // builder's own click handler, so is-correct/is-wrong classes are already set.
+  var interactionLoggingBound = false;
+  function bindInteractionLogging() {
+    if (interactionLoggingBound) return;
+    interactionLoggingBound = true;
+    function gameOf(node) {
+      var sec = node.closest ? node.closest('[data-mg]') : null;
+      return (sec && sec.dataset.mg) || 'minigame';
+    }
+    document.addEventListener('click', function(e) {
+      var mg = e.target.closest && e.target.closest('.minigame');
+      if (!mg) return;
+      var ctrl = e.target.closest('button, .chip, [role="button"]');
+      if (!ctrl) return;
+      var correct = ctrl.classList.contains('is-correct') ? 1
+                  : ctrl.classList.contains('is-wrong') ? 0 : null;
+      logGameplay(gameOf(mg), 'interaction', {
+        label: (ctrl.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80),
+      }, { correct: correct });
+    }, false);
+    document.addEventListener('change', function(e) {
+      var mg = e.target.closest && e.target.closest('.minigame');
+      if (!mg || e.target.tagName !== 'INPUT') return;
+      logGameplay(gameOf(mg), 'adjust', {
+        control: e.target.id || e.target.name || e.target.type, value: e.target.value,
+      });
+    }, false);
+  }
+
   function shell(mount, opts) {
     // Build the classic .minigame shell and return the body element.
     var sec = el('section', 'block');
@@ -115,6 +160,7 @@
           scoreEl.style.display = 'flex';
           if (answered === ITEMS.length) {
             var pct = Math.round(100 * correct / ITEMS.length);
+            logGameplay('s02', 'score', { pct: pct }, { score_raw: correct, score_max: ITEMS.length });
             noteEl.textContent = pct >= 87 ? 'Sharp eye — you screen briefs like an editor.' :
                                 pct >= 62 ? 'Solid. Reread the ones you missed before drafting D1.' :
                                             'This is the most common D1 failure mode. Spend time here.';
@@ -558,6 +604,12 @@
         var m = text.match(/\[[\s\S]*\]/);
         var data = m ? JSON.parse(m[0]) : null;
         if (!Array.isArray(data) || data.length !== 5) throw new Error('Bad evaluator output');
+        if (window.xapi && typeof window.xapi.logConversation === 'function') {
+          window.xapi.logConversation({
+            source: 'defense-evaluator', session_id: 's12', model: 'claude',
+            system_prompt: '', user_prompt: prompt, response: text, ok: true,
+          });
+        }
         var total = data.reduce(function(s,d){ return s + (+d.score || 0); }, 0);
         var verdict = total >= 20 ? 'Defense-ready. Tighten any 4-point answer to a 5.'
                     : total >= 14 ? 'Defensible but has soft spots. Rehearse the two lowest-scoring questions before the real defense.'
@@ -585,6 +637,7 @@
 
   // ─── Dispatch ─────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function() {
+    bindInteractionLogging();
     document.querySelectorAll('[data-minigame]').forEach(function(node) {
       var kind = node.getAttribute('data-minigame');
       try {
@@ -593,6 +646,11 @@
         else if (kind === 's07') buildS07(node);
         else if (kind === 's11') buildS11(node);
         else if (kind === 's12') buildS12(node);
+        // Stamp the rendered section with its game id so the delegated logger
+        // can attribute interactions, and record that the minigame started.
+        var sec = document.getElementById('minigame');
+        if (sec && !sec.dataset.mg) sec.dataset.mg = kind;
+        logGameplay(kind, 'start', { page: location.pathname });
       } catch (e) {
         console.error('Minigame failed:', kind, e);
       }

@@ -65,7 +65,7 @@
     el.innerHTML = `
       <div class="aitry__hdr">
         <span class="aitry__tag">Run it with your key</span>
-        <span class="aitry__hint">Your key stays in your browser. We do not proxy.</span>
+        <span class="aitry__hint">Your API key stays in your browser. Your prompt and the response are saved to your learning record (see the privacy notice in the footer).</span>
       </div>
       <div class="aitry__keyrow" data-keyrow>
         <input type="password" class="aitry__key" placeholder="Paste your Google AI Studio API key" aria-label="Gemini API key" id="${uid}-key" />
@@ -140,9 +140,11 @@
         const ms = Math.round(performance.now() - started);
         status.textContent = `✓ Response in ${ms}ms`;
         emitXapi({ sessionId, loId, inputLen: user.length, outputLen: text.length, ms, ok: true });
+        logConversation({ sessionId, loId, systemPrompt, user, response: text, ms, ok: true });
       } catch (e) {
         status.textContent = `✗ ${e.message}`;
         emitXapi({ sessionId, loId, inputLen: user.length, outputLen: 0, ms: 0, ok: false, err: e.message });
+        logConversation({ sessionId, loId, systemPrompt, user, response: '', ms: 0, ok: false, err: e.message });
       } finally {
         runBtn.disabled = false;
       }
@@ -169,6 +171,28 @@
           'https://teachplay.dev/ext/ai-lo': loId || null,
           'https://teachplay.dev/ext/ai-error': err || null
         }
+      });
+    } catch {}
+  }
+
+  // Persist the full exchange (prompt + response text) to the DB, not just the
+  // length metadata emitXapi carries. The learner's API key still never leaves
+  // the browser — only the conversation content is logged (disclosed on the
+  // touchpoint card and in privacy.html).
+  function logConversation({ sessionId, loId, systemPrompt, user, response, ms, ok, err }) {
+    try {
+      if (!global.xapi || typeof global.xapi.logConversation !== 'function') return;
+      global.xapi.logConversation({
+        source: 'touchpoint',
+        session_id: sessionId || null,
+        lo_id: loId || null,
+        model: DEFAULT_MODEL,
+        system_prompt: systemPrompt || '',
+        user_prompt: user || '',
+        response: response || '',
+        ok: !!ok,
+        error: err || null,
+        duration_ms: ms || 0,
       });
     } catch {}
   }

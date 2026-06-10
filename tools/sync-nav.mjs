@@ -189,21 +189,29 @@ const files = readdirSync(repoRoot).filter((f) => f.endsWith('.html'));
 
 let touched = 0, skipped = 0;
 
+// Returns 'noanchor' | 'unchanged' | 'wrote' so callers can treat a missing
+// anchor as a hard failure for pages where the nav is mandatory.
 function tryWrite(file, rewriter) {
   const path = join(repoRoot, file);
   const src = readFileSync(path, 'utf8');
   const out = rewriter(src, file);
-  if (out == null) { skipped++; console.log(`skip ${file} (no anchor)`); return; }
-  if (out === src) { skipped++; return; }
+  if (out == null) { skipped++; console.log(`skip ${file} (no anchor)`); return 'noanchor'; }
+  if (out === src) { skipped++; return 'unchanged'; }
   writeFileSync(path, out);
   touched++;
   console.log(`wrote ${file}`);
+  return 'wrote';
 }
+
+// A session page that produces no anchor would silently ship without the
+// shared handbook nav — the exact "every page looks different" bug this tool
+// exists to prevent. Collect those and fail the build instead of exiting 0.
+const sessionNoAnchor = [];
 
 for (const f of files) {
   if (HANDBOOK_SKIP.has(f)) { skipped++; continue; }
   if (f.startsWith('session-')) {
-    tryWrite(f, rewriteSessionPage);
+    if (tryWrite(f, rewriteSessionPage) === 'noanchor') sessionNoAnchor.push(f);
   } else if (f === 'verifier.html') {
     tryWrite(f, rewriteVerifierPage);
   } else {
@@ -212,3 +220,11 @@ for (const f of files) {
 }
 
 console.log(`\ndone — ${touched} updated, ${skipped} skipped`);
+
+if (sessionNoAnchor.length) {
+  console.error(
+    `\nERROR: ${sessionNoAnchor.length} session page(s) had no nav anchor and ` +
+    `were left without the shared handbook nav: ${sessionNoAnchor.join(', ')}`
+  );
+  process.exit(1);
+}

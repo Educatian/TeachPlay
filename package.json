@@ -19,8 +19,9 @@
     "smoke": "playwright test tests/smoke.spec.mjs --reporter=list",
     "audit": "playwright test tests/audit.spec.mjs --reporter=list",
     "a11y":  "playwright test tests/a11y.spec.mjs --reporter=list",
-    "ci": "npm run build && playwright test --reporter=list",
-    "test": "npm run verify:example"
+    "test:unit": "node --test \"tests/unit/*.test.mjs\"",
+    "ci": "npm run build && npm run test:unit && playwright test --reporter=list",
+    "test": "npm run verify:example && npm run test:unit"
   },
   "repository": {
     "type": "git",
