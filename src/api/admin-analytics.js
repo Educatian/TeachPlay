@@ -86,7 +86,7 @@ export async function handleAdminAnalytics(request, env) {
             AVG(CASE WHEN activity_id LIKE 'self-assessment/pre/%'  THEN score_raw END) AS pre_avg,
             AVG(CASE WHEN activity_id LIKE 'self-assessment/post/%' THEN score_raw END) AS post_avg
           FROM xapi_events
-          WHERE verb = 'answered' AND activity_type = 'self-assessment'
+          WHERE verb = 'responded' AND activity_type = 'self-assessment'
           GROUP BY skill
         `),
       ]);
