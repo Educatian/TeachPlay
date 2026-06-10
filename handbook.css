@@ -3078,28 +3078,3 @@ a.deliverable:hover {
     flex-direction: column;
   }
 }
-
-/* Motion hero accent (start.html only carries a .hero__video). Mirrors the
-   .hero__bg::after still image's placement/blend; the poster is hero-bg.jpg so
-   the still shows before/while the video loads. Reduced-motion and small screens
-   fall back to the static image (no autoplay, no mobile-data cost). */
-.hero__video {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 65%;
-  height: auto;
-  opacity: 0.22;
-  mix-blend-mode: screen;
-  pointer-events: none;
-  z-index: 0;
-}
-.hero:has(.hero__video) .hero__bg::after { opacity: 0; }
-@media (prefers-reduced-motion: reduce) {
-  .hero__video { display: none; }
-  .hero:has(.hero__video) .hero__bg::after { opacity: 0.22; }
-}
-@media (max-width: 640px) {
-  .hero__video { display: none; }
-  .hero:has(.hero__video) .hero__bg::after { opacity: 0.22; }
-}
