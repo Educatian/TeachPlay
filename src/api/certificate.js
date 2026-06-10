@@ -190,6 +190,58 @@ function renderPage({ payload, qrSvgMarkup, verifyUrl, code }) {
 `;
 }
 
+// Friendly on-brand page for the states a learner reaches when they open
+// /certificate WITHOUT a usable claim code: they typed the URL, followed a
+// stale link, or the code was already redeemed/expired. A bare text/plain
+// 400/404 reads like a crash; this explains what happened and what to do
+// next, in the certificate's own crimson/serif styling. Status codes are
+// kept (400/404) for correctness; only the body becomes human-friendly.
+function renderNotice({ status, heading, message, actions }) {
+  const actionHtml = (actions || [])
+    .map((a) => `<a class="btn${a.primary ? ' primary' : ''}" href="${escapeHtml(a.href)}">${escapeHtml(a.label)}</a>`)
+    .join('');
+  const body = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>${escapeHtml(heading)} — ${escapeHtml(ACHIEVEMENT_NAME)}</title>
+  <style>
+    :root { --ink:#1a1a1a; --accent:#990000; --paper:#fdfcf7; --rule:#c9b37d; }
+    * { box-sizing: border-box; }
+    html, body { margin:0; min-height:100%; background:#e5e5e5; color:var(--ink);
+      font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif; }
+    body { display:grid; place-items:center; min-height:100vh; padding:24px; }
+    .card { width:min(560px,100%); background:var(--paper); border:1px solid var(--rule);
+      box-shadow:0 2px 12px rgba(0,0,0,0.15); padding:40px 36px; text-align:center; position:relative; }
+    .card::before { content:""; position:absolute; inset:8px; border:1px solid var(--rule); opacity:.5; pointer-events:none; }
+    .kicker { font:600 11pt/1.2 'Helvetica Neue',Arial,sans-serif; letter-spacing:.28em;
+      color:var(--accent); text-transform:uppercase; margin-bottom:18px; }
+    h1 { font-size:21pt; margin:0 0 14px; font-weight:700; }
+    p { font-size:12.5pt; line-height:1.6; color:#444; margin:0 auto 14px; max-width:42ch; }
+    .actions { margin-top:24px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .btn { display:inline-flex; align-items:center; min-height:42px; padding:0 18px; border-radius:6px;
+      border:1px solid var(--accent); color:var(--accent); background:transparent; text-decoration:none;
+      font:600 11pt/1 'Helvetica Neue',Arial,sans-serif; }
+    .btn.primary { background:var(--accent); color:#fff; }
+    .btn:focus-visible { outline:3px solid #c9b37d; outline-offset:2px; }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div class="kicker">${escapeHtml(CERTIFICATE_TITLE)}</div>
+    <h1>${escapeHtml(heading)}</h1>
+    <p>${message}</p>
+    <div class="actions">${actionHtml}</div>
+  </main>
+</body>
+</html>`;
+  return new Response(body, {
+    status,
+    headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' },
+  });
+}
+
 export async function handleCertificate(request, env, ctx) {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return new Response('Method Not Allowed', { status: 405 });
@@ -197,17 +249,32 @@ export async function handleCertificate(request, env, ctx) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   if (!code || !CODE_PATTERN.test(code)) {
-    return new Response('Missing or malformed claim code.', {
+    return renderNotice({
       status: 400,
-      headers: { 'content-type': 'text/plain; charset=utf-8' },
+      heading: 'No certificate to show yet',
+      message: 'This page prints your certificate once your instructor issues it. ' +
+        'Finish all 12 sessions, request your credential, and you will receive a personal ' +
+        'certificate link by email. Open that link here to print or save your certificate.',
+      actions: [
+        { label: 'Go to the course', href: '/app/', primary: true },
+        { label: 'How issuance works', href: '/credential.html' },
+      ],
     });
   }
 
   const raw = await env.CLAIM_CODES.get(code);
   if (!raw) {
-    return new Response('Unknown, expired, or already-redeemed claim code. Re-issue a code to print the certificate.', {
+    return renderNotice({
       status: 404,
-      headers: { 'content-type': 'text/plain; charset=utf-8' },
+      heading: 'This certificate link is no longer active',
+      message: 'The link has expired or has already been redeemed into a wallet. ' +
+        'If you already claimed your credential, you still hold the signed version — ' +
+        'no further action is needed. If you need to print it again, ask your instructor ' +
+        'to re-issue your certificate link.',
+      actions: [
+        { label: 'Back to the course', href: '/app/', primary: true },
+        { label: 'About this credential', href: '/credential.html' },
+      ],
     });
   }
 
