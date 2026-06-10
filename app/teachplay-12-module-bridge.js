@@ -116,73 +116,73 @@
   const moduleSupport = {
     '01': {
       reading: 'Read Session 01 first, then write the learning-problem statement before choosing a game genre.',
-      video: 'Watch the learning-problem lecture in the guided course.',
+      video: 'Watch the learning-problem concept primer in the guided course.',
       connects: 'This module creates the problem frame that Module 02 turns into a learner/context profile.',
       reference: '/references.html'
     },
     '02': {
       reading: 'Read Session 02 and use the constraint questions to describe one learner group, setting, time limit, and access condition.',
-      video: 'Use the learning-problem lecture as the video anchor, then apply it to your own learner context.',
+      video: 'Use the learning-problem concept primer as the video anchor, then apply it to your own learner context.',
       connects: 'Your learner/context profile becomes the boundary condition for the Module 03 crosswalk.',
       reference: '/facilitator.html'
     },
     '03': {
       reading: 'Read Session 03 and the worked examples before drafting the objective-to-mechanic crosswalk.',
-      video: 'Watch the objective-to-mechanic lecture in the guided course.',
+      video: 'Watch the objective-to-mechanic concept primer in the guided course.',
       connects: 'The crosswalk becomes the design spine for Modules 04 and 05.',
       reference: '/examples.html'
     },
     '04': {
       reading: 'Read Session 04 to decide what learners predict, what feedback they receive, and what they revise.',
-      video: 'Use the objective-to-mechanic lecture as the video anchor for feedback alignment.',
+      video: 'Use the objective-to-mechanic concept primer as the video anchor for feedback alignment.',
       connects: 'The feedback loop gives Module 05 a role and narrative purpose instead of decoration.',
       reference: '/cognitive-load.html'
     },
     '05': {
       reading: 'Read Session 05 and compare your role design with the Chalk and Chance teacher-simulation case.',
-      video: 'Use the AI provenance lecture as the video anchor when role or AI behavior shapes the interaction.',
+      video: 'Use the AI provenance concept primer as the video anchor when role or AI behavior shapes the interaction.',
       connects: 'The role card tells Module 06 what a facilitator must set up, monitor, and debrief.',
       reference: '/ai-use-policy.html'
     },
     '06': {
       reading: 'Read Session 06 and turn the activity into instructions another instructor could run.',
-      video: 'Use the five-minute-loop lecture as the video anchor for keeping facilitation practical.',
+      video: 'Use the five-minute-loop concept primer as the video anchor for keeping facilitation practical.',
       connects: 'The facilitation guide defines the minimum playable conditions for Module 07.',
       reference: '/facilitator.html'
     },
     '07': {
       reading: 'Read Session 07 and reduce the game to one playable slice that proves the learning loop.',
-      video: 'Watch the five-minute-loop lecture in the guided course.',
+      video: 'Watch the five-minute-loop concept primer in the guided course.',
       connects: 'The prototype slice becomes the state/event system specified in Module 08.',
       reference: '/examples.html'
     },
     '08': {
       reading: 'Read Session 08 and specify states, player actions, system responses, failure states, and saved evidence.',
-      video: 'Use the prototype/provenance-log lecture as the video anchor for making implementation decisions reviewable.',
+      video: 'Use the prototype/provenance-log concept primer as the video anchor for making implementation decisions reviewable.',
       connects: 'The interaction spec tells Module 09 what traces the playtest must collect.',
       reference: '/portfolio.html'
     },
     '09': {
       reading: 'Read Session 09 and design a small playtest around the riskiest learning claim.',
-      video: 'Watch the playtest-evidence lecture in the guided course.',
+      video: 'Watch the playtest-evidence concept primer in the guided course.',
       connects: 'The playtest evidence becomes the raw material for the Module 10 audit and Module 11 revision plan.',
       reference: '/rubrics.html'
     },
     '10': {
       reading: 'Read Session 10 and audit cognitive load, accessibility, privacy, AI use, and reward alignment.',
-      video: 'Use the playtest-evidence lecture as the video anchor when interpreting breakdowns and risks.',
+      video: 'Use the playtest-evidence concept primer as the video anchor when interpreting breakdowns and risks.',
       connects: 'The audit identifies which problems Module 11 should revise first.',
       reference: '/cognitive-load.html'
     },
     '11': {
       reading: 'Read Session 11 and rank revisions by evidence strength, learning impact, and effort.',
-      video: 'Use the final-defense lecture as the video anchor for turning changes into a defensible design story.',
+      video: 'Use the final-defense concept primer as the video anchor for turning changes into a defensible design story.',
       connects: 'The revision rationale becomes part of the final defense in Module 12.',
       reference: '/rubrics.html'
     },
     '12': {
       reading: 'Read Session 12 and assemble the blueprint, prototype, AI disclosure, playtest evidence, audit, and revision story.',
-      video: 'Watch the final-defense lecture in the guided course before submitting the portfolio packet.',
+      video: 'Watch the final-defense concept primer in the guided course before submitting the portfolio packet.',
       connects: 'This module closes the pathway by preparing the evidence packet for review and certificate handoff.',
       reference: '/guides/student-completion-guide.html'
     }
@@ -217,7 +217,7 @@
         <div><dt>Evidence</dt><dd>${module.deliverable}</dd></div>
         <div><dt>Case use</dt><dd>${module.caseUse}</dd></div>
         <div><dt>Reading</dt><dd>${support.reading}</dd></div>
-        <div><dt>Video anchor</dt><dd>${support.video}</dd></div>
+        <div><dt>Video anchor</dt><dd>${support.video} The written session is the primary instruction; the avatar clip is a one-minute concept primer.</dd></div>
         <div><dt>Connection</dt><dd>${support.connects}</dd></div>
       </dl>
       <details>
