@@ -226,6 +226,7 @@ og-image.svg / .png     Social preview card (1200 × 630)
 - **Cohen's κ** — inter-rater reliability on double-rated deliverables, with calibration trigger at κ < 0.70
 - **Skills growth** — pre/post 8-skill Likert delta per cohort, rendered as bars with Δ
 - **CLR export** — whole-cohort or per-learner, as `ClrCredential` JSON
+- **Measurement & validity** — `GET /api/admin/psychometrics` turns the aggregates into measured psychometrics (quiz **KR-20 / α** + item p-value & point-biserial discrimination, rubric difficulty + **inter-rater reliability** via Cohen's / Fleiss' κ + Gwet's AC1, and metacognitive **calibration**: signed bias, Brier, ECE, Goodman-Kruskal γ, pre→post shift). The Worker computes only closed-form stats live; iterative **1PL/Rasch IRT** + bootstrap κ CIs run offline in `analysis/psychometrics.py` over the de-identified `GET /api/admin/export`. See [`docs/ANALYTICS.md`](docs/ANALYTICS.md).
 
 </details>
 

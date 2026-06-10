@@ -44,3 +44,7 @@ playwright-report/
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Offline psychometrics outputs are derived from a (de-identified) export and
+# may reflect demo/real cohort data — regenerate locally, don't commit.
+analysis/out/

@@ -1,0 +1,4 @@
+# Offline psychometrics kit. Light deps only — runs on the user's GPU box but
+# uses CPU/scipy (no torch needed). Pin loosely; these are stable APIs.
+numpy>=1.24
+scipy>=1.10
