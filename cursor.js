@@ -19,6 +19,17 @@
 (function () {
   'use strict';
 
+  // DISABLED 2026-06-10. The game-style custom cursor hid the native cursor
+  // globally (`body * { cursor: none !important }`) and updated the dot only on
+  // mousemove + the ring only in rAF; on content-heavy pages any brief
+  // main-thread/compositor stall left the dot frozen with no native cursor to
+  // fall back to — reported as a "frozen cursor" on /start. For a credential
+  // site the native OS cursor is the right call. This early return restores it
+  // everywhere and never adds `hb-cursor-on`, so `cursor:none` is never applied.
+  // To bring the effect back, make it fail-safe (restore the native cursor on
+  // any stall) and remove this return.
+  return;
+
   if (window.matchMedia('(hover: none)').matches) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (window.innerWidth < 720) return;
