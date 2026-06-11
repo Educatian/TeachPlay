@@ -17,7 +17,9 @@
     const s = document.createElement('style');
     s.id = 'tp-app-search-style';
     s.textContent = [
-      '#tp-app-search { position: fixed; top: 12px; right: 14px; z-index: 9990; }',
+      // top is set dynamically (below the React header) by positionPill();
+      // the 76px here is only the pre-measure fallback.
+      '#tp-app-search { position: fixed; top: 76px; right: 14px; z-index: 9990; }',
       '#tp-app-search .site-header__search {',
       '  display: flex; align-items: center; gap: 4px;',
       '  background: #fff; border: 1px solid #d9d4cc; border-radius: 999px;',
@@ -41,12 +43,41 @@
       '  box-shadow: 0 0 0 3px rgba(190,26,47,.18), 0 4px 14px rgba(16,24,40,.12);',
       '}',
       '@media (max-width: 720px) {',
-      '  #tp-app-search { top: 8px; right: 8px; }',
+      '  #tp-app-search { right: 8px; }',
       '  #tp-app-search input[type="search"] { width: 112px; }',
       '}',
       '@media print { #tp-app-search { display: none; } }',
     ].join('\n');
     document.head.appendChild(s);
+  }
+
+  // The pill must NEVER sit on top of the React header's own controls (the
+  // Sign in button lives at the header's top-right and a fixed top:12px pill
+  // covered it on narrower laptop viewports — field-reported). So we park the
+  // pill just BELOW the header, and below the pre-survey banner when that is
+  // showing. Re-measured on resize, on tp:layout (banner mount/dismiss), and
+  // on a few delayed ticks while React mounts.
+  function positionPill() {
+    const wrap = document.getElementById('tp-app-search');
+    if (!wrap) return;
+    let top = 76; // fallback ≈ header height + gap
+    const header = document.querySelector('#root header') || document.querySelector('header');
+    if (header) {
+      const r = header.getBoundingClientRect();
+      if (r.height > 0 && r.bottom > 0 && r.bottom < 220) top = Math.round(r.bottom) + 10;
+    }
+    const banner = document.getElementById('tp-presurvey-banner');
+    if (banner) {
+      const b = banner.getBoundingClientRect();
+      if (b.height > 0 && b.bottom > top - 10) top = Math.round(b.bottom) + 10;
+    }
+    wrap.style.top = top + 'px';
+  }
+
+  function watchLayout() {
+    [400, 1200, 2600].forEach((ms) => setTimeout(positionPill, ms));
+    window.addEventListener('resize', positionPill);
+    window.addEventListener('tp:layout', positionPill);
   }
 
   function inject() {
@@ -61,6 +92,8 @@
         '<button type="submit" class="site-header__search-btn" aria-label="Search">🔍</button>' +
       '</form>';
     document.body.appendChild(wrap);
+    positionPill();
+    watchLayout();
 
     // Load the shared search engine once. If it is somehow already present,
     // re-run its (idempotent) wiring so it picks up this freshly-injected form.

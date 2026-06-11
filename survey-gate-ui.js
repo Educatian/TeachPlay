@@ -22,6 +22,33 @@
   var TOK = (function () { try { return localStorage.getItem('hb:learner_token') || ''; } catch (_) { return ''; } })();
   if (!LID) return; // not enrolled yet — enroll.js handles registration first
 
+  // Learners who signed in via the React shell before it persisted tokens have
+  // a learner_id but no session token, so every gated call would 403. The
+  // enroll endpoint is idempotent per email and returns the row's token; a
+  // silent re-enroll with the stored email restores the session.
+  function ensureToken() {
+    if (TOK) return Promise.resolve(TOK);
+    var email = '', name = '';
+    try {
+      email = localStorage.getItem('hb:learner_email') || '';
+      name = localStorage.getItem('hb:learner_name') || '';
+    } catch (_) {}
+    if (!email) return Promise.resolve('');
+    return fetch('/api/enroll', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name || email.split('@')[0], email: email, cohort: '2026-spring' }),
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.ok || !d.session_token) return '';
+      try {
+        localStorage.setItem('hb:learner_id', d.learner_id);
+        localStorage.setItem('hb:learner_token', d.session_token);
+      } catch (_) {}
+      LID = d.learner_id; TOK = d.session_token;
+      return TOK;
+    }).catch(function () { return ''; });
+  }
+
   var isSessionPage = /session-\d+\.html|\/start\.html/i.test(location.pathname) ||
                       /\/start(\.html)?$/i.test(location.pathname);
   var isClaimFlow = /progress\.html|claim\.html|credential\.html/i.test(location.pathname);
@@ -66,8 +93,10 @@
   }
 
   function run() {
-  fetch('/api/completion-check?learner_id=' + encodeURIComponent(LID), {
+  ensureToken().then(function () {
+  return fetch('/api/completion-check?learner_id=' + encodeURIComponent(LID), {
     headers: { 'X-Learner-Token': TOK },
+  });
   }).then(function (r) { return r.json(); }).then(function (data) {
     if (!data || !data.ok || !data.gate) return;
     var g = data.gate;
