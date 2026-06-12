@@ -7,16 +7,31 @@
   const pendingNoticeKey = 'tp:evidence-pending-notice';
   const evidenceButtonLabel = 'Submit Evidence Packet';
   const sections = ['Context', 'Alignment', 'GenAI Design', 'Evidence', 'Reflection'];
+  const headingToSection = {
+    'Context Setting': 'Context',
+    'Constructive Alignment': 'Alignment',
+    'GenAI Design': 'GenAI Design',
+    'GenAI Design Process': 'GenAI Design',
+    'Prototype & Evidence': 'Evidence',
+    'Final Reflection': 'Reflection',
+  };
   const fieldLabels = {
     'e.g., 7th Grade Biology Students, Corporate Trainees...': 'targetAudience',
     'The learning will take place in a hybrid classroom...': 'contextBrief',
+    'ChatGPT, Midjourney, Claude, Blockade Labs...': 'genAiToolsUsed',
     'https://...': 'prototypeLink',
     'Summary of feedback from at least 2 playtesters...': 'testingNotes',
     '## Prompt 1\nAct as a...': 'promptDocumentation',
   };
 
   const normalize = (text) => (text || '').replace(/\s+/g, ' ').trim();
-  const isEditor = () => normalize(document.body.textContent).includes('Evidence Submission');
+  // Strict: the editor's page header reads exactly "Evidence Submission"
+  // (an h2 in the bundle; the heading-refine overlay may promote it to h1).
+  // The course view's final-submission promo panel mentions the phrase in
+  // body text, so a substring match would treat that view as the editor and
+  // replay draft values into its inputs.
+  const isEditor = () =>
+    [...document.querySelectorAll('h1, h2')].some((h) => normalize(h.textContent) === 'Evidence Submission');
   const isSubmitted = () => Boolean(localStorage.getItem(submittedKey));
   const learnerIdentity = () => window.TeachPlayLearnerIdentity?.current?.() || null;
 
@@ -29,24 +44,38 @@
     localStorage.setItem(draftKey, JSON.stringify({ ...readDraft(), ...next, updatedAt: new Date().toISOString() }));
   };
 
-  const activeSection = () => {
+  // The section currently rendered, read from the DOM only. Returns null when
+  // no editor heading is on screen (never falls back to the draft — the draft
+  // is what we are trying to keep in sync, so a fallback would self-confirm).
+  const domSection = () => {
     const heading = [...document.querySelectorAll('h3')]
-      .find((node) => ['Context Setting', 'Constructive Alignment', 'GenAI Design', 'Prototype & Evidence', 'Final Reflection']
-        .includes(normalize(node.textContent)));
-    const title = normalize(heading?.textContent);
-    if (title === 'Context Setting') return 'Context';
-    if (title === 'Constructive Alignment') return 'Alignment';
-    if (title === 'Prototype & Evidence') return 'Evidence';
-    if (title === 'Final Reflection') return 'Reflection';
-    return sections.includes(title) ? title : readDraft().activeSection || 'Context';
+      .find((node) => headingToSection[normalize(node.textContent)]);
+    return heading ? headingToSection[normalize(heading.textContent)] : null;
   };
 
   const buttonByText = (text) =>
     [...document.querySelectorAll('button')].find((button) => normalize(button.textContent) === text);
 
-  const fieldKey = (field, index) => {
-    const placeholder = field.getAttribute('placeholder') || '';
-    return fieldLabels[placeholder] || `${activeSection()}:${placeholder || field.name || field.id || index}`;
+  // Stable-ish autosave keys. Named fields keep their label key. Repeated
+  // fields (the Alignment rows all share placeholders) get a per-occurrence
+  // suffix so row N's value never bleeds into row M.
+  const enumerateFields = () => {
+    const seen = {};
+    const section = domSection();
+    // #root only: overlay widgets (e.g. the handbook search pill) append
+    // inputs to <body> and must not enter the evidence draft.
+    return [...root.querySelectorAll('input:not([type="file"]), textarea')].map((field) => {
+      const placeholder = field.getAttribute('placeholder') || '';
+      if (fieldLabels[placeholder]) return { field, key: fieldLabels[placeholder] };
+      // The Final Reflection textarea has no placeholder; it is the only
+      // unmarked textarea rendered in that section.
+      if (!placeholder && section === 'Reflection' && field instanceof HTMLTextAreaElement) {
+        return { field, key: 'reflectionText' };
+      }
+      const base = placeholder || field.name || field.id || 'field';
+      const occurrence = seen[base] = (seen[base] || 0) + 1;
+      return { field, key: `${base}#${occurrence - 1}`, base, occurrence: occurrence - 1 };
+    });
   };
 
   const setNativeValue = (field, value) => {
@@ -61,40 +90,98 @@
     if (!isEditor()) return;
     const draft = readDraft();
     const fields = { ...(draft.fields || {}) };
-    [...document.querySelectorAll('input:not([type="file"]), textarea')].forEach((field, index) => {
-      fields[fieldKey(field, index)] = field.value;
-    });
-    writeDraft({ activeSection: activeSection(), fields });
+    enumerateFields().forEach(({ field, key }) => { fields[key] = field.value; });
+    const current = domSection();
+    writeDraft({ fields, ...(current ? { activeSection: current } : {}) });
   };
 
+  // One-shot restore when the editor mounts (page reload / re-entering the
+  // editor view). React owns the live state afterwards — re-running this on
+  // every mutation is what used to bounce "Next Section" clicks back and
+  // clone Alignment rows, so it must never run continuously.
   const restoreFields = () => {
-    if (!isEditor()) return;
     const fields = readDraft().fields || {};
-    [...document.querySelectorAll('input:not([type="file"]), textarea')].forEach((field, index) => {
-      const value = fields[fieldKey(field, index)];
-      if (typeof value === 'string' && field.value !== value) setNativeValue(field, value);
+    enumerateFields().forEach(({ field, key, occurrence }) => {
+      let value = fields[key];
+      // Legacy drafts (pre per-occurrence keys) stored one value per section:placeholder.
+      if (typeof value !== 'string' && occurrence === 0) {
+        const placeholder = field.getAttribute('placeholder') || '';
+        const legacy = Object.keys(fields).find((k) => k.endsWith(`:${placeholder}`) && placeholder);
+        if (legacy) value = fields[legacy];
+      }
+      if (typeof value === 'string' && value && field.value !== value) setNativeValue(field, value);
     });
   };
 
-  const restoreActiveSection = () => {
-    if (!isEditor()) return;
-    const wanted = readDraft().activeSection;
-    if (sections.includes(wanted) && activeSection() !== wanted) buttonByText(wanted)?.click();
-    setTimeout(restoreFields, 60);
+  // Alignment rows: if the draft holds more rows than React rendered, click
+  // "Add Alignment Row" until the counts match, then restore.
+  const ensureAlignmentRows = (onDone, attempt = 0) => {
+    const fields = readDraft().fields || {};
+    let wantedRows = 1;
+    Object.keys(fields).forEach((key) => {
+      const m = key.match(/^(.+)#(\d+)$/);
+      if (m && typeof fields[key] === 'string' && fields[key]) wantedRows = Math.max(wantedRows, Number(m[2]) + 1);
+    });
+    const counts = {};
+    enumerateFields().forEach(({ base }) => { if (base) counts[base] = (counts[base] || 0) + 1; });
+    const haveRows = Math.max(1, ...Object.values(counts));
+    const addButton = buttonByText('Add Alignment Row');
+    if (wantedRows > haveRows && addButton && attempt < 12) {
+      addButton.click();
+      setTimeout(() => ensureAlignmentRows(onDone, attempt + 1), 90);
+      return;
+    }
+    onDone();
   };
 
+  const restoreCurrentSection = () => {
+    if (domSection() === 'Alignment') ensureAlignmentRows(restoreFields);
+    else restoreFields();
+  };
+
+  // Mount restore retries the section-tab click: right after the editor
+  // mounts React may not have attached handlers yet, so a single click can be
+  // swallowed. While `restoring` is set the DOM→draft section sync is paused,
+  // otherwise the still-default section would overwrite the saved one.
+  let restoring = false;
+  const restoreEditorState = () => {
+    restoring = true;
+    const wanted = readDraft().activeSection;
+    let attempts = 0;
+    const attempt = () => {
+      if (!isEditor()) { restoring = false; return; } // editor left mid-restore
+      const current = domSection();
+      if (!sections.includes(wanted) || current === wanted || attempts >= 12) {
+        lastSyncedSection = domSection();
+        setTimeout(() => {
+          restoreCurrentSection();
+          restoredSections.add(domSection());
+          restoring = false;
+        }, 80);
+        return;
+      }
+      attempts += 1;
+      buttonByText(wanted)?.click();
+      setTimeout(attempt, 250);
+    };
+    attempt();
+  };
+
+  // File picks are metadata-only bookkeeping for the server payload — they
+  // must not navigate or replay the draft (that used to yank learners who
+  // touched a file input straight to the Evidence tab).
   const rememberFiles = (files) => {
     const metadata = [...files].map((file) => ({ name: file.name, size: file.size, type: file.type || '' }));
-    writeDraft({ activeSection: 'Evidence', files: metadata });
-    [80, 300, 900].forEach((delay) => setTimeout(restoreActiveSection, delay));
+    writeDraft({ files: metadata });
   };
 
   const hasEvidencePacket = () => {
     const draft = readDraft();
     const fields = draft.fields || {};
-    const textEvidence = ['targetAudience', 'contextBrief', 'prototypeLink', 'testingNotes', 'promptDocumentation']
+    const named = ['targetAudience', 'contextBrief', 'genAiToolsUsed', 'prototypeLink', 'testingNotes', 'promptDocumentation', 'reflectionText']
       .some((key) => normalize(fields[key]).length > 0);
-    return textEvidence || (draft.files || []).length > 0;
+    const anyRow = Object.keys(fields).some((key) => key.includes('#') && normalize(fields[key]).length > 0);
+    return named || anyRow || (draft.files || []).length > 0;
   };
 
   // ── Server submission (system of record) ───────────────────────────────────
@@ -110,15 +197,22 @@
     const fields = draft.fields || {};
     const files = draft.files || [];
     const fileMeta = files[0] ? { name: files[0].name, size: files[0].size, type: files[0].type } : undefined;
+    const alignmentRows = Object.keys(fields)
+      .filter((key) => key.includes('#') && normalize(fields[key]).length > 0)
+      .sort()
+      .map((key) => ({ field: key, value: fields[key] }));
     // The current editor collects one cross-deliverable packet. Attach the whole
     // structured packet to each deliverable so the instructor sees the full
     // context per artifact; the instructor scores each deliverable's criteria.
     const content = {
       targetAudience: fields.targetAudience || '',
       contextBrief: fields.contextBrief || '',
+      genAiToolsUsed: fields.genAiToolsUsed || '',
       prototypeLink: fields.prototypeLink || '',
       testingNotes: fields.testingNotes || '',
       promptDocumentation: fields.promptDocumentation || '',
+      reflectionText: fields.reflectionText || '',
+      alignmentRows,
       activeSection: draft.activeSection || '',
       submittedAt: new Date().toISOString(),
     };
@@ -207,6 +301,28 @@
     }
   };
 
+  // The Reflection deliverable is written directly in its text box; the file
+  // dropzone lives under Prototype & Evidence. Say so where learners look.
+  const reflectionUploadNote = () => {
+    if (domSection() !== 'Reflection') return;
+    if (document.getElementById('tp-reflection-upload-note')) return;
+    const heading = [...document.querySelectorAll('h3')]
+      .find((node) => normalize(node.textContent) === 'Final Reflection');
+    if (!heading) return;
+    const note = document.createElement('div');
+    note.id = 'tp-reflection-upload-note';
+    note.className = 'tp-evidence-notice tp-evidence-notice--info';
+    note.innerHTML = 'Write your reflection directly in the text box below — no file upload is needed here. ' +
+      'Screenshots, documents, and other files are attached in the <strong>Evidence</strong> section. ';
+    const jump = document.createElement('button');
+    jump.type = 'button';
+    jump.textContent = 'Go to Evidence uploads →';
+    jump.className = 'tp-evidence-jump';
+    jump.addEventListener('click', () => buttonByText('Evidence')?.click());
+    note.appendChild(jump);
+    heading.insertAdjacentElement('afterend', note);
+  };
+
   document.addEventListener('input', (event) => {
     if (event.target?.matches?.('input:not([type="file"]), textarea')) collectFields();
   }, true);
@@ -215,10 +331,7 @@
     const button = event.target?.closest?.('button');
     if (!button) return;
     const label = normalize(button.textContent);
-    if (sections.includes(label)) {
-      writeDraft({ activeSection: label });
-      setTimeout(restoreFields, 80);
-    }
+    if (sections.includes(label)) writeDraft({ activeSection: label });
     if (label === 'Submit for Review' && isEditor() && !markSubmitted()) {
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -258,19 +371,71 @@
         background: #f0fdf4;
         color: #166534;
       }
+      .tp-evidence-notice--info {
+        border-color: #c7d7f0;
+        background: #f4f8ff;
+        color: #1e3a5f;
+      }
+      .tp-evidence-jump {
+        display: inline-block;
+        margin-top: 8px;
+        border: 1px solid #1e3a5f;
+        border-radius: 6px;
+        background: transparent;
+        color: #1e3a5f;
+        padding: 5px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
     `;
     document.head.appendChild(style);
   };
 
+  let editorWasVisible = false;
+  let lastSyncedSection = null;
+  let restoredSections = new Set();
+
   const run = () => {
     injectStyles();
-    restoreActiveSection();
+    const editorVisible = isEditor();
+
+    if (editorVisible && !editorWasVisible) {
+      // Editor just (re)mounted — restore the saved section, then React owns
+      // navigation. Per-section field values restore on first visit below.
+      restoredSections = new Set();
+      restoreEditorState();
+    }
+    editorWasVisible = editorVisible;
+
+    if (editorVisible) {
+      if (!restoring) {
+        // Sync the draft FROM the DOM (never the DOM from the draft): whatever
+        // section the learner navigated to — tabs, Next Section, Back — becomes
+        // the section restored after a reload.
+        const current = domSection();
+        if (current && current !== lastSyncedSection) {
+          lastSyncedSection = current;
+          if (readDraft().activeSection !== current) writeDraft({ activeSection: current });
+          // First visit to this section since mount: replay its saved values
+          // once (React state starts empty after a remount). Restores only
+          // non-empty saved values into differing fields, so live edits and
+          // intentional clears are never overwritten.
+          if (!restoredSections.has(current)) {
+            restoredSections.add(current);
+            restoreCurrentSection();
+          }
+        }
+      }
+      reflectionUploadNote();
+    }
+
     guardCertificateButton();
     const pendingNotice = localStorage.getItem(pendingNoticeKey);
-    if (pendingNotice && isEditor()) {
+    if (pendingNotice && editorVisible) {
       showNotice(pendingNotice);
       localStorage.removeItem(pendingNoticeKey);
-    } else if (isEditor() && !isSubmitted() && !document.querySelector('[data-tp-evidence-notice]')) {
+    } else if (editorVisible && !isSubmitted() && !document.querySelector('[data-tp-evidence-notice]')) {
       showNotice('Submit your evidence packet here. The certificate preview opens after the packet is saved for review.');
     }
   };

@@ -152,7 +152,7 @@
             <span>The official certificate is issued after authenticated submission review. This preview keeps the learner journey coherent during orientation and screen-recorded demos.</span>
           </div>
           <div class="tp-cert-actions">
-            <a href="/guides/post-completion-survey.html?source=certificate-preview">Complete post-credential survey</a>
+            <a href="/guides/post-completion-survey.html?source=certificate-preview" target="_blank" rel="noopener">Complete post-credential survey ↗</a>
             <a href="/credential/assertion-example-v3.json" download>Download sample credential JSON</a>
             <a href="/credential.html">Open credential standard</a>
             <button type="button" data-tp-return-dashboard>Return to Dashboard</button>

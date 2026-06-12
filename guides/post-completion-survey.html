@@ -558,6 +558,23 @@
           status.style.color = '#1a6e2e';
           status.textContent = data.message;
           button.textContent = 'Survey submitted';
+          // Don't dead-end here — point to the remaining credential steps.
+          var next = document.getElementById('survey-next-steps');
+          if (!next) {
+            next = document.createElement('div');
+            next.id = 'survey-next-steps';
+            next.style.cssText = 'margin-top:18px;padding:18px 20px;background:#f4f8ff;border:1px solid #c7d7f0;border-radius:10px;';
+            next.innerHTML =
+              '<p style="margin:0 0 8px;color:#1f3a5f;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;">What’s next</p>' +
+              '<p style="margin:0 0 14px;color:#475467;font-size:14.5px;line-height:1.55;">Thank you! Your survey is recorded. Continue with the credential handoff:</p>' +
+              '<div style="display:flex;flex-wrap:wrap;gap:10px;">' +
+              '<a href="/app/?goto=evidence" style="display:inline-block;background:#1f3a5f;color:#fff;text-decoration:none;border-radius:8px;padding:11px 14px;font-size:14px;font-weight:800;">Submit / review my evidence packet →</a>' +
+              '<a href="/session-12.html#claim-credential" style="display:inline-block;background:#9e1b32;color:#fff;text-decoration:none;border-radius:8px;padding:11px 14px;font-size:14px;font-weight:800;">Request my credential →</a>' +
+              '<a href="/progress.html" style="display:inline-block;border:1px solid #9e1b32;color:#9e1b32;text-decoration:none;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:800;">Check my status →</a>' +
+              '</div>';
+            status.insertAdjacentElement('afterend', next);
+            next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
         } catch (error) {
           status.style.color = '#9e1b32';
           status.textContent = error.message || 'Survey submission failed. Please try again.';

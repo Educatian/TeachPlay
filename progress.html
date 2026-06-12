@@ -39,6 +39,17 @@
 
     #lookup-section { display: none; }
     #progress-section { display: none; }
+
+    /* Path to credential */
+    .path-steps { list-style: none; counter-reset: step; }
+    .path-steps li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #f0ede8; font-size: 14.5px; line-height: 1.5; }
+    .path-steps li:last-child { border-bottom: none; }
+    .path-steps .marker { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: #f0ede8; color: #888; }
+    .path-steps li.done .marker { background: #1a7f37; color: #fff; }
+    .path-steps li.next .marker { background: #be1a2f; color: #fff; }
+    .path-steps .step-cta { display: inline-block; margin-top: 6px; background: #be1a2f; color: #fff; text-decoration: none; border-radius: 6px; padding: 8px 14px; font-size: 13.5px; font-weight: 600; }
+    .path-steps .step-note { color: #888; font-size: 13px; }
+    .survey-ok { background: #e6f4ea; border: 1px solid #a8d5b5; color: #1a5c2e; border-radius: 8px; padding: 14px 18px; font-size: 14.5px; line-height: 1.5; margin-bottom: 20px; }
   </style>
 </head>
 <body>
@@ -79,6 +90,11 @@
       </div>
     </div>
 
+    <div class="card" id="path-card">
+      <h2>Path to your credential</h2>
+      <ol class="path-steps" id="path-steps"></ol>
+    </div>
+
     <div class="card">
       <h2>Credential status</h2>
       <div class="cred-banner" id="cred-banner"></div>
@@ -98,8 +114,10 @@
 
   // Recovery link from the "resume progress" email: ?lid=<id>&t=<token>.
   // Re-seed this device's session, then strip the params from the URL.
+  var surveyJustDone = false;
   try {
     var qp = new URLSearchParams(location.search);
+    surveyJustDone = qp.get('survey') === 'ok'; // Qualtrics post-survey return
     var lid = qp.get('lid'), tok = qp.get('t');
     if (lid) {
       localStorage.setItem('hb:learner_id', lid);
@@ -107,6 +125,15 @@
       history.replaceState(null, '', location.pathname);
     }
   } catch (e) {}
+
+  if (surveyJustDone) {
+    var okNote = document.createElement('div');
+    okNote.className = 'survey-ok';
+    okNote.innerHTML = '<strong>✓ Post-program survey received — thank you!</strong> ' +
+      'Your remaining steps toward the credential are listed below.';
+    var wrap = document.querySelector('.wrap');
+    wrap.insertBefore(okNote, wrap.children[2]);
+  }
 
   var learnerId = localStorage.getItem('hb:learner_id');
 
@@ -207,15 +234,116 @@
     // Credential status
     var banner = document.getElementById('cred-banner');
     var status = learner.cred_status;
+    var evidence = data.evidence || { applicable: false };
     banner.className = 'cred-banner cred-banner--' + (status || 'none');
+    var noneMsg;
+    if (!completion.complete) {
+      noneMsg = 'Complete all 12 sessions to begin the credential steps.';
+    } else if (evidence.applicable && !evidence.submitted) {
+      noneMsg = 'You\'ve completed all sessions. Next: <a href="/app/?goto=evidence">submit your evidence packet</a> ' +
+        'for instructor review, then request your credential on <a href="session-12.html#claim-credential">Session 12</a>.';
+    } else {
+      noneMsg = 'You\'ve completed all sessions. Go to <a href="session-12.html#claim-credential">Session 12</a> to request your credential.';
+    }
     var messages = {
-      none:    completion.complete
-        ? 'You\'ve completed all sessions. Go to <a href="session-12.html#claim-credential">Session 12</a> to request your credential.'
-        : 'Complete all 12 sessions to request your credential.',
+      none:    noneMsg,
       pending: 'Your credential request is pending instructor review. You\'ll receive an email once approved.',
       issued:  '✓ Your credential has been issued. Check your email for the claim link.',
     };
     banner.innerHTML = messages[status] || messages.none;
+
+    renderPath(data, surveyJustDone);
+
+    // The survey-gate Worker records Qualtrics completion server-side; ask it
+    // so the survey step shows done on later visits too (not only on the
+    // ?survey=ok return redirect).
+    var lid = localStorage.getItem('hb:learner_id');
+    if (lid) {
+      fetch('/api/completion-check?learner_id=' + encodeURIComponent(lid), {
+        headers: { 'X-Learner-Token': localStorage.getItem('hb:learner_token') || '' },
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (d && d.ok && d.gate && d.gate.survey && d.gate.survey.active && d.gate.survey.completed) {
+          renderPath(data, true);
+        }
+      }).catch(function () {});
+    }
+  }
+
+  // "Path to your credential" — the step map field-testers asked for: the
+  // post-survey return used to land here with no pointer to the evidence
+  // packet or the claim form.
+  function renderPath(data, surveyDone) {
+    var completion = data.completion || {};
+    var evidence = data.evidence || { applicable: false };
+    var status = (data.learner || {}).cred_status;
+
+    var steps = [];
+    steps.push({
+      label: 'Complete all 12 sessions',
+      done: !!completion.complete,
+      note: completion.complete ? null : (completion.count || 0) + ' of 12 done',
+      cta: completion.complete ? null : { href: 'index.html', text: 'Open the sessions →' },
+    });
+    if (evidence.applicable) {
+      steps.push({
+        label: 'Submit your evidence packet for instructor review',
+        done: !!evidence.submitted,
+        note: evidence.submitted ? null : (evidence.deliverables || 0) + ' of ' + (evidence.required || 5) + ' deliverables received',
+        cta: evidence.submitted ? null : { href: '/app/?goto=evidence', text: 'Open the evidence submission editor →' },
+        locked: !completion.complete,
+      });
+    }
+    steps.push({
+      label: 'Request your credential on Session 12',
+      done: status === 'pending' || status === 'issued',
+      note: status === 'pending' ? 'Requested — pending instructor review' : null,
+      cta: (status === 'pending' || status === 'issued') ? null : { href: 'session-12.html#claim-credential', text: 'Go to the request form →' },
+      locked: !completion.complete || (evidence.applicable && !evidence.submitted),
+    });
+    steps.push({
+      label: 'Complete the post-program survey',
+      done: !!surveyDone,
+      note: surveyDone ? null : 'If the survey is still open for you, a banner with your personal link appears at the top of this page.',
+      locked: !completion.complete,
+    });
+    steps.push({
+      label: 'Claim your signed credential from the email link',
+      done: status === 'issued',
+      locked: status !== 'issued',
+    });
+
+    var nextMarked = false;
+    var list = document.getElementById('path-steps');
+    list.innerHTML = '';
+    steps.forEach(function (step, i) {
+      var li = document.createElement('li');
+      var cls = step.done ? 'done' : '';
+      if (!step.done && !step.locked && !nextMarked) { cls = 'next'; nextMarked = true; }
+      li.className = cls;
+      var marker = document.createElement('span');
+      marker.className = 'marker';
+      marker.textContent = step.done ? '✓' : String(i + 1);
+      li.appendChild(marker);
+      var body = document.createElement('div');
+      var label = document.createElement('div');
+      label.textContent = step.label;
+      body.appendChild(label);
+      if (step.note) {
+        var note = document.createElement('div');
+        note.className = 'step-note';
+        note.textContent = step.note;
+        body.appendChild(note);
+      }
+      if (step.cta && cls === 'next') {
+        var a = document.createElement('a');
+        a.className = 'step-cta';
+        a.href = step.cta.href;
+        a.textContent = step.cta.text;
+        body.appendChild(a);
+      }
+      li.appendChild(body);
+      list.appendChild(li);
+    });
   }
 })();
 </script>

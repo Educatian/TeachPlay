@@ -15,6 +15,7 @@
  */
 import { sendEmail } from '../lib/email.js';
 import { escapeHtml, randomToken, getClientIp, rateLimit, learnerTokenDecision } from '../lib/security.js';
+import { rubricTablesExist, DELIVERABLES } from '../lib/rubric.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -114,6 +115,20 @@ export async function handleProgress(request, env) {
   const sessions     = (sessionsRes.results || []).map(r => r.activity_id);
   const quizStats    = quizRes.results?.[0] || {};
 
+  // Evidence packet status — feature-detected (mig 0008). Lets the progress
+  // page show "submit your evidence packet" as an explicit step instead of
+  // learners discovering it as a 422 at approval time.
+  let evidence = { applicable: false, submitted: false, deliverables: 0, required: DELIVERABLES.length };
+  try {
+    if (await rubricTablesExist(env)) {
+      const row = await env.DB.prepare(
+        'SELECT COUNT(DISTINCT deliverable_id) AS cnt FROM evidence_submissions WHERE learner_id = ?'
+      ).bind(learner.id).first();
+      const cnt = row ? Number(row.cnt) || 0 : 0;
+      evidence = { applicable: true, submitted: cnt >= DELIVERABLES.length, deliverables: cnt, required: DELIVERABLES.length };
+    }
+  } catch { /* progress display must never fail on the evidence lookup */ }
+
   return json({
     ok: true,
     learner: {
@@ -133,5 +148,6 @@ export async function handleProgress(request, env) {
       correct:    quizStats.correct   || 0,
       avg_score:  quizStats.avg_score != null ? Math.round(quizStats.avg_score * 10) / 10 : null,
     },
+    evidence,
   });
 }
