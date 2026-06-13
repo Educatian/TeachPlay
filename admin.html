@@ -102,6 +102,11 @@
     .deliv-block__art dt { font-weight: 600; color: #555; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 8px; }
     .deliv-block__art dd { margin: 2px 0 0; white-space: pre-wrap; word-break: break-word; }
     .deliv-block__art .nofile { color: #aaa; font-style: italic; }
+    .evi-files { list-style: none; margin: 0; padding: 0; }
+    .evi-files li { margin: 4px 0; }
+    .evi-file-dl { border: 1px solid #9a1b30; background: #fff; color: #9a1b30; border-radius: 6px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .evi-file-dl:hover { background: #9a1b30; color: #fff; }
+    .evi-files small { color: #888; }
     .crit-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 9px 16px; border-bottom: 1px solid #f4f3f0; }
     .crit-row:last-child { border-bottom: none; }
     .crit-row__label { font-size: 13px; }
@@ -637,6 +642,7 @@
     var subBy = {};
     (data.submissions || []).forEach(function (s) { subBy[String(s.deliverable_id).toUpperCase()] = s; });
     var scores = data.scores || {};
+    var files = data.files || [];
 
     if (data.enabled === false) {
       document.getElementById('score-body').innerHTML =
@@ -646,6 +652,21 @@
     var levels = data.meta.levels;     // [Emerging, Developing, Proficient, Exemplary]
     var passLevel = data.meta.pass_level; // Proficient
     var html = '';
+
+    // Uploaded artifact files (screenshots, GDD, …). Downloaded through an
+    // authenticated fetch so the Bearer key is never put in a URL.
+    if (files.length) {
+      html += '<div class="deliv-block"><div class="deliv-block__head"><h3>Uploaded files</h3>' +
+              '<span class="sub">' + files.length + ' file' + (files.length === 1 ? '' : 's') + '</span></div>' +
+              '<div class="deliv-block__art"><ul class="evi-files">';
+      files.forEach(function (f) {
+        var kb = f.file_size ? Math.max(1, Math.round(f.file_size / 1024)) + ' KB' : '';
+        html += '<li><button type="button" class="evi-file-dl" data-id="' + esc(f.id) + '" data-name="' + esc(f.file_name || 'evidence') + '">⬇ ' +
+                esc(f.file_name || 'evidence') + '</button> <small>' + esc(f.file_type || '') +
+                (kb ? ' · ' + kb : '') + ' · ' + esc(f.storage || '') + '</small></li>';
+      });
+      html += '</ul></div></div>';
+    }
 
     data.meta.rubric.forEach(function (d) {
       var sub = subBy[d.deliverable] || null;
@@ -687,6 +708,27 @@
 
     document.getElementById('score-body').innerHTML = html;
     updateVerdictLine(data.verdict);
+
+    // Wire evidence-file downloads (authenticated fetch -> blob).
+    document.getElementById('score-body').querySelectorAll('.evi-file-dl').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        var id = btn.getAttribute('data-id');
+        var name = btn.getAttribute('data-name') || 'evidence';
+        btn.disabled = true;
+        try {
+          var res = await fetch('/api/admin/evidence-file?id=' + encodeURIComponent(id), {
+            headers: { 'Authorization': 'Bearer ' + apiKey }
+          });
+          if (!res.ok) { alert('Download failed (' + res.status + ')'); return; }
+          var blob = await res.blob();
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = name; document.body.appendChild(a); a.click();
+          a.remove(); URL.revokeObjectURL(url);
+        } catch (e) { alert(e.message); }
+        finally { btn.disabled = false; }
+      });
+    });
 
     // Wire level buttons
     document.getElementById('score-body').querySelectorAll('.lvl-btn').forEach(function (btn) {

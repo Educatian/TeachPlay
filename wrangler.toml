@@ -55,3 +55,18 @@ id = "35d14ddef4714d6e996a3c17251e264b"
 binding = "DB"
 database_name = "teachplay-lrs"
 database_id = "c2749430-248b-4c85-b224-e9e24424e8aa"
+
+# R2 — evidence-file storage (OPTIONAL, currently INACTIVE).
+#
+# /api/evidence-file feature-detects this binding: when present, uploaded
+# portfolio files (screenshots, GDD, video) are stored in R2 with no practical
+# size limit; when absent, they fall back to inline D1 storage capped at ~1 MB
+# per file (D1's row limit is 2 MB). Enabling R2 needs NO code change.
+#
+# To enable (R2 must first be turned on in the Cloudflare dashboard — wrangler
+# reports "Please enable R2" until then):
+#   npx wrangler r2 bucket create teachplay-evidence
+# then uncomment the three lines below and redeploy:
+# [[r2_buckets]]
+# binding = "EVIDENCE_BUCKET"
+# bucket_name = "teachplay-evidence"

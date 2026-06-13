@@ -31,6 +31,7 @@ import { handleAdminApprove } from './api/admin-approve.js';
 import { handleCompletionCheck } from './api/completion-check.js';
 import { handleProgress } from './api/progress.js';
 import { handleEvidence } from './api/evidence.js';
+import { handleEvidenceFile, handleAdminEvidenceFileDownload } from './api/evidence-file.js';
 import { handleAdminEvidence, handleAdminScore } from './api/admin-evidence.js';
 import { handlePostCompletionSurvey } from './api/post-completion-survey.js';
 import { handleLog } from './api/log.js';
@@ -59,8 +60,10 @@ export default {
     if (p === '/api/admin/export')       return handleAdminExport(request, env, ctx);
     if (p === '/api/admin/approve')      return handleAdminApprove(request, env, ctx);
     if (p === '/api/admin/evidence')     return handleAdminEvidence(request, env, ctx);
+    if (p === '/api/admin/evidence-file') return handleAdminEvidenceFileDownload(request, env, ctx);
     if (p === '/api/admin/score')        return handleAdminScore(request, env, ctx);
     if (p === '/api/evidence')           return handleEvidence(request, env, ctx);
+    if (p === '/api/evidence-file')      return handleEvidenceFile(request, env, ctx);
     if (p === '/api/completion-check')   return handleCompletionCheck(request, env, ctx);
     if (p === '/api/log/conversation')   return handleLog(request, env, ctx, 'conversation');
     if (p === '/api/log/gameplay')       return handleLog(request, env, ctx, 'gameplay');

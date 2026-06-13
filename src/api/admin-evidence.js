@@ -90,6 +90,17 @@ export async function handleAdminEvidence(request, env) {
     scores[r.criterion_id] = { level: r.level, scorer_email: r.scorer_email, scored_at: r.scored_at };
   }
 
+  // Uploaded evidence files (migration 0011). Feature-detected so a pre-0011
+  // deployment simply returns an empty list. Never selects the bytes.
+  let files = [];
+  try {
+    const filesRes = await env.DB.prepare(
+      `SELECT id, deliverable_id, file_name, file_size, file_type, storage, uploaded_at
+         FROM evidence_files WHERE learner_id = ? ORDER BY uploaded_at`
+    ).bind(learner_id).all();
+    files = filesRes.results || [];
+  } catch (_) { files = []; }
+
   const verdict = await rubricPassed(env, learner_id);
 
   return json({
@@ -98,6 +109,7 @@ export async function handleAdminEvidence(request, env) {
     learner,
     meta: rubricMeta,
     submissions: subRes.results || [],
+    files,
     scores,
     verdict,
   });
