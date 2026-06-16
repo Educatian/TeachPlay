@@ -55,6 +55,18 @@ test('S12 evaluator degrades to self-score with no raw error', async ({ page }) 
 });
 
 test('React evidence upload preserves draft fields and keeps the learner in Evidence', async ({ page }) => {
+  // The static CI server has no Worker, so the evidence-upload shim's POST to
+  // /api/evidence-file 404s → "Network error" → the editor resets the view and the
+  // draft fields vanish (the real flake). Mock the endpoint the way 1c mocks
+  // /api/enroll: the shim treats `res.ok && data.Id` as success.
+  await page.route('**/api/evidence-file', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ Id: 'test-evidence-file-id', Key: 'evidence/test.png' }),
+    });
+  });
+
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
   await page.getByRole('button', { name: /Start learning/i }).click();

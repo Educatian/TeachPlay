@@ -76,7 +76,9 @@ test('1c. React create account registers through the TeachPlay enrollment API', 
   await page.locator('#auth-name').fill('React Signup');
   await page.locator('#auth-email').fill(email);
   await page.locator('#auth-password').fill('password123');
-  await page.locator('form button[type="submit"]').click();
+  // Scope to the auth form: the page also carries the header search form, so a bare
+  // `form button[type="submit"]` matches two elements (Playwright strict-mode error).
+  await page.locator('form:has(#auth-email) button[type="submit"]').click();
 
   await expect(page.getByRole('button', { name: /Sign Out/i })).toBeVisible({ timeout: 8000 });
   await expect(page.getByText('Account connected.')).toBeVisible();
@@ -136,13 +138,16 @@ test('4. lightbox bug-fix: page is clickable after closing the overlay', async (
   await page.waitForURL(/index\.html$/);
 });
 
-test('5. custom cursor mounts (dot + ring elements present)', async ({ page }) => {
+test('5. custom cursor stays disabled (native OS cursor by design)', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto(BASE + '/rubrics.html', { waitUntil: 'domcontentloaded' });
-  // hover-capable + viewport ≥ 720 + no reduced-motion: cursor should mount.
-  await expect(page.locator('body.hb-cursor-on')).toHaveCount(1, { timeout: 3000 });
-  await expect(page.locator('.hb-cursor-dot')).toHaveCount(1);
-  await expect(page.locator('.hb-cursor-ring')).toHaveCount(1);
+  // cursor.js intentionally early-returns (disabled 2026-06-10): the game-style
+  // cursor hid the native cursor globally and could freeze on a compositor stall,
+  // so a credential site keeps the native OS cursor. It must NOT mount. Re-enabling
+  // without a fail-safe restore is a regression — this guards the decision.
+  await expect(page.locator('body.hb-cursor-on')).toHaveCount(0);
+  await expect(page.locator('.hb-cursor-dot')).toHaveCount(0);
+  await expect(page.locator('.hb-cursor-ring')).toHaveCount(0);
 });
 
 test.skip('6. legacy admin gate is no longer on the canonical learner landing', async () => {});
