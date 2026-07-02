@@ -28,6 +28,7 @@ import { handleAdminAnalytics } from './api/admin-analytics.js';
 import { handleAdminPsychometrics } from './api/admin-psychometrics.js';
 import { handleAdminExport } from './api/admin-export.js';
 import { handleAdminApprove } from './api/admin-approve.js';
+import { handleAdminEntitlement } from './api/admin-entitlement.js';
 import { handleCompletionCheck } from './api/completion-check.js';
 import { handleProgress } from './api/progress.js';
 import { handleEvidence } from './api/evidence.js';
@@ -59,6 +60,7 @@ export default {
     if (p === '/api/admin/psychometrics') return handleAdminPsychometrics(request, env, ctx);
     if (p === '/api/admin/export')       return handleAdminExport(request, env, ctx);
     if (p === '/api/admin/approve')      return handleAdminApprove(request, env, ctx);
+    if (p === '/api/admin/entitlement')  return handleAdminEntitlement(request, env, ctx);
     if (p === '/api/admin/evidence')     return handleAdminEvidence(request, env, ctx);
     if (p === '/api/admin/evidence-file') return handleAdminEvidenceFileDownload(request, env, ctx);
     if (p === '/api/admin/score')        return handleAdminScore(request, env, ctx);
