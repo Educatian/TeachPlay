@@ -6,8 +6,18 @@ import assert from 'node:assert/strict';
 import { handleEvidenceFile } from '../../src/api/evidence-file.js';
 
 // tableExists=true unless tableMissing is set. Records INSERTs in `calls`.
-function makeDB({ learnerRow, tableMissing = false } = {}) {
+// entTable/entRow drive the entitlements paywall check: entTable defaults false
+// so the paywall is inert for the pre-existing tests (default-open).
+function makeDB({ learnerRow, tableMissing = false, entTable = false, entRow = null } = {}) {
   const calls = [];
+  const respond = (sql) => {
+    // entitlementsTableExists reads COUNT(*) AS n; the evidence_files check reads 1 AS ok.
+    if (sql.includes('sqlite_master') && sql.includes('entitlements')) return { n: entTable ? 1 : 0 };
+    if (sql.includes('sqlite_master')) return tableMissing ? null : { ok: 1 };
+    if (sql.includes('FROM learners')) return learnerRow;
+    if (sql.includes('FROM entitlements')) return entRow;
+    return null;
+  };
   return {
     calls,
     prepare(sql) {
@@ -15,19 +25,12 @@ function makeDB({ learnerRow, tableMissing = false } = {}) {
         bind(...args) {
           calls.push({ sql, args });
           return {
-            async first() {
-              if (sql.includes('sqlite_master')) return tableMissing ? null : { ok: 1 };
-              if (sql.includes('FROM learners')) return learnerRow;
-              return null;
-            },
+            async first() { return respond(sql); },
             async run() { return { success: true }; },
           };
         },
         // sqlite_master check binds nothing in some callers; support no-bind first().
-        async first() {
-          if (sql.includes('sqlite_master')) return tableMissing ? null : { ok: 1 };
-          return null;
-        },
+        async first() { return respond(sql); },
       };
     },
   };
@@ -67,6 +70,31 @@ test('evidence-file: 503 pre-migration (table absent)', async () => {
   const db = makeDB({ learnerRow: { id: 'L1', session_token: 'tok' }, tableMissing: true });
   const res = await handleEvidenceFile(makeReq({ headers: { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok' } }), { DB: db });
   assert.equal(res.status, 503);
+});
+
+test('evidence-file: 402 when paywall on and learner not entitled', async () => {
+  const db = makeDB({ learnerRow: { id: 'L1', session_token: 'tok' }, entTable: true, entRow: null });
+  const res = await handleEvidenceFile(
+    makeReq({ headers: { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok' } }),
+    { DB: db, PAYWALL_ENABLED: '1' },
+  );
+  assert.equal(res.status, 402);
+  const out = JSON.parse(await res.text());
+  assert.equal(out.code, 'payment_required');
+});
+
+test('evidence-file: paywall on + active entitlement -> upload proceeds (stores)', async () => {
+  const db = makeDB({
+    learnerRow: { id: 'L1', session_token: 'tok' },
+    entTable: true,
+    entRow: { tier: 'paid', source: 'stripe', status: 'active', expires_at: null },
+  });
+  const res = await handleEvidenceFile(
+    makeReq({ headers: { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok', 'X-File-Name': 'a.txt', 'X-Deliverable': 'D1' } }),
+    { DB: db, PAYWALL_ENABLED: '1' },
+  );
+  assert.notEqual(res.status, 402);
+  assert.equal(res.status, 200);
 });
 
 test('evidence-file: stores inline in D1 and returns { Id, Key } when no R2', async () => {

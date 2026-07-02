@@ -28,6 +28,35 @@
 
   const safeGet = (key) => { try { return localStorage.getItem(key) || ''; } catch (_) { return ''; } };
 
+  // Same identity backfill as the evidence-submission guard: a Supabase-
+  // authenticated learner has no hb:learner_id, which used to make file uploads
+  // fail with 401 even though they were "signed in". Resolve the identity from
+  // any source (hb: keys OR a Supabase session) and enroll (idempotent per
+  // email) so uploads attach to a real D1 learner row.
+  const ensureEnrolled = async () => {
+    const lid = safeGet('hb:learner_id');
+    const token = safeGet('hb:learner_token');
+    if (lid && token) return { lid, token };
+    const identity = window.TeachPlayLearnerIdentity?.current?.() || null;
+    const email = (identity?.email || safeGet('hb:learner_email') || safeGet('tp:pending-learner-email') || '').toLowerCase();
+    const name = identity?.name || safeGet('hb:learner_name') || safeGet('tp:pending-learner-name') || (email ? email.split('@')[0] : '');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !name) return null;
+    try {
+      const res = await nativeFetch('/api/enroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, email: email, cohort: '2026-spring' }),
+      });
+      const d = await res.json();
+      if (!d?.ok || !d.learner_id || !d.session_token) return null;
+      try {
+        localStorage.setItem('hb:learner_id', d.learner_id);
+        localStorage.setItem('hb:learner_token', d.session_token);
+      } catch (_) {}
+      return { lid: d.learner_id, token: d.session_token };
+    } catch (_) { return null; }
+  };
+
   const jsonResponse = (obj, status) =>
     new Response(JSON.stringify(obj), {
       status,
@@ -80,10 +109,11 @@
       return errorResponse(400, 'Could not read the selected file. Please try again.');
     }
 
-    const learnerId = safeGet('hb:learner_id');
-    if (!learnerId) {
-      return errorResponse(401, 'Please enroll / sign in before uploading evidence files.');
+    const auth = await ensureEnrolled();
+    if (!auth) {
+      return errorResponse(401, 'Please sign in with your enrollment email before uploading evidence files.');
     }
+    const learnerId = auth.lid;
 
     try {
       const res = await nativeFetch('/api/evidence-file', {
@@ -91,7 +121,7 @@
         headers: {
           'Content-Type': file.type || 'application/octet-stream',
           'X-Learner-ID': learnerId,
-          'X-Learner-Token': safeGet('hb:learner_token'),
+          'X-Learner-Token': auth.token,
           'X-File-Name': encodeURIComponent(file.name || 'upload'),
           'X-File-Type': file.type || '',
         },
@@ -105,7 +135,8 @@
         // Supabase StorageFileApi.upload reads { Id, Key } from the JSON body.
         return jsonResponse({ Id: data.Id, Key: data.Key || `evidence-uploads/${data.Id}` }, 200);
       }
-      const msg = (data && (data.error || data.message)) ||
+      const msg = (res.status === 402 && data && (data.detail || data.error)) ||
+        (data && (data.error || data.message)) ||
         (res.status === 503 ? 'Evidence file uploads are not enabled yet on this deployment.' : `Upload failed (${res.status}).`);
       return errorResponse(res.status || 500, msg);
     } catch (e) {
