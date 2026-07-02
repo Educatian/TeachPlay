@@ -242,6 +242,11 @@
       });
       if (res.ok) return { status: 'ok' };
       if (res.status === 404 || res.status === 503) return { status: 'fallback' }; // pre-migration
+      if (res.status === 402) { // paywall: credential path is a paid upgrade
+        let detail = '';
+        try { detail = (await res.json())?.detail || ''; } catch (_) {}
+        return { status: 'payment_required', detail };
+      }
       return { status: 'failed', code: res.status };
     } catch (_) {
       return { status: 'failed' };
@@ -273,6 +278,13 @@
     postEvidenceToServer().then((result) => {
       if (result.status === 'ok') {
         showNotice('Evidence packet submitted to the server for instructor review. Your instructor will score all 25 rubric criteria; the credential is awarded only when every criterion reaches Proficient.', 'success');
+      } else if (result.status === 'payment_required') {
+        // The credential path (evidence review + signed badge) is a paid upgrade;
+        // reading the handbook and taking the checks stays free. Don't leave a
+        // misleading "submitted" state — surface the upgrade path instead of the
+        // generic "click Submit again" retry error.
+        localStorage.removeItem(submittedKey);
+        showNotice(result.detail || 'Submitting your credential portfolio for instructor review requires an upgrade — reading the handbook and taking the checks stays free. Open the Credential page to upgrade and unlock evidence submission.', 'error');
       } else if (result.status === 'fallback' || result.status === 'skipped') {
         showNotice('Evidence packet saved for instructor review. You can now continue to certificate handoff.', 'success');
       } else {

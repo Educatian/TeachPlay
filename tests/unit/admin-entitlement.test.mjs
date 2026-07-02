@@ -93,3 +93,19 @@ test('GET reads the entitlement verdict for a learner', async () => {
   assert.equal(out.entitlement.allowed, true);
   assert.equal(out.entitlement.tier, 'paid');
 });
+
+test('rejects an unparseable expires_at with 400', async () => {
+  const { env } = mockEnv();
+  const res = await handleAdminEntitlement(mockReq({ body: { learner_id: 'L1', expires_at: 'someday' } }), env);
+  assert.equal(res.status, 400);
+});
+
+test('normalizes a date-only expires_at to canonical ISO-8601 UTC', async () => {
+  const { env } = mockEnv();
+  const res = await handleAdminEntitlement(mockReq({ body: { learner_id: 'L1', expires_at: '2026-12-31' } }), env);
+  assert.equal(res.status, 200);
+  const out = JSON.parse(await res.text());
+  // Must be a full ISO-8601 UTC string (ends in Z), not the date-only input —
+  // otherwise the lexicographic active-check mis-verdicts.
+  assert.match(out.expires_at, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+});

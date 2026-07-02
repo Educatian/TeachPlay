@@ -82,7 +82,20 @@ export async function handleAdminEntitlement(request, env) {
     return json({ error: `source must be one of ${ENTITLEMENT_SOURCES.join(', ')}` }, 400);
   }
   const tier = body.tier ? String(body.tier) : 'paid';
-  const expires_at = body.expires_at != null ? String(body.expires_at) : null;
+
+  // Normalize expiry to canonical ISO-8601 UTC. isEntitlementActive compares
+  // expires_at lexicographically against an ISO `nowIso`, which is only correct
+  // for full ISO-8601 UTC strings — a date-only ("2026-12-31") or locale
+  // ("12/31/2026") value would mis-verdict (e.g. wrongly lock out a paying
+  // learner). Reject anything Date can't parse; store the canonical form.
+  let expires_at = null;
+  if (body.expires_at != null && String(body.expires_at).trim() !== '') {
+    const d = new Date(String(body.expires_at));
+    if (Number.isNaN(d.getTime())) {
+      return json({ error: 'expires_at must be a parseable date (ISO-8601 recommended, e.g. 2026-12-31T00:00:00Z)' }, 400);
+    }
+    expires_at = d.toISOString();
+  }
 
   const r = await grantEntitlement(env, {
     learner_id: learner.id, product, tier, source, expires_at,
