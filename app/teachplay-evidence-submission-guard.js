@@ -227,16 +227,47 @@
     };
   };
 
+  // Ensure a D1 learners row + session token exist for the CURRENT identity —
+  // whether it came from the hb: registration keys OR a Supabase session
+  // (window.TeachPlayLearnerIdentity resolves both). /api/enroll is idempotent
+  // per email, so this backfills hb:learner_id/token for a Supabase-authenticated
+  // learner who never went through the SPA enroll. Without it their evidence
+  // silently never reached D1 (returned 'skipped' → the UI faked "submitted")
+  // and they could never be approved.
+  const ensureEnrolled = async () => {
+    const lid = safeGet('hb:learner_id');
+    const token = safeGet('hb:learner_token');
+    if (lid && token) return { lid, token };
+    const identity = window.TeachPlayLearnerIdentity?.current?.() || null;
+    const email = (identity?.email || safeGet('hb:learner_email') || safeGet('tp:pending-learner-email') || '').toLowerCase();
+    const name = identity?.name || safeGet('hb:learner_name') || safeGet('tp:pending-learner-name') || (email ? email.split('@')[0] : '');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !name) return null;
+    try {
+      const res = await fetch('/api/enroll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, email: email, cohort: '2026-spring' }),
+      });
+      const d = await res.json();
+      if (!d?.ok || !d.learner_id || !d.session_token) return null;
+      try {
+        localStorage.setItem('hb:learner_id', d.learner_id);
+        localStorage.setItem('hb:learner_token', d.session_token);
+      } catch (_) {}
+      return { lid: d.learner_id, token: d.session_token };
+    } catch (_) { return null; }
+  };
+
   const postEvidenceToServer = async () => {
-    const learnerId = safeGet('hb:learner_id');
-    if (!learnerId) return { status: 'skipped' }; // no server row to attach to
+    const auth = await ensureEnrolled();
+    if (!auth) return { status: 'no_identity' }; // genuinely anonymous — never fake success
     try {
       const res = await fetch('/api/evidence', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Learner-ID': learnerId,
-          'X-Learner-Token': safeGet('hb:learner_token'),
+          'X-Learner-ID': auth.lid,
+          'X-Learner-Token': auth.token,
         },
         body: JSON.stringify(buildServerPayload()),
       });
@@ -285,6 +316,11 @@
         // generic "click Submit again" retry error.
         localStorage.removeItem(submittedKey);
         showNotice(result.detail || 'Submitting your credential portfolio for instructor review requires an upgrade — reading the handbook and taking the checks stays free. Open the Credential page to upgrade and unlock evidence submission.', 'error');
+      } else if (result.status === 'no_identity') {
+        // No enrollable identity (not signed in, no enrollment email on file).
+        // Don't fake a successful submission — the packet is NOT on the server.
+        localStorage.removeItem(submittedKey);
+        showNotice('Your portfolio was saved in this browser, but to submit it for instructor review you must first sign in with your enrollment email so it can be attached to your record.', 'error');
       } else if (result.status === 'fallback' || result.status === 'skipped') {
         showNotice('Evidence packet saved for instructor review. You can now continue to certificate handoff.', 'success');
       } else {
