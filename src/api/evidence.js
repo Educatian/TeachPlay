@@ -28,6 +28,7 @@
 
 import { getClientIp, rateLimit, learnerTokenDecision } from '../lib/security.js';
 import { DELIVERABLES } from '../lib/rubric.js';
+import { requireProductAccess } from '../lib/entitlements.js';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -95,6 +96,23 @@ export async function handleEvidence(request, env) {
   if (decision === 'bind') {
     await env.DB.prepare('UPDATE learners SET session_token = ? WHERE id = ? AND session_token IS NULL')
       .bind(providedToken, learner_id).run();
+  }
+
+  // Paywall choke point. Building the reviewable credential portfolio is the
+  // paid product; reading the handbook and taking the checks stay free. This is
+  // DEFAULT-OPEN: when the paywall flag is off or the entitlements table is
+  // absent, requireProductAccess returns applicable=false and submission
+  // proceeds exactly as before — so the live cohort is never blocked until the
+  // paywall is deliberately switched on (see src/lib/entitlements.js).
+  const access = await requireProductAccess(env, learner_id, 'credential');
+  if (access.applicable && !access.allowed) {
+    return json({
+      ok: false,
+      error: 'This is the paid part of TeachPlay.',
+      code: 'payment_required',
+      reason: access.reason,
+      detail: 'Reading the handbook and taking the checks is free. Submitting your credential portfolio for instructor review requires an upgrade.',
+    }, 402);
   }
 
   // Feature-detect: pre-migration, degrade gracefully so the class isn't blocked.
