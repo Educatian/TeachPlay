@@ -840,8 +840,8 @@ function refreshNpcNameSprites() {
 // Ambient villagers wandering the paths (non-interactive)
 const wanderers = [];
 [
-  { palette: { skin: 0xf1c9a5, hair: 0x51361f, top: 0xf2b134, bottom: 0x3a4a5a }, path: [[-10, 0], [10, 0], [10, -8], [-4, -12]] },
-  { palette: { skin: 0xecc19c, hair: 0x2b2b33, top: 0x81c784, bottom: 0x5a4a3a }, path: [[0, 10], [0, 16], [8, 12], [-6, 12]] }
+  { palette: { skin: 0xf1c9a5, hair: 0x51361f, top: 0xf2b134, bottom: 0x3a4a5a }, path: [[-10, 0], [-5, -5.5], [5, -5.5], [10, 0], [10, -8], [-4, -12]] },
+  { palette: { skin: 0xecc19c, hair: 0x2b2b33, top: 0x81c784, bottom: 0x5a4a3a }, path: [[-4, 10], [0, 16], [8, 12], [-6, 12]] }
 ].forEach((cfg, i) => {
   const g = buildCharacter({ ...cfg.palette, scale: 0.82 });
   g.position.set(cfg.path[0][0], 0, cfg.path[0][1]);
