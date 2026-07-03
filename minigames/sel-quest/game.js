@@ -1,0 +1,1698 @@
+// Maeum Village: SEL Quest 3D
+// A third-person RPG-style social-emotional learning simulator built with
+// plain Three.js. Learners roam a small village, talk with residents through
+// branching dialogue, and grow the five CASEL competencies as RPG stats.
+
+import * as THREE from "./vendor/three/three.module.js";
+import {
+  COMPETENCIES,
+  CHOICE_POINTS,
+  NPCS,
+  QUESTS,
+  UI,
+  MOOD_EMOJI
+} from "./data.js";
+
+// ---------------------------------------------------------------------------
+// DOM
+// ---------------------------------------------------------------------------
+
+const dom = {
+  root: document.getElementById("gameRoot"),
+  levelValue: document.getElementById("levelValue"),
+  xpFill: document.getElementById("xpFill"),
+  xpLabel: document.getElementById("xpLabel"),
+  competencyList: document.getElementById("competencyList"),
+  questTracker: document.getElementById("questTracker"),
+  scormBadge: document.getElementById("scormBadge"),
+  toast: document.getElementById("toast"),
+  talkPrompt: document.getElementById("talkPrompt"),
+  dialogueBox: document.getElementById("dialogueBox"),
+  dialoguePortrait: document.getElementById("dialoguePortrait"),
+  dialogueName: document.getElementById("dialogueName"),
+  dialogueText: document.getElementById("dialogueText"),
+  dialogueChoices: document.getElementById("dialogueChoices"),
+  dialogueContinue: document.getElementById("dialogueContinue"),
+  journalButton: document.getElementById("journalButton"),
+  journalOverlay: document.getElementById("journalOverlay"),
+  journalTitle: document.getElementById("journalTitle"),
+  journalClose: document.getElementById("journalClose"),
+  journalList: document.getElementById("journalList"),
+  langButton: document.getElementById("langButton"),
+  resetButton: document.getElementById("resetButton"),
+  reportOverlay: document.getElementById("reportOverlay"),
+  reportTitle: document.getElementById("reportTitle"),
+  reportBadgeText: document.getElementById("reportBadgeText"),
+  reportScoreLabel: document.getElementById("reportScoreLabel"),
+  reportScoreValue: document.getElementById("reportScoreValue"),
+  reportGradeLabel: document.getElementById("reportGradeLabel"),
+  reportGradeValue: document.getElementById("reportGradeValue"),
+  reportBars: document.getElementById("reportBars"),
+  reportReflection: document.getElementById("reportReflection"),
+  reportScorm: document.getElementById("reportScorm"),
+  reportReplay: document.getElementById("reportReplay"),
+  reportClose: document.getElementById("reportClose"),
+  startOverlay: document.getElementById("startOverlay"),
+  startTitle: document.getElementById("startTitle"),
+  startSubtitle: document.getElementById("startSubtitle"),
+  startBody: document.getElementById("startBody"),
+  controlsTitle: document.getElementById("controlsTitle"),
+  controlsMove: document.getElementById("controlsMove"),
+  controlsCamera: document.getElementById("controlsCamera"),
+  controlsTalk: document.getElementById("controlsTalk"),
+  controlsJournal: document.getElementById("controlsJournal"),
+  startButton: document.getElementById("startButton"),
+  startLangButton: document.getElementById("startLangButton"),
+  startScorm: document.getElementById("startScorm"),
+  joystick: document.getElementById("joystick"),
+  joystickKnob: document.getElementById("joystickKnob"),
+  shell: document.getElementById("gameShell")
+};
+
+// ---------------------------------------------------------------------------
+// Persistent game state
+// ---------------------------------------------------------------------------
+
+const SAVE_KEY = "teachplay-sel-quest-v1";
+
+const state = {
+  lang: "ko",
+  started: false,
+  xp: 0,
+  level: 1,
+  stats: {},
+  statMax: {},
+  quests: {}, // id -> "locked" | "available" | "active" | "done"
+  reportShown: false,
+  playerPos: null
+};
+
+COMPETENCIES.forEach((c) => {
+  state.stats[c.id] = 0;
+  state.statMax[c.id] = 0;
+});
+
+function loadSave() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== "object") return false;
+    state.lang = data.lang === "en" ? "en" : "ko";
+    state.xp = Number(data.xp) || 0;
+    state.level = Number(data.level) || 1;
+    COMPETENCIES.forEach((c) => {
+      state.stats[c.id] = Number(data.stats?.[c.id]) || 0;
+      state.statMax[c.id] = Number(data.statMax?.[c.id]) || 0;
+    });
+    state.quests = data.quests && typeof data.quests === "object" ? data.quests : {};
+    state.reportShown = !!data.reportShown;
+    if (data.playerPos && Number.isFinite(data.playerPos.x) && Number.isFinite(data.playerPos.z)) {
+      state.playerPos = { x: data.playerPos.x, z: data.playerPos.z };
+    }
+    return Object.keys(state.quests).length > 0 || state.xp > 0;
+  } catch (error) {
+    return false;
+  }
+}
+
+function persistSave() {
+  try {
+    localStorage.setItem(
+      SAVE_KEY,
+      JSON.stringify({
+        lang: state.lang,
+        xp: state.xp,
+        level: state.level,
+        stats: state.stats,
+        statMax: state.statMax,
+        quests: state.quests,
+        reportShown: state.reportShown,
+        playerPos: player
+          ? { x: Number(player.position.x.toFixed(2)), z: Number(player.position.z.toFixed(2)) }
+          : state.playerPos
+      })
+    );
+  } catch (error) {
+    /* storage unavailable — play on without saving */
+  }
+}
+
+const hasSave = loadSave();
+
+// ---------------------------------------------------------------------------
+// i18n helpers
+// ---------------------------------------------------------------------------
+
+function t(entry) {
+  if (!entry) return "";
+  return entry[state.lang] ?? entry.ko ?? "";
+}
+
+// ---------------------------------------------------------------------------
+// SCORM
+// ---------------------------------------------------------------------------
+
+const scorm = {
+  active: false,
+  learner: "",
+  submitted: false
+};
+
+function scormInit() {
+  if (!window.Scorm12) return;
+  scorm.active = window.Scorm12.init();
+  if (!scorm.active) return;
+  scorm.learner = window.Scorm12.get("cmi.core.student_name") || "";
+  const status = window.Scorm12.get("cmi.core.lesson_status");
+  if (status === "not attempted" || status === "") {
+    window.Scorm12.set("cmi.core.lesson_status", "incomplete");
+  }
+  window.Scorm12.commit();
+}
+
+function scormSubmit(score) {
+  if (!scorm.active || scorm.submitted) return;
+  window.Scorm12.set("cmi.core.score.min", "0");
+  window.Scorm12.set("cmi.core.score.max", "100");
+  window.Scorm12.set("cmi.core.score.raw", String(score));
+  window.Scorm12.set("cmi.core.lesson_status", score >= 80 ? "passed" : "completed");
+  window.Scorm12.commit();
+  scorm.submitted = true;
+}
+
+window.addEventListener("beforeunload", () => {
+  persistSave();
+  if (scorm.active && window.Scorm12) {
+    window.Scorm12.commit();
+    window.Scorm12.finish();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Tiny synth audio (no assets)
+// ---------------------------------------------------------------------------
+
+let audioCtx = null;
+
+function ensureAudio() {
+  if (!audioCtx) {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (error) {
+      audioCtx = null;
+    }
+  }
+  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+}
+
+function tone(freq, start, duration, type = "sine", volume = 0.08) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  const now = audioCtx.currentTime + start;
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(volume, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + duration + 0.05);
+}
+
+const sfx = {
+  talk: () => tone(520, 0, 0.09, "triangle", 0.05),
+  choice: () => {
+    tone(660, 0, 0.1, "triangle", 0.06);
+    tone(880, 0.07, 0.12, "triangle", 0.05);
+  },
+  quest: () => {
+    tone(523, 0, 0.14, "triangle", 0.07);
+    tone(659, 0.11, 0.14, "triangle", 0.07);
+    tone(784, 0.22, 0.22, "triangle", 0.07);
+  },
+  levelup: () => {
+    tone(523, 0, 0.12, "square", 0.045);
+    tone(659, 0.1, 0.12, "square", 0.045);
+    tone(784, 0.2, 0.12, "square", 0.045);
+    tone(1046, 0.3, 0.3, "triangle", 0.07);
+  },
+  step: () => {}
+};
+
+// ---------------------------------------------------------------------------
+// Three.js scene setup
+// ---------------------------------------------------------------------------
+
+const WORLD_BOUND = 26;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+dom.root.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x9ed4e8);
+scene.fog = new THREE.Fog(0x9ed4e8, 55, 110);
+
+const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 300);
+
+const hemiLight = new THREE.HemisphereLight(0xdff3ff, 0x6a8f5a, 0.95);
+scene.add(hemiLight);
+
+const sun = new THREE.DirectionalLight(0xfff3d6, 2.4);
+sun.position.set(28, 42, 18);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.left = -42;
+sun.shadow.camera.right = 42;
+sun.shadow.camera.top = 42;
+sun.shadow.camera.bottom = -42;
+sun.shadow.camera.far = 120;
+sun.shadow.bias = -0.0004;
+scene.add(sun);
+
+function resize() {
+  const w = dom.root.clientWidth || window.innerWidth;
+  const h = dom.root.clientHeight || window.innerHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener("resize", resize);
+resize();
+
+// ---------------------------------------------------------------------------
+// World building
+// ---------------------------------------------------------------------------
+
+const colliders = []; // { x, z, r }
+
+function addCollider(x, z, r) {
+  colliders.push({ x, z, r });
+}
+
+function mat(color, extra = {}) {
+  return new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0.02, ...extra });
+}
+
+// Ground with soft color noise
+{
+  const geo = new THREE.PlaneGeometry(140, 140, 48, 48);
+  geo.rotateX(-Math.PI / 2);
+  const colors = [];
+  const base = new THREE.Color(0x79b45c);
+  const alt = new THREE.Color(0x8cc46b);
+  const pos = geo.attributes.position;
+  for (let i = 0; i < pos.count; i += 1) {
+    const n = Math.sin(pos.getX(i) * 0.35) * Math.cos(pos.getZ(i) * 0.3);
+    const c = base.clone().lerp(alt, (n + 1) / 2 + (Math.sin(i * 7.13) * 0.5 + 0.5) * 0.25);
+    colors.push(c.r, c.g, c.b);
+  }
+  geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  const ground = new THREE.Mesh(
+    geo,
+    new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1 })
+  );
+  ground.receiveShadow = true;
+  scene.add(ground);
+}
+
+// Plaza + paths
+{
+  const plaza = new THREE.Mesh(
+    new THREE.CircleGeometry(8.2, 40).rotateX(-Math.PI / 2),
+    mat(0xd9c49a, { roughness: 1 })
+  );
+  plaza.position.y = 0.02;
+  plaza.receiveShadow = true;
+  scene.add(plaza);
+}
+
+function addPath(x, z, w, d, rot = 0) {
+  const path = new THREE.Mesh(new THREE.PlaneGeometry(w, d).rotateX(-Math.PI / 2), mat(0xcdb98f, { roughness: 1 }));
+  path.position.set(x, 0.015, z);
+  path.rotation.y = rot;
+  path.receiveShadow = true;
+  scene.add(path);
+}
+
+addPath(0, -13, 3.2, 18); // south to shop
+addPath(0, 14, 3.2, 16); // north to school
+addPath(-13, 0, 3.2, 18, Math.PI / 2); // west
+addPath(13, 0, 3.2, 18, Math.PI / 2); // east
+addPath(-14, -8, 3, 12, Math.PI / 4); // to pond
+addPath(14, -8, 3, 12, -Math.PI / 4); // to playground
+addPath(-13.5, 9, 3, 11, -Math.PI / 4); // to big tree
+addPath(13.5, 9, 3, 11, Math.PI / 4); // to workshop
+
+// Fountain at plaza center
+let fountainWater = null;
+{
+  const group = new THREE.Group();
+  const rim = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.7, 0.8, 24), mat(0xb8b2a6));
+  rim.position.y = 0.4;
+  rim.castShadow = true;
+  rim.receiveShadow = true;
+  group.add(rim);
+  fountainWater = new THREE.Mesh(
+    new THREE.CylinderGeometry(2.25, 2.25, 0.3, 24),
+    new THREE.MeshStandardMaterial({ color: 0x59b7d8, roughness: 0.2, emissive: 0x1d6f8e, emissiveIntensity: 0.35 })
+  );
+  fountainWater.position.y = 0.72;
+  group.add(fountainWater);
+  const column = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.5, 1.6, 16), mat(0xb8b2a6));
+  column.position.y = 1.4;
+  column.castShadow = true;
+  group.add(column);
+  const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.6, 0.35, 16), mat(0xc7c2b6));
+  bowl.position.y = 2.25;
+  bowl.castShadow = true;
+  group.add(bowl);
+  scene.add(group);
+  addCollider(0, 0, 3.1);
+}
+
+// Pond (southwest)
+{
+  const pond = new THREE.Mesh(
+    new THREE.CircleGeometry(5.2, 30).rotateX(-Math.PI / 2),
+    new THREE.MeshStandardMaterial({ color: 0x4da4cf, roughness: 0.25, emissive: 0x15506b, emissiveIntensity: 0.25 })
+  );
+  pond.scale.set(1.35, 1, 1);
+  pond.position.set(-19.5, 0.03, -14);
+  scene.add(pond);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(5.35, 0.28, 10, 34).rotateX(-Math.PI / 2), mat(0x9a8f78));
+  rim.scale.set(1.35, 1, 1);
+  rim.position.set(-19.5, 0.12, -14);
+  scene.add(rim);
+  addCollider(-19.5, -14, 6.4);
+}
+
+function addBox(group, w, h, d, color, x, y, z, opts = {}) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color, opts));
+  m.position.set(x, y, z);
+  m.castShadow = true;
+  m.receiveShadow = true;
+  group.add(m);
+  return m;
+}
+
+function addRoof(group, w, d, color, x, y, z, rotY = 0) {
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(w, d) * 0.78, 1.9, 4), mat(color, { roughness: 0.7 }));
+  roof.position.set(x, y, z);
+  roof.rotation.y = Math.PI / 4 + rotY;
+  roof.castShadow = true;
+  group.add(roof);
+  return roof;
+}
+
+function addBuilding({ x, z, w = 6, h = 3.4, d = 5, wall = 0xf5e9d2, roof = 0xc75450, rotY = 0, sign = null }) {
+  const g = new THREE.Group();
+  addBox(g, w, h, d, wall, 0, h / 2, 0);
+  addRoof(g, w, d, roof, 0, h + 0.92, 0);
+  // door + windows
+  addBox(g, 1.1, 1.8, 0.15, 0x6b4a2f, 0, 0.9, d / 2 + 0.03);
+  addBox(g, 1.2, 1, 0.12, 0xbde3f2, -w / 4, h * 0.55, d / 2 + 0.03, { roughness: 0.3 });
+  addBox(g, 1.2, 1, 0.12, 0xbde3f2, w / 4, h * 0.55, d / 2 + 0.03, { roughness: 0.3 });
+  if (sign) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#4a3423";
+    ctx.fillRect(0, 0, 256, 64);
+    ctx.fillStyle = "#f7ecd7";
+    ctx.font = "bold 34px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(sign, 128, 34);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const board = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.6, 0.65),
+      new THREE.MeshBasicMaterial({ map: tex })
+    );
+    board.position.set(0, h - 0.5, d / 2 + 0.06);
+    g.add(board);
+  }
+  g.position.set(x, 0, z);
+  g.rotation.y = rotY;
+  scene.add(g);
+  addCollider(x, z, Math.max(w, d) * 0.68);
+  return g;
+}
+
+addBuilding({ x: 0, z: 23, w: 12, h: 4.6, d: 6, wall: 0xf2e3c8, roof: 0x3e6f8e, sign: "SCHOOL" });
+addBuilding({ x: 19, z: 19.5, w: 6.4, h: 3.2, d: 5, wall: 0xe8dcc0, roof: 0xd98e2b, rotY: -0.35, sign: "MAKER" });
+addBuilding({ x: 6.5, z: -24.5, w: 6, h: 3.1, d: 4.6, wall: 0xf7ecd7, roof: 0x7fae5c, sign: "SHOP" });
+addBuilding({ x: -23, z: 3, w: 5.4, h: 3, d: 4.6, wall: 0xf5e0d8, roof: 0xb56a4f, rotY: Math.PI / 2 });
+addBuilding({ x: 23.5, z: 1.5, w: 5.4, h: 3, d: 4.6, wall: 0xe9eadd, roof: 0x8a6fae, rotY: -Math.PI / 2 });
+addBuilding({ x: -9, z: 24, w: 5.2, h: 2.9, d: 4.4, wall: 0xfbeed9, roof: 0xc75450, rotY: 0.2 });
+
+// Playground (southeast): slide + swing silhouettes
+{
+  const g = new THREE.Group();
+  const slideBase = addBox(g, 0.5, 2.2, 0.5, 0xd9d4c8, 0, 1.1, 0);
+  const slide = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.16, 3.4), mat(0xe0685f, { roughness: 0.5 }));
+  slide.position.set(0, 1.35, 1.6);
+  slide.rotation.x = 0.62;
+  slide.castShadow = true;
+  g.add(slide);
+  const frame = addBox(g, 3.4, 0.18, 0.18, 0x6b8fb0, 3.4, 2.3, 0);
+  addBox(g, 0.16, 2.3, 0.16, 0x6b8fb0, 1.9, 1.15, 0);
+  addBox(g, 0.16, 2.3, 0.16, 0x6b8fb0, 4.9, 1.15, 0);
+  addBox(g, 0.8, 0.12, 0.35, 0xf2b134, 3, 0.85, 0);
+  addBox(g, 0.8, 0.12, 0.35, 0xf2b134, 4, 1, 0);
+  g.position.set(20, 0, -17);
+  g.rotation.y = 0.5;
+  scene.add(g);
+  addCollider(20, -17, 4.2);
+}
+
+// Benches
+function addBench(x, z, rotY) {
+  const g = new THREE.Group();
+  addBox(g, 2.2, 0.14, 0.7, 0x9a6b43, 0, 0.55, 0);
+  addBox(g, 2.2, 0.6, 0.12, 0x9a6b43, 0, 0.95, -0.32);
+  addBox(g, 0.14, 0.55, 0.6, 0x5e4128, -0.9, 0.28, 0);
+  addBox(g, 0.14, 0.55, 0.6, 0x5e4128, 0.9, 0.28, 0);
+  g.position.set(x, 0, z);
+  g.rotation.y = rotY;
+  scene.add(g);
+  addCollider(x, z, 1.3);
+}
+addBench(-5.5, 5.5, 0.7);
+addBench(5.5, 5.5, -0.7);
+addBench(-12.5, 16.5, -0.9);
+
+// Street lamps (decorative)
+function addLamp(x, z) {
+  const g = new THREE.Group();
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 3.4, 8), mat(0x37414a));
+  pole.position.y = 1.7;
+  pole.castShadow = true;
+  g.add(pole);
+  const bulb = new THREE.Mesh(
+    new THREE.SphereGeometry(0.28, 12, 12),
+    new THREE.MeshStandardMaterial({ color: 0xfff1bd, emissive: 0xffdf8a, emissiveIntensity: 0.9 })
+  );
+  bulb.position.y = 3.45;
+  g.add(bulb);
+  g.position.set(x, 0, z);
+  scene.add(g);
+  addCollider(x, z, 0.4);
+}
+[[-8, -6], [8, -6], [-8, 8.5], [8, 8.5], [2.5, -18], [0, 17], [-16, 5], [16, 5]].forEach(([x, z]) => addLamp(x, z));
+
+// Trees
+const treeSpots = [
+  [-24, -4], [-25, 12], [-18, 22], [-4, -24], [-12, -21], [12, -22], [24, -10],
+  [25, 9], [12, 24], [-25, -20], [24, -22], [9, 13], [-9, -11],
+  [10, -12.5], [-22, 17], [-14.2, 14.8], [23, 13]
+];
+treeSpots.forEach(([x, z], i) => {
+  const g = new THREE.Group();
+  const trunkH = 1.5 + (i % 3) * 0.4;
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.34, trunkH, 8), mat(0x7a5230));
+  trunk.position.y = trunkH / 2;
+  trunk.castShadow = true;
+  g.add(trunk);
+  const leafColor = i % 2 ? 0x4e8f43 : 0x5da24f;
+  if (i % 3 === 0) {
+    const cone1 = new THREE.Mesh(new THREE.ConeGeometry(1.5, 2.4, 9), mat(leafColor));
+    cone1.position.y = trunkH + 1;
+    cone1.castShadow = true;
+    g.add(cone1);
+    const cone2 = new THREE.Mesh(new THREE.ConeGeometry(1.1, 1.9, 9), mat(leafColor));
+    cone2.position.y = trunkH + 2.2;
+    cone2.castShadow = true;
+    g.add(cone2);
+  } else {
+    const puff = new THREE.Mesh(new THREE.SphereGeometry(1.5, 12, 10), mat(leafColor));
+    puff.position.y = trunkH + 1.15;
+    puff.scale.y = 0.92;
+    puff.castShadow = true;
+    g.add(puff);
+    const puff2 = new THREE.Mesh(new THREE.SphereGeometry(0.95, 10, 8), mat(leafColor));
+    puff2.position.set(0.75, trunkH + 0.75, 0.35);
+    puff2.castShadow = true;
+    g.add(puff2);
+  }
+  const scale = 0.85 + ((i * 37) % 10) / 22;
+  g.scale.setScalar(scale);
+  g.position.set(x, 0, z);
+  scene.add(g);
+  addCollider(x, z, 0.75 * scale);
+});
+
+// Big landmark tree near Minjun
+{
+  const g = new THREE.Group();
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.75, 3.6, 10), mat(0x6d4527));
+  trunk.position.y = 1.8;
+  trunk.castShadow = true;
+  g.add(trunk);
+  [[0, 4.6, 0, 2.6], [1.6, 3.9, 0.6, 1.7], [-1.5, 4, -0.4, 1.6], [0.3, 3.6, 1.5, 1.4]].forEach(([x, y, z, r]) => {
+    const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 10), mat(0x54984a));
+    puff.position.set(x, y, z);
+    puff.castShadow = true;
+    g.add(puff);
+  });
+  g.position.set(-16.5, 0, 16.5);
+  scene.add(g);
+  addCollider(-16.5, 16.5, 1.2);
+}
+
+// Clouds
+const clouds = [];
+for (let i = 0; i < 6; i += 1) {
+  const g = new THREE.Group();
+  const cmat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, transparent: true, opacity: 0.92 });
+  for (let j = 0; j < 4; j += 1) {
+    const puff = new THREE.Mesh(new THREE.SphereGeometry(1.6 + (j % 2), 10, 8), cmat);
+    puff.position.set(j * 1.9 - 2.8, (j % 2) * 0.5, ((j * 13) % 3) - 1);
+    puff.scale.y = 0.55;
+    g.add(puff);
+  }
+  g.position.set(-50 + i * 20, 24 + (i % 3) * 3, -30 + ((i * 29) % 60));
+  scene.add(g);
+  clouds.push(g);
+}
+
+// Butterflies
+const butterflies = [];
+for (let i = 0; i < 7; i += 1) {
+  const g = new THREE.Group();
+  const wingMat = new THREE.MeshBasicMaterial({
+    color: [0xf2b134, 0xf48fb1, 0x81d4fa, 0xb39ddb][i % 4],
+    side: THREE.DoubleSide
+  });
+  const wingGeo = new THREE.PlaneGeometry(0.34, 0.26);
+  const w1 = new THREE.Mesh(wingGeo, wingMat);
+  w1.position.x = -0.17;
+  const w2 = new THREE.Mesh(wingGeo, wingMat);
+  w2.position.x = 0.17;
+  g.add(w1, w2);
+  g.userData = {
+    w1, w2,
+    cx: -20 + ((i * 53) % 40),
+    cz: -18 + ((i * 31) % 36),
+    r: 2 + (i % 3),
+    speed: 0.5 + (i % 4) * 0.18,
+    phase: i * 1.7
+  };
+  scene.add(g);
+  butterflies.push(g);
+}
+
+// ---------------------------------------------------------------------------
+// Characters
+// ---------------------------------------------------------------------------
+
+function buildCharacter({ skin, hair, top, bottom, scale = 1 }) {
+  const g = new THREE.Group();
+  const parts = {};
+
+  const legGeo = new THREE.BoxGeometry(0.24, 0.62, 0.26);
+  legGeo.translate(0, -0.31, 0);
+  parts.legL = new THREE.Mesh(legGeo, mat(bottom));
+  parts.legL.position.set(-0.15, 0.72, 0);
+  parts.legR = new THREE.Mesh(legGeo.clone(), mat(bottom));
+  parts.legR.position.set(0.15, 0.72, 0);
+
+  parts.body = new THREE.Mesh(new THREE.CapsuleGeometry(0.34, 0.5, 6, 12), mat(top));
+  parts.body.position.y = 1.15;
+
+  const armGeo = new THREE.CapsuleGeometry(0.1, 0.42, 4, 8);
+  armGeo.translate(0, -0.26, 0);
+  parts.armL = new THREE.Mesh(armGeo, mat(top));
+  parts.armL.position.set(-0.44, 1.42, 0);
+  parts.armR = new THREE.Mesh(armGeo.clone(), mat(top));
+  parts.armR.position.set(0.44, 1.42, 0);
+
+  const handGeo = new THREE.SphereGeometry(0.11, 8, 8);
+  const handL = new THREE.Mesh(handGeo, mat(skin));
+  handL.position.set(0, -0.52, 0);
+  parts.armL.add(handL);
+  const handR = new THREE.Mesh(handGeo.clone(), mat(skin));
+  handR.position.set(0, -0.52, 0);
+  parts.armR.add(handR);
+
+  parts.head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 14), mat(skin));
+  parts.head.position.y = 1.95;
+
+  const hairCap = new THREE.Mesh(
+    new THREE.SphereGeometry(0.36, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.55),
+    mat(hair)
+  );
+  hairCap.position.y = 0.03;
+  parts.head.add(hairCap);
+
+  const eyeGeo = new THREE.SphereGeometry(0.045, 8, 8);
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x21262d });
+  const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+  eyeL.position.set(-0.12, 0.02, 0.3);
+  const eyeR = new THREE.Mesh(eyeGeo.clone(), eyeMat);
+  eyeR.position.set(0.12, 0.02, 0.3);
+  parts.head.add(eyeL, eyeR);
+
+  Object.values(parts).forEach((p) => {
+    p.castShadow = true;
+    g.add(p);
+  });
+  // shadow-only blob to ground the character visually
+  const blob = new THREE.Mesh(
+    new THREE.CircleGeometry(0.42, 16).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.18 })
+  );
+  blob.position.y = 0.02;
+  g.add(blob);
+
+  g.scale.setScalar(scale);
+  g.userData.parts = parts;
+  return g;
+}
+
+function animateWalk(charGroup, timeMs, moving, speedFactor = 1) {
+  const p = charGroup.userData.parts;
+  if (!p) return;
+  const tSec = timeMs / 1000;
+  if (moving) {
+    const swing = Math.sin(tSec * 10 * speedFactor) * 0.55;
+    p.legL.rotation.x = swing;
+    p.legR.rotation.x = -swing;
+    p.armL.rotation.x = -swing * 0.8;
+    p.armR.rotation.x = swing * 0.8;
+    p.body.position.y = 1.15 + Math.abs(Math.sin(tSec * 10 * speedFactor)) * 0.05;
+    p.head.position.y = 1.95 + Math.abs(Math.sin(tSec * 10 * speedFactor)) * 0.05;
+  } else {
+    p.legL.rotation.x *= 0.8;
+    p.legR.rotation.x *= 0.8;
+    p.armL.rotation.x = Math.sin(tSec * 1.7) * 0.06;
+    p.armR.rotation.x = -Math.sin(tSec * 1.7) * 0.06;
+    p.body.position.y = 1.15 + Math.sin(tSec * 2.1) * 0.018;
+    p.head.position.y = 1.95 + Math.sin(tSec * 2.1) * 0.022;
+  }
+}
+
+// Text/emoji sprite helpers
+function makeTextSprite(text, { font = "600 44px sans-serif", pad = 18, bg = null, fg = "#ffffff", stroke = null, size = 0.55 } = {}) {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.font = font;
+  const metrics = ctx.measureText(text);
+  canvas.width = Math.max(48, Math.ceil(metrics.width) + pad * 2);
+  canvas.height = 72 + pad;
+  const c2 = canvas.getContext("2d");
+  if (bg) {
+    c2.fillStyle = bg;
+    c2.beginPath();
+    if (typeof c2.roundRect === "function") {
+      c2.roundRect(0, 0, canvas.width, canvas.height, 18);
+    } else {
+      c2.rect(0, 0, canvas.width, canvas.height);
+    }
+    c2.fill();
+  }
+  c2.font = font;
+  c2.textAlign = "center";
+  c2.textBaseline = "middle";
+  if (stroke) {
+    c2.strokeStyle = stroke;
+    c2.lineWidth = 7;
+    c2.strokeText(text, canvas.width / 2, canvas.height / 2);
+  }
+  c2.fillStyle = fg;
+  c2.fillText(text, canvas.width / 2, canvas.height / 2);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false })
+  );
+  sprite.renderOrder = 999;
+  sprite.scale.set((canvas.width / canvas.height) * size, size, 1);
+  return sprite;
+}
+
+// NPC instances
+const npcActors = {}; // id -> actor
+
+function spawnNpc(def) {
+  const group = buildCharacter({ ...def.palette, scale: 0.96 });
+  group.position.set(def.position.x, 0, def.position.z);
+  group.rotation.y = def.facing || 0;
+  scene.add(group);
+  addCollider(def.position.x, def.position.z, 0.6);
+
+  const nameSprite = makeTextSprite(t(def.name), {
+    font: "700 40px sans-serif",
+    bg: "rgba(20,30,38,0.72)",
+    fg: "#fdfaf2"
+  });
+  nameSprite.position.y = 2.62;
+  group.add(nameSprite);
+
+  const moodSprite = makeTextSprite(MOOD_EMOJI[def.mood] || "🙂", { font: "60px sans-serif", size: 0.62 });
+  moodSprite.position.y = 3.1;
+  group.add(moodSprite);
+
+  const markerSprite = makeTextSprite("!", {
+    font: "900 62px sans-serif",
+    fg: "#ffd147",
+    stroke: "#5c3d00",
+    size: 0.95
+  });
+  markerSprite.position.y = 3.72;
+  markerSprite.visible = false;
+  group.add(markerSprite);
+
+  const actor = {
+    def,
+    group,
+    mood: def.mood,
+    nameSprite,
+    moodSprite,
+    markerSprite,
+    baseFacing: def.facing || 0
+  };
+  npcActors[def.id] = actor;
+  return actor;
+}
+
+Object.values(NPCS).forEach(spawnNpc);
+
+function replaceSprite(actor, key, sprite, y) {
+  const old = actor[key];
+  actor.group.remove(old);
+  old.material.map.dispose();
+  old.material.dispose();
+  sprite.position.y = y;
+  actor.group.add(sprite);
+  actor[key] = sprite;
+}
+
+function setNpcMood(id, mood) {
+  const actor = npcActors[id];
+  if (!actor || actor.mood === mood) return;
+  actor.mood = mood;
+  replaceSprite(actor, "moodSprite", makeTextSprite(MOOD_EMOJI[mood] || "🙂", { font: "60px sans-serif", size: 0.62 }), 3.1);
+}
+
+function setNpcMarker(id, kind) {
+  const actor = npcActors[id];
+  if (!actor) return;
+  if (actor.markerKind === kind) return;
+  actor.markerKind = kind;
+  if (!kind) {
+    actor.markerSprite.visible = false;
+    return;
+  }
+  const styles = {
+    available: { text: "!", fg: "#ffd147", stroke: "#5c3d00" },
+    active: { text: "…", fg: "#9adcf7", stroke: "#124b63" },
+    done: { text: "✓", fg: "#8ef0b0", stroke: "#124b2a" }
+  };
+  const s = styles[kind] || styles.available;
+  replaceSprite(
+    actor,
+    "markerSprite",
+    makeTextSprite(s.text, { font: "900 62px sans-serif", fg: s.fg, stroke: s.stroke, size: 0.95 }),
+    3.72
+  );
+  actor.markerSprite.visible = true;
+}
+
+function refreshNpcNameSprites() {
+  Object.values(npcActors).forEach((actor) => {
+    replaceSprite(
+      actor,
+      "nameSprite",
+      makeTextSprite(t(actor.def.name), { font: "700 40px sans-serif", bg: "rgba(20,30,38,0.72)", fg: "#fdfaf2" }),
+      2.62
+    );
+  });
+}
+
+// Ambient villagers wandering the paths (non-interactive)
+const wanderers = [];
+[
+  { palette: { skin: 0xf1c9a5, hair: 0x51361f, top: 0xf2b134, bottom: 0x3a4a5a }, path: [[-10, 0], [10, 0], [10, -8], [-4, -12]] },
+  { palette: { skin: 0xecc19c, hair: 0x2b2b33, top: 0x81c784, bottom: 0x5a4a3a }, path: [[0, 10], [0, 16], [8, 12], [-6, 12]] }
+].forEach((cfg, i) => {
+  const g = buildCharacter({ ...cfg.palette, scale: 0.82 });
+  g.position.set(cfg.path[0][0], 0, cfg.path[0][1]);
+  scene.add(g);
+  wanderers.push({ group: g, path: cfg.path, target: 1, speed: 1.5 + i * 0.3, wait: 0 });
+});
+
+// Player
+const player = buildCharacter({ skin: 0xf3cba5, hair: 0x2c2320, top: 0x2e6f5e, bottom: 0x2c3a46 });
+if (state.playerPos) {
+  player.position.set(state.playerPos.x, 0, state.playerPos.z);
+} else {
+  player.position.set(0, 0, 12);
+}
+player.rotation.y = Math.PI;
+scene.add(player);
+
+// ---------------------------------------------------------------------------
+// Input
+// ---------------------------------------------------------------------------
+
+const input = {
+  keys: new Set(),
+  joy: { active: false, x: 0, y: 0 },
+  cam: { yaw: 0, pitch: 0.52, dist: 9.5 },
+  dragging: false,
+  dragMoved: 0,
+  lastX: 0,
+  lastY: 0
+};
+
+const isTouch = window.matchMedia("(pointer: coarse)").matches;
+if (isTouch) dom.joystick.hidden = false;
+
+window.addEventListener("keydown", (e) => {
+  if (e.repeat) return;
+  const k = e.key.toLowerCase();
+  input.keys.add(k);
+  if (k === "e" || k === " ") {
+    if (dialogue.open) {
+      e.preventDefault();
+      advanceDialogue();
+    } else if (k === "e" && nearestNpc) {
+      startInteraction(nearestNpc);
+    }
+  }
+  if (k === "j" && state.started && !dialogue.open) toggleJournal();
+  if (k === "escape") {
+    if (!dom.journalOverlay.hidden) toggleJournal(false);
+  }
+});
+window.addEventListener("keyup", (e) => input.keys.delete(e.key.toLowerCase()));
+window.addEventListener("blur", () => input.keys.clear());
+
+// Camera orbit via pointer drag on canvas
+renderer.domElement.addEventListener("pointerdown", (e) => {
+  input.dragging = true;
+  input.dragMoved = 0;
+  input.lastX = e.clientX;
+  input.lastY = e.clientY;
+  renderer.domElement.setPointerCapture(e.pointerId);
+});
+renderer.domElement.addEventListener("pointermove", (e) => {
+  if (!input.dragging) return;
+  const dx = e.clientX - input.lastX;
+  const dy = e.clientY - input.lastY;
+  input.dragMoved += Math.abs(dx) + Math.abs(dy);
+  input.lastX = e.clientX;
+  input.lastY = e.clientY;
+  input.cam.yaw -= dx * 0.0052;
+  input.cam.pitch = THREE.MathUtils.clamp(input.cam.pitch + dy * 0.0042, 0.12, 1.25);
+});
+renderer.domElement.addEventListener("pointerup", (e) => {
+  input.dragging = false;
+  if (input.dragMoved < 8) handleTap(e);
+});
+renderer.domElement.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  input.cam.dist = THREE.MathUtils.clamp(input.cam.dist + e.deltaY * 0.01, 5, 17);
+}, { passive: false });
+
+// Tap-to-talk raycast
+const raycaster = new THREE.Raycaster();
+function handleTap(e) {
+  if (!state.started || dialogue.open) return;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const ndc = new THREE.Vector2(
+    ((e.clientX - rect.left) / rect.width) * 2 - 1,
+    -((e.clientY - rect.top) / rect.height) * 2 + 1
+  );
+  raycaster.setFromCamera(ndc, camera);
+  const groups = Object.values(npcActors).map((a) => a.group);
+  const hits = raycaster.intersectObjects(groups, true);
+  if (!hits.length) return;
+  let obj = hits[0].object;
+  while (obj && !groups.includes(obj)) obj = obj.parent;
+  if (!obj) return;
+  const actor = Object.values(npcActors).find((a) => a.group === obj);
+  if (actor && actor.group.position.distanceTo(player.position) < 4.5) {
+    startInteraction(actor);
+  }
+}
+
+// Virtual joystick
+{
+  let pointerId = null;
+  const maxR = 40;
+  function setKnob(dx, dy) {
+    dom.joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+  }
+  dom.joystick.addEventListener("pointerdown", (e) => {
+    pointerId = e.pointerId;
+    dom.joystick.setPointerCapture(pointerId);
+    input.joy.active = true;
+  });
+  dom.joystick.addEventListener("pointermove", (e) => {
+    if (e.pointerId !== pointerId) return;
+    const rect = dom.joystick.getBoundingClientRect();
+    let dx = e.clientX - (rect.left + rect.width / 2);
+    let dy = e.clientY - (rect.top + rect.height / 2);
+    const len = Math.hypot(dx, dy);
+    if (len > maxR) {
+      dx = (dx / len) * maxR;
+      dy = (dy / len) * maxR;
+    }
+    setKnob(dx, dy);
+    input.joy.x = dx / maxR;
+    input.joy.y = dy / maxR;
+  });
+  function endJoy(e) {
+    if (e.pointerId !== pointerId) return;
+    pointerId = null;
+    input.joy.active = false;
+    input.joy.x = 0;
+    input.joy.y = 0;
+    setKnob(0, 0);
+  }
+  dom.joystick.addEventListener("pointerup", endJoy);
+  dom.joystick.addEventListener("pointercancel", endJoy);
+}
+
+// ---------------------------------------------------------------------------
+// Quest state machine
+// ---------------------------------------------------------------------------
+
+// npc id -> quest lookup (taeo shares the relationship quest)
+const NPC_QUEST_ALIAS = { taeo: "q_relationship" };
+
+function questById(id) {
+  return QUESTS.find((q) => q.id === id);
+}
+
+function questStatus(quest) {
+  if (state.quests[quest.id]) return state.quests[quest.id];
+  const reqs = quest.requires || [];
+  const unlocked = reqs.every((r) => state.quests[r] === "done");
+  return unlocked ? "available" : "locked";
+}
+
+function questForNpc(npcId) {
+  const aliasQuest = NPC_QUEST_ALIAS[npcId];
+  const candidates = QUESTS.filter((q) => q.npc === npcId || q.id === aliasQuest);
+  // prefer active, then available, ordered by quest order
+  candidates.sort((a, b) => a.order - b.order);
+  const active = candidates.find((q) => questStatus(q) === "active");
+  if (active) return active;
+  const available = candidates.find((q) => questStatus(q) === "available");
+  if (available) return available;
+  return null;
+}
+
+function refreshMarkers() {
+  Object.keys(npcActors).forEach((npcId) => {
+    const quest = questForNpc(npcId);
+    if (quest) {
+      setNpcMarker(npcId, questStatus(quest) === "active" ? "active" : "available");
+      return;
+    }
+    const aliasQuest = NPC_QUEST_ALIAS[npcId];
+    const owned = QUESTS.filter((q) => q.npc === npcId || q.id === aliasQuest);
+    const anyDone = owned.some((q) => questStatus(q) === "done");
+    setNpcMarker(npcId, anyDone ? "done" : null);
+  });
+}
+
+const MOOD_AFTER = {
+  q_selfAwareness: { jiho: "relieved" },
+  q_selfManagement: { yuna: "happy" },
+  q_socialAwareness: { minjun: "happy" },
+  q_relationship: { sora: "happy", taeo: "happy" },
+  q_decision: { doyun: "relieved" },
+  finale: { hana: "happy" }
+};
+
+function applyMoodsFromState() {
+  Object.entries(MOOD_AFTER).forEach(([questId, moods]) => {
+    if (state.quests[questId] === "done") {
+      Object.entries(moods).forEach(([npcId, mood]) => setNpcMood(npcId, mood));
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// XP / level
+// ---------------------------------------------------------------------------
+
+function xpNeededFor(level) {
+  return 40 + (level - 1) * 25;
+}
+
+function grantPoints(statId, tier) {
+  const pts = CHOICE_POINTS[tier] ?? 0;
+  if (statId && state.stats[statId] !== undefined) {
+    state.stats[statId] += pts;
+    state.statMax[statId] += CHOICE_POINTS.best;
+  }
+  state.xp += pts;
+  let leveled = false;
+  while (state.xp >= totalXpForLevel(state.level + 1)) {
+    state.level += 1;
+    leveled = true;
+  }
+  updateStatusHud();
+  spawnFloatText(`+${pts} XP`, false);
+  if (leveled) {
+    spawnFloatText(t(UI.levelUp), true);
+    sfx.levelup();
+  }
+  persistSave();
+}
+
+function totalXpForLevel(level) {
+  // cumulative XP required to reach a level
+  let sum = 0;
+  for (let l = 2; l <= level; l += 1) sum += xpNeededFor(l - 1);
+  return sum;
+}
+
+function spawnFloatText(text, isLevel) {
+  const el = document.createElement("div");
+  el.className = `float-text${isLevel ? " levelup" : ""}`;
+  el.textContent = text;
+  // project the player's head to screen space
+  const v = player.position.clone().add(new THREE.Vector3(0, 2.4, 0)).project(camera);
+  const rect = renderer.domElement.getBoundingClientRect();
+  el.style.left = `${rect.left + ((v.x + 1) / 2) * rect.width}px`;
+  el.style.top = `${rect.top + ((1 - v.y) / 2) * rect.height - (isLevel ? 40 : 0)}px`;
+  dom.shell.appendChild(el);
+  setTimeout(() => el.remove(), 1500);
+}
+
+// ---------------------------------------------------------------------------
+// HUD
+// ---------------------------------------------------------------------------
+
+function updateStatusHud() {
+  dom.levelValue.textContent = String(state.level);
+  const currentBase = totalXpForLevel(state.level);
+  const nextTotal = totalXpForLevel(state.level + 1);
+  const frac = THREE.MathUtils.clamp((state.xp - currentBase) / (nextTotal - currentBase), 0, 1);
+  dom.xpFill.style.width = `${Math.round(frac * 100)}%`;
+  dom.xpLabel.textContent = `${state.xp} XP`;
+
+  COMPETENCIES.forEach((c) => {
+    const li = dom.competencyList.querySelector(`[data-comp="${c.id}"]`);
+    if (!li) return;
+    const max = Math.max(state.statMax[c.id], 1);
+    const pct = state.statMax[c.id] === 0 ? 0 : Math.round((state.stats[c.id] / max) * 100);
+    li.querySelector(".comp-fill").style.width = `${pct}%`;
+    li.querySelector(".comp-value").textContent = state.statMax[c.id] === 0 ? "—" : `${pct}%`;
+  });
+}
+
+function buildCompetencyHud() {
+  dom.competencyList.innerHTML = "";
+  COMPETENCIES.forEach((c) => {
+    const li = document.createElement("li");
+    li.dataset.comp = c.id;
+    li.innerHTML = `
+      <span class="comp-name">${c.icon} ${t(c.label)}</span>
+      <span class="comp-icon"></span>
+      <span class="comp-track"><span class="comp-fill" style="background:${c.color}"></span></span>
+      <span class="comp-value">—</span>`;
+    dom.competencyList.appendChild(li);
+  });
+  updateStatusHud();
+}
+
+function updateTracker() {
+  dom.questTracker.innerHTML = "";
+  const visible = QUESTS
+    .map((q) => ({ q, s: questStatus(q) }))
+    .filter(({ s }) => s === "active" || s === "available")
+    .slice(0, 3);
+  if (!visible.length) {
+    const allDone = QUESTS.every((q) => questStatus(q) === "done");
+    const div = document.createElement("div");
+    div.className = "tracker-item done";
+    div.textContent = allDone ? t(UI.reportBadge) : t(UI.journalEmpty);
+    dom.questTracker.appendChild(div);
+    return;
+  }
+  visible.forEach(({ q, s }) => {
+    const div = document.createElement("div");
+    div.className = "tracker-item";
+    div.innerHTML = `<strong>${s === "active" ? "▶" : "!"} ${t(q.title)}</strong>${t(q.objective)}`;
+    dom.questTracker.appendChild(div);
+  });
+}
+
+function updateScormBadge() {
+  const label = scorm.active ? t(UI.scormConnected) : t(UI.scormLocal);
+  dom.scormBadge.textContent = label;
+  dom.startScorm.textContent = scorm.learner
+    ? `${label} — ${scorm.learner}`
+    : label;
+}
+
+let toastTimer = null;
+function showToast(message, ms = 3400) {
+  dom.toast.textContent = message;
+  dom.toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => dom.toast.classList.remove("show"), ms);
+}
+
+// ---------------------------------------------------------------------------
+// Dialogue engine
+// ---------------------------------------------------------------------------
+
+const dialogue = {
+  open: false,
+  quest: null,
+  nodeId: null,
+  phase: "line", // "line" | "choices" | "reply"
+  pendingNext: null,
+  actor: null
+};
+
+function speakerName(speakerId) {
+  if (speakerId === "player") return t(UI.playerName);
+  const def = NPCS[speakerId];
+  return def ? t(def.name) : speakerId;
+}
+
+function speakerEmoji(speakerId) {
+  const actor = npcActors[speakerId];
+  return actor ? MOOD_EMOJI[actor.mood] || "🙂" : "🙂";
+}
+
+function startInteraction(actor) {
+  if (dialogue.open || !state.started) return;
+  const quest = questForNpc(actor.def.id);
+  if (!quest) {
+    // finished or locked: small ambient response
+    if (actor.def.id === "hana" && questStatus(questById("finale")) === "locked") {
+      showToast(t(UI.toastFinaleLocked));
+      return;
+    }
+    const aliasQuest = NPC_QUEST_ALIAS[actor.def.id];
+    const owned = QUESTS.filter((q) => q.npc === actor.def.id || q.id === aliasQuest);
+    if (owned.some((q) => questStatus(q) === "done")) {
+      showToast(`${t(actor.def.name)} 😊`);
+    } else {
+      showToast(t(UI.toastLocked));
+    }
+    return;
+  }
+  ensureAudio();
+  if (questStatus(quest) === "available") {
+    state.quests[quest.id] = "active";
+    showToast(`${t(UI.questAccepted)} ${t(quest.title)}`);
+    refreshMarkers();
+    updateTracker();
+    persistSave();
+  }
+  dialogue.open = true;
+  dialogue.quest = quest;
+  dialogue.nodeId = quest.start;
+  dialogue.actor = actor;
+  dom.talkPrompt.hidden = true;
+  renderDialogueNode();
+}
+
+function currentNode() {
+  return dialogue.quest.nodes[dialogue.nodeId];
+}
+
+function renderDialogueNode() {
+  const node = currentNode();
+  if (!node) {
+    closeDialogue();
+    return;
+  }
+  sfx.talk();
+  dialogue.phase = node.choices ? "choices" : "line";
+  dom.dialogueBox.hidden = false;
+  dom.dialogueName.textContent = speakerName(node.speaker);
+  dom.dialoguePortrait.textContent = speakerEmoji(node.speaker);
+  dom.dialogueText.textContent = t(node.text);
+  dom.dialogueChoices.innerHTML = "";
+  dom.dialogueContinue.textContent = "";
+
+  if (node.choices) {
+    const hint = document.createElement("p");
+    hint.className = "choice-hint";
+    hint.textContent = t(UI.choiceHint);
+    dom.dialogueChoices.appendChild(hint);
+    // shuffle so the strongest answer isn't always in the same slot
+    const shuffled = node.choices
+      .map((c, i) => ({ c, key: (i * 31 + t(c.text).length * 7 + hashSeed) % 23 }))
+      .sort((a, b) => a.key - b.key)
+      .map((x) => x.c);
+    shuffled.forEach((choice) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = t(choice.text);
+      btn.addEventListener("click", () => pickChoice(choice));
+      dom.dialogueChoices.appendChild(btn);
+    });
+  } else {
+    dom.dialogueContinue.textContent = t(UI.continueHint);
+  }
+}
+
+// stable-ish per-session shuffle seed
+const hashSeed = 1 + Math.floor(performance.now()) % 89;
+
+function pickChoice(choice) {
+  sfx.choice();
+  grantPoints(choice.stat, choice.tier);
+  dialogue.phase = "reply";
+  dialogue.pendingNext = choice.next;
+  dom.dialogueChoices.innerHTML = "";
+  const node = currentNode();
+  dom.dialogueName.textContent = speakerName(node.speaker);
+  dom.dialoguePortrait.textContent = speakerEmoji(node.speaker);
+  dom.dialogueText.textContent = t(choice.reply);
+  dom.dialogueContinue.textContent = t(UI.continueHint);
+}
+
+function advanceDialogue() {
+  if (!dialogue.open) return;
+  const node = currentNode();
+  if (dialogue.phase === "choices") return; // must pick a choice
+  if (dialogue.phase === "reply") {
+    dialogue.nodeId = dialogue.pendingNext;
+    dialogue.pendingNext = null;
+    if (!dialogue.nodeId) {
+      finishQuestDialogue(node);
+      return;
+    }
+    renderDialogueNode();
+    return;
+  }
+  // linear line
+  if (node.end) {
+    finishQuestDialogue(node);
+    return;
+  }
+  dialogue.nodeId = node.next;
+  renderDialogueNode();
+}
+
+dom.dialogueBox.addEventListener("click", (e) => {
+  if (e.target.tagName === "BUTTON") return;
+  advanceDialogue();
+});
+dom.talkPrompt.addEventListener("click", () => {
+  ensureAudio();
+  if (nearestNpc) startInteraction(nearestNpc);
+});
+
+function finishQuestDialogue(endNode) {
+  const quest = dialogue.quest;
+  closeDialogue();
+  if (questStatus(quest) !== "done") {
+    state.quests[quest.id] = "done";
+    sfx.quest();
+    showToast(`✅ ${t(UI.questComplete)} ${t(quest.completion)}`, 4200);
+    const moods = MOOD_AFTER[quest.id];
+    if (moods) Object.entries(moods).forEach(([npcId, mood]) => setNpcMood(npcId, mood));
+    refreshMarkers();
+    updateTracker();
+    persistSave();
+  }
+  if (endNode && endNode.triggersReport) {
+    setTimeout(showReport, 700);
+  }
+}
+
+function closeDialogue() {
+  dialogue.open = false;
+  dialogue.quest = null;
+  dialogue.nodeId = null;
+  dom.dialogueBox.hidden = true;
+}
+
+// ---------------------------------------------------------------------------
+// Journal
+// ---------------------------------------------------------------------------
+
+function toggleJournal(force) {
+  const show = force !== undefined ? force : dom.journalOverlay.hidden;
+  dom.journalOverlay.hidden = !show;
+  if (show) renderJournal();
+}
+
+function renderJournal() {
+  dom.journalTitle.textContent = t(UI.journalTitle);
+  dom.journalList.innerHTML = "";
+  const statusLabel = {
+    locked: t(UI.statusLocked),
+    available: t(UI.statusAvailable),
+    active: t(UI.statusActive),
+    done: t(UI.statusDone)
+  };
+  QUESTS.forEach((q) => {
+    const s = questStatus(q);
+    const comp = COMPETENCIES.find((c) => c.id === q.competency);
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div class="quest-head">
+        <strong>${comp ? comp.icon + " " : "⭐ "}${t(q.title)}</strong>
+        <span class="quest-status ${s}">${statusLabel[s]}</span>
+      </div>
+      <p class="quest-summary">${s === "locked" ? "???" : t(q.summary)}</p>`;
+    dom.journalList.appendChild(li);
+  });
+}
+
+dom.journalButton.addEventListener("click", () => toggleJournal());
+dom.journalClose.addEventListener("click", () => toggleJournal(false));
+dom.journalOverlay.addEventListener("click", (e) => {
+  if (e.target === dom.journalOverlay) toggleJournal(false);
+});
+
+// ---------------------------------------------------------------------------
+// Report
+// ---------------------------------------------------------------------------
+
+function computeScore() {
+  let earned = 0;
+  let max = 0;
+  COMPETENCIES.forEach((c) => {
+    earned += state.stats[c.id];
+    max += state.statMax[c.id];
+  });
+  if (max === 0) return 0;
+  return Math.round((earned / max) * 100);
+}
+
+function showReport() {
+  state.reportShown = true;
+  persistSave();
+  const score = computeScore();
+  const grade = score >= 90 ? "S" : score >= 75 ? "A" : "B";
+  dom.reportTitle.textContent = t(UI.reportTitle);
+  dom.reportBadgeText.textContent = t(UI.reportBadge);
+  dom.reportScoreLabel.textContent = t(UI.reportScore);
+  dom.reportScoreValue.textContent = String(score);
+  dom.reportGradeLabel.textContent = t(UI.reportGradeLabel);
+  dom.reportGradeValue.textContent = t(UI.grades[grade]);
+  dom.reportReflection.textContent = t(UI.reportReflection);
+  dom.reportReplay.textContent = t(UI.reportReplay);
+  dom.reportClose.textContent = t(UI.reportClose);
+
+  dom.reportBars.innerHTML = "";
+  COMPETENCIES.forEach((c) => {
+    const max = Math.max(state.statMax[c.id], 1);
+    const pct = state.statMax[c.id] === 0 ? 0 : Math.round((state.stats[c.id] / max) * 100);
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span class="bar-name">${c.icon} ${t(c.label)}</span>
+      <span class="bar-icon"></span>
+      <span class="bar-track"><span class="bar-fill" style="background:${c.color};width:0%"></span></span>
+      <span class="bar-pct">${pct}%</span>`;
+    dom.reportBars.appendChild(li);
+    requestAnimationFrame(() => {
+      li.querySelector(".bar-fill").style.width = `${pct}%`;
+    });
+  });
+
+  scormSubmit(score);
+  dom.reportScorm.textContent = scorm.active ? t(UI.scormSent) : t(UI.scormLocal);
+  dom.reportOverlay.hidden = false;
+}
+
+dom.reportClose.addEventListener("click", () => {
+  dom.reportOverlay.hidden = true;
+});
+dom.reportReplay.addEventListener("click", () => {
+  localStorage.removeItem(SAVE_KEY);
+  location.reload();
+});
+
+// ---------------------------------------------------------------------------
+// Language + reset + start
+// ---------------------------------------------------------------------------
+
+function applyLanguage() {
+  document.documentElement.lang = state.lang;
+  dom.langButton.textContent = state.lang === "ko" ? "EN" : "한";
+  dom.startLangButton.textContent = state.lang === "ko" ? "English" : "한국어";
+  dom.startTitle.textContent = t(UI.gameTitle);
+  dom.startSubtitle.textContent = t(UI.gameSubtitle);
+  dom.startBody.textContent = t(UI.introBody);
+  dom.controlsTitle.textContent = t(UI.controlsTitle);
+  dom.controlsMove.textContent = t(UI.controlsMove);
+  dom.controlsCamera.textContent = t(UI.controlsCamera);
+  dom.controlsTalk.textContent = t(UI.controlsTalk);
+  dom.controlsJournal.textContent = t(UI.controlsJournal);
+  dom.startButton.textContent = hasSave ? t(UI.continueButton) : t(UI.startButton);
+  dom.talkPrompt.textContent = t(UI.talkPrompt);
+  document.title = `${t(UI.gameTitle)} — TeachPlay`;
+  const levelWord = dom.statusLevelWord || document.querySelector('[data-ui="level"]');
+  if (levelWord) levelWord.textContent = t(UI.level);
+  buildCompetencyHud();
+  updateTracker();
+  updateScormBadge();
+  refreshNpcNameSprites();
+  if (!dom.journalOverlay.hidden) renderJournal();
+  if (dialogue.open) renderDialogueNode();
+  persistSave();
+}
+
+dom.langButton.addEventListener("click", () => {
+  state.lang = state.lang === "ko" ? "en" : "ko";
+  applyLanguage();
+});
+dom.startLangButton.addEventListener("click", () => {
+  state.lang = state.lang === "ko" ? "en" : "ko";
+  applyLanguage();
+});
+
+dom.resetButton.addEventListener("click", () => {
+  if (confirm(t(UI.resetConfirm))) {
+    localStorage.removeItem(SAVE_KEY);
+    location.reload();
+  }
+});
+
+dom.startButton.addEventListener("click", () => {
+  ensureAudio();
+  state.started = true;
+  dom.startOverlay.hidden = true;
+  if (!hasSave) showToast(t(UI.toastLocked), 4200);
+});
+
+// ---------------------------------------------------------------------------
+// Movement + camera + interaction proximity
+// ---------------------------------------------------------------------------
+
+const PLAYER_RADIUS = 0.55;
+let nearestNpc = null;
+let saveTicker = 0;
+
+function movementVector() {
+  let x = 0;
+  let y = 0;
+  if (input.keys.has("w") || input.keys.has("arrowup")) y -= 1;
+  if (input.keys.has("s") || input.keys.has("arrowdown")) y += 1;
+  if (input.keys.has("a") || input.keys.has("arrowleft")) x -= 1;
+  if (input.keys.has("d") || input.keys.has("arrowright")) x += 1;
+  if (input.joy.active) {
+    x += input.joy.x;
+    y += input.joy.y;
+  }
+  const len = Math.hypot(x, y);
+  if (len > 1) {
+    x /= len;
+    y /= len;
+  }
+  return { x, y, mag: Math.min(len, 1) };
+}
+
+function resolveCollisions(px, pz) {
+  let x = px;
+  let z = pz;
+  for (const c of colliders) {
+    const dx = x - c.x;
+    const dz = z - c.z;
+    const dist = Math.hypot(dx, dz);
+    const minDist = c.r + PLAYER_RADIUS;
+    if (dist < minDist && dist > 0.0001) {
+      const push = (minDist - dist) / dist;
+      x += dx * push;
+      z += dz * push;
+    }
+  }
+  x = THREE.MathUtils.clamp(x, -WORLD_BOUND, WORLD_BOUND);
+  z = THREE.MathUtils.clamp(z, -WORLD_BOUND, WORLD_BOUND);
+  return { x, z };
+}
+
+const cameraTarget = new THREE.Vector3();
+
+function updateCamera(dt) {
+  const { yaw, pitch, dist } = input.cam;
+  const target = cameraTarget.set(player.position.x, 1.7, player.position.z);
+  const offX = Math.sin(yaw) * Math.cos(pitch) * dist;
+  const offY = Math.sin(pitch) * dist;
+  const offZ = Math.cos(yaw) * Math.cos(pitch) * dist;
+  const desired = new THREE.Vector3(target.x + offX, target.y + offY, target.z + offZ);
+  camera.position.lerp(desired, Math.min(1, dt * 7));
+  camera.lookAt(target);
+}
+
+function updateProximity() {
+  let best = null;
+  let bestDist = 3.4;
+  Object.values(npcActors).forEach((actor) => {
+    const d = actor.group.position.distanceTo(player.position);
+    if (d < bestDist) {
+      best = actor;
+      bestDist = d;
+    }
+  });
+  nearestNpc = best;
+  const showPrompt = !!best && state.started && !dialogue.open;
+  dom.talkPrompt.hidden = !showPrompt;
+
+  // NPCs turn toward the player when close, drift back otherwise
+  Object.values(npcActors).forEach((actor) => {
+    const d = actor.group.position.distanceTo(player.position);
+    let desired = actor.baseFacing;
+    if (d < 5) {
+      desired = Math.atan2(
+        player.position.x - actor.group.position.x,
+        player.position.z - actor.group.position.z
+      );
+    }
+    let diff = desired - actor.group.rotation.y;
+    diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+    actor.group.rotation.y += diff * 0.08;
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Main loop
+// ---------------------------------------------------------------------------
+
+const clock = new THREE.Clock();
+
+function tick() {
+  requestAnimationFrame(tick);
+  const dt = Math.min(clock.getDelta(), 0.08);
+  const now = performance.now();
+
+  let moving = false;
+  if (state.started && !dialogue.open && dom.journalOverlay.hidden && dom.reportOverlay.hidden) {
+    const mv = movementVector();
+    if (mv.mag > 0.05) {
+      moving = true;
+      const run = input.keys.has("shift");
+      const speed = (run ? 8.2 : 5.1) * mv.mag;
+      // camera-relative movement: forward = (-sin(yaw), -cos(yaw))
+      const yaw = input.cam.yaw;
+      const dirX = Math.sin(yaw) * mv.y + Math.cos(yaw) * mv.x;
+      const dirZ = Math.cos(yaw) * mv.y - Math.sin(yaw) * mv.x;
+      const nx = player.position.x + dirX * speed * dt;
+      const nz = player.position.z + dirZ * speed * dt;
+      const resolved = resolveCollisions(nx, nz);
+      player.position.x = resolved.x;
+      player.position.z = resolved.z;
+      const targetRot = Math.atan2(dirX, dirZ);
+      let diff = targetRot - player.rotation.y;
+      diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+      player.rotation.y += diff * Math.min(1, dt * 14);
+
+      saveTicker += dt;
+      if (saveTicker > 5) {
+        saveTicker = 0;
+        persistSave();
+      }
+    }
+  }
+  animateWalk(player, now, moving, input.keys.has("shift") ? 1.4 : 1);
+
+  Object.values(npcActors).forEach((actor) => {
+    animateWalk(actor.group, now + actor.def.position.x * 313, false);
+    // gentle marker bob
+    if (actor.markerSprite.visible) {
+      actor.markerSprite.position.y = 3.72 + Math.sin(now / 320 + actor.def.position.z) * 0.12;
+    }
+  });
+
+  wanderers.forEach((w) => {
+    if (w.wait > 0) {
+      w.wait -= dt;
+      animateWalk(w.group, now, false);
+      return;
+    }
+    const [tx, tz] = w.path[w.target];
+    const dx = tx - w.group.position.x;
+    const dz = tz - w.group.position.z;
+    const d = Math.hypot(dx, dz);
+    if (d < 0.2) {
+      w.target = (w.target + 1) % w.path.length;
+      w.wait = 1.2 + Math.abs(Math.sin(now / 900)) * 2;
+      return;
+    }
+    w.group.position.x += (dx / d) * w.speed * dt;
+    w.group.position.z += (dz / d) * w.speed * dt;
+    const rot = Math.atan2(dx, dz);
+    let diff = rot - w.group.rotation.y;
+    diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+    w.group.rotation.y += diff * Math.min(1, dt * 8);
+    animateWalk(w.group, now, true, 0.85);
+  });
+
+  butterflies.forEach((b) => {
+    const u = b.userData;
+    const a = now / 1000 * u.speed + u.phase;
+    b.position.set(
+      u.cx + Math.cos(a) * u.r,
+      1.4 + Math.sin(a * 2.3) * 0.5,
+      u.cz + Math.sin(a) * u.r
+    );
+    b.rotation.y = -a + Math.PI / 2;
+    const flap = Math.sin(now / 55 + u.phase) * 0.9;
+    u.w1.rotation.y = flap;
+    u.w2.rotation.y = -flap;
+  });
+
+  clouds.forEach((c, i) => {
+    c.position.x += dt * (0.4 + (i % 3) * 0.14);
+    if (c.position.x > 70) c.position.x = -70;
+  });
+
+  if (fountainWater) {
+    fountainWater.scale.y = 1 + Math.sin(now / 400) * 0.12;
+    fountainWater.material.emissiveIntensity = 0.3 + (Math.sin(now / 500) + 1) * 0.1;
+  }
+
+  updateProximity();
+  updateCamera(dt);
+  renderer.render(scene, camera);
+}
+
+// ---------------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------------
+
+// test/debug handle (harmless in production)
+window.__selquest = { state, player, npcActors, camera, renderer };
+
+scormInit();
+applyLanguage();
+applyMoodsFromState();
+refreshMarkers();
+updateTracker();
+updateStatusHud();
+tick();

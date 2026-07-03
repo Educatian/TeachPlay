@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>마음 마을: 사회정서 RPG — Maeum Village: SEL Quest 3D</title>
+  <meta name="description" content="A 3D RPG-style social-emotional learning simulator. Explore Maeum Village, listen to its residents, and grow the five CASEL heart skills." />
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="gameShell" class="game-shell">
+    <div id="gameRoot" class="game-root" aria-label="Maeum Village 3D world"></div>
+
+    <!-- Top-left: player status -->
+    <section id="statusPanel" class="hud-panel status-panel" aria-label="Player status">
+      <div class="status-header">
+        <div class="level-badge"><span data-ui="level">레벨</span> <strong id="levelValue">1</strong></div>
+        <div class="xp-track" aria-label="XP progress">
+          <div id="xpFill" class="xp-fill"></div>
+          <span id="xpLabel" class="xp-label">0 XP</span>
+        </div>
+      </div>
+      <ul id="competencyList" class="competency-list"></ul>
+    </section>
+
+    <!-- Top-right: quest tracker + buttons -->
+    <section class="hud-panel tracker-panel" aria-label="Quest tracker">
+      <div class="tracker-buttons">
+        <button id="journalButton" class="hud-button" type="button" title="Quest journal (J)">📜</button>
+        <button id="langButton" class="hud-button" type="button" title="한국어 / English">EN</button>
+        <button id="resetButton" class="hud-button" type="button" title="Reset">↺</button>
+      </div>
+      <div id="questTracker" class="quest-tracker"></div>
+      <p id="scormBadge" class="scorm-badge"></p>
+    </section>
+
+    <!-- Bottom-center: toast + interact prompt -->
+    <div id="toast" class="toast" role="status"></div>
+    <button id="talkPrompt" class="talk-prompt" type="button" hidden>E — 대화하기</button>
+
+    <!-- Dialogue -->
+    <section id="dialogueBox" class="dialogue-box" hidden aria-live="polite">
+      <div class="dialogue-portrait" id="dialoguePortrait">😊</div>
+      <div class="dialogue-body">
+        <p class="dialogue-name" id="dialogueName"></p>
+        <p class="dialogue-text" id="dialogueText"></p>
+        <div class="dialogue-choices" id="dialogueChoices"></div>
+        <p class="dialogue-continue" id="dialogueContinue"></p>
+      </div>
+    </section>
+
+    <!-- Quest journal overlay -->
+    <section id="journalOverlay" class="overlay" hidden>
+      <div class="overlay-card">
+        <div class="overlay-head">
+          <h2 id="journalTitle">퀘스트 일지</h2>
+          <button id="journalClose" class="hud-button" type="button">✕</button>
+        </div>
+        <ul id="journalList" class="journal-list"></ul>
+      </div>
+    </section>
+
+    <!-- Final report overlay -->
+    <section id="reportOverlay" class="overlay" hidden>
+      <div class="overlay-card report-card">
+        <div class="report-badge">🏅</div>
+        <h2 id="reportTitle">마음의 힘 리포트</h2>
+        <p id="reportBadgeText" class="report-badge-text"></p>
+        <div class="report-score-row">
+          <div class="report-score"><span id="reportScoreLabel"></span><strong id="reportScoreValue">0</strong></div>
+          <div class="report-grade"><span id="reportGradeLabel"></span><strong id="reportGradeValue">—</strong></div>
+        </div>
+        <ul id="reportBars" class="report-bars"></ul>
+        <p id="reportReflection" class="report-reflection"></p>
+        <p id="reportScorm" class="report-scorm"></p>
+        <div class="report-actions">
+          <button id="reportReplay" class="action-button ghost" type="button"></button>
+          <button id="reportClose" class="action-button solid" type="button"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Start screen -->
+    <section id="startOverlay" class="overlay start-overlay">
+      <div class="overlay-card start-card">
+        <p class="eyebrow">TEACHPLAY MICRO-RPG · SCORM 1.2 · THREE.JS</p>
+        <h1 id="startTitle">마음 마을: 사회정서 RPG</h1>
+        <p id="startSubtitle" class="start-subtitle"></p>
+        <p id="startBody" class="start-body"></p>
+        <div class="start-controls">
+          <p class="card-label" id="controlsTitle">조작법</p>
+          <ul>
+            <li id="controlsMove"></li>
+            <li id="controlsCamera"></li>
+            <li id="controlsTalk"></li>
+            <li id="controlsJournal"></li>
+          </ul>
+        </div>
+        <div class="start-actions">
+          <button id="startButton" class="action-button solid" type="button">모험 시작하기</button>
+          <button id="startLangButton" class="action-button ghost" type="button">English</button>
+        </div>
+        <p id="startScorm" class="scorm-badge"></p>
+      </div>
+    </section>
+
+    <!-- Mobile controls -->
+    <div id="joystick" class="joystick" hidden>
+      <div id="joystickKnob" class="joystick-knob"></div>
+    </div>
+  </div>
+
+  <script src="./scormdriver.js"></script>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
