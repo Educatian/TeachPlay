@@ -281,7 +281,7 @@ export const QUESTS = [
         },
         choices: [
           {
-            text: { ko: "그건 '부끄러움(수치심)' 같아.", en: "That sounds like embarrassment (shame)." },
+            text: { ko: "그건 '부끄러움' 같아.", en: "That sounds like embarrassment." },
             tier: "best",
             stat: "selfAwareness",
             reply: {
@@ -291,12 +291,12 @@ export const QUESTS = [
             next: "n3"
           },
           {
-            text: { ko: "그건 그냥 '배고픔' 아닐까?", en: "Maybe you're just hungry?" },
+            text: { ko: "에이, 별거 아니야. 너무 깊게 생각하지 마.", en: "Eh, it's probably nothing. Don't overthink it." },
             tier: "poor",
             stat: "selfAwareness",
             reply: {
-              ko: "하하, 배도 고프긴 한데… 얼굴이 화끈거리는 건 아마 다른 걸 거야. 다시 생각해 보니 '부끄러움'인 것 같아.",
-              en: "Ha, I am hungry... but the burning face is probably something else. Thinking again — it's embarrassment."
+              ko: "그냥 넘기려고 해 봤는데 자꾸 얼굴이 화끈거려… 아무래도 이 느낌의 정체를 알아야겠어. 다시 보니 '부끄러움' 같아.",
+              en: "I tried brushing it off, but my face keeps burning... I think I need to know what this feeling is. Looking again — it's embarrassment."
             },
             next: "n3"
           },
@@ -334,14 +334,14 @@ export const QUESTS = [
           },
           {
             text: {
-              ko: "몸은 상관없어. 그냥 생각만 바꾸면 돼.",
-              en: "The body doesn't matter. Just change your thoughts."
+              ko: "그런 느낌은 그냥 꾹 참고 무시하면 돼.",
+              en: "Just push those feelings down and ignore them."
             },
             tier: "poor",
             stat: "selfAwareness",
             reply: {
-              ko: "음… 근데 아까 가슴이 답답한 걸 먼저 느꼈는걸? 몸의 신호도 마음을 읽는 단서가 되는 것 같아.",
-              en: "Hmm... but the tight chest is what I noticed first? I think body signals really are clues to the heart."
+              ko: "꾹 참아 봤는데, 참을수록 가슴이 더 답답해지던걸? 몸의 신호를 살펴봐 주는 게 나은 것 같아.",
+              en: "I tried holding it in, but the tighter I squeezed, the tighter my chest got. Listening to the body's signals works better."
             },
             next: "n4"
           }
@@ -350,8 +350,8 @@ export const QUESTS = [
       n4: {
         speaker: "jiho",
         text: {
-          ko: "고마워! '감정 알아차리기 → 이름 붙이기 → 몸의 신호 살피기' — 오늘 배운 세 단계, 잊지 않을게. 너 덕분에 다음 시험은 두렵지 않아!",
-          en: "Thanks! Notice the feeling → name it → check the body signals. I won't forget those three steps. Thanks to you, the next test doesn't scare me!"
+          ko: "고마워! '감정 알아차리기 → 이름 붙이기 → 몸의 신호 살피기' — 오늘 배운 세 단계, 잊지 않을게. 다음 시험을 생각하면 아직 떨리긴 하지만, 이제 그 마음을 어떻게 다루면 될지 알 것 같아!",
+          en: "Thanks! Notice the feeling → name it → check the body signals. I won't forget those three steps. I still get nervous thinking about the next test — but now I know what to do with that feeling!"
         },
         end: true
       }
@@ -420,7 +420,7 @@ export const QUESTS = [
             tier: "good",
             stat: "selfManagement",
             reply: {
-              ko: "95점!! …아니, 말하고 나니까 90점? 숫자로 재 보니까 조금은 내려다볼 수 있네.",
+              ko: "95점!! …아니, 말하고 나니까 90점? 숫자로 재 보니까 한 발짝 떨어져서 볼 수 있네.",
               en: "95!! ...Actually, saying it out loud... 90? Measuring it kind of lets me look down at it."
             },
             next: "n2"
@@ -442,8 +442,8 @@ export const QUESTS = [
             tier: "best",
             stat: "selfManagement",
             reply: {
-              ko: "들이쉬고… 둘, 셋, 넷. 내쉬고… 둘, 셋, 넷, 다섯, 여섯. …용암이 식는 게 진짜 느껴져. 이 호흡법 뭐야, 마법이야?",
-              en: "In... two, three, four. Out... two, three, four, five, six. ...The lava is actually cooling. What is this breath, magic?"
+              ko: "들이쉬고… 둘, 셋, 넷. 내쉬고… 둘, 셋, 넷, 다섯, 여섯. …용암이 조금씩 식는 게 느껴져. 아직 뜨겁긴 한데, 완전 신기해!",
+              en: "In... two, three, four. Out... two, three, four, five, six. ...I can feel the lava cooling bit by bit. Still warm, but wow!"
             },
             next: "n3"
           },
@@ -462,7 +462,7 @@ export const QUESTS = [
           },
           {
             text: {
-              ko: "잠깐 이 자리를 벗어나서 물 한잔 마시고 오는 건 어때?",
+              ko: "잠깐 이 자리를 벗어나서 물 한 잔 마시고 오는 건 어때?",
               en: "How about stepping away for a minute and getting a drink of water?"
             },
             tier: "good",
@@ -621,7 +621,7 @@ export const QUESTS = [
             tier: "best",
             stat: "socialAwareness",
             reply: {
-              ko: "듣고 보니… 걔들이 자기들끼리 영상을 보고 있었던 것 같기도 해. 내 생각이 최악의 해석으로 점프했나 봐.",
+              ko: "듣고 보니… 걔들이 자기들끼리 영상을 보고 있었던 것 같기도 해. 내 생각이 곧장 최악의 상상으로 튀었나 봐.",
               en: "Now that you say it... I think they were watching a video together. My brain jumped straight to the worst interpretation."
             },
             next: "n3"
@@ -692,7 +692,7 @@ export const QUESTS = [
       n4: {
         speaker: "minjun",
         text: {
-          ko: "가르쳐 줘서 고마워. 오늘 배운 것: 사람 마음은 내 상상이 아니라 '단서'로 읽기, 그리고 상대 입장에서 한 번 더 생각하기. 너는 그걸 나한테 해 줬어!",
+          ko: "가르쳐 줘서 고마워. 오늘 배운 것: 사람 마음은 내 상상이 아니라 '단서'로 읽기, 그리고 상대 입장에서 한 번 더 생각하기. 네가 방금 나한테 딱 그렇게 해 줬잖아!",
           en: "Thank you. Today I learned: read people by clues, not by my imagination — and think once more from the other person's side. That's exactly what you did for me!"
         },
         end: true
@@ -786,7 +786,7 @@ export const QUESTS = [
         choices: [
           {
             text: {
-              ko: "'너 때문에'가 아니라 '나는'으로 시작해 봐. \"로봇이 부서져서 나는 정말 속상해\" 처럼.",
+              ko: "'너 때문에'가 아니라 '나는'으로 시작해 봐. \"로봇이 부서져서 나는 정말 속상해\"처럼.",
               en: "Start with 'I', not 'you'. Like: \"I'm really hurt that the robot broke.\""
             },
             tier: "best",
@@ -805,7 +805,7 @@ export const QUESTS = [
             tier: "poor",
             stat: "relationship",
             reply: {
-              ko: "(소라) \"다시는 손대지 마!\" (태오) …알았어. 이제 아무것도 안 도와줄게. (소라) 아 잠깐, 이건 아니야. 이렇게 말하면 마음이 더 멀어지잖아. 다시 해 볼래.",
+              ko: "(소라) \"다시는 손대지 마!\" (태오) …알았어. 다신 아무것도 안 도와줄 거야. (소라) 아 잠깐, 이건 아니야. 이렇게 말하면 마음이 더 멀어지잖아. 다시 해 볼래.",
               en: "(Sora) \"Never touch my stuff!\" (Taeo) ...Fine. I won't help with anything then. (Sora) Wait — no. That just pushed us further apart. Let me try again."
             },
             next: "n3b"
@@ -950,7 +950,7 @@ export const QUESTS = [
             tier: "best",
             stat: "decision",
             reply: {
-              ko: "갖으면 → 게임은 생기지만 죄책감도 생겨. 두고 가면 → 다른 사람이 가져갈지도 몰라. 찾아 주면 → 주인이 기뻐하고, 나도 떳떳해! …답이 보인다.",
+              ko: "가지면 → 게임은 생기지만 죄책감도 생겨. 두고 가면 → 다른 사람이 가져갈지도 몰라. 찾아 주면 → 주인이 기뻐하고, 나도 떳떳해! …답이 보인다.",
               en: "Keep it → I get the game but also the guilt. Leave it → someone else might take it. Return it → the owner's relieved and I can hold my head high! ...The answer is showing itself."
             },
             next: "n3"
@@ -963,7 +963,7 @@ export const QUESTS = [
             tier: "poor",
             stat: "decision",
             reply: {
-              ko: "하하, 잠깐 솔깃했다… 근데 반만 가져도 가진 건 가진 거잖아. 어중간한 선택은 어중간하게 마음이 무거울 뿐이야.",
+              ko: "하하, 잠깐 솔깃했다… 근데 반만 가져도 가진 건 가진 거잖아. 반만 가져도 마음이 무거운 건 똑같을 거야.",
               en: "Ha, tempting for a second... but keeping half is still keeping. A halfway choice just leaves my heart halfway heavy."
             },
             next: "n3"
@@ -1021,7 +1021,7 @@ export const QUESTS = [
       n4: {
         speaker: "doyun",
         text: {
-          ko: "가게 아저씨가 옆 학교에 바로 연락해 주셨어! 오늘 배운 '멈추기 → 선택지 펼치기 → 결과 상상하기 → 책임 있게 행동하기' 4단계, 진짜 물건이다. 고마워!",
+          ko: "가게 아저씨가 옆 학교에 바로 연락해 주셨어! 오늘 배운 '멈추기 → 선택지 펼치기 → 결과 상상하기 → 책임 있게 행동하기' 4단계, 진짜 꿀팁이다. 고마워!",
           en: "The shopkeeper called the school right away! That four-step move — pause → lay out options → imagine outcomes → act responsibly — is the real deal. Thank you!"
         },
         end: true
@@ -1103,6 +1103,32 @@ export const QUESTS = [
               en: "A wise choice. A moment's pause prevents a long regret."
             },
             next: "n3"
+          },
+          {
+            text: {
+              ko: "넷 세며 들이쉬고 여섯 세며 내쉬기 — 화가 나면 용암부터 식힐래요.",
+              en: "In for four, out for six — when I'm angry, I'll cool the lava first."
+            },
+            tier: "best",
+            stat: "selfManagement",
+            reply: {
+              ko: "든든한 선택이야. 가장 뜨거운 순간에 그 호흡이 너를 지켜 줄 거야.",
+              en: "A steady choice. That breath will hold you through the hottest moments."
+            },
+            next: "n3"
+          },
+          {
+            text: {
+              ko: "단서로 다시 보기 — 나쁜 상상이 들 때 진짜 단서를 찾아볼래요.",
+              en: "Checking the clues — when my brain assumes the worst, I'll look for real clues."
+            },
+            tier: "best",
+            stat: "socialAwareness",
+            reply: {
+              ko: "지혜로운 선택이야. 상상 대신 단서를 보면 마음이 훨씬 가벼워지지.",
+              en: "A wise choice. Clues instead of stories — your heart gets much lighter that way."
+            },
+            next: "n3"
           }
         ]
       },
@@ -1130,12 +1156,12 @@ export const QUESTS = [
 export const UI = {
   gameTitle: { ko: "마음 마을: 사회정서 RPG", en: "Maeum Village: SEL Quest 3D" },
   gameSubtitle: {
-    ko: "3D 사회정서학습(SEL) 시뮬레이터",
-    en: "A 3D social-emotional learning simulator"
+    ko: "마음의 힘을 키우는 3D 마을 모험",
+    en: "A 3D village adventure that grows your heart skills"
   },
   introBody: {
-    ko: "마음 마을의 친구들이 저마다 마음의 어려움을 겪고 있어요. 마을을 자유롭게 돌아다니며 친구들의 이야기를 듣고, 다섯 가지 마음의 힘(CASEL 사회정서 역량)을 키워 보세요.",
-    en: "The villagers of Maeum Village are each wrestling with a feeling. Explore freely, listen to their stories, and grow the five heart skills (the CASEL social-emotional competencies)."
+    ko: "마음 마을의 친구들이 저마다 마음의 어려움을 겪고 있어요. 마을을 자유롭게 돌아다니며 친구들의 이야기를 듣고, 다섯 가지 마음의 힘을 키워 보세요.",
+    en: "The villagers of Maeum Village are each wrestling with a feeling. Explore freely, listen to their stories, and grow the five heart skills."
   },
   startButton: { ko: "모험 시작하기", en: "Start the Adventure" },
   continueButton: { ko: "이어서 하기", en: "Continue Journey" },
@@ -1165,13 +1191,17 @@ export const UI = {
     ko: "오늘 연습한 것: 감정에 이름 붙이기 · 호흡으로 진정하기 · 입장 바꿔 생각하기 · 나-전달법 · 멈추고 결정하기. 내일 실제 하루에서 하나만 골라 써 보세요!",
     en: "Practiced today: naming feelings, calming breaths, perspective-taking, I-messages, and pausing before deciding. Pick one and try it in real life tomorrow!"
   },
+  reportHedge: {
+    ko: "각 지표는 대화 속 선택 2~4개를 바탕으로 한 연습 기록이에요. 진짜 실력은 내일의 하루에서 자라나요!",
+    en: "Each bar is a practice snapshot from 2–4 conversation choices — the real skill grows in your day tomorrow!"
+  },
   reportReplay: { ko: "다시 플레이", en: "Play Again" },
   reportClose: { ko: "마을로 돌아가기", en: "Back to the Village" },
   scormLocal: { ko: "LMS 미연결 · 로컬 플레이", en: "No LMS · local preview" },
   scormConnected: { ko: "LMS 연결됨 · 진행 상황 기록 중", en: "LMS connected · progress reported" },
   scormSent: { ko: "LMS에 점수 전송 완료", en: "Score sent to LMS" },
   toastLocked: {
-    ko: "먼저 하나 선생님과 이야기해 보자! (광장의 ! 표시)",
+    ko: "먼저 하나 선생님과 이야기해 보세요! (광장의 ! 표시)",
     en: "Talk to Ms. Hana first! (the ! in the plaza)"
   },
   toastFinaleLocked: {
@@ -1186,7 +1216,7 @@ export const UI = {
     en: "Erase saved progress and start over?"
   },
   customizeTitle: { ko: "캐릭터 설정", en: "Character Setup" },
-  namePlaceholder: { ko: "이름을 입력하세요 (선택)", en: "Enter your name (optional)" },
+  namePlaceholder: { ko: "이름을 입력하세요 (안 써도 돼요)", en: "Enter your name (optional)" },
   colorLabel: { ko: "옷 색깔", en: "Outfit color" },
   colorDefault: { ko: "기본", en: "Default" },
   soundTitle: { ko: "사운드", en: "Sound" },

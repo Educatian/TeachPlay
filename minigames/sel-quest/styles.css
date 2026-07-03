@@ -673,6 +673,13 @@ html, body {
   text-align: left;
 }
 
+.report-hedge {
+  font-size: 11px;
+  opacity: 0.62;
+  margin: -4px 0 10px;
+  text-align: left;
+}
+
 .report-scorm { font-size: 11px; opacity: 0.6; margin: 0 0 14px; }
 
 .report-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }

@@ -57,9 +57,14 @@ Then open `http://127.0.0.1:8765/minigames/sel-quest/`.
 ## Completion logic
 
 - learners finish the tutorial, all five competency quests, and the finale
-- score = earned choice points / maximum choice points × 100
+- score = earned choice points / maximum choice points × 100; each dialogue
+  node is scored once (first answer), even across reloads
 - the SCO reports `cmi.core.score.raw` and sets `lesson_status` to `passed`
-  (score ≥ 80, matching the manifest mastery score) or `completed`
+  (score ≥ 70 — consistently reasonable answers pass) or `completed`; a
+  recorded pass or score is never downgraded within the same attempt
+- `cmi.suspend_data` carries a compact JSON record: per-competency
+  earned/max points and the tier picked at every dialogue node, for
+  teacher-side review or later psychometric analysis
 
 ## Credits
 

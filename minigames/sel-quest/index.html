@@ -91,6 +91,7 @@
           <div class="report-grade"><span id="reportGradeLabel"></span><strong id="reportGradeValue">—</strong></div>
         </div>
         <ul id="reportBars" class="report-bars"></ul>
+        <p id="reportHedge" class="report-hedge"></p>
         <p id="reportReflection" class="report-reflection"></p>
         <p id="reportScorm" class="report-scorm"></p>
         <div class="report-actions">
@@ -154,11 +155,11 @@
       window.__selquestBootFailed = bootFailed;
       window.addEventListener("error", function (event) {
         if (event && event.filename && /game\.js|three|GLTFLoader|data\.js/.test(event.filename)) {
-          bootFailed("로드 실패 — 새로고침 해 주세요 · Load failed, please refresh");
+          bootFailed("로드 실패 — 새로고침해 주세요 · Load failed, please refresh");
         }
       });
       setTimeout(function () {
-        bootFailed("로드 실패 — 새로고침 해 주세요 · Load failed, please refresh");
+        bootFailed("로드 실패 — 새로고침해 주세요 · Load failed, please refresh");
       }, 25000);
     })();
   </script>

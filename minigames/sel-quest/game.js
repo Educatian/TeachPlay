@@ -61,6 +61,7 @@ const dom = {
   reportGradeLabel: document.getElementById("reportGradeLabel"),
   reportGradeValue: document.getElementById("reportGradeValue"),
   reportBars: document.getElementById("reportBars"),
+  reportHedge: document.getElementById("reportHedge"),
   reportReflection: document.getElementById("reportReflection"),
   reportScorm: document.getElementById("reportScorm"),
   reportReplay: document.getElementById("reportReplay"),
@@ -200,6 +201,16 @@ function scormInit() {
   window.Scorm12.commit();
 }
 
+// Compact per-competency + per-item record for the teacher/LMS side
+// (readable via cmi.suspend_data; stays well under the 4096-char guarantee).
+function scormDetailPayload(score) {
+  const comps = {};
+  COMPETENCIES.forEach((c) => {
+    comps[c.id] = [state.stats[c.id], state.statMax[c.id]];
+  });
+  return JSON.stringify({ v: 1, score, comps, nodes: state.answered });
+}
+
 function scormSubmit(score) {
   if (!scorm.active || scorm.submitted) return;
   scorm.submitted = true;
@@ -207,13 +218,16 @@ function scormSubmit(score) {
   const prevStatus = window.Scorm12.get("cmi.core.lesson_status");
   const prevRawStr = window.Scorm12.get("cmi.core.score.raw");
   const prevRaw = prevRawStr === "" ? -1 : Number(prevRawStr);
-  const newStatus = score >= 80 ? "passed" : "completed";
+  // Pass cut 70: a learner who consistently picks reasonable ("good")
+  // answers passes; the on-screen A grade (75) always clears it.
+  const newStatus = score >= 70 ? "passed" : "completed";
   if (prevStatus === "passed" && newStatus !== "passed") return;
   if (Number.isFinite(prevRaw) && score < prevRaw) return;
   window.Scorm12.set("cmi.core.score.min", "0");
   window.Scorm12.set("cmi.core.score.max", "100");
   window.Scorm12.set("cmi.core.score.raw", String(score));
   window.Scorm12.set("cmi.core.lesson_status", newStatus);
+  window.Scorm12.set("cmi.suspend_data", scormDetailPayload(score));
   window.Scorm12.commit();
 }
 
@@ -1788,10 +1802,11 @@ function renderReplyView() {
 
 function pickChoice(choice) {
   sfx.choice();
-  // one score per node, even across replays (reload, language toggle)
+  // one score per node, even across replays (reload, language toggle);
+  // the tier is recorded for teacher-facing SCORM suspend_data
   const answeredKey = `${dialogue.quest.id}:${dialogue.nodeId}`;
   if (!state.answered[answeredKey]) {
-    state.answered[answeredKey] = true;
+    state.answered[answeredKey] = choice.tier;
     grantPoints(choice.stat, choice.tier);
   }
   dialogue.phase = "reply";
@@ -1936,6 +1951,7 @@ function renderReport() {
   dom.reportScoreValue.textContent = String(score);
   dom.reportGradeLabel.textContent = t(UI.reportGradeLabel);
   dom.reportGradeValue.textContent = t(UI.grades[grade]);
+  dom.reportHedge.textContent = t(UI.reportHedge);
   dom.reportReflection.textContent = t(UI.reportReflection);
   dom.reportReplay.textContent = t(UI.reportReplay);
   dom.reportClose.textContent = t(UI.reportClose);
