@@ -78,16 +78,22 @@ Then open `http://127.0.0.1:8765/minigames/sel-quest/`.
 
 ## Credits
 
-3D models come from Kenney's open-source starter kits — the same
-asset family distributed for Unity/Godot/Unreal projects:
+3D models come from open-source game asset kits — the same asset
+families distributed for Unity/Godot/Unreal projects:
 
-- [Starter Kit 3D Platformer](https://github.com/KenneyNL/Starter-Kit-3D-Platformer)
-  (`character.glb`, `flag.glb`)
-- [Starter Kit City Builder](https://github.com/KenneyNL/Starter-Kit-City-Builder)
-  (buildings, fountain, tree patches)
+- [KayKit Character Pack: Adventurers](https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0)
+  (CC0) — the human characters (knight, barbarian, mage, rogues). The
+  shipped GLBs are slimmed in-repo: weapon/prop nodes removed for the
+  school setting and only the Idle / Walking_A / Running_A / Cheer clips
+  kept (3.6 MB → ~320 KB each), quantized with KHR_mesh_quantization.
+- [Kenney Starter Kit 3D Platformer](https://github.com/KenneyNL/Starter-Kit-3D-Platformer)
+  (MIT) — `flag.glb`, plus the robot `character.glb` kept as a fallback.
+- [Kenney Starter Kit City Builder](https://github.com/KenneyNL/Starter-Kit-City-Builder)
+  (MIT) — buildings, fountain, tree patches.
 
-Both are MIT licensed; the license text ships with the package at
-`assets/LICENSE-kenney.md`. Three.js (MIT) is vendored under `vendor/three/`.
+License texts ship with the package (`assets/LICENSE-kenney.md`,
+`assets/LICENSE-kaykit.txt`). Three.js (MIT) is vendored under
+`vendor/three/`.
 
 ## Content safety
 

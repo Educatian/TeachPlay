@@ -29,7 +29,14 @@
       <file href="vendor/three/three.module.js"/>
       <file href="vendor/three/GLTFLoader.js"/>
       <file href="vendor/three/BufferGeometryUtils.js"/>
+      <file href="vendor/three/SkeletonUtils.js"/>
       <file href="assets/LICENSE-kenney.md"/>
+      <file href="assets/LICENSE-kaykit.txt"/>
+      <file href="assets/models/kaykit/knight.glb"/>
+      <file href="assets/models/kaykit/barbarian.glb"/>
+      <file href="assets/models/kaykit/mage.glb"/>
+      <file href="assets/models/kaykit/rogue.glb"/>
+      <file href="assets/models/kaykit/rogue-hooded.glb"/>
       <file href="assets/models/platformer/character.glb"/>
       <file href="assets/models/platformer/flag.glb"/>
       <file href="assets/models/platformer/Textures/colormap.png"/>

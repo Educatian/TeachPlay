@@ -41,6 +41,7 @@ export const CHOICE_POINTS = { best: 10, good: 6, poor: 2 };
 export const NPCS = {
   hana: {
     id: "hana",
+    model: "charMage",
     name: { ko: "하나 선생님", en: "Ms. Hana" },
     role: { ko: "마음 마을 안내자", en: "Village Guide" },
     palette: { skin: 0xf1c9a5, hair: 0x3a2c23, top: 0x2e6f5e, bottom: 0x24333f },
@@ -50,6 +51,7 @@ export const NPCS = {
   },
   jiho: {
     id: "jiho",
+    model: "charRogue",
     name: { ko: "지호", en: "Jiho" },
     role: { ko: "연못가의 학생", en: "Student by the pond" },
     palette: { skin: 0xf1c9a5, hair: 0x20242c, top: 0x5471b8, bottom: 0x30405c },
@@ -59,6 +61,7 @@ export const NPCS = {
   },
   yuna: {
     id: "yuna",
+    model: "charBarbarian",
     name: { ko: "유나", en: "Yuna" },
     role: { ko: "운동장의 학생", en: "Student at the playground" },
     palette: { skin: 0xf6d3b3, hair: 0x5a3825, top: 0xc75450, bottom: 0x574052 },
@@ -68,6 +71,7 @@ export const NPCS = {
   },
   minjun: {
     id: "minjun",
+    model: "charRogueHooded",
     name: { ko: "민준", en: "Minjun" },
     role: { ko: "전학 온 학생", en: "New transfer student" },
     palette: { skin: 0xe8bd95, hair: 0x1c1c22, top: 0x8d9440, bottom: 0x3d4a37 },
@@ -77,6 +81,7 @@ export const NPCS = {
   },
   sora: {
     id: "sora",
+    model: "charBarbarian",
     name: { ko: "소라", en: "Sora" },
     role: { ko: "발명 동아리원", en: "Maker-club member" },
     palette: { skin: 0xf6d3b3, hair: 0x704214, top: 0xd98e2b, bottom: 0x4b3b56 },
@@ -86,6 +91,7 @@ export const NPCS = {
   },
   taeo: {
     id: "taeo",
+    model: "charRogue",
     name: { ko: "태오", en: "Taeo" },
     role: { ko: "발명 동아리원", en: "Maker-club member" },
     palette: { skin: 0xedc39d, hair: 0x2f2620, top: 0x4a7fb5, bottom: 0x2e3d4d },
@@ -95,6 +101,7 @@ export const NPCS = {
   },
   doyun: {
     id: "doyun",
+    model: "charRogueHooded",
     name: { ko: "도윤", en: "Doyun" },
     role: { ko: "가게 앞의 학생", en: "Student outside the shop" },
     palette: { skin: 0xf1c9a5, hair: 0x33261c, top: 0x6b5ca5, bottom: 0x30363f },

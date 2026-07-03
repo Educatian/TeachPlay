@@ -5,6 +5,7 @@
 
 import * as THREE from "./vendor/three/three.module.js";
 import { GLTFLoader } from "./vendor/three/GLTFLoader.js";
+import { clone as cloneSkinned } from "./vendor/three/SkeletonUtils.js";
 import {
   COMPETENCIES,
   CHOICE_POINTS,
@@ -256,6 +257,11 @@ scormInit();
 
 const MODEL_FILES = {
   character: "./assets/models/platformer/character.glb",
+  charKnight: "./assets/models/kaykit/knight.glb",
+  charBarbarian: "./assets/models/kaykit/barbarian.glb",
+  charMage: "./assets/models/kaykit/mage.glb",
+  charRogue: "./assets/models/kaykit/rogue.glb",
+  charRogueHooded: "./assets/models/kaykit/rogue-hooded.glb",
   flag: "./assets/models/platformer/flag.glb",
   houseA: "./assets/models/city/building-small-a.glb",
   houseB: "./assets/models/city/building-small-b.glb",
@@ -281,8 +287,14 @@ const assets = {};
 
 // Clone a loaded glTF scene, normalize its size, center it on XZ, rest it on
 // the ground plane, and optionally tint it toward a color.
-function cloneModel(gltf, { size = 1, axis = "footprint", tint = null, shadows = true } = {}) {
-  const root = gltf.scene.clone(true);
+function cloneModel(gltf, { size = 1, axis = "footprint", tint = null, tintStrength = 0.62, shadows = true } = {}) {
+  if (gltf.__hasSkin === undefined) {
+    gltf.__hasSkin = false;
+    gltf.scene.traverse((o) => {
+      if (o.isSkinnedMesh) gltf.__hasSkin = true;
+    });
+  }
+  const root = gltf.__hasSkin ? cloneSkinned(gltf.scene) : gltf.scene.clone(true);
   const box = new THREE.Box3().setFromObject(root);
   const dims = box.getSize(new THREE.Vector3());
   const basis = axis === "y" ? dims.y : Math.max(dims.x, dims.z);
@@ -298,7 +310,7 @@ function cloneModel(gltf, { size = 1, axis = "footprint", tint = null, shadows =
       obj.receiveShadow = true;
       if (tint) {
         obj.material = obj.material.clone();
-        obj.material.color.lerp(new THREE.Color(tint), 0.62);
+        obj.material.color.lerp(new THREE.Color(tint), tintStrength);
       }
     }
   });
@@ -856,15 +868,23 @@ for (let i = 0; i < 7; i += 1) {
 // ---------------------------------------------------------------------------
 
 function buildCharacter(cfg) {
-  if (assets.character) return buildCharacterGLB(cfg);
+  const source = (cfg.model && assets[cfg.model]) || assets.character;
+  if (source) return buildCharacterGLB(cfg, source);
   return buildCharacterPrimitive(cfg);
 }
 
-// Kenney animated mini character (idle/walk clips baked into the GLB)
-function buildCharacterGLB({ top, scale = 1 }) {
+// Animated GLB character: KayKit human adventurers (skinned, Idle/Walking_A/
+// Running_A/Cheer) with the Kenney robot as fallback (idle/walk).
+function buildCharacterGLB({ top, scale = 1 }, source) {
   const g = new THREE.Group();
-  const model = cloneModel(assets.character, { size: 2.1 * scale, axis: "y", tint: top });
-  g.add(model); // asset forward is +Z, matching the game convention
+  const isRobot = source === assets.character;
+  const model = cloneModel(source, {
+    size: 2.05 * scale,
+    axis: "y",
+    tint: top,
+    tintStrength: isRobot ? 0.62 : 0.45
+  });
+  g.add(model); // both asset families face +Z, matching the game convention
 
   const blob = new THREE.Mesh(
     new THREE.CircleGeometry(0.42 * scale, 16).rotateX(-Math.PI / 2),
@@ -874,18 +894,39 @@ function buildCharacterGLB({ top, scale = 1 }) {
   g.add(blob);
 
   const mixer = new THREE.AnimationMixer(model);
-  const clips = assets.character.animations;
-  const actions = {};
-  ["idle", "walk"].forEach((name) => {
-    const clip = THREE.AnimationClip.findByName(clips, name);
-    if (clip) actions[name] = mixer.clipAction(clip);
-  });
+  const clips = source.animations;
+  const pick = (...names) => {
+    for (const n of names) {
+      const clip = THREE.AnimationClip.findByName(clips, n);
+      if (clip) return mixer.clipAction(clip);
+    }
+    return null;
+  };
+  const actions = {
+    idle: pick("Idle", "idle"),
+    walk: pick("Walking_A", "walk"),
+    run: pick("Running_A"),
+    cheer: pick("Cheer")
+  };
   if (actions.idle) {
     actions.idle.play();
     // desynchronize idle cycles between characters
     actions.idle.time = Math.random() * actions.idle.getClip().duration;
   }
-  g.userData.anim = { mixer, actions, state: "idle" };
+  const anim = { mixer, actions, state: "idle", oneShot: false };
+  anim.playOnce = (name) => {
+    const action = actions[name];
+    if (!action || anim.oneShot) return;
+    anim.oneShot = true;
+    const from = actions[anim.state];
+    action.reset().setLoop(THREE.LoopOnce, 1).fadeIn(0.2).play();
+    if (from) from.fadeOut(0.2);
+  };
+  mixer.addEventListener("finished", () => {
+    anim.oneShot = false;
+    if (actions[anim.state]) actions[anim.state].reset().fadeIn(0.25).play();
+  });
+  g.userData.anim = anim;
   return g;
 }
 
@@ -956,14 +997,19 @@ function buildCharacterPrimitive({ skin, hair, top, bottom, scale = 1 }) {
 function animateWalk(charGroup, timeMs, moving, speedFactor = 1, dt = 1 / 60) {
   const anim = charGroup.userData.anim;
   if (anim) {
-    const target = moving && anim.actions.walk ? "walk" : "idle";
-    if (anim.state !== target && anim.actions[target]) {
-      const from = anim.actions[anim.state];
-      anim.actions[target].reset().fadeIn(0.16).play();
-      if (from) from.fadeOut(0.16);
-      anim.state = target;
+    if (!anim.oneShot) {
+      let target = "idle";
+      if (moving && anim.actions.walk) {
+        target = speedFactor > 1.2 && anim.actions.run ? "run" : "walk";
+      }
+      if (anim.state !== target && anim.actions[target]) {
+        const from = anim.actions[anim.state];
+        anim.actions[target].reset().fadeIn(0.16).play();
+        if (from) from.fadeOut(0.16);
+        anim.state = target;
+      }
+      if (anim.actions.walk) anim.actions.walk.timeScale = speedFactor * 1.35;
     }
-    if (anim.actions.walk) anim.actions.walk.timeScale = speedFactor * 1.35;
     anim.mixer.update(dt);
     return;
   }
@@ -1031,7 +1077,7 @@ function makeTextSprite(text, { font = "600 44px sans-serif", pad = 18, bg = nul
 const npcActors = {}; // id -> actor
 
 function spawnNpc(def) {
-  const group = buildCharacter({ ...def.palette, scale: 0.96 });
+  const group = buildCharacter({ ...def.palette, model: def.model, scale: 0.96 });
   group.position.set(def.position.x, 0, def.position.z);
   group.rotation.y = def.facing || 0;
   scene.add(group);
@@ -1193,10 +1239,10 @@ function refreshNpcNameSprites() {
 // Ambient villagers wandering the paths (non-interactive)
 const wanderers = [];
 [
-  { palette: { skin: 0xf1c9a5, hair: 0x51361f, top: 0xf2b134, bottom: 0x3a4a5a }, path: [[-10, 0], [-5, -5.5], [5, -5.5], [10, 0], [10, -8], [-4, -12]] },
-  { palette: { skin: 0xecc19c, hair: 0x2b2b33, top: 0x81c784, bottom: 0x5a4a3a }, path: [[-4, 10], [0, 16], [8, 12], [-6, 12]] }
+  { model: "charRogue", palette: { skin: 0xf1c9a5, hair: 0x51361f, top: 0xf2b134, bottom: 0x3a4a5a }, path: [[-10, 0], [-5, -5.5], [5, -5.5], [10, 0], [10, -8], [-4, -12]] },
+  { model: "charRogueHooded", palette: { skin: 0xecc19c, hair: 0x2b2b33, top: 0x81c784, bottom: 0x5a4a3a }, path: [[-4, 10], [0, 16], [8, 12], [-6, 12]] }
 ].forEach((cfg, i) => {
-  const g = buildCharacter({ ...cfg.palette, scale: 0.82 });
+  const g = buildCharacter({ ...cfg.palette, model: cfg.model, scale: 0.82 });
   g.position.set(cfg.path[0][0], 0, cfg.path[0][1]);
   scene.add(g);
   wanderers.push({ group: g, path: cfg.path, target: 1, speed: 1.5 + i * 0.3, wait: 0 });
@@ -1259,10 +1305,11 @@ function updateBursts(dt) {
   }
 }
 
-// Player — untinted hero look by default; learners can pick an outfit color
-const player = assets.character
-  ? buildCharacter({ top: null })
-  : buildCharacter({ skin: 0xf3cba5, hair: 0x2c2320, top: 0x2e6f5e, bottom: 0x2c3a46 });
+// Player — the knight, untinted hero look; learners can pick an outfit color
+const player =
+  assets.charKnight || assets.character
+    ? buildCharacter({ top: null, model: "charKnight" })
+    : buildCharacter({ skin: 0xf3cba5, hair: 0x2c2320, top: 0x2e6f5e, bottom: 0x2c3a46 });
 
 const PLAYER_COLORS = [null, "#f2b134", "#e0685f", "#4fc3f7", "#81c784", "#b39ddb", "#f48fb1"];
 let playerMeshes = null;
@@ -1914,7 +1961,13 @@ function finishQuestDialogue(endNode) {
     spawnBurst(player.position.clone().add(new THREE.Vector3(0, 1.9, 0)));
     showToast(`✅ ${t(UI.questComplete)} ${t(quest.completion)}`, 4200);
     const moods = MOOD_AFTER[quest.id];
-    if (moods) Object.entries(moods).forEach(([npcId, mood]) => setNpcMood(npcId, mood));
+    if (moods) {
+      Object.entries(moods).forEach(([npcId, mood]) => {
+        setNpcMood(npcId, mood);
+        const actor = npcActors[npcId];
+        if (actor && actor.group.userData.anim) actor.group.userData.anim.playOnce("cheer");
+      });
+    }
     refreshMarkers();
     updateTracker();
     persistSave();
