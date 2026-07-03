@@ -718,6 +718,28 @@ html, body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* ---------- Quest guide arrow (level 2 unlock) ---------- */
+
+.quest-arrow {
+  position: absolute;
+  z-index: 22;
+  font-size: 30px;
+  color: var(--accent-warm);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  transform-origin: center;
+  animation: arrow-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes arrow-pulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quest-arrow { animation: none; }
+}
+
 /* ---------- Floating XP text (DOM sprites) ---------- */
 
 .float-text {

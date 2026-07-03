@@ -28,6 +28,7 @@ const dom = {
   questTracker: document.getElementById("questTracker"),
   scormBadge: document.getElementById("scormBadge"),
   toast: document.getElementById("toast"),
+  questArrow: document.getElementById("questArrow"),
   talkPrompt: document.getElementById("talkPrompt"),
   dialogueBox: document.getElementById("dialogueBox"),
   dialoguePortrait: document.getElementById("dialoguePortrait"),
@@ -1586,6 +1587,7 @@ function grantPoints(statId, tier) {
     spawnFloatText(t(UI.levelUp), true);
     sfx.levelup();
     spawnBurst(player.position.clone().add(new THREE.Vector3(0, 1.6, 0)), 52);
+    if (state.level === 2) showToast(t(UI.arrowUnlocked), 5600);
   }
   persistSave();
 }
@@ -2180,7 +2182,54 @@ function resolveCollisions(px, pz) {
 
 const cameraTarget = new THREE.Vector3();
 const cameraDesired = new THREE.Vector3();
+const arrowWorld = new THREE.Vector3();
 let sprinting = false;
+
+// Level-2 unlock: an edge-of-screen arrow pointing at the next quest NPC.
+function updateQuestArrow() {
+  const active =
+    state.level >= 2 &&
+    state.started &&
+    !dialogue.open &&
+    dom.journalOverlay.hidden &&
+    dom.reportOverlay.hidden;
+  let targetQuest = null;
+  if (active) {
+    const candidates = QUESTS
+      .map((q) => ({ q, s: questStatus(q) }))
+      .filter(({ s }) => s === "active" || s === "available")
+      .sort((a, b) => (a.s === "active" ? -1 : 1) - (b.s === "active" ? -1 : 1) || a.q.order - b.q.order);
+    targetQuest = candidates.length ? candidates[0].q : null;
+  }
+  if (!targetQuest) {
+    dom.questArrow.hidden = true;
+    return;
+  }
+  const def = NPCS[targetQuest.npc];
+  arrowWorld.set(def.position.x, 2.4, def.position.z).project(camera);
+  let x = arrowWorld.x;
+  let y = arrowWorld.y;
+  const behind = arrowWorld.z > 1;
+  if (behind) {
+    x = -x;
+    y = -y;
+  }
+  if (!behind && Math.abs(x) < 0.9 && Math.abs(y) < 0.82) {
+    dom.questArrow.hidden = true; // NPC is on screen — the ! marker suffices
+    return;
+  }
+  const scale = 0.88 / Math.max(Math.abs(x), Math.abs(y), 0.0001);
+  x *= scale;
+  y *= scale;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const sx = rect.left + ((x + 1) / 2) * rect.width;
+  const sy = rect.top + ((1 - y) / 2) * rect.height;
+  const angle = Math.atan2(-(y), x); // screen-space direction from center
+  dom.questArrow.hidden = false;
+  dom.questArrow.style.left = `${sx - 15}px`;
+  dom.questArrow.style.top = `${sy - 15}px`;
+  dom.questArrow.style.transform = `rotate(${angle}rad)`;
+}
 
 function updateCamera(dt) {
   const targetFov = sprinting ? 61 : 55;
@@ -2331,6 +2380,7 @@ function tick() {
 
   updateProximity(dt);
   updateCamera(dt);
+  updateQuestArrow();
   renderer.render(scene, camera);
 }
 

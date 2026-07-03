@@ -1239,6 +1239,10 @@ export const UI = {
   questAccepted: { ko: "새 퀘스트:", en: "New quest:" },
   questComplete: { ko: "퀘스트 완료!", en: "Quest complete!" },
   levelUp: { ko: "레벨 업!", en: "LEVEL UP!" },
+  arrowUnlocked: {
+    ko: "🧭 레벨 2 달성! '길잡이 화살표'가 열렸어요 — 화면 가장자리 화살표가 다음 친구를 가리켜 줘요.",
+    en: "🧭 Level 2! Guide Arrow unlocked — the arrow at the screen edge now points to the next friend."
+  },
   reportTitle: { ko: "마음의 힘 리포트", en: "Heart Skills Report" },
   reportBadge: { ko: "마음의 힘 배지 획득!", en: "Heart Skills Badge earned!" },
   reportScore: { ko: "종합 점수", en: "Overall score" },
