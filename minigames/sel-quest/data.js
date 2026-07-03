@@ -41,6 +41,7 @@ export const CHOICE_POINTS = { best: 10, good: 6, poor: 2 };
 export const NPCS = {
   hana: {
     id: "hana",
+    size: 1.14,
     model: "charMage",
     name: { ko: "세라 현자님", en: "Sage Sera" },
     role: { ko: "마음 마을의 현자", en: "Village Sage" },
@@ -51,6 +52,7 @@ export const NPCS = {
   },
   jiho: {
     id: "jiho",
+    size: 0.95,
     model: "charRogue",
     name: { ko: "로이", en: "Roy" },
     role: { ko: "연못가의 견습 궁수", en: "Apprentice archer by the pond" },
@@ -61,6 +63,7 @@ export const NPCS = {
   },
   yuna: {
     id: "yuna",
+    size: 0.99,
     model: "charBarbarian",
     name: { ko: "타라", en: "Tara" },
     role: { ko: "수련장의 꼬마 전사", en: "Young warrior at the training yard" },
@@ -71,6 +74,7 @@ export const NPCS = {
   },
   minjun: {
     id: "minjun",
+    size: 0.88,
     model: "charRogueHooded",
     name: { ko: "루카", en: "Luka" },
     role: { ko: "새로 온 여행자", en: "Newcomer to the village" },
@@ -81,6 +85,7 @@ export const NPCS = {
   },
   sora: {
     id: "sora",
+    size: 0.94,
     model: "charBarbarian",
     name: { ko: "엠버", en: "Ember" },
     role: { ko: "대장간 견습 장인", en: "Smithy apprentice" },
@@ -91,6 +96,7 @@ export const NPCS = {
   },
   taeo: {
     id: "taeo",
+    size: 0.92,
     model: "charRogue",
     name: { ko: "니코", en: "Niko" },
     role: { ko: "대장간 견습 장인", en: "Smithy apprentice" },
@@ -101,6 +107,7 @@ export const NPCS = {
   },
   doyun: {
     id: "doyun",
+    size: 0.84,
     model: "charRogueHooded",
     name: { ko: "모모", en: "Momo" },
     role: { ko: "상점 앞 심부름꾼", en: "Errand runner outside the shop" },

@@ -1441,7 +1441,8 @@ function makeTextSprite(text, { font = "600 44px sans-serif", pad = 18, bg = nul
 const npcActors = {}; // id -> actor
 
 function spawnNpc(def) {
-  const group = buildCharacter({ ...def.palette, model: def.model, scale: 0.96 });
+  const size = def.size || 0.96;
+  const group = buildCharacter({ ...def.palette, model: def.model, scale: size });
   group.position.set(def.position.x, 0, def.position.z);
   group.rotation.y = def.facing || 0;
   scene.add(group);
@@ -1452,11 +1453,17 @@ function spawnNpc(def) {
     bg: "rgba(20,30,38,0.72)",
     fg: "#fdfaf2"
   });
-  nameSprite.position.y = LABEL_Y.name;
+  const labelScale = size / 0.96;
+  const labelY = {
+    name: LABEL_Y.name * labelScale,
+    mood: LABEL_Y.mood * labelScale,
+    marker: LABEL_Y.marker * labelScale
+  };
+  nameSprite.position.y = labelY.name;
   group.add(nameSprite);
 
   const moodSprite = makeTextSprite(MOOD_EMOJI[def.mood] || "🙂", { font: "60px sans-serif", size: 0.62 });
-  moodSprite.position.y = LABEL_Y.mood;
+  moodSprite.position.y = labelY.mood;
   group.add(moodSprite);
 
   const markerSprite = makeTextSprite("!", {
@@ -1465,13 +1472,14 @@ function spawnNpc(def) {
     stroke: "#5c3d00",
     size: 0.95
   });
-  markerSprite.position.y = LABEL_Y.marker;
+  markerSprite.position.y = labelY.marker;
   markerSprite.visible = false;
   group.add(markerSprite);
 
   const actor = {
     def,
     group,
+    labelY,
     mood: def.mood,
     nameSprite,
     moodSprite,
@@ -1562,7 +1570,7 @@ function setNpcMood(id, mood) {
   const actor = npcActors[id];
   if (!actor || actor.mood === mood) return;
   actor.mood = mood;
-  replaceSprite(actor, "moodSprite", makeTextSprite(MOOD_EMOJI[mood] || "🙂", { font: "60px sans-serif", size: 0.62 }), LABEL_Y.mood);
+  replaceSprite(actor, "moodSprite", makeTextSprite(MOOD_EMOJI[mood] || "🙂", { font: "60px sans-serif", size: 0.62 }), actor.labelY.mood);
 }
 
 function setNpcMarker(id, kind) {
@@ -1584,7 +1592,7 @@ function setNpcMarker(id, kind) {
     actor,
     "markerSprite",
     makeTextSprite(s.text, { font: "900 62px sans-serif", fg: s.fg, stroke: s.stroke, size: 0.95 }),
-    LABEL_Y.marker
+    actor.labelY.marker
   );
   actor.markerSprite.visible = true;
 }
@@ -1595,7 +1603,7 @@ function refreshNpcNameSprites() {
       actor,
       "nameSprite",
       makeTextSprite(t(actor.def.name), { font: "700 40px sans-serif", bg: "rgba(20,30,38,0.72)", fg: "#fdfaf2" }),
-      LABEL_Y.name
+      actor.labelY.name
     );
   });
 }
@@ -1603,10 +1611,10 @@ function refreshNpcNameSprites() {
 // Ambient villagers wandering the paths (non-interactive)
 const wanderers = [];
 [
-  { model: "charRogue", palette: { skin: 0xf1c9a5, hair: 0x51361f, top: 0xf2b134, bottom: 0x3a4a5a }, path: [[-10, 0], [-5, -5.5], [5, -5.5], [10, 0], [10, -8], [-4, -12]] },
-  { model: "charRogueHooded", palette: { skin: 0xecc19c, hair: 0x2b2b33, top: 0x81c784, bottom: 0x5a4a3a }, path: [[-4, 10], [0, 16], [8, 12], [-6, 12]] }
+  { model: "charRogue", size: 0.8, palette: { skin: 0xf1c9a5, hair: 0x51361f, top: 0xf2b134, bottom: 0x3a4a5a }, path: [[-10, 0], [-5, -5.5], [5, -5.5], [10, 0], [10, -8], [-4, -12]] },
+  { model: "charRogueHooded", size: 0.87, palette: { skin: 0xecc19c, hair: 0x2b2b33, top: 0x81c784, bottom: 0x5a4a3a }, path: [[-4, 10], [0, 16], [8, 12], [-6, 12]] }
 ].forEach((cfg, i) => {
-  const g = buildCharacter({ ...cfg.palette, model: cfg.model, scale: 0.82 });
+  const g = buildCharacter({ ...cfg.palette, model: cfg.model, scale: cfg.size });
   g.position.set(cfg.path[0][0], 0, cfg.path[0][1]);
   scene.add(g);
   wanderers.push({ group: g, path: cfg.path, target: 1, speed: 1.5 + i * 0.3, wait: 0 });
@@ -2752,7 +2760,7 @@ function tick() {
     animateWalk(actor.group, now + actor.def.position.x * 313, false, 1, dt);
     // gentle marker bob
     if (actor.markerSprite.visible) {
-      actor.markerSprite.position.y = LABEL_Y.marker + Math.sin(now / 320 + actor.def.position.z) * 0.12;
+      actor.markerSprite.position.y = actor.labelY.marker + Math.sin(now / 320 + actor.def.position.z) * 0.12;
     }
   }
 
