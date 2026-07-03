@@ -10,13 +10,13 @@ Each quest targets one CASEL competency through an authentic peer scenario:
 
 | Quest | NPC | Competency | SEL skill practiced |
 | --- | --- | --- | --- |
-| The Nameless Storm Cloud | Jiho | Self-Awareness | Noticing, naming, and body-mapping emotions |
-| Volcano About to Blow | Yuna | Self-Management | Pausing, paced breathing, cool-first-talk-later |
-| The Kid Standing Alone | Minjun | Social Awareness | Perspective-taking, checking interpretations against clues |
-| Broken Robot, Broken Friendship? | Sora & Taeo | Relationship Skills | Turn-taking, active listening, I-messages, mediation |
-| The Lost Wallet | Doyun | Responsible Decision-Making | Pause → options → outcomes → responsible action |
+| The Nameless Storm Cloud | Roy the apprentice archer | Self-Awareness | Noticing, naming, and body-mapping emotions |
+| Volcano About to Blow | Tara the young warrior | Self-Management | Pausing, paced breathing, cool-first-talk-later |
+| The Kid Standing Alone | Luka the newcomer | Social Awareness | Perspective-taking, checking interpretations against clues |
+| Broken Robot, Broken Friendship? | Ember & Niko, smithy apprentices | Relationship Skills | Turn-taking, active listening, I-messages, mediation |
+| The Lost Coin Pouch | Momo the errand runner | Responsible Decision-Making | Pause → options → outcomes → responsible action |
 
-A tutorial (Ms. Hana) opens the loop and a finale ceremony closes it with a
+A tutorial (Sage Sera, the village mage) opens the loop and a finale ceremony closes it with a
 personal report across all five competencies.
 
 ## Game systems

@@ -42,8 +42,8 @@ export const NPCS = {
   hana: {
     id: "hana",
     model: "charMage",
-    name: { ko: "하나 선생님", en: "Ms. Hana" },
-    role: { ko: "마음 마을 안내자", en: "Village Guide" },
+    name: { ko: "세라 현자님", en: "Sage Sera" },
+    role: { ko: "마음 마을의 현자", en: "Village Sage" },
     palette: { skin: 0xf1c9a5, hair: 0x3a2c23, top: 0x2e6f5e, bottom: 0x24333f },
     position: { x: 0, z: 6 },
     facing: Math.PI,
@@ -52,8 +52,8 @@ export const NPCS = {
   jiho: {
     id: "jiho",
     model: "charRogue",
-    name: { ko: "지호", en: "Jiho" },
-    role: { ko: "연못가의 학생", en: "Student by the pond" },
+    name: { ko: "로이", en: "Roy" },
+    role: { ko: "연못가의 견습 궁수", en: "Apprentice archer by the pond" },
     palette: { skin: 0xf1c9a5, hair: 0x20242c, top: 0x5471b8, bottom: 0x30405c },
     position: { x: -16, z: -10 },
     facing: Math.PI * 0.3,
@@ -62,8 +62,8 @@ export const NPCS = {
   yuna: {
     id: "yuna",
     model: "charBarbarian",
-    name: { ko: "유나", en: "Yuna" },
-    role: { ko: "운동장의 학생", en: "Student at the playground" },
+    name: { ko: "타라", en: "Tara" },
+    role: { ko: "수련장의 꼬마 전사", en: "Young warrior at the training yard" },
     palette: { skin: 0xf6d3b3, hair: 0x5a3825, top: 0xc75450, bottom: 0x574052 },
     position: { x: 17, z: -12 },
     facing: -Math.PI * 0.4,
@@ -72,8 +72,8 @@ export const NPCS = {
   minjun: {
     id: "minjun",
     model: "charRogueHooded",
-    name: { ko: "민준", en: "Minjun" },
-    role: { ko: "전학 온 학생", en: "New transfer student" },
+    name: { ko: "루카", en: "Luka" },
+    role: { ko: "새로 온 여행자", en: "Newcomer to the village" },
     palette: { skin: 0xe8bd95, hair: 0x1c1c22, top: 0x8d9440, bottom: 0x3d4a37 },
     position: { x: -14, z: 14 },
     facing: -Math.PI * 0.2,
@@ -82,8 +82,8 @@ export const NPCS = {
   sora: {
     id: "sora",
     model: "charBarbarian",
-    name: { ko: "소라", en: "Sora" },
-    role: { ko: "발명 동아리원", en: "Maker-club member" },
+    name: { ko: "엠버", en: "Ember" },
+    role: { ko: "대장간 견습 장인", en: "Smithy apprentice" },
     palette: { skin: 0xf6d3b3, hair: 0x704214, top: 0xd98e2b, bottom: 0x4b3b56 },
     position: { x: 14.6, z: 13.4 },
     facing: Math.PI * 0.9,
@@ -92,8 +92,8 @@ export const NPCS = {
   taeo: {
     id: "taeo",
     model: "charRogue",
-    name: { ko: "태오", en: "Taeo" },
-    role: { ko: "발명 동아리원", en: "Maker-club member" },
+    name: { ko: "니코", en: "Niko" },
+    role: { ko: "대장간 견습 장인", en: "Smithy apprentice" },
     palette: { skin: 0xedc39d, hair: 0x2f2620, top: 0x4a7fb5, bottom: 0x2e3d4d },
     position: { x: 17.4, z: 15 },
     facing: -Math.PI * 0.75,
@@ -102,8 +102,8 @@ export const NPCS = {
   doyun: {
     id: "doyun",
     model: "charRogueHooded",
-    name: { ko: "도윤", en: "Doyun" },
-    role: { ko: "가게 앞의 학생", en: "Student outside the shop" },
+    name: { ko: "모모", en: "Momo" },
+    role: { ko: "상점 앞 심부름꾼", en: "Errand runner outside the shop" },
     palette: { skin: 0xf1c9a5, hair: 0x33261c, top: 0x6b5ca5, bottom: 0x30363f },
     position: { x: 3, z: -20 },
     facing: 0.2,
@@ -128,12 +128,12 @@ export const QUESTS = [
     order: 0,
     title: { ko: "마음 마을에 온 것을 환영해!", en: "Welcome to Maeum Village!" },
     summary: {
-      ko: "하나 선생님에게 마을과 다섯 가지 마음의 힘에 대해 듣는다.",
-      en: "Hear from Ms. Hana about the village and the five heart skills."
+      ko: "세라 현자님에게 마을과 다섯 가지 마음의 힘에 대해 듣는다.",
+      en: "Hear from Sage Sera about the village and the five heart skills."
     },
     objective: {
-      ko: "하나 선생님과 대화하기",
-      en: "Talk to Ms. Hana"
+      ko: "세라 현자님과 대화하기",
+      en: "Talk to Sage Sera"
     },
     learningGoal: {
       ko: "마을과 다섯 가지 마음의 힘 알아보기",
@@ -221,12 +221,12 @@ export const QUESTS = [
     requires: ["intro"],
     title: { ko: "이름 없는 먹구름", en: "The Nameless Storm Cloud" },
     summary: {
-      ko: "연못가의 지호가 시험을 망친 뒤 마음이 복잡하다. 감정에 이름을 붙이도록 도와주자.",
-      en: "Jiho bombed a test and his feelings are a tangle. Help him name what he feels."
+      ko: "연못가의 로이가 궁술 시험을 망친 뒤 마음이 복잡하다. 감정에 이름을 붙이도록 도와주자.",
+      en: "Roy bombed his archery test and his feelings are a tangle. Help him name what he feels."
     },
     objective: {
-      ko: "연못가의 지호와 대화하기",
-      en: "Talk to Jiho by the pond"
+      ko: "연못가의 로이와 대화하기",
+      en: "Talk to Roy by the pond"
     },
     learningGoal: {
       ko: "섞여 있는 감정에 이름을 붙이고, 몸의 신호 알아차리기",
@@ -241,8 +241,8 @@ export const QUESTS = [
       n1: {
         speaker: "jiho",
         text: {
-          ko: "…아, 안녕. 나 오늘 수학 시험을 완전히 망쳤어. 가슴이 꽉 막힌 것 같고, 뭐가 뭔지 모르겠어.",
-          en: "...Oh, hey. I totally bombed the math test today. My chest feels tight and I can't even tell what's going on inside me."
+          ko: "…아, 안녕. 나 오늘 궁술 시험을 완전히 망쳤어. 가슴이 꽉 막힌 것 같고, 뭐가 뭔지 모르겠어.",
+          en: "...Oh, hey. I totally bombed the archery test today. My chest feels tight and I can't even tell what's going on inside me."
         },
         choices: [
           {
@@ -278,8 +278,8 @@ export const QUESTS = [
             tier: "good",
             stat: "selfAwareness",
             reply: {
-              ko: "공부를 열심히 했는데 아는 문제도 틀렸어. 말하다 보니… 여러 감정이 한꺼번에 몰려온 것 같아.",
-              en: "I studied hard but missed problems I knew. Saying it out loud... I think a bunch of feelings hit me at once."
+              ko: "연습을 그렇게 했는데 자신 있던 과녁까지 빗나갔어. 말하다 보니… 여러 감정이 한꺼번에 몰려온 것 같아.",
+              en: "I practiced so hard, and still missed targets I knew I could hit. Saying it out loud... I think a bunch of feelings hit me at once."
             },
             next: "n2"
           }
@@ -367,8 +367,8 @@ export const QUESTS = [
       }
     },
     completion: {
-      ko: "지호가 자기 감정에 이름을 붙일 수 있게 되었다! (자기인식 ↑)",
-      en: "Jiho can now name his feelings! (Self-Awareness ↑)"
+      ko: "로이가 자기 감정에 이름을 붙일 수 있게 되었다! (자기인식 ↑)",
+      en: "Roy can now name his feelings! (Self-Awareness ↑)"
     }
   },
 
@@ -380,20 +380,20 @@ export const QUESTS = [
     requires: ["intro"],
     title: { ko: "폭발 직전의 화산", en: "Volcano About to Blow" },
     summary: {
-      ko: "운동장의 유나가 경기에서 진 뒤 화가 나 폭발하기 직전이다. 화를 다스리는 방법을 함께 찾아 주자.",
-      en: "Yuna just lost a match and is about to erupt. Help her find a way to cool the volcano."
+      ko: "수련장의 타라가 대련에서 진 뒤 화가 나 폭발하기 직전이다. 화를 다스리는 방법을 함께 찾아 주자.",
+      en: "Tara just lost a sparring match and is about to erupt. Help her find a way to cool the volcano."
     },
     objective: {
-      ko: "운동장의 유나와 대화하기",
-      en: "Talk to Yuna at the playground"
+      ko: "수련장의 타라와 대화하기",
+      en: "Talk to Tara at the training yard"
     },
     learningGoal: {
       ko: "화가 날 때 멈추고, 호흡으로 식힌 뒤 말하기",
       en: "Pause when angry, cool down with breath, talk after"
     },
     postLine: {
-      ko: "어제 동생이 내 필통을 망가뜨렸는데, 넷-여섯 호흡부터 했다? 나 완전 온천이었어.",
-      en: "My little brother broke my pencil case yesterday — and I did the four-six breath FIRST. Total hot spring."
+      ko: "어제 동생이 내 그림을 찢어 놨는데, 넷-여섯 호흡부터 했다? 나 완전 온천이었어.",
+      en: "My little brother tore up my drawing yesterday — and I did the four-six breath FIRST. Total hot spring."
     },
     start: "n1",
     nodes: {
@@ -466,7 +466,7 @@ export const QUESTS = [
           },
           {
             text: {
-              ko: "참으면 병 돼. 운동장 끝까지 달려가서 속이 시원해질 때까지 소리 지르는 게 낫지 않아?",
+              ko: "참으면 병 돼. 수련장 끝까지 달려가서 속이 시원해질 때까지 소리 지르는 게 낫지 않아?",
               en: "Bottling it up is bad for you. Run to the far field and scream until it's all out — better, right?"
             },
             tier: "poor",
@@ -500,8 +500,8 @@ export const QUESTS = [
         choices: [
           {
             text: {
-              ko: "가라앉은 다음, 내일 코치님께 차분하게 '판정이 이해가 안 됐어요'라고 말해 보자.",
-              en: "Once it settles, talk to Coach tomorrow: 'I didn't understand that call' — calmly."
+              ko: "가라앉은 다음, 내일 사부님께 차분하게 '판정이 이해가 안 됐어요'라고 말해 보자.",
+              en: "Once it settles, talk to Master tomorrow: 'I didn't understand that call' — calmly."
             },
             tier: "best",
             stat: "selfManagement",
@@ -513,14 +513,14 @@ export const QUESTS = [
           },
           {
             text: {
-              ko: "속상할 일을 뭐 하러 만들어? 앞으로 경기에 안 나가면 화날 일도 없잖아.",
-              en: "Why sign up for more hurt? Just skip the matches from now on — no matches, no anger."
+              ko: "속상할 일을 뭐 하러 만들어? 앞으로 대련에 안 나가면 화날 일도 없잖아.",
+              en: "Why sign up for more hurt? Just skip the sparring bouts from now on — no bouts, no anger."
             },
             tier: "poor",
             stat: "selfManagement",
             reply: {
-              ko: "안 돼, 난 경기가 너무 좋단 말이야! 피해 버리는 것 말고… 이 문제를 어떻게 다루면 좋을까?",
-              en: "No way, I love playing too much! Something besides running away... how should I handle this?"
+              ko: "안 돼, 난 대련이 너무 좋단 말이야! 피해 버리는 것 말고… 이 문제를 어떻게 다루면 좋을까?",
+              en: "No way, I love sparring too much! Something besides running away... how should I handle this?"
             }
           }
         ]
@@ -535,8 +535,8 @@ export const QUESTS = [
       }
     },
     completion: {
-      ko: "유나가 화를 다스리는 자기만의 방법을 찾았다! (자기관리 ↑)",
-      en: "Yuna found her own way to manage anger! (Self-Management ↑)"
+      ko: "타라가 화를 다스리는 자기만의 방법을 찾았다! (자기관리 ↑)",
+      en: "Tara found her own way to manage anger! (Self-Management ↑)"
     }
   },
 
@@ -548,12 +548,12 @@ export const QUESTS = [
     requires: ["intro"],
     title: { ko: "혼자인 아이", en: "The Kid Standing Alone" },
     summary: {
-      ko: "전학 온 민준이가 나무 아래에 혼자 서 있다. 민준이의 입장이 되어 마음을 헤아려 보자.",
-      en: "Minjun, the new transfer student, stands alone under a tree. Step into his shoes."
+      ko: "마을에 새로 온 루카가 나무 아래에 혼자 서 있다. 루카의 입장이 되어 마음을 헤아려 보자.",
+      en: "Luka, new to the village, stands alone under a tree. Step into his shoes."
     },
     objective: {
-      ko: "나무 아래의 민준과 대화하기",
-      en: "Talk to Minjun under the tree"
+      ko: "나무 아래의 루카와 대화하기",
+      en: "Talk to Luka under the tree"
     },
     learningGoal: {
       ko: "상상 대신 단서로 마음 읽기, 입장 바꿔 생각하기",
@@ -568,14 +568,14 @@ export const QUESTS = [
       n1: {
         speaker: "minjun",
         text: {
-          ko: "어… 안녕. 나 지난주에 전학 왔어. 다들 이미 친한 것 같아서, 어디에 껴야 할지 모르겠어. 그래서 그냥 여기 서 있었어.",
-          en: "Oh... hi. I transferred here last week. Everyone already has their groups, and I don't know where I fit. So I've just been... standing here."
+          ko: "어… 안녕. 나 지난주에 이 마을로 이사 왔어. 다들 이미 친한 것 같아서, 어디에 껴야 할지 모르겠어. 그래서 그냥 여기 서 있었어.",
+          en: "Oh... hi. I moved to this village last week. Everyone already has their groups, and I don't know where I fit. So I've just been... standing here."
         },
         choices: [
           {
             text: {
-              ko: "아는 사람 없는 새 학교라니… 많이 외롭고 긴장되겠다. 나라도 그럴 것 같아.",
-              en: "A new school where you know no one... that must be lonely and nerve-wracking. I'd feel the same."
+              ko: "아는 사람 없는 새 마을이라니… 많이 외롭고 긴장되겠다. 나라도 그럴 것 같아.",
+              en: "A new village where you know no one... that must be lonely and nerve-wracking. I'd feel the same."
             },
             tier: "best",
             stat: "socialAwareness",
@@ -599,8 +599,8 @@ export const QUESTS = [
           },
           {
             text: {
-              ko: "전에 다니던 학교는 어땠어? 거기 이야기 좀 들려줄래?",
-              en: "What was your old school like? Would you tell me about it?"
+              ko: "전에 살던 마을은 어땠어? 거기 이야기 좀 들려줄래?",
+              en: "What was your old village like? Would you tell me about it?"
             },
             tier: "good",
             stat: "socialAwareness",
@@ -668,8 +668,8 @@ export const QUESTS = [
         choices: [
           {
             text: {
-              ko: "\"안녕, 나 지난주에 전학 온 민준이야. 너희 뭐 하고 있어? 같이 해도 돼?\"",
-              en: "\"Hi, I'm Minjun — I transferred last week. What are you playing? Mind if I join?\""
+              ko: "\"안녕, 나 지난주에 이사 온 루카야. 너희 뭐 하고 있어? 같이 해도 돼?\"",
+              en: "\"Hi, I'm Luka — I just moved here. What are you playing? Mind if I join?\""
             },
             tier: "best",
             stat: "relationship",
@@ -703,8 +703,8 @@ export const QUESTS = [
       }
     },
     completion: {
-      ko: "민준이가 용기를 내어 새 친구들에게 다가갔다! (사회적 인식 ↑)",
-      en: "Minjun found the courage to approach new friends! (Social Awareness ↑)"
+      ko: "루카가 용기를 내어 새 친구들에게 다가갔다! (사회적 인식 ↑)",
+      en: "Luka found the courage to approach new friends! (Social Awareness ↑)"
     }
   },
 
@@ -716,73 +716,73 @@ export const QUESTS = [
     requires: ["intro"],
     title: { ko: "부서진 로봇, 부서진 우정?", en: "Broken Robot, Broken Friendship?" },
     summary: {
-      ko: "소라와 태오가 발명 대회 로봇이 부서진 일로 크게 다퉜다. 두 사람 사이에서 대화의 다리를 놓아 주자.",
-      en: "Sora and Taeo are fighting over their broken contest robot. Build a bridge between them."
+      ko: "엠버와 니코가 축제에 낼 태엽 로봇이 부서진 일로 크게 다퉜다. 두 사람 사이에서 대화의 다리를 놓아 주자.",
+      en: "Ember and Niko are fighting over their broken festival robot. Build a bridge between them."
     },
     objective: {
-      ko: "공방 앞의 소라, 태오와 대화하기",
-      en: "Talk to Sora and Taeo by the workshop"
+      ko: "공방 앞의 엠버, 니코와 대화하기",
+      en: "Talk to Ember and Niko by the workshop"
     },
     learningGoal: {
       ko: "차례로 듣기와 '나'로 시작하는 말로 갈등 풀기",
       en: "Use turn-taking and I-messages to work through conflict"
     },
     postLine: {
-      ko: "로봇 2호 제작 중! 이번엔 바닥에서 만들고, 이야기도 차례로 들어. 대회에서 보자!",
-      en: "Robot 2.0 in progress! We build on the floor now — and take turns talking. See you at the contest!"
+      ko: "로봇 2호 제작 중! 이번엔 바닥에서 만들고, 이야기도 차례로 들어. 축제에서 보자!",
+      en: "Robot 2.0 in progress! We build on the floor now — and take turns talking. See you at the festival!"
     },
     start: "n1",
     nodes: {
       n1: {
         speaker: "sora",
         text: {
-          ko: "잘 왔어! 네가 판단 좀 해 줘. 태오가 우리 대회 로봇을 떨어뜨려서 부쉈어! 3주 동안 만든 건데! 쟤랑은 이제 끝이야!",
-          en: "Perfect timing! You be the judge. Taeo dropped our contest robot and SMASHED it! Three weeks of work! I'm done with him!"
+          ko: "잘 왔어! 네가 판단 좀 해 줘. 니코가 장인 축제에 낼 우리 태엽 로봇을 떨어뜨려서 부쉈어! 3주 동안 만든 건데! 쟤랑은 이제 끝이야!",
+          en: "Perfect timing! You be the judge. Niko dropped our festival clockwork robot and SMASHED it! Three weeks of work! I'm done with him!"
         },
         next: "n2"
       },
       n2: {
         speaker: "taeo",
         text: {
-          ko: "일부러 그런 게 아니야! 선반이 흔들려서 잡으려다가… 그리고 소라 넌 내 말은 듣지도 않잖아!",
-          en: "It wasn't on purpose! The shelf wobbled and I tried to catch it... and Sora, you won't even listen to me!"
+          ko: "일부러 그런 게 아니야! 선반이 흔들려서 잡으려다가… 그리고 엠버 넌 내 말은 듣지도 않잖아!",
+          en: "It wasn't on purpose! The shelf wobbled and I tried to catch it... and Ember, you won't even listen to me!"
         },
         choices: [
           {
             text: {
-              ko: "잠깐, 둘 다 로봇을 아껴서 속상한 거잖아. 한 명씩 차례로 듣자. 먼저 소라부터.",
-              en: "Hold on — you're both upset because you both care. Let's take turns listening. Sora first."
+              ko: "잠깐, 둘 다 로봇을 아껴서 속상한 거잖아. 한 명씩 차례로 듣자. 먼저 엠버부터.",
+              en: "Hold on — you're both upset because you both care. Let's take turns listening. Ember first."
             },
             tier: "best",
             stat: "relationship",
             reply: {
-              ko: "(소라) …좋아. 차례로라면. 나는 3주 내내 만든 로봇이 부서져서 가슴이 무너졌어. 대회가 다음 주란 말이야.",
-              en: "(Sora) ...Fine. If we take turns. My heart sank when the robot broke — I built it for three straight weeks. The contest is next week."
+              ko: "(엠버) …좋아. 차례로라면. 나는 3주 내내 만든 로봇이 부서져서 가슴이 무너졌어. 축제가 다음 주란 말이야.",
+              en: "(Ember) ...Fine. If we take turns. My heart sank when the robot broke — I built it for three straight weeks. The festival is next week."
             },
             next: "n3"
           },
           {
             text: {
-              ko: "뭘 물어봐, 로봇을 떨어뜨린 사람 잘못이지. 태오가 부품값을 다 물어내면 되겠네.",
-              en: "What's there to judge? Whoever dropped it is at fault. Taeo can just pay for all the parts."
+              ko: "뭘 물어봐, 로봇을 떨어뜨린 사람 잘못이지. 니코가 부품값을 다 물어내면 되겠네.",
+              en: "What's there to judge? Whoever dropped it is at fault. Niko can just pay for all the parts."
             },
             tier: "poor",
             stat: "relationship",
             reply: {
-              ko: "(태오) 거봐, 아무도 내 이야기는 듣지도 않아! (소라) …이러니까 싸움만 커지네. 우리, 어떻게 이야기하면 좋을까?",
-              en: "(Taeo) See?! Nobody even hears my side! (Sora) ...This is just making the fight bigger. How should we talk about this?"
+              ko: "(니코) 거봐, 아무도 내 이야기는 듣지도 않아! (엠버) …이러니까 싸움만 커지네. 우리, 어떻게 이야기하면 좋을까?",
+              en: "(Niko) See?! Nobody even hears my side! (Ember) ...This is just making the fight bigger. How should we talk about this?"
             }
           },
           {
             text: {
-              ko: "태오야, 그때 무슨 일이 있었는지 자세히 말해 줄래?",
-              en: "Taeo, can you tell us exactly what happened?"
+              ko: "니코야, 그때 무슨 일이 있었는지 자세히 말해 줄래?",
+              en: "Niko, can you tell us exactly what happened?"
             },
             tier: "good",
             stat: "relationship",
             reply: {
-              ko: "(태오) 로봇을 더 안전한 칸으로 옮기려던 거였어. 소라를 놀라게 해 주고 싶어서… 근데 선반이 흔들렸어.",
-              en: "(Taeo) I was moving it to a safer shelf. I wanted to surprise Sora... then the shelf wobbled."
+              ko: "(니코) 로봇을 더 안전한 칸으로 옮기려던 거였어. 엠버를 놀라게 해 주고 싶어서… 근데 선반이 흔들렸어.",
+              en: "(Niko) I was moving it to a safer shelf. I wanted to surprise Ember... then the shelf wobbled."
             },
             next: "n3"
           }
@@ -791,7 +791,7 @@ export const QUESTS = [
       n3: {
         speaker: "sora",
         text: {
-          ko: "…옮기려던 거였다고? 몰랐어. 그래도 나 아직 화가 나. 이 마음을 태오한테 어떻게 말하면 좋을까?",
+          ko: "…옮기려던 거였다고? 몰랐어. 그래도 나 아직 화가 나. 이 마음을 니코한테 어떻게 말하면 좋을까?",
           en: "...You were moving it for me? I didn't know that. But I'm still angry. How do I even say this to him?"
         },
         choices: [
@@ -803,8 +803,8 @@ export const QUESTS = [
             tier: "best",
             stat: "relationship",
             reply: {
-              ko: "(소라) \"태오야… 로봇이 부서져서 나는 정말 속상하고, 대회를 망칠까 봐 무서워.\" (태오) …정말 미안해, 소라야. 나도 그게 제일 무서웠어.",
-              en: "(Sora) \"Taeo... I'm really hurt the robot broke, and I'm scared we'll lose the contest.\" (Taeo) ...I'm so sorry, Sora. That's what scared me most too."
+              ko: "(엠버) \"니코야… 로봇이 부서져서 나는 정말 속상하고, 축제를 망칠까 봐 무서워.\" (니코) …정말 미안해, 엠버야. 나도 그게 제일 무서웠어.",
+              en: "(Ember) \"Niko... I'm really hurt the robot broke, and I'm scared we'll lose the festival.\" (Niko) ...I'm so sorry, Ember. That's what scared me most too."
             },
             next: "n4"
           },
@@ -816,8 +816,8 @@ export const QUESTS = [
             tier: "poor",
             stat: "relationship",
             reply: {
-              ko: "(소라) \"다시는 손대지 마!\" (태오) …알았어. 다신 아무것도 안 도와줄 거야. (소라) 아, 이게 아닌데… 마음이 더 멀어졌어. 어떻게 말하면 좋을까?",
-              en: "(Sora) \"Never touch my stuff!\" (Taeo) ...Fine. I'm never helping with anything again. (Sora) Wait, that's not what I wanted... we're further apart now. How should I say it?"
+              ko: "(엠버) \"다시는 손대지 마!\" (니코) …알았어. 다신 아무것도 안 도와줄 거야. (엠버) 아, 이게 아닌데… 마음이 더 멀어졌어. 어떻게 말하면 좋을까?",
+              en: "(Ember) \"Never touch my stuff!\" (Niko) ...Fine. I'm never helping with anything again. (Ember) Wait, that's not what I wanted... we're further apart now. How should I say it?"
             }
           }
         ]
@@ -825,33 +825,33 @@ export const QUESTS = [
       n4: {
         speaker: "taeo",
         text: {
-          ko: "저기… 부품은 대부분 무사해. 대회까지 일주일 남았는데, 우리 어떻게 하면 좋을까?",
-          en: "Hey... most of the parts survived. We have one week until the contest. What should we do?"
+          ko: "저기… 부품은 대부분 무사해. 축제까지 일주일 남았는데, 우리 어떻게 하면 좋을까?",
+          en: "Hey... most of the parts survived. We have one week until the festival. What should we do?"
         },
         choices: [
           {
             text: {
-              ko: "둘이 역할을 나눠서 같이 다시 만들면 어때? 소라는 설계, 태오는 조립처럼.",
-              en: "Rebuild it together with split roles — Sora on design, Taeo on assembly?"
+              ko: "둘이 역할을 나눠서 같이 다시 만들면 어때? 엠버는 설계, 니코는 조립처럼.",
+              en: "Rebuild it together with split roles — Ember on design, Niko on assembly?"
             },
             tier: "best",
             stat: "decision",
             reply: {
-              ko: "(소라) 좋아, 같이 하면 일주일이면 충분해! (태오) 이번엔 선반 말고 바닥에서 작업하자! 하하!",
-              en: "(Sora) Yes — together, a week is plenty! (Taeo) And this time we work on the FLOOR, not the shelf! Haha!"
+              ko: "(엠버) 좋아, 같이 하면 일주일이면 충분해! (니코) 이번엔 선반 말고 바닥에서 작업하자! 하하!",
+              en: "(Ember) Yes — together, a week is plenty! (Niko) And this time we work on the FLOOR, not the shelf! Haha!"
             },
             next: "n5"
           },
           {
             text: {
-              ko: "일주일 만에 다시 만들다가 또 싸우면 어떡해. 이번 대회는 그냥 포기하는 게 마음 편하지 않을까?",
-              en: "What if rebuilding in a week just starts another fight? Maybe dropping this contest is easier on everyone."
+              ko: "일주일 만에 다시 만들다가 또 싸우면 어떡해. 이번 축제는 그냥 포기하는 게 마음 편하지 않을까?",
+              en: "What if rebuilding in a week just starts another fight? Maybe dropping this festival is easier on everyone."
             },
             tier: "poor",
             stat: "decision",
             reply: {
-              ko: "(소라) 포기라니! 3주의 노력이 아깝잖아. (태오) 맞아, 포기 말고… 우리 셋이서 방법을 찾아보자. 어떻게 하면 좋을까?",
-              en: "(Sora) Drop out?! Not after three weeks of work. (Taeo) Right — not quitting... let's figure something out, the three of us. What should we do?"
+              ko: "(엠버) 포기라니! 3주의 노력이 아깝잖아. (니코) 맞아, 포기 말고… 우리 셋이서 방법을 찾아보자. 어떻게 하면 좋을까?",
+              en: "(Ember) Drop out?! Not after three weeks of work. (Niko) Right — not quitting... let's figure something out, the three of us. What should we do?"
             }
           }
         ]
@@ -866,8 +866,8 @@ export const QUESTS = [
       }
     },
     completion: {
-      ko: "소라와 태오가 화해하고 다시 한 팀이 되었다! (관계 기술 ↑)",
-      en: "Sora and Taeo made up and became a team again! (Relationship Skills ↑)"
+      ko: "엠버와 니코가 화해하고 다시 한 팀이 되었다! (관계 기술 ↑)",
+      en: "Ember and Niko made up and became a team again! (Relationship Skills ↑)"
     }
   },
 
@@ -877,30 +877,30 @@ export const QUESTS = [
     competency: "decision",
     order: 5,
     requires: ["intro"],
-    title: { ko: "주인 잃은 지갑", en: "The Lost Wallet" },
+    title: { ko: "주인 잃은 동전 주머니", en: "The Lost Coin Pouch" },
     summary: {
-      ko: "도윤이가 가게 앞에서 지갑을 주웠다. 책임 있는 선택의 단계를 함께 밟아 보자.",
-      en: "Doyun found a wallet outside the shop. Walk through the steps of a responsible choice together."
+      ko: "모모가 상점 앞에서 동전 주머니을 주웠다. 책임 있는 선택의 단계를 함께 밟아 보자.",
+      en: "Momo found a coin pouch outside the shop. Walk through the steps of a responsible choice together."
     },
     objective: {
-      ko: "가게 앞의 도윤과 대화하기",
-      en: "Talk to Doyun outside the shop"
+      ko: "상점 앞의 모모와 대화하기",
+      en: "Talk to Momo outside the shop"
     },
     learningGoal: {
       ko: "결정 전에 멈춰서 선택지와 결과를 따져 보기",
       en: "Pause before deciding; weigh the options and outcomes"
     },
     postLine: {
-      ko: "지갑 주인이 고맙다고 쪽지를 줬어! 떳떳한 기분이 5만 원보다 훨씬 크더라.",
-      en: "The wallet's owner left me a thank-you note! Standing tall feels way bigger than 50,000 won."
+      ko: "동전 주머니 주인이 고맙다고 쪽지를 줬어! 떳떳한 기분이 금화 다섯 닢보다 훨씬 크더라.",
+      en: "The pouch's owner left me a thank-you note! Standing tall feels way bigger than five gold coins."
     },
     start: "n1",
     nodes: {
       n1: {
         speaker: "doyun",
         text: {
-          ko: "야, 잠깐만! 나 방금 가게 앞에서 이 지갑을 주웠어. 안에 5만 원이나 들어 있어… 아무도 못 봤는데, 어떡하지?",
-          en: "Hey, wait! I just found this wallet outside the shop. There's 50,000 won inside... nobody saw me pick it up. What do I do?"
+          ko: "야, 잠깐만! 나 방금 상점 앞에서 이 동전 주머니을 주웠어. 안에 금화가 다섯 닢이나 들어 있어… 아무도 못 봤는데, 어떡하지?",
+          en: "Hey, wait! I just found this coin pouch outside the shop. There are five gold coins inside... nobody saw me pick it up. What do I do?"
         },
         choices: [
           {
@@ -930,14 +930,14 @@ export const QUESTS = [
           },
           {
             text: {
-              ko: "지갑 안에 주인을 알 수 있는 단서가 있는지 먼저 볼까?",
-              en: "Should we check the wallet for clues about the owner first?"
+              ko: "동전 주머니 안에 주인을 알 수 있는 단서가 있는지 먼저 볼까?",
+              en: "Should we check the coin pouch for clues about the owner first?"
             },
             tier: "good",
             stat: "decision",
             reply: {
-              ko: "그러네! 학생증이 있어 — 옆 학교 6학년이야. 얼굴 사진을 보니까 더 남 일 같지 않다…",
-              en: "Good idea! There's a student ID — a 6th grader from the school next door. Seeing the photo makes it feel so much more real..."
+              ko: "그러네! 이름표가 있어 — 이웃 마을 아이인가 봐. 얼굴 사진을 보니까 더 남 일 같지 않다…",
+              en: "Good idea! There's a name tag — a kid from the next village. Seeing the photo makes it feel so much more real..."
             },
             next: "n2"
           }
@@ -946,8 +946,8 @@ export const QUESTS = [
       n2: {
         speaker: "doyun",
         text: {
-          ko: "솔직히 말하면 요즘 갖고 싶던 게임이 딱 5만 원이야. 머릿속에서 천사와 악마가 싸우고 있어. 선택지를 정리해 줄래?",
-          en: "Honestly? The game I've been wanting costs exactly 50,000 won. There's an angel and a devil wrestling in my head. Help me lay out the options?"
+          ko: "솔직히 말하면 요즘 갖고 싶던 망원경이 딱 금화 다섯 닢이야. 머릿속에서 천사와 악마가 싸우고 있어. 선택지를 정리해 줄래?",
+          en: "Honestly? The spyglass I've been wanting costs exactly five gold coins. There's an angel and a devil wrestling in my head. Help me lay out the options?"
         },
         choices: [
           {
@@ -958,8 +958,8 @@ export const QUESTS = [
             tier: "best",
             stat: "decision",
             reply: {
-              ko: "가지면 → 게임은 생기지만 죄책감도 생겨. 두고 가면 → 다른 사람이 가져갈지도 몰라. 찾아 주면 → 주인이 기뻐하고, 나도 떳떳해! …답이 보인다.",
-              en: "Keep it → I get the game but also the guilt. Leave it → someone else might take it. Return it → the owner's relieved and I can hold my head high! ...The answer is showing itself."
+              ko: "가지면 → 망원경은 생기지만 죄책감도 생겨. 두고 가면 → 다른 사람이 가져갈지도 몰라. 찾아 주면 → 주인이 기뻐하고, 나도 떳떳해! …답이 보인다.",
+              en: "Keep it → I get the spyglass but also the guilt. Leave it → someone else might take it. Return it → the owner's relieved and I can hold my head high! ...The answer is showing itself."
             },
             next: "n3"
           },
@@ -977,8 +977,8 @@ export const QUESTS = [
           },
           {
             text: {
-              ko: "만약 네 지갑이었다면, 주운 사람이 어떻게 해 주길 바랄 것 같아?",
-              en: "If it were YOUR wallet, what would you want the finder to do?"
+              ko: "만약 네 동전 주머니이었다면, 주운 사람이 어떻게 해 주길 바랄 것 같아?",
+              en: "If it were YOUR coin pouch, what would you want the finder to do?"
             },
             tier: "good",
             stat: "decision",
@@ -993,14 +993,14 @@ export const QUESTS = [
       n3: {
         speaker: "doyun",
         text: {
-          ko: "결정했어. 주인을 찾아 주자! 학생증을 보니 옆 학교 학생이야. 어떤 방법이 제일 좋을까?",
-          en: "Decided. We return it! The ID says the owner goes to the school next door. What's the best way?"
+          ko: "결정했어. 주인을 찾아 주자! 이름표를 보니 이웃 마을 아이야. 어떤 방법이 제일 좋을까?",
+          en: "Decided. We return it! The tag says the owner lives in the next village. What's the best way?"
         },
         choices: [
           {
             text: {
-              ko: "가게 아저씨나 선생님 같은 어른께 학생증 정보와 함께 맡기자.",
-              en: "Hand it to a trusted adult — the shopkeeper or a teacher — with the ID info."
+              ko: "상점 아저씨나 선생님 같은 어른께 이름표 정보와 함께 맡기자.",
+              en: "Hand it to a trusted adult — the shopkeeper or a teacher — with the tag info."
             },
             tier: "best",
             stat: "decision",
@@ -1027,15 +1027,15 @@ export const QUESTS = [
       n4: {
         speaker: "doyun",
         text: {
-          ko: "가게 아저씨가 옆 학교에 바로 연락해 주셨어! 오늘 배운 '멈추기 → 선택지 펼치기 → 결과 상상하기 → 책임 있게 행동하기' 4단계, 진짜 꿀팁이다. 고마워!",
-          en: "The shopkeeper called the school right away! That four-step move — pause → lay out options → imagine outcomes → act responsibly — is the real deal. Thank you!"
+          ko: "상점 아저씨가 이웃 마을에 바로 연락해 주셨어! 오늘 배운 '멈추기 → 선택지 펼치기 → 결과 상상하기 → 책임 있게 행동하기' 4단계, 진짜 꿀팁이다. 고마워!",
+          en: "The shopkeeper sent word to the next village right away! That four-step move — pause → lay out options → imagine outcomes → act responsibly — is the real deal. Thank you!"
         },
         end: true
       }
     },
     completion: {
-      ko: "도윤이가 책임 있는 선택으로 지갑 주인을 찾아 주었다! (책임 있는 의사결정 ↑)",
-      en: "Doyun made the responsible choice and returned the wallet! (Responsible Decision-Making ↑)"
+      ko: "모모가 책임 있는 선택으로 동전 주머니 주인을 찾아 주었다! (책임 있는 의사결정 ↑)",
+      en: "Momo made the responsible choice and returned the coin pouch! (Responsible Decision-Making ↑)"
     }
   },
 
@@ -1047,12 +1047,12 @@ export const QUESTS = [
     requires: ["q_selfAwareness", "q_selfManagement", "q_socialAwareness", "q_relationship", "q_decision"],
     title: { ko: "마음의 힘 수여식", en: "The Heart Skills Ceremony" },
     summary: {
-      ko: "마을 친구들을 모두 도왔다! 하나 선생님에게 돌아가 수여식을 치르자.",
-      en: "Every villager has been helped! Return to Ms. Hana for the ceremony."
+      ko: "마을 친구들을 모두 도왔다! 세라 현자님에게 돌아가 수여식을 치르자.",
+      en: "Every villager has been helped! Return to Sage Sera for the ceremony."
     },
     objective: {
-      ko: "하나 선생님에게 돌아가기",
-      en: "Return to Ms. Hana"
+      ko: "세라 현자님에게 돌아가기",
+      en: "Return to Sage Sera"
     },
     learningGoal: {
       ko: "마음의 힘 하나를 골라, 내일 쓸 순간까지 다짐하기",
@@ -1063,8 +1063,8 @@ export const QUESTS = [
       n1: {
         speaker: "hana",
         text: {
-          ko: "마을 전체가 환해졌어! 지호는 감정에 이름을 붙이고, 유나는 화산을 온천으로 만들고, 민준이는 새 친구를 사귀고, 소라와 태오는 다시 한 팀이 되고, 도윤이는 떳떳한 선택을 했지.",
-          en: "The whole village is glowing! Jiho names his feelings, Yuna turns volcanoes into hot springs, Minjun made new friends, Sora and Taeo are a team again, and Doyun chose to stand tall."
+          ko: "마을 전체가 환해졌어! 로이는 감정에 이름을 붙이고, 타라는 화산을 온천으로 만들고, 루카는 새 친구를 사귀고, 엠버와 니코는 다시 한 팀이 되고, 모모는 떳떳한 선택을 했지.",
+          en: "The whole village is glowing! Roy names his feelings, Tara turns volcanoes into hot springs, Luka made new friends, Ember and Niko are a team again, and Momo chose to stand tall."
         },
         next: "n2"
       },
@@ -1268,8 +1268,8 @@ export const UI = {
   scormConnected: { ko: "LMS 연결됨 · 진행 상황 기록 중", en: "LMS connected · progress reported" },
   scormSent: { ko: "LMS에 점수 전송 완료", en: "Score sent to LMS" },
   toastLocked: {
-    ko: "먼저 하나 선생님과 이야기해 보세요! (광장의 ! 표시)",
-    en: "Talk to Ms. Hana first! (the ! in the plaza)"
+    ko: "먼저 세라 현자님과 이야기해 보세요! (광장의 ! 표시)",
+    en: "Talk to Sage Sera first! (the ! in the plaza)"
   },
   toastFinaleLocked: {
     ko: "아직 도움이 필요한 친구들이 남아 있어요.",

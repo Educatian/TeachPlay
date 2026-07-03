@@ -683,13 +683,13 @@ function addBuilding({ x, z, w = 6, h = 3.4, d = 5, wall = 0xf5e9d2, roof = 0xc7
   return g;
 }
 
-addBuilding({ x: 0, z: 23, w: 13, h: 4.6, d: 7, wall: 0xf2e3c8, roof: 0x3e6f8e, sign: "SCHOOL", model: "houseC" });
-addBuilding({ x: 19, z: 19.5, w: 7, h: 3.2, d: 5.6, wall: 0xe8dcc0, roof: 0xd98e2b, rotY: -0.35, sign: "MAKER", model: "houseB" });
-addBuilding({ x: 6.5, z: -24.5, w: 6.6, h: 3.1, d: 5, wall: 0xf7ecd7, roof: 0x7fae5c, sign: "SHOP", model: "houseD" });
-addBuilding({ x: -23, z: 3, w: 6, h: 3, d: 4.6, wall: 0xf5e0d8, roof: 0xb56a4f, rotY: Math.PI / 2, model: "houseA" });
-addBuilding({ x: 23.5, z: 1.5, w: 6, h: 3, d: 4.6, wall: 0xe9eadd, roof: 0x8a6fae, rotY: -Math.PI / 2, model: "houseB" });
-addBuilding({ x: -9, z: 24, w: 5.6, h: 2.9, d: 4.4, wall: 0xfbeed9, roof: 0xc75450, rotY: 0.2, model: "houseA" });
-addBuilding({ x: -21, z: -22, w: 5.2, h: 2.6, d: 4.2, rotY: 0.7, model: "garage" });
+addBuilding({ x: 0, z: 23, w: 15, h: 4.6, d: 8, wall: 0xf2e3c8, roof: 0x3e6f8e, sign: "GUILD", model: "houseC" });
+addBuilding({ x: 19, z: 19.5, w: 8.4, h: 3.2, d: 6.6, wall: 0xe8dcc0, roof: 0xd98e2b, rotY: -0.35, sign: "SMITHY", model: "houseB" });
+addBuilding({ x: 6.5, z: -24.5, w: 8, h: 3.1, d: 6, wall: 0xf7ecd7, roof: 0x7fae5c, sign: "SHOP", model: "houseD" });
+addBuilding({ x: -23, z: 3, w: 7.4, h: 3, d: 5.6, wall: 0xf5e0d8, roof: 0xb56a4f, rotY: Math.PI / 2, model: "houseA" });
+addBuilding({ x: 23.5, z: 1.5, w: 7.4, h: 3, d: 5.6, wall: 0xe9eadd, roof: 0x8a6fae, rotY: -Math.PI / 2, model: "houseB" });
+addBuilding({ x: -9, z: 24, w: 7, h: 2.9, d: 5.4, wall: 0xfbeed9, roof: 0xc75450, rotY: 0.2, model: "houseA" });
+addBuilding({ x: -21, z: -22, w: 6.4, h: 2.6, d: 5.2, rotY: 0.7, model: "garage" });
 
 // Playground (southeast): slide + swing silhouettes
 {
@@ -867,6 +867,9 @@ for (let i = 0; i < 7; i += 1) {
 // Characters
 // ---------------------------------------------------------------------------
 
+// Overhead label altitudes, tuned to the ~1.7-unit character height
+const LABEL_Y = { name: 2.1, mood: 2.55, marker: 3.05 };
+
 function buildCharacter(cfg) {
   const source = (cfg.model && assets[cfg.model]) || assets.character;
   if (source) return buildCharacterGLB(cfg, source);
@@ -879,7 +882,7 @@ function buildCharacterGLB({ top, scale = 1 }, source) {
   const g = new THREE.Group();
   const isRobot = source === assets.character;
   const model = cloneModel(source, {
-    size: 2.05 * scale,
+    size: 1.72 * scale, // human scale relative to the village buildings
     axis: "y",
     tint: top,
     tintStrength: isRobot ? 0.62 : 0.45
@@ -1081,18 +1084,18 @@ function spawnNpc(def) {
   group.position.set(def.position.x, 0, def.position.z);
   group.rotation.y = def.facing || 0;
   scene.add(group);
-  addCollider(def.position.x, def.position.z, 0.6);
+  addCollider(def.position.x, def.position.z, 0.5);
 
   const nameSprite = makeTextSprite(t(def.name), {
     font: "700 40px sans-serif",
     bg: "rgba(20,30,38,0.72)",
     fg: "#fdfaf2"
   });
-  nameSprite.position.y = 2.62;
+  nameSprite.position.y = LABEL_Y.name;
   group.add(nameSprite);
 
   const moodSprite = makeTextSprite(MOOD_EMOJI[def.mood] || "🙂", { font: "60px sans-serif", size: 0.62 });
-  moodSprite.position.y = 3.1;
+  moodSprite.position.y = LABEL_Y.mood;
   group.add(moodSprite);
 
   const markerSprite = makeTextSprite("!", {
@@ -1101,7 +1104,7 @@ function spawnNpc(def) {
     stroke: "#5c3d00",
     size: 0.95
   });
-  markerSprite.position.y = 3.72;
+  markerSprite.position.y = LABEL_Y.marker;
   markerSprite.visible = false;
   group.add(markerSprite);
 
@@ -1134,7 +1137,7 @@ if (assets.flag) {
   });
   flagSpots.forEach(({ npc, color }, i) => {
     const def = NPCS[npc];
-    const flag = cloneModel(assets.flag, { size: 1.5, axis: "y", tint: color });
+    const flag = cloneModel(assets.flag, { size: 1.3, axis: "y", tint: color });
     const angle = (def.facing || 0) + Math.PI / 2;
     flag.position.set(def.position.x + Math.sin(angle) * 1.15, 0, def.position.z + Math.cos(angle) * 1.15);
     flag.rotation.y = i * 1.1;
@@ -1198,7 +1201,7 @@ function setNpcMood(id, mood) {
   const actor = npcActors[id];
   if (!actor || actor.mood === mood) return;
   actor.mood = mood;
-  replaceSprite(actor, "moodSprite", makeTextSprite(MOOD_EMOJI[mood] || "🙂", { font: "60px sans-serif", size: 0.62 }), 3.1);
+  replaceSprite(actor, "moodSprite", makeTextSprite(MOOD_EMOJI[mood] || "🙂", { font: "60px sans-serif", size: 0.62 }), LABEL_Y.mood);
 }
 
 function setNpcMarker(id, kind) {
@@ -1220,7 +1223,7 @@ function setNpcMarker(id, kind) {
     actor,
     "markerSprite",
     makeTextSprite(s.text, { font: "900 62px sans-serif", fg: s.fg, stroke: s.stroke, size: 0.95 }),
-    3.72
+    LABEL_Y.marker
   );
   actor.markerSprite.visible = true;
 }
@@ -1231,7 +1234,7 @@ function refreshNpcNameSprites() {
       actor,
       "nameSprite",
       makeTextSprite(t(actor.def.name), { font: "700 40px sans-serif", bg: "rgba(20,30,38,0.72)", fg: "#fdfaf2" }),
-      2.62
+      LABEL_Y.name
     );
   });
 }
@@ -1348,7 +1351,7 @@ function setPlayerName(rawName) {
       fg: "#fdfaf2",
       size: 0.5
     });
-    playerNameSprite.position.y = 2.55;
+    playerNameSprite.position.y = LABEL_Y.name;
     player.add(playerNameSprite);
   }
 }
@@ -1393,7 +1396,7 @@ scene.add(player);
 const input = {
   keys: new Set(),
   joy: { active: false, x: 0, y: 0 },
-  cam: { yaw: 0, pitch: 0.52, dist: 9.5 }
+  cam: { yaw: 0, pitch: 0.52, dist: 8.5 }
 };
 
 // Show the joystick for any touch-capable device (coarse-pointer phones,
@@ -1633,7 +1636,7 @@ function grantPoints(statId, tier) {
   if (leveled) {
     spawnFloatText(t(UI.levelUp), true);
     sfx.levelup();
-    spawnBurst(player.position.clone().add(new THREE.Vector3(0, 1.6, 0)), 52);
+    spawnBurst(player.position.clone().add(new THREE.Vector3(0, 1.4, 0)), 52);
     if (state.level === 2) showToast(t(UI.arrowUnlocked), 5600);
   }
   persistSave();
@@ -1651,7 +1654,7 @@ function spawnFloatText(text, isLevel) {
   el.className = `float-text${isLevel ? " levelup" : ""}`;
   el.textContent = text;
   // project the player's head to screen space
-  const v = player.position.clone().add(new THREE.Vector3(0, 2.4, 0)).project(camera);
+  const v = player.position.clone().add(new THREE.Vector3(0, 2.0, 0)).project(camera);
   const rect = renderer.domElement.getBoundingClientRect();
   el.style.left = `${rect.left + ((v.x + 1) / 2) * rect.width}px`;
   el.style.top = `${rect.top + ((1 - v.y) / 2) * rect.height - (isLevel ? 40 : 0)}px`;
@@ -1958,7 +1961,7 @@ function finishQuestDialogue(endNode) {
   if (questStatus(quest) !== "done") {
     state.quests[quest.id] = "done";
     sfx.quest();
-    spawnBurst(player.position.clone().add(new THREE.Vector3(0, 1.9, 0)));
+    spawnBurst(player.position.clone().add(new THREE.Vector3(0, 1.6, 0)));
     showToast(`✅ ${t(UI.questComplete)} ${t(quest.completion)}`, 4200);
     const moods = MOOD_AFTER[quest.id];
     if (moods) {
@@ -2259,7 +2262,7 @@ function updateQuestArrow() {
     return;
   }
   const def = NPCS[targetQuest.npc];
-  arrowWorld.set(def.position.x, 2.4, def.position.z).project(camera);
+  arrowWorld.set(def.position.x, 2.0, def.position.z).project(camera);
   let x = arrowWorld.x;
   let y = arrowWorld.y;
   const behind = arrowWorld.z > 1;
@@ -2292,12 +2295,12 @@ function updateCamera(dt) {
   }
   const { yaw, pitch } = input.cam;
   let dist = input.cam.dist;
-  const target = cameraTarget.set(player.position.x, 1.7, player.position.z);
+  const target = cameraTarget.set(player.position.x, 1.45, player.position.z);
   // conversation framing: pull in and center between the two speakers
   if (dialogue.open && dialogue.actor) {
     const npcPos = dialogue.actor.group.position;
-    target.set((player.position.x + npcPos.x) / 2, 1.55, (player.position.z + npcPos.z) / 2);
-    dist = Math.min(dist, 5.4);
+    target.set((player.position.x + npcPos.x) / 2, 1.3, (player.position.z + npcPos.z) / 2);
+    dist = Math.min(dist, 4.8);
   }
   const offX = Math.sin(yaw) * Math.cos(pitch) * dist;
   const offY = Math.sin(pitch) * dist;
@@ -2381,7 +2384,7 @@ function tick() {
     animateWalk(actor.group, now + actor.def.position.x * 313, false, 1, dt);
     // gentle marker bob
     if (actor.markerSprite.visible) {
-      actor.markerSprite.position.y = 3.72 + Math.sin(now / 320 + actor.def.position.z) * 0.12;
+      actor.markerSprite.position.y = LABEL_Y.marker + Math.sin(now / 320 + actor.def.position.z) * 0.12;
     }
   }
 
