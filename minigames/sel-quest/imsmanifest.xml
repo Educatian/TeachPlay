@@ -12,7 +12,9 @@
   <organizations default="org-1">
     <organization identifier="org-1">
       <title>Maeum Village: SEL Quest 3D</title>
-      <item identifier="item-1" identifierref="resource-1" adlcp:masteryscore="80">
+      <!-- No masteryscore: the SCO reports passed/completed itself; an LMS
+           recomputing status from score.raw must not downgrade to failed. -->
+      <item identifier="item-1" identifierref="resource-1">
         <title>Maeum Village: SEL Quest 3D Simulation</title>
       </item>
     </organization>

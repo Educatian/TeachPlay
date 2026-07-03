@@ -2,14 +2,14 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>마음 마을: 사회정서 RPG — Maeum Village: SEL Quest 3D</title>
   <meta name="description" content="A 3D RPG-style social-emotional learning simulator. Explore Maeum Village, listen to its residents, and grow the five CASEL heart skills." />
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div id="gameShell" class="game-shell">
+  <main id="gameShell" class="game-shell">
     <div id="gameRoot" class="game-root" aria-label="Maeum Village 3D world"></div>
 
     <!-- Top-left: player status -->
@@ -110,9 +110,32 @@
     <div id="joystick" class="joystick" hidden>
       <div id="joystickKnob" class="joystick-knob"></div>
     </div>
-  </div>
+  </main>
 
   <script src="./scormdriver.js"></script>
+  <script>
+    // Boot watchdog: if the module graph fails (blocked file, no WebGL, old
+    // browser), surface an error instead of an eternal "loading" button.
+    (function () {
+      function bootFailed(message) {
+        if (window.__selquestBootOk) return;
+        var btn = document.getElementById("startButton");
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = message;
+        }
+      }
+      window.__selquestBootFailed = bootFailed;
+      window.addEventListener("error", function (event) {
+        if (event && event.filename && /game\.js|three|GLTFLoader|data\.js/.test(event.filename)) {
+          bootFailed("로드 실패 — 새로고침 해 주세요 · Load failed, please refresh");
+        }
+      });
+      setTimeout(function () {
+        bootFailed("로드 실패 — 새로고침 해 주세요 · Load failed, please refresh");
+      }, 25000);
+    })();
+  </script>
   <script type="module" src="./game.js"></script>
 </body>
 </html>

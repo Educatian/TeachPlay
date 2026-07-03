@@ -644,12 +644,29 @@ html, body {
 /* ---------- Small screens ---------- */
 
 @media (max-width: 700px) {
-  .status-panel { width: min(215px, 56vw); padding: 10px; }
+  .status-panel { width: min(215px, 50vw); padding: 10px; }
   .competency-list li { font-size: 10.5px; }
-  .tracker-panel { width: min(190px, 42vw); }
+  .tracker-panel { width: min(190px, 40vw); }
   .quest-tracker .tracker-item { font-size: 11px; }
   .dialogue-box { padding: 12px 13px; gap: 10px; bottom: 10px; }
   .dialogue-portrait { flex-basis: 44px; height: 44px; font-size: 24px; }
   .dialogue-text { font-size: 13px; }
   .talk-prompt { bottom: 26vh; }
+}
+
+/* Narrow phones: the two top panels must never overlap.
+   50vw + 38vw + 2 × 10px margins + gap stays under 100vw at 320px+. */
+@media (max-width: 480px) {
+  .status-panel { left: 10px; top: 10px; width: min(180px, 50vw); padding: 8px; }
+  .tracker-panel { right: 10px; top: 10px; width: min(140px, 38vw); padding: 8px 9px; }
+  .hud-button { min-width: 28px; height: 26px; font-size: 12px; padding: 0 6px; }
+  .quest-tracker .tracker-item { font-size: 10px; padding: 5px 7px; }
+  .scorm-badge { font-size: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .talk-prompt { animation: none; }
+  .report-badge { animation: none; }
+  .float-text { animation: none; opacity: 1; }
+  .xp-fill, .comp-fill, .bar-fill { transition: none; }
 }

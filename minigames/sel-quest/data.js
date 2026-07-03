@@ -110,7 +110,7 @@ export const NPCS = {
 //   { speaker, text, next }                      → linear line
 //   { speaker, text, choices: [{ text, tier, stat, reply, next }] } → decision
 //   { speaker, text, end: true }                 → closes the dialogue
-// The special node id "done" finishes the quest.
+// A node with `end: true` completes the quest. Every choice must carry `next`.
 // ---------------------------------------------------------------------------
 
 export const QUESTS = [

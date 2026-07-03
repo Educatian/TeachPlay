@@ -21,6 +21,7 @@ import {
 const dom = {
   root: document.getElementById("gameRoot"),
   levelValue: document.getElementById("levelValue"),
+  levelWord: document.querySelector('[data-ui="level"]'),
   xpFill: document.getElementById("xpFill"),
   xpLabel: document.getElementById("xpLabel"),
   competencyList: document.getElementById("competencyList"),
@@ -85,7 +86,9 @@ const state = {
   stats: {},
   statMax: {},
   quests: {}, // id -> "locked" | "available" | "active" | "done"
+  answered: {}, // "questId:nodeId" -> true, so replays never re-score a node
   reportShown: false,
+  musicOn: true,
   playerPos: null
 };
 
@@ -108,6 +111,7 @@ function loadSave() {
       state.statMax[c.id] = Number(data.statMax?.[c.id]) || 0;
     });
     state.quests = data.quests && typeof data.quests === "object" ? data.quests : {};
+    state.answered = data.answered && typeof data.answered === "object" ? data.answered : {};
     state.reportShown = !!data.reportShown;
     state.musicOn = data.musicOn !== false;
     if (data.playerPos && Number.isFinite(data.playerPos.x) && Number.isFinite(data.playerPos.z)) {
@@ -130,6 +134,7 @@ function persistSave() {
         stats: state.stats,
         statMax: state.statMax,
         quests: state.quests,
+        answered: state.answered,
         reportShown: state.reportShown,
         musicOn: music.on,
         playerPos: player
@@ -143,6 +148,64 @@ function persistSave() {
 }
 
 const hasSave = loadSave();
+
+function clearSave() {
+  try {
+    localStorage.removeItem(SAVE_KEY);
+  } catch (error) {
+    /* storage unavailable — reload will start fresh anyway */
+  }
+}
+
+// ---------------------------------------------------------------------------
+// SCORM — initialized before asset streaming so the LMS records the attempt
+// even if the learner bails during the download.
+// ---------------------------------------------------------------------------
+
+const scorm = {
+  active: false,
+  learner: "",
+  submitted: false
+};
+
+function scormInit() {
+  if (!window.Scorm12) return;
+  scorm.active = window.Scorm12.init();
+  if (!scorm.active) return;
+  scorm.learner = window.Scorm12.get("cmi.core.student_name") || "";
+  const status = window.Scorm12.get("cmi.core.lesson_status");
+  if (status === "not attempted" || status === "") {
+    window.Scorm12.set("cmi.core.lesson_status", "incomplete");
+  }
+  window.Scorm12.commit();
+}
+
+function scormSubmit(score) {
+  if (!scorm.active || scorm.submitted) return;
+  scorm.submitted = true;
+  // Never downgrade an already-recorded result within the same attempt.
+  const prevStatus = window.Scorm12.get("cmi.core.lesson_status");
+  const prevRawStr = window.Scorm12.get("cmi.core.score.raw");
+  const prevRaw = prevRawStr === "" ? -1 : Number(prevRawStr);
+  const newStatus = score >= 80 ? "passed" : "completed";
+  if (prevStatus === "passed" && newStatus !== "passed") return;
+  if (Number.isFinite(prevRaw) && score < prevRaw) return;
+  window.Scorm12.set("cmi.core.score.min", "0");
+  window.Scorm12.set("cmi.core.score.max", "100");
+  window.Scorm12.set("cmi.core.score.raw", String(score));
+  window.Scorm12.set("cmi.core.lesson_status", newStatus);
+  window.Scorm12.commit();
+}
+
+window.addEventListener("beforeunload", () => {
+  persistSave();
+  if (scorm.active && window.Scorm12) {
+    window.Scorm12.commit();
+    window.Scorm12.finish();
+  }
+});
+
+scormInit();
 
 // ---------------------------------------------------------------------------
 // Game-ready 3D assets (Kenney starter kits, MIT — see assets/LICENSE-kenney.md)
@@ -209,46 +272,6 @@ function t(entry) {
   if (!entry) return "";
   return entry[state.lang] ?? entry.ko ?? "";
 }
-
-// ---------------------------------------------------------------------------
-// SCORM
-// ---------------------------------------------------------------------------
-
-const scorm = {
-  active: false,
-  learner: "",
-  submitted: false
-};
-
-function scormInit() {
-  if (!window.Scorm12) return;
-  scorm.active = window.Scorm12.init();
-  if (!scorm.active) return;
-  scorm.learner = window.Scorm12.get("cmi.core.student_name") || "";
-  const status = window.Scorm12.get("cmi.core.lesson_status");
-  if (status === "not attempted" || status === "") {
-    window.Scorm12.set("cmi.core.lesson_status", "incomplete");
-  }
-  window.Scorm12.commit();
-}
-
-function scormSubmit(score) {
-  if (!scorm.active || scorm.submitted) return;
-  window.Scorm12.set("cmi.core.score.min", "0");
-  window.Scorm12.set("cmi.core.score.max", "100");
-  window.Scorm12.set("cmi.core.score.raw", String(score));
-  window.Scorm12.set("cmi.core.lesson_status", score >= 80 ? "passed" : "completed");
-  window.Scorm12.commit();
-  scorm.submitted = true;
-}
-
-window.addEventListener("beforeunload", () => {
-  persistSave();
-  if (scorm.active && window.Scorm12) {
-    window.Scorm12.commit();
-    window.Scorm12.finish();
-  }
-});
 
 // ---------------------------------------------------------------------------
 // Tiny synth audio (no assets)
@@ -334,8 +357,25 @@ const sfx = {
 // ---------------------------------------------------------------------------
 
 const WORLD_BOUND = 26;
+const PLAYER_RADIUS = 0.55;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+// shortest-arc angle wrap, shared by every turn-toward easing
+function wrapAngle(a) {
+  return Math.atan2(Math.sin(a), Math.cos(a));
+}
+
+function createRenderer() {
+  try {
+    return new THREE.WebGLRenderer({ antialias: true });
+  } catch (error) {
+    if (window.__selquestBootFailed) {
+      window.__selquestBootFailed("WebGL 사용 불가 — 그래픽 가속을 켜 주세요 · WebGL unavailable");
+    }
+    throw error;
+  }
+}
+
+const renderer = createRenderer();
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.12;
@@ -507,7 +547,9 @@ if (assets.fountain) {
   rim.scale.set(1.35, 1, 1);
   rim.position.set(-19.5, 0.12, -14);
   scene.add(rim);
-  addCollider(-19.5, -14, 6.4);
+  // radius kept small enough that push-out + world clamp cannot re-embed
+  // the player at the map edge (26 - 19.5 = 6.5 > 5.8 + player radius 0.55)
+  addCollider(-19.5, -14, 5.8);
 }
 
 function addBox(group, w, h, d, color, x, y, z, opts = {}) {
@@ -979,18 +1021,20 @@ function spawnNpc(def) {
 }
 
 Object.values(NPCS).forEach(spawnNpc);
+const npcList = Object.values(npcActors); // fixed after spawn — cached for hot paths
 
-// Quest flags planted beside each quest giver, tinted by competency color
+// Quest flags planted beside each quest giver, tinted by the quest's
+// competency color (derived from data.js so colors can never drift).
 if (assets.flag) {
-  const FLAG_SPOTS = [
-    { npc: "hana", color: "#2e6f5e" },
-    { npc: "jiho", color: "#f2b134" },
-    { npc: "yuna", color: "#4fc3f7" },
-    { npc: "minjun", color: "#81c784" },
-    { npc: "sora", color: "#f48fb1" },
-    { npc: "doyun", color: "#b39ddb" }
-  ];
-  FLAG_SPOTS.forEach(({ npc, color }, i) => {
+  const flagSpots = [];
+  const seen = new Set();
+  QUESTS.forEach((q) => {
+    if (seen.has(q.npc)) return;
+    seen.add(q.npc);
+    const comp = COMPETENCIES.find((c) => c.id === q.competency);
+    flagSpots.push({ npc: q.npc, color: comp ? comp.color : "#2e6f5e" });
+  });
+  flagSpots.forEach(({ npc, color }, i) => {
     const def = NPCS[npc];
     const flag = cloneModel(assets.flag, { size: 1.5, axis: "y", tint: color });
     const angle = (def.facing || 0) + Math.PI / 2;
@@ -1108,8 +1152,10 @@ const wanderers = [];
 
 // Confetti bursts (quest complete / level up)
 const bursts = [];
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function spawnBurst(position, count = 40) {
+  if (reducedMotion) return;
   const colors = [0xf2b134, 0xf48fb1, 0x81c784, 0x4fc3f7, 0xb39ddb, 0xffffff];
   const positions = new Float32Array(count * 3);
   const colorArr = new Float32Array(count * 3);
@@ -1166,7 +1212,13 @@ const player = assets.character
   ? buildCharacter({ top: null })
   : buildCharacter({ skin: 0xf3cba5, hair: 0x2c2320, top: 0x2e6f5e, bottom: 0x2c3a46 });
 if (state.playerPos) {
-  player.position.set(state.playerPos.x, 0, state.playerPos.z);
+  // saved positions are untrusted: clamp to the world and push out of any
+  // collider (collider layout can change between versions)
+  const safe = resolveCollisions(
+    THREE.MathUtils.clamp(state.playerPos.x, -WORLD_BOUND, WORLD_BOUND),
+    THREE.MathUtils.clamp(state.playerPos.z, -WORLD_BOUND, WORLD_BOUND)
+  );
+  player.position.set(safe.x, 0, safe.z);
 } else {
   player.position.set(0, 0, 12);
 }
@@ -1180,14 +1232,12 @@ scene.add(player);
 const input = {
   keys: new Set(),
   joy: { active: false, x: 0, y: 0 },
-  cam: { yaw: 0, pitch: 0.52, dist: 9.5 },
-  dragging: false,
-  dragMoved: 0,
-  lastX: 0,
-  lastY: 0
+  cam: { yaw: 0, pitch: 0.52, dist: 9.5 }
 };
 
-const isTouch = window.matchMedia("(pointer: coarse)").matches;
+// Show the joystick for any touch-capable device (coarse-pointer phones,
+// but also touchscreen laptops/tablets whose primary pointer is fine).
+const isTouch = window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
 if (isTouch) dom.joystick.hidden = false;
 
 window.addEventListener("keydown", (e) => {
@@ -1195,6 +1245,9 @@ window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
   input.keys.add(k);
   if (k === "e" || k === " ") {
+    // let Space/Enter activate a focused dialogue-choice button natively
+    const active = document.activeElement;
+    if (active && active.tagName === "BUTTON" && dom.dialogueChoices.contains(active)) return;
     if (dialogue.open) {
       e.preventDefault();
       advanceDialogue();
@@ -1205,37 +1258,63 @@ window.addEventListener("keydown", (e) => {
   if (k === "j" && state.started && !dialogue.open) toggleJournal();
   if (k === "escape") {
     if (!dom.journalOverlay.hidden) toggleJournal(false);
+    else if (!dom.reportOverlay.hidden) dom.reportOverlay.hidden = true;
   }
 });
 window.addEventListener("keyup", (e) => input.keys.delete(e.key.toLowerCase()));
 window.addEventListener("blur", () => input.keys.clear());
 
-// Camera orbit via pointer drag on canvas
-renderer.domElement.addEventListener("pointerdown", (e) => {
-  input.dragging = true;
-  input.dragMoved = 0;
-  input.lastX = e.clientX;
-  input.lastY = e.clientY;
-  renderer.domElement.setPointerCapture(e.pointerId);
-});
-renderer.domElement.addEventListener("pointermove", (e) => {
-  if (!input.dragging) return;
-  const dx = e.clientX - input.lastX;
-  const dy = e.clientY - input.lastY;
-  input.dragMoved += Math.abs(dx) + Math.abs(dy);
-  input.lastX = e.clientX;
-  input.lastY = e.clientY;
-  input.cam.yaw -= dx * 0.0052;
-  input.cam.pitch = THREE.MathUtils.clamp(input.cam.pitch + dy * 0.0042, 0.12, 1.25);
-});
-renderer.domElement.addEventListener("pointerup", (e) => {
-  input.dragging = false;
-  if (input.dragMoved < 8) handleTap(e);
-});
-renderer.domElement.addEventListener("wheel", (e) => {
-  e.preventDefault();
-  input.cam.dist = THREE.MathUtils.clamp(input.cam.dist + e.deltaY * 0.01, 5, 17);
-}, { passive: false });
+// Camera orbit via pointer drag on canvas; two-finger pinch zooms.
+// Pointers are tracked by id so a second finger cannot corrupt the drag.
+{
+  const pointers = new Map();
+  let pinchDist = 0;
+
+  function pinchDistance() {
+    const [a, b] = [...pointers.values()];
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  }
+
+  renderer.domElement.addEventListener("pointerdown", (e) => {
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, moved: 0 });
+    renderer.domElement.setPointerCapture(e.pointerId);
+    if (pointers.size === 2) pinchDist = pinchDistance();
+  });
+
+  renderer.domElement.addEventListener("pointermove", (e) => {
+    const p = pointers.get(e.pointerId);
+    if (!p) return;
+    const dx = e.clientX - p.x;
+    const dy = e.clientY - p.y;
+    p.x = e.clientX;
+    p.y = e.clientY;
+    p.moved += Math.abs(dx) + Math.abs(dy);
+    if (pointers.size === 2) {
+      const d = pinchDistance();
+      if (pinchDist > 0) {
+        input.cam.dist = THREE.MathUtils.clamp(input.cam.dist + (pinchDist - d) * 0.03, 5, 17);
+      }
+      pinchDist = d;
+      return;
+    }
+    input.cam.yaw -= dx * 0.0052;
+    input.cam.pitch = THREE.MathUtils.clamp(input.cam.pitch + dy * 0.0042, 0.12, 1.25);
+  });
+
+  function endPointer(e) {
+    const p = pointers.get(e.pointerId);
+    pointers.delete(e.pointerId);
+    pinchDist = 0;
+    if (p && p.moved < 8 && e.type === "pointerup" && pointers.size === 0) handleTap(e);
+  }
+  renderer.domElement.addEventListener("pointerup", endPointer);
+  renderer.domElement.addEventListener("pointercancel", endPointer);
+
+  renderer.domElement.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    input.cam.dist = THREE.MathUtils.clamp(input.cam.dist + e.deltaY * 0.01, 5, 17);
+  }, { passive: false });
+}
 
 // Tap-to-talk raycast
 const raycaster = new THREE.Raycaster();
@@ -1247,13 +1326,14 @@ function handleTap(e) {
     -((e.clientY - rect.top) / rect.height) * 2 + 1
   );
   raycaster.setFromCamera(ndc, camera);
-  const groups = Object.values(npcActors).map((a) => a.group);
-  const hits = raycaster.intersectObjects(groups, true);
-  if (!hits.length) return;
-  let obj = hits[0].object;
+  const groups = npcList.map((a) => a.group);
+  // ignore hidden helper sprites (e.g. an invisible quest marker)
+  const hit = raycaster.intersectObjects(groups, true).find((h) => h.object.visible);
+  if (!hit) return;
+  let obj = hit.object;
   while (obj && !groups.includes(obj)) obj = obj.parent;
   if (!obj) return;
-  const actor = Object.values(npcActors).find((a) => a.group === obj);
+  const actor = npcList.find((a) => a.group === obj);
   if (actor && actor.group.position.distanceTo(player.position) < 4.5) {
     startInteraction(actor);
   }
@@ -1266,13 +1346,7 @@ function handleTap(e) {
   function setKnob(dx, dy) {
     dom.joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
   }
-  dom.joystick.addEventListener("pointerdown", (e) => {
-    pointerId = e.pointerId;
-    dom.joystick.setPointerCapture(pointerId);
-    input.joy.active = true;
-  });
-  dom.joystick.addEventListener("pointermove", (e) => {
-    if (e.pointerId !== pointerId) return;
+  function applyJoystick(e) {
     const rect = dom.joystick.getBoundingClientRect();
     let dx = e.clientX - (rect.left + rect.width / 2);
     let dy = e.clientY - (rect.top + rect.height / 2);
@@ -1284,6 +1358,16 @@ function handleTap(e) {
     setKnob(dx, dy);
     input.joy.x = dx / maxR;
     input.joy.y = dy / maxR;
+  }
+  dom.joystick.addEventListener("pointerdown", (e) => {
+    pointerId = e.pointerId;
+    dom.joystick.setPointerCapture(pointerId);
+    input.joy.active = true;
+    applyJoystick(e); // a stationary press already sets a direction
+  });
+  dom.joystick.addEventListener("pointermove", (e) => {
+    if (e.pointerId !== pointerId) return;
+    applyJoystick(e);
   });
   function endJoy(e) {
     if (e.pointerId !== pointerId) return;
@@ -1308,6 +1392,12 @@ function questById(id) {
   return QUESTS.find((q) => q.id === id);
 }
 
+// Single source of truth for "which quests does this NPC front?"
+function questsOwnedBy(npcId) {
+  const aliasQuest = NPC_QUEST_ALIAS[npcId];
+  return QUESTS.filter((q) => q.npc === npcId || q.id === aliasQuest);
+}
+
 function questStatus(quest) {
   if (state.quests[quest.id]) return state.quests[quest.id];
   const reqs = quest.requires || [];
@@ -1316,8 +1406,7 @@ function questStatus(quest) {
 }
 
 function questForNpc(npcId) {
-  const aliasQuest = NPC_QUEST_ALIAS[npcId];
-  const candidates = QUESTS.filter((q) => q.npc === npcId || q.id === aliasQuest);
+  const candidates = questsOwnedBy(npcId);
   // prefer active, then available, ordered by quest order
   candidates.sort((a, b) => a.order - b.order);
   const active = candidates.find((q) => questStatus(q) === "active");
@@ -1334,9 +1423,7 @@ function refreshMarkers() {
       setNpcMarker(npcId, questStatus(quest) === "active" ? "active" : "available");
       return;
     }
-    const aliasQuest = NPC_QUEST_ALIAS[npcId];
-    const owned = QUESTS.filter((q) => q.npc === npcId || q.id === aliasQuest);
-    const anyDone = owned.some((q) => questStatus(q) === "done");
+    const anyDone = questsOwnedBy(npcId).some((q) => questStatus(q) === "done");
     setNpcMarker(npcId, anyDone ? "done" : null);
   });
 }
@@ -1436,8 +1523,8 @@ function buildCompetencyHud() {
     const li = document.createElement("li");
     li.dataset.comp = c.id;
     li.innerHTML = `
-      <span class="comp-name">${c.icon} ${t(c.label)}</span>
-      <span class="comp-icon"></span>
+      <span class="comp-name">${t(c.label)}</span>
+      <span class="comp-icon">${c.icon}</span>
       <span class="comp-track"><span class="comp-fill" style="background:${c.color}"></span></span>
       <span class="comp-value">—</span>`;
     dom.competencyList.appendChild(li);
@@ -1493,6 +1580,8 @@ const dialogue = {
   nodeId: null,
   phase: "line", // "line" | "choices" | "reply"
   pendingNext: null,
+  lastChoice: null,
+  repliedAt: 0,
   actor: null
 };
 
@@ -1511,14 +1600,18 @@ function startInteraction(actor) {
   if (dialogue.open || !state.started) return;
   const quest = questForNpc(actor.def.id);
   if (!quest) {
-    // finished or locked: small ambient response
-    if (actor.def.id === "hana" && questStatus(questById("finale")) === "locked") {
-      showToast(t(UI.toastFinaleLocked));
-      return;
+    // finished or locked: ambient response
+    if (actor.def.id === "hana") {
+      if (questStatus(questById("finale")) === "done") {
+        showReport(); // journey finished — Hana re-opens the report card
+        return;
+      }
+      if (questStatus(questById("finale")) === "locked") {
+        showToast(t(UI.toastFinaleLocked));
+        return;
+      }
     }
-    const aliasQuest = NPC_QUEST_ALIAS[actor.def.id];
-    const owned = QUESTS.filter((q) => q.npc === actor.def.id || q.id === aliasQuest);
-    if (owned.some((q) => questStatus(q) === "done")) {
+    if (questsOwnedBy(actor.def.id).some((q) => questStatus(q) === "done")) {
       showToast(`${t(actor.def.name)} 😊`);
     } else {
       showToast(t(UI.toastLocked));
@@ -1577,6 +1670,8 @@ function renderDialogueNode() {
       btn.addEventListener("click", () => pickChoice(choice));
       dom.dialogueChoices.appendChild(btn);
     });
+    const firstChoice = dom.dialogueChoices.querySelector("button");
+    if (firstChoice) firstChoice.focus({ preventScroll: true });
   } else {
     dom.dialogueContinue.textContent = t(UI.continueHint);
   }
@@ -1585,17 +1680,30 @@ function renderDialogueNode() {
 // stable-ish per-session shuffle seed
 const hashSeed = 1 + Math.floor(performance.now()) % 89;
 
-function pickChoice(choice) {
-  sfx.choice();
-  grantPoints(choice.stat, choice.tier);
-  dialogue.phase = "reply";
-  dialogue.pendingNext = choice.next;
-  dom.dialogueChoices.innerHTML = "";
+function renderReplyView() {
   const node = currentNode();
+  const choice = dialogue.lastChoice;
+  if (!node || !choice) return;
+  dom.dialogueChoices.innerHTML = "";
   dom.dialogueName.textContent = speakerName(node.speaker);
   dom.dialoguePortrait.textContent = speakerEmoji(node.speaker);
   dom.dialogueText.textContent = t(choice.reply);
   dom.dialogueContinue.textContent = t(UI.continueHint);
+}
+
+function pickChoice(choice) {
+  sfx.choice();
+  // one score per node, even across replays (reload, language toggle)
+  const answeredKey = `${dialogue.quest.id}:${dialogue.nodeId}`;
+  if (!state.answered[answeredKey]) {
+    state.answered[answeredKey] = true;
+    grantPoints(choice.stat, choice.tier);
+  }
+  dialogue.phase = "reply";
+  dialogue.pendingNext = choice.next;
+  dialogue.lastChoice = choice;
+  dialogue.repliedAt = performance.now();
+  renderReplyView();
 }
 
 function advanceDialogue() {
@@ -1603,6 +1711,8 @@ function advanceDialogue() {
   const node = currentNode();
   if (dialogue.phase === "choices") return; // must pick a choice
   if (dialogue.phase === "reply") {
+    // absorb double-clicks/taps so the reply line is actually read
+    if (performance.now() - dialogue.repliedAt < 350) return;
     dialogue.nodeId = dialogue.pendingNext;
     dialogue.pendingNext = null;
     if (!dialogue.nodeId) {
@@ -1713,6 +1823,12 @@ function computeScore() {
 function showReport() {
   state.reportShown = true;
   persistSave();
+  scormSubmit(computeScore());
+  renderReport();
+  dom.reportOverlay.hidden = false;
+}
+
+function renderReport() {
   const score = computeScore();
   const grade = score >= 90 ? "S" : score >= 75 ? "A" : "B";
   dom.reportTitle.textContent = t(UI.reportTitle);
@@ -1731,8 +1847,8 @@ function showReport() {
     const pct = state.statMax[c.id] === 0 ? 0 : Math.round((state.stats[c.id] / max) * 100);
     const li = document.createElement("li");
     li.innerHTML = `
-      <span class="bar-name">${c.icon} ${t(c.label)}</span>
-      <span class="bar-icon"></span>
+      <span class="bar-name">${t(c.label)}</span>
+      <span class="bar-icon">${c.icon}</span>
       <span class="bar-track"><span class="bar-fill" style="background:${c.color};width:0%"></span></span>
       <span class="bar-pct">${pct}%</span>`;
     dom.reportBars.appendChild(li);
@@ -1741,16 +1857,14 @@ function showReport() {
     });
   });
 
-  scormSubmit(score);
   dom.reportScorm.textContent = scorm.active ? t(UI.scormSent) : t(UI.scormLocal);
-  dom.reportOverlay.hidden = false;
 }
 
 dom.reportClose.addEventListener("click", () => {
   dom.reportOverlay.hidden = true;
 });
 dom.reportReplay.addEventListener("click", () => {
-  localStorage.removeItem(SAVE_KEY);
+  clearSave();
   location.reload();
 });
 
@@ -1773,14 +1887,18 @@ function applyLanguage() {
   dom.startButton.textContent = hasSave ? t(UI.continueButton) : t(UI.startButton);
   dom.talkPrompt.textContent = t(UI.talkPrompt);
   document.title = `${t(UI.gameTitle)} — TeachPlay`;
-  const levelWord = dom.statusLevelWord || document.querySelector('[data-ui="level"]');
-  if (levelWord) levelWord.textContent = t(UI.level);
+  if (dom.levelWord) dom.levelWord.textContent = t(UI.level);
   buildCompetencyHud();
   updateTracker();
   updateScormBadge();
   refreshNpcNameSprites();
   if (!dom.journalOverlay.hidden) renderJournal();
-  if (dialogue.open) renderDialogueNode();
+  if (dialogue.open) {
+    // phase-aware: re-answering an already-scored node must not be possible
+    if (dialogue.phase === "reply") renderReplyView();
+    else renderDialogueNode();
+  }
+  if (!dom.reportOverlay.hidden) renderReport();
   persistSave();
 }
 
@@ -1801,7 +1919,7 @@ dom.musicButton.addEventListener("click", () => {
 
 dom.resetButton.addEventListener("click", () => {
   if (confirm(t(UI.resetConfirm))) {
-    localStorage.removeItem(SAVE_KEY);
+    clearSave();
     location.reload();
   }
 });
@@ -1817,7 +1935,6 @@ dom.startButton.addEventListener("click", () => {
 // Movement + camera + interaction proximity
 // ---------------------------------------------------------------------------
 
-const PLAYER_RADIUS = 0.55;
 let nearestNpc = null;
 let saveTicker = 0;
 let stepTicker = 0;
@@ -1844,23 +1961,28 @@ function movementVector() {
 function resolveCollisions(px, pz) {
   let x = px;
   let z = pz;
-  for (const c of colliders) {
-    const dx = x - c.x;
-    const dz = z - c.z;
-    const dist = Math.hypot(dx, dz);
-    const minDist = c.r + PLAYER_RADIUS;
-    if (dist < minDist && dist > 0.0001) {
-      const push = (minDist - dist) / dist;
-      x += dx * push;
-      z += dz * push;
+  // two passes: a push-out from one collider (or the world clamp) may land
+  // inside a neighboring collider, so resolve again before settling
+  for (let pass = 0; pass < 2; pass += 1) {
+    for (const c of colliders) {
+      const dx = x - c.x;
+      const dz = z - c.z;
+      const dist = Math.hypot(dx, dz);
+      const minDist = c.r + PLAYER_RADIUS;
+      if (dist < minDist && dist > 0.0001) {
+        const push = (minDist - dist) / dist;
+        x += dx * push;
+        z += dz * push;
+      }
     }
+    x = THREE.MathUtils.clamp(x, -WORLD_BOUND, WORLD_BOUND);
+    z = THREE.MathUtils.clamp(z, -WORLD_BOUND, WORLD_BOUND);
   }
-  x = THREE.MathUtils.clamp(x, -WORLD_BOUND, WORLD_BOUND);
-  z = THREE.MathUtils.clamp(z, -WORLD_BOUND, WORLD_BOUND);
   return { x, z };
 }
 
 const cameraTarget = new THREE.Vector3();
+const cameraDesired = new THREE.Vector3();
 let sprinting = false;
 
 function updateCamera(dt) {
@@ -1874,28 +1996,21 @@ function updateCamera(dt) {
   const offX = Math.sin(yaw) * Math.cos(pitch) * dist;
   const offY = Math.sin(pitch) * dist;
   const offZ = Math.cos(yaw) * Math.cos(pitch) * dist;
-  const desired = new THREE.Vector3(target.x + offX, target.y + offY, target.z + offZ);
-  camera.position.lerp(desired, Math.min(1, dt * 7));
+  cameraDesired.set(target.x + offX, target.y + offY, target.z + offZ);
+  camera.position.lerp(cameraDesired, Math.min(1, dt * 7));
   camera.lookAt(target);
 }
 
-function updateProximity() {
+function updateProximity(dt) {
   let best = null;
   let bestDist = 3.4;
-  Object.values(npcActors).forEach((actor) => {
+  for (const actor of npcList) {
     const d = actor.group.position.distanceTo(player.position);
     if (d < bestDist) {
       best = actor;
       bestDist = d;
     }
-  });
-  nearestNpc = best;
-  const showPrompt = !!best && state.started && !dialogue.open;
-  dom.talkPrompt.hidden = !showPrompt;
-
-  // NPCs turn toward the player when close, drift back otherwise
-  Object.values(npcActors).forEach((actor) => {
-    const d = actor.group.position.distanceTo(player.position);
+    // NPCs turn toward the player when close, drift back otherwise
     let desired = actor.baseFacing;
     if (d < 5) {
       desired = Math.atan2(
@@ -1903,10 +2018,10 @@ function updateProximity() {
         player.position.z - actor.group.position.z
       );
     }
-    let diff = desired - actor.group.rotation.y;
-    diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-    actor.group.rotation.y += diff * 0.08;
-  });
+    actor.group.rotation.y += wrapAngle(desired - actor.group.rotation.y) * Math.min(1, dt * 6);
+  }
+  nearestNpc = best;
+  dom.talkPrompt.hidden = !(best && state.started && !dialogue.open);
 }
 
 // ---------------------------------------------------------------------------
@@ -1937,9 +2052,7 @@ function tick() {
       player.position.x = resolved.x;
       player.position.z = resolved.z;
       const targetRot = Math.atan2(dirX, dirZ);
-      let diff = targetRot - player.rotation.y;
-      diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-      player.rotation.y += diff * Math.min(1, dt * 14);
+      player.rotation.y += wrapAngle(targetRot - player.rotation.y) * Math.min(1, dt * 14);
 
       stepTicker += dt;
       if (stepTicker > (run ? 0.24 : 0.34)) {
@@ -1958,13 +2071,13 @@ function tick() {
   updateBursts(dt);
   animateWalk(player, now, moving, input.keys.has("shift") ? 1.4 : 1, dt);
 
-  Object.values(npcActors).forEach((actor) => {
+  for (const actor of npcList) {
     animateWalk(actor.group, now + actor.def.position.x * 313, false, 1, dt);
     // gentle marker bob
     if (actor.markerSprite.visible) {
       actor.markerSprite.position.y = 3.72 + Math.sin(now / 320 + actor.def.position.z) * 0.12;
     }
-  });
+  }
 
   wanderers.forEach((w) => {
     if (w.wait > 0) {
@@ -1984,9 +2097,7 @@ function tick() {
     w.group.position.x += (dx / d) * w.speed * dt;
     w.group.position.z += (dz / d) * w.speed * dt;
     const rot = Math.atan2(dx, dz);
-    let diff = rot - w.group.rotation.y;
-    diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-    w.group.rotation.y += diff * Math.min(1, dt * 8);
+    w.group.rotation.y += wrapAngle(rot - w.group.rotation.y) * Math.min(1, dt * 8);
     animateWalk(w.group, now, true, 0.85, dt);
   });
 
@@ -2014,7 +2125,7 @@ function tick() {
     fountainWater.material.emissiveIntensity = 0.3 + (Math.sin(now / 500) + 1) * 0.1;
   }
 
-  updateProximity();
+  updateProximity(dt);
   updateCamera(dt);
   renderer.render(scene, camera);
 }
@@ -2026,7 +2137,7 @@ function tick() {
 // test/debug handle (harmless in production)
 window.__selquest = { state, player, npcActors, camera, renderer };
 
-scormInit();
+window.__selquestBootOk = true;
 setMusic(state.musicOn !== false);
 dom.startButton.disabled = false;
 applyLanguage();
