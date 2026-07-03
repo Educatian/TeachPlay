@@ -4,6 +4,7 @@
 // branching dialogue, and grow the five CASEL competencies as RPG stats.
 
 import * as THREE from "./vendor/three/three.module.js";
+import { GLTFLoader } from "./vendor/three/GLTFLoader.js";
 import {
   COMPETENCIES,
   CHOICE_POINTS,
@@ -34,6 +35,7 @@ const dom = {
   dialogueChoices: document.getElementById("dialogueChoices"),
   dialogueContinue: document.getElementById("dialogueContinue"),
   journalButton: document.getElementById("journalButton"),
+  musicButton: document.getElementById("musicButton"),
   journalOverlay: document.getElementById("journalOverlay"),
   journalTitle: document.getElementById("journalTitle"),
   journalClose: document.getElementById("journalClose"),
@@ -107,6 +109,7 @@ function loadSave() {
     });
     state.quests = data.quests && typeof data.quests === "object" ? data.quests : {};
     state.reportShown = !!data.reportShown;
+    state.musicOn = data.musicOn !== false;
     if (data.playerPos && Number.isFinite(data.playerPos.x) && Number.isFinite(data.playerPos.z)) {
       state.playerPos = { x: data.playerPos.x, z: data.playerPos.z };
     }
@@ -128,6 +131,7 @@ function persistSave() {
         statMax: state.statMax,
         quests: state.quests,
         reportShown: state.reportShown,
+        musicOn: music.on,
         playerPos: player
           ? { x: Number(player.position.x.toFixed(2)), z: Number(player.position.z.toFixed(2)) }
           : state.playerPos
@@ -139,6 +143,63 @@ function persistSave() {
 }
 
 const hasSave = loadSave();
+
+// ---------------------------------------------------------------------------
+// Game-ready 3D assets (Kenney starter kits, MIT — see assets/LICENSE-kenney.md)
+// Loaded up front; every user is served the local files packaged with the SCO.
+// Any file that fails to load falls back to the procedural primitive builders.
+// ---------------------------------------------------------------------------
+
+const MODEL_FILES = {
+  character: "./assets/models/platformer/character.glb",
+  flag: "./assets/models/platformer/flag.glb",
+  houseA: "./assets/models/city/building-small-a.glb",
+  houseB: "./assets/models/city/building-small-b.glb",
+  houseC: "./assets/models/city/building-small-c.glb",
+  houseD: "./assets/models/city/building-small-d.glb",
+  garage: "./assets/models/city/building-garage.glb",
+  fountain: "./assets/models/city/pavement-fountain.glb",
+  trees: "./assets/models/city/grass-trees.glb",
+  treesTall: "./assets/models/city/grass-trees-tall.glb"
+};
+
+const assets = {};
+{
+  const gltfLoader = new GLTFLoader();
+  const entries = Object.entries(MODEL_FILES);
+  const loaded = await Promise.all(
+    entries.map(([, url]) => gltfLoader.loadAsync(url).catch(() => null))
+  );
+  entries.forEach(([key], i) => {
+    assets[key] = loaded[i];
+  });
+}
+
+// Clone a loaded glTF scene, normalize its size, center it on XZ, rest it on
+// the ground plane, and optionally tint it toward a color.
+function cloneModel(gltf, { size = 1, axis = "footprint", tint = null, shadows = true } = {}) {
+  const root = gltf.scene.clone(true);
+  const box = new THREE.Box3().setFromObject(root);
+  const dims = box.getSize(new THREE.Vector3());
+  const basis = axis === "y" ? dims.y : Math.max(dims.x, dims.z);
+  root.scale.setScalar(size / (basis || 1));
+  const box2 = new THREE.Box3().setFromObject(root);
+  const center = box2.getCenter(new THREE.Vector3());
+  root.position.x -= center.x;
+  root.position.z -= center.z;
+  root.position.y -= box2.min.y;
+  root.traverse((obj) => {
+    if (obj.isMesh) {
+      obj.castShadow = shadows;
+      obj.receiveShadow = true;
+      if (tint) {
+        obj.material = obj.material.clone();
+        obj.material.color.lerp(new THREE.Color(tint), 0.62);
+      }
+    }
+  });
+  return root;
+}
 
 // ---------------------------------------------------------------------------
 // i18n helpers
@@ -204,6 +265,7 @@ function ensureAudio() {
     }
   }
   if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+  startMusic();
 }
 
 function tone(freq, start, duration, type = "sine", volume = 0.08) {
@@ -221,8 +283,35 @@ function tone(freq, start, duration, type = "sine", volume = 0.08) {
   osc.stop(now + duration + 0.05);
 }
 
+// Gentle generative background music: a slow pentatonic music-box line.
+const music = { timer: null, step: 0, on: true };
+const PENTA = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25];
+const MELODY = [0, 2, 4, 3, 5, 4, 2, 1, 3, 2, 4, 0];
+
+function musicTick() {
+  if (!audioCtx || !music.on) return;
+  const i = music.step % MELODY.length;
+  const octaveLift = music.step % 24 >= 12 ? 2 : 1;
+  tone(PENTA[MELODY[i]] * octaveLift, 0, 1.6, "sine", 0.022);
+  if (music.step % 4 === 0) {
+    tone(PENTA[MELODY[i]] / 2, 0, 2.4, "triangle", 0.014);
+  }
+  music.step += 1;
+}
+
+function startMusic() {
+  if (music.timer || !audioCtx) return;
+  music.timer = setInterval(musicTick, 620);
+}
+
+function setMusic(on) {
+  music.on = on;
+  if (dom.musicButton) dom.musicButton.textContent = on ? "🔊" : "🔇";
+}
+
 const sfx = {
   talk: () => tone(520, 0, 0.09, "triangle", 0.05),
+  step: (run) => tone(run ? 170 : 150, 0, 0.045, "sine", 0.018),
   choice: () => {
     tone(660, 0, 0.1, "triangle", 0.06);
     tone(880, 0.07, 0.12, "triangle", 0.05);
@@ -237,8 +326,7 @@ const sfx = {
     tone(659, 0.1, 0.12, "square", 0.045);
     tone(784, 0.2, 0.12, "square", 0.045);
     tone(1046, 0.3, 0.3, "triangle", 0.07);
-  },
-  step: () => {}
+  }
 };
 
 // ---------------------------------------------------------------------------
@@ -249,14 +337,39 @@ const WORLD_BOUND = 26;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 dom.root.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x9ed4e8);
-scene.fog = new THREE.Fog(0x9ed4e8, 55, 110);
+scene.background = new THREE.Color(0xbfe6f2);
+scene.fog = new THREE.Fog(0xbfe6f2, 55, 130);
+
+// Gradient sky dome
+{
+  const canvas = document.createElement("canvas");
+  canvas.width = 16;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d");
+  const grad = ctx.createLinearGradient(0, 0, 0, 256);
+  grad.addColorStop(0, "#3f97d6");
+  grad.addColorStop(0.42, "#7cc3e8");
+  grad.addColorStop(0.62, "#c7ecf5");
+  grad.addColorStop(1, "#f4e9c8");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 16, 256);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const sky = new THREE.Mesh(
+    new THREE.SphereGeometry(190, 24, 14),
+    new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide, fog: false, depthWrite: false })
+  );
+  sky.renderOrder = -10;
+  scene.add(sky);
+}
 
 const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 300);
 
@@ -351,7 +464,12 @@ addPath(13.5, 9, 3, 11, Math.PI / 4); // to workshop
 
 // Fountain at plaza center
 let fountainWater = null;
-{
+if (assets.fountain) {
+  const tile = cloneModel(assets.fountain, { size: 6 });
+  tile.position.y += 0.03;
+  scene.add(tile);
+  addCollider(0, 0, 2.1);
+} else {
   const group = new THREE.Group();
   const rim = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.7, 0.8, 24), mat(0xb8b2a6));
   rim.position.y = 0.4;
@@ -410,48 +528,62 @@ function addRoof(group, w, d, color, x, y, z, rotY = 0) {
   return roof;
 }
 
-function addBuilding({ x, z, w = 6, h = 3.4, d = 5, wall = 0xf5e9d2, roof = 0xc75450, rotY = 0, sign = null }) {
+function makeSign(text) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#4a3423";
+  ctx.fillRect(0, 0, 256, 64);
+  ctx.fillStyle = "#f7ecd7";
+  ctx.font = "bold 34px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, 128, 34);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.65), new THREE.MeshBasicMaterial({ map: tex }));
+}
+
+function addBuilding({ x, z, w = 6, h = 3.4, d = 5, wall = 0xf5e9d2, roof = 0xc75450, rotY = 0, sign = null, model = null }) {
   const g = new THREE.Group();
-  addBox(g, w, h, d, wall, 0, h / 2, 0);
-  addRoof(g, w, d, roof, 0, h + 0.92, 0);
-  // door + windows
-  addBox(g, 1.1, 1.8, 0.15, 0x6b4a2f, 0, 0.9, d / 2 + 0.03);
-  addBox(g, 1.2, 1, 0.12, 0xbde3f2, -w / 4, h * 0.55, d / 2 + 0.03, { roughness: 0.3 });
-  addBox(g, 1.2, 1, 0.12, 0xbde3f2, w / 4, h * 0.55, d / 2 + 0.03, { roughness: 0.3 });
-  if (sign) {
-    const canvas = document.createElement("canvas");
-    canvas.width = 256;
-    canvas.height = 64;
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#4a3423";
-    ctx.fillRect(0, 0, 256, 64);
-    ctx.fillStyle = "#f7ecd7";
-    ctx.font = "bold 34px sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(sign, 128, 34);
-    const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
-    const board = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.6, 0.65),
-      new THREE.MeshBasicMaterial({ map: tex })
-    );
-    board.position.set(0, h - 0.5, d / 2 + 0.06);
-    g.add(board);
+  const source = model ? assets[model] : null;
+  if (source) {
+    const building = cloneModel(source, { size: Math.max(w, d) });
+    g.add(building);
+    if (sign) {
+      const box = new THREE.Box3().setFromObject(building);
+      const board = makeSign(sign);
+      board.position.set(0, box.max.y * 0.72, box.max.z + 0.08);
+      g.add(board);
+    }
+  } else {
+    addBox(g, w, h, d, wall, 0, h / 2, 0);
+    addRoof(g, w, d, roof, 0, h + 0.92, 0);
+    // door + windows
+    addBox(g, 1.1, 1.8, 0.15, 0x6b4a2f, 0, 0.9, d / 2 + 0.03);
+    addBox(g, 1.2, 1, 0.12, 0xbde3f2, -w / 4, h * 0.55, d / 2 + 0.03, { roughness: 0.3 });
+    addBox(g, 1.2, 1, 0.12, 0xbde3f2, w / 4, h * 0.55, d / 2 + 0.03, { roughness: 0.3 });
+    if (sign) {
+      const board = makeSign(sign);
+      board.position.set(0, h - 0.5, d / 2 + 0.06);
+      g.add(board);
+    }
   }
   g.position.set(x, 0, z);
   g.rotation.y = rotY;
   scene.add(g);
-  addCollider(x, z, Math.max(w, d) * 0.68);
+  addCollider(x, z, Math.max(w, d) * (source ? 0.55 : 0.68));
   return g;
 }
 
-addBuilding({ x: 0, z: 23, w: 12, h: 4.6, d: 6, wall: 0xf2e3c8, roof: 0x3e6f8e, sign: "SCHOOL" });
-addBuilding({ x: 19, z: 19.5, w: 6.4, h: 3.2, d: 5, wall: 0xe8dcc0, roof: 0xd98e2b, rotY: -0.35, sign: "MAKER" });
-addBuilding({ x: 6.5, z: -24.5, w: 6, h: 3.1, d: 4.6, wall: 0xf7ecd7, roof: 0x7fae5c, sign: "SHOP" });
-addBuilding({ x: -23, z: 3, w: 5.4, h: 3, d: 4.6, wall: 0xf5e0d8, roof: 0xb56a4f, rotY: Math.PI / 2 });
-addBuilding({ x: 23.5, z: 1.5, w: 5.4, h: 3, d: 4.6, wall: 0xe9eadd, roof: 0x8a6fae, rotY: -Math.PI / 2 });
-addBuilding({ x: -9, z: 24, w: 5.2, h: 2.9, d: 4.4, wall: 0xfbeed9, roof: 0xc75450, rotY: 0.2 });
+addBuilding({ x: 0, z: 23, w: 13, h: 4.6, d: 7, wall: 0xf2e3c8, roof: 0x3e6f8e, sign: "SCHOOL", model: "houseC" });
+addBuilding({ x: 19, z: 19.5, w: 7, h: 3.2, d: 5.6, wall: 0xe8dcc0, roof: 0xd98e2b, rotY: -0.35, sign: "MAKER", model: "houseB" });
+addBuilding({ x: 6.5, z: -24.5, w: 6.6, h: 3.1, d: 5, wall: 0xf7ecd7, roof: 0x7fae5c, sign: "SHOP", model: "houseD" });
+addBuilding({ x: -23, z: 3, w: 6, h: 3, d: 4.6, wall: 0xf5e0d8, roof: 0xb56a4f, rotY: Math.PI / 2, model: "houseA" });
+addBuilding({ x: 23.5, z: 1.5, w: 6, h: 3, d: 4.6, wall: 0xe9eadd, roof: 0x8a6fae, rotY: -Math.PI / 2, model: "houseB" });
+addBuilding({ x: -9, z: 24, w: 5.6, h: 2.9, d: 4.4, wall: 0xfbeed9, roof: 0xc75450, rotY: 0.2, model: "houseA" });
+addBuilding({ x: -21, z: -22, w: 5.2, h: 2.6, d: 4.2, rotY: 0.7, model: "garage" });
 
 // Playground (southeast): slide + swing silhouettes
 {
@@ -515,6 +647,16 @@ const treeSpots = [
   [10, -12.5], [-22, 17], [-14.2, 14.8], [23, 13]
 ];
 treeSpots.forEach(([x, z], i) => {
+  if (assets.trees || assets.treesTall) {
+    const source = i % 3 === 0 ? assets.treesTall || assets.trees : assets.trees || assets.treesTall;
+    const size = 3.4 + ((i * 37) % 10) / 4;
+    const patch = cloneModel(source, { size });
+    patch.position.set(x, -0.04, z);
+    patch.rotation.y = (i * 2.39996) % (Math.PI * 2);
+    scene.add(patch);
+    addCollider(x, z, size * 0.28);
+    return;
+  }
   const g = new THREE.Group();
   const trunkH = 1.5 + (i % 3) * 0.4;
   const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.34, trunkH, 8), mat(0x7a5230));
@@ -550,7 +692,13 @@ treeSpots.forEach(([x, z], i) => {
 });
 
 // Big landmark tree near Minjun
-{
+if (assets.treesTall) {
+  const grove = cloneModel(assets.treesTall, { size: 8.5 });
+  grove.position.set(-16.5, -0.04, 16.5);
+  grove.rotation.y = 0.8;
+  scene.add(grove);
+  addCollider(-16.5, 16.5, 1.6);
+} else {
   const g = new THREE.Group();
   const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.75, 3.6, 10), mat(0x6d4527));
   trunk.position.y = 1.8;
@@ -613,7 +761,41 @@ for (let i = 0; i < 7; i += 1) {
 // Characters
 // ---------------------------------------------------------------------------
 
-function buildCharacter({ skin, hair, top, bottom, scale = 1 }) {
+function buildCharacter(cfg) {
+  if (assets.character) return buildCharacterGLB(cfg);
+  return buildCharacterPrimitive(cfg);
+}
+
+// Kenney animated mini character (idle/walk clips baked into the GLB)
+function buildCharacterGLB({ top, scale = 1 }) {
+  const g = new THREE.Group();
+  const model = cloneModel(assets.character, { size: 2.1 * scale, axis: "y", tint: top });
+  g.add(model); // asset forward is +Z, matching the game convention
+
+  const blob = new THREE.Mesh(
+    new THREE.CircleGeometry(0.42 * scale, 16).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.16 })
+  );
+  blob.position.y = 0.02;
+  g.add(blob);
+
+  const mixer = new THREE.AnimationMixer(model);
+  const clips = assets.character.animations;
+  const actions = {};
+  ["idle", "walk"].forEach((name) => {
+    const clip = THREE.AnimationClip.findByName(clips, name);
+    if (clip) actions[name] = mixer.clipAction(clip);
+  });
+  if (actions.idle) {
+    actions.idle.play();
+    // desynchronize idle cycles between characters
+    actions.idle.time = Math.random() * actions.idle.getClip().duration;
+  }
+  g.userData.anim = { mixer, actions, state: "idle" };
+  return g;
+}
+
+function buildCharacterPrimitive({ skin, hair, top, bottom, scale = 1 }) {
   const g = new THREE.Group();
   const parts = {};
 
@@ -677,7 +859,20 @@ function buildCharacter({ skin, hair, top, bottom, scale = 1 }) {
   return g;
 }
 
-function animateWalk(charGroup, timeMs, moving, speedFactor = 1) {
+function animateWalk(charGroup, timeMs, moving, speedFactor = 1, dt = 1 / 60) {
+  const anim = charGroup.userData.anim;
+  if (anim) {
+    const target = moving && anim.actions.walk ? "walk" : "idle";
+    if (anim.state !== target && anim.actions[target]) {
+      const from = anim.actions[anim.state];
+      anim.actions[target].reset().fadeIn(0.16).play();
+      if (from) from.fadeOut(0.16);
+      anim.state = target;
+    }
+    if (anim.actions.walk) anim.actions.walk.timeScale = speedFactor * 1.35;
+    anim.mixer.update(dt);
+    return;
+  }
   const p = charGroup.userData.parts;
   if (!p) return;
   const tSec = timeMs / 1000;
@@ -785,6 +980,68 @@ function spawnNpc(def) {
 
 Object.values(NPCS).forEach(spawnNpc);
 
+// Quest flags planted beside each quest giver, tinted by competency color
+if (assets.flag) {
+  const FLAG_SPOTS = [
+    { npc: "hana", color: "#2e6f5e" },
+    { npc: "jiho", color: "#f2b134" },
+    { npc: "yuna", color: "#4fc3f7" },
+    { npc: "minjun", color: "#81c784" },
+    { npc: "sora", color: "#f48fb1" },
+    { npc: "doyun", color: "#b39ddb" }
+  ];
+  FLAG_SPOTS.forEach(({ npc, color }, i) => {
+    const def = NPCS[npc];
+    const flag = cloneModel(assets.flag, { size: 1.5, axis: "y", tint: color });
+    const angle = (def.facing || 0) + Math.PI / 2;
+    flag.position.set(def.position.x + Math.sin(angle) * 1.15, 0, def.position.z + Math.cos(angle) * 1.15);
+    flag.rotation.y = i * 1.1;
+    scene.add(flag);
+  });
+}
+
+// Wildflower sprinkles (instanced — two draw calls for the whole meadow)
+{
+  const COUNT = 90;
+  const rand = (n) => {
+    const v = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+    return v - Math.floor(v);
+  };
+  const stemGeo = new THREE.CylinderGeometry(0.02, 0.03, 0.32, 5);
+  stemGeo.translate(0, 0.16, 0);
+  const stems = new THREE.InstancedMesh(stemGeo, mat(0x4e8f43), COUNT);
+  const headGeo = new THREE.IcosahedronGeometry(0.09, 0);
+  const heads = new THREE.InstancedMesh(
+    headGeo,
+    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7 }),
+    COUNT
+  );
+  const petal = [0xf2b134, 0xf48fb1, 0xffffff, 0xb39ddb, 0xff8a65];
+  const m4 = new THREE.Matrix4();
+  let placed = 0;
+  let n = 0;
+  while (placed < COUNT && n < COUNT * 30) {
+    n += 1;
+    const x = (rand(n) - 0.5) * 2 * (WORLD_BOUND - 1);
+    const z = (rand(n + 1000) - 0.5) * 2 * (WORLD_BOUND - 1);
+    // keep flowers off the plaza, paths corridor, and colliders
+    if (Math.hypot(x, z) < 9.5) continue;
+    if (Math.abs(x) < 2.2 || Math.abs(z) < 2.2) continue;
+    if (colliders.some((c) => Math.hypot(x - c.x, z - c.z) < c.r + 0.4)) continue;
+    const s = 0.75 + rand(n + 2000) * 0.7;
+    m4.makeScale(s, s, s).setPosition(x, 0, z);
+    stems.setMatrixAt(placed, m4);
+    m4.makeScale(s, s, s).setPosition(x, 0.34 * s, z);
+    heads.setMatrixAt(placed, m4);
+    heads.setColorAt(placed, new THREE.Color(petal[placed % petal.length]));
+    placed += 1;
+  }
+  stems.count = placed;
+  heads.count = placed;
+  stems.receiveShadow = true;
+  scene.add(stems, heads);
+}
+
 function replaceSprite(actor, key, sprite, y) {
   const old = actor[key];
   actor.group.remove(old);
@@ -849,8 +1106,65 @@ const wanderers = [];
   wanderers.push({ group: g, path: cfg.path, target: 1, speed: 1.5 + i * 0.3, wait: 0 });
 });
 
-// Player
-const player = buildCharacter({ skin: 0xf3cba5, hair: 0x2c2320, top: 0x2e6f5e, bottom: 0x2c3a46 });
+// Confetti bursts (quest complete / level up)
+const bursts = [];
+
+function spawnBurst(position, count = 40) {
+  const colors = [0xf2b134, 0xf48fb1, 0x81c784, 0x4fc3f7, 0xb39ddb, 0xffffff];
+  const positions = new Float32Array(count * 3);
+  const colorArr = new Float32Array(count * 3);
+  const velocities = [];
+  const c = new THREE.Color();
+  for (let i = 0; i < count; i += 1) {
+    positions[i * 3] = position.x;
+    positions[i * 3 + 1] = position.y;
+    positions[i * 3 + 2] = position.z;
+    c.set(colors[i % colors.length]);
+    colorArr[i * 3] = c.r;
+    colorArr[i * 3 + 1] = c.g;
+    colorArr[i * 3 + 2] = c.b;
+    const a = (i / count) * Math.PI * 2;
+    const spread = 1.6 + (i % 5) * 0.55;
+    velocities.push(new THREE.Vector3(Math.cos(a) * spread, 3.6 + (i % 4) * 0.8, Math.sin(a) * spread));
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute("color", new THREE.BufferAttribute(colorArr, 3));
+  const points = new THREE.Points(
+    geo,
+    new THREE.PointsMaterial({ size: 0.16, vertexColors: true, transparent: true, depthWrite: false })
+  );
+  scene.add(points);
+  bursts.push({ points, velocities, age: 0, life: 1.5 });
+}
+
+function updateBursts(dt) {
+  for (let i = bursts.length - 1; i >= 0; i -= 1) {
+    const b = bursts[i];
+    b.age += dt;
+    const pos = b.points.geometry.attributes.position;
+    for (let j = 0; j < b.velocities.length; j += 1) {
+      const v = b.velocities[j];
+      v.y -= 7.5 * dt;
+      pos.array[j * 3] += v.x * dt;
+      pos.array[j * 3 + 1] += v.y * dt;
+      pos.array[j * 3 + 2] += v.z * dt;
+    }
+    pos.needsUpdate = true;
+    b.points.material.opacity = Math.max(0, 1 - b.age / b.life);
+    if (b.age >= b.life) {
+      scene.remove(b.points);
+      b.points.geometry.dispose();
+      b.points.material.dispose();
+      bursts.splice(i, 1);
+    }
+  }
+}
+
+// Player — untinted hero look when the GLB character is available
+const player = assets.character
+  ? buildCharacter({ top: null })
+  : buildCharacter({ skin: 0xf3cba5, hair: 0x2c2320, top: 0x2e6f5e, bottom: 0x2c3a46 });
 if (state.playerPos) {
   player.position.set(state.playerPos.x, 0, state.playerPos.z);
 } else {
@@ -1069,6 +1383,7 @@ function grantPoints(statId, tier) {
   if (leveled) {
     spawnFloatText(t(UI.levelUp), true);
     sfx.levelup();
+    spawnBurst(player.position.clone().add(new THREE.Vector3(0, 1.6, 0)), 52);
   }
   persistSave();
 }
@@ -1321,6 +1636,7 @@ function finishQuestDialogue(endNode) {
   if (questStatus(quest) !== "done") {
     state.quests[quest.id] = "done";
     sfx.quest();
+    spawnBurst(player.position.clone().add(new THREE.Vector3(0, 1.9, 0)));
     showToast(`✅ ${t(UI.questComplete)} ${t(quest.completion)}`, 4200);
     const moods = MOOD_AFTER[quest.id];
     if (moods) Object.entries(moods).forEach(([npcId, mood]) => setNpcMood(npcId, mood));
@@ -1477,6 +1793,12 @@ dom.startLangButton.addEventListener("click", () => {
   applyLanguage();
 });
 
+dom.musicButton.addEventListener("click", () => {
+  ensureAudio();
+  setMusic(!music.on);
+  persistSave();
+});
+
 dom.resetButton.addEventListener("click", () => {
   if (confirm(t(UI.resetConfirm))) {
     localStorage.removeItem(SAVE_KEY);
@@ -1498,6 +1820,7 @@ dom.startButton.addEventListener("click", () => {
 const PLAYER_RADIUS = 0.55;
 let nearestNpc = null;
 let saveTicker = 0;
+let stepTicker = 0;
 
 function movementVector() {
   let x = 0;
@@ -1538,8 +1861,14 @@ function resolveCollisions(px, pz) {
 }
 
 const cameraTarget = new THREE.Vector3();
+let sprinting = false;
 
 function updateCamera(dt) {
+  const targetFov = sprinting ? 61 : 55;
+  if (Math.abs(camera.fov - targetFov) > 0.05) {
+    camera.fov += (targetFov - camera.fov) * Math.min(1, dt * 5);
+    camera.updateProjectionMatrix();
+  }
   const { yaw, pitch, dist } = input.cam;
   const target = cameraTarget.set(player.position.x, 1.7, player.position.z);
   const offX = Math.sin(yaw) * Math.cos(pitch) * dist;
@@ -1612,6 +1941,12 @@ function tick() {
       diff = Math.atan2(Math.sin(diff), Math.cos(diff));
       player.rotation.y += diff * Math.min(1, dt * 14);
 
+      stepTicker += dt;
+      if (stepTicker > (run ? 0.24 : 0.34)) {
+        stepTicker = 0;
+        sfx.step(run);
+      }
+
       saveTicker += dt;
       if (saveTicker > 5) {
         saveTicker = 0;
@@ -1619,10 +1954,12 @@ function tick() {
       }
     }
   }
-  animateWalk(player, now, moving, input.keys.has("shift") ? 1.4 : 1);
+  sprinting = moving && input.keys.has("shift");
+  updateBursts(dt);
+  animateWalk(player, now, moving, input.keys.has("shift") ? 1.4 : 1, dt);
 
   Object.values(npcActors).forEach((actor) => {
-    animateWalk(actor.group, now + actor.def.position.x * 313, false);
+    animateWalk(actor.group, now + actor.def.position.x * 313, false, 1, dt);
     // gentle marker bob
     if (actor.markerSprite.visible) {
       actor.markerSprite.position.y = 3.72 + Math.sin(now / 320 + actor.def.position.z) * 0.12;
@@ -1632,7 +1969,7 @@ function tick() {
   wanderers.forEach((w) => {
     if (w.wait > 0) {
       w.wait -= dt;
-      animateWalk(w.group, now, false);
+      animateWalk(w.group, now, false, 1, dt);
       return;
     }
     const [tx, tz] = w.path[w.target];
@@ -1650,7 +1987,7 @@ function tick() {
     let diff = rot - w.group.rotation.y;
     diff = Math.atan2(Math.sin(diff), Math.cos(diff));
     w.group.rotation.y += diff * Math.min(1, dt * 8);
-    animateWalk(w.group, now, true, 0.85);
+    animateWalk(w.group, now, true, 0.85, dt);
   });
 
   butterflies.forEach((b) => {
@@ -1690,6 +2027,8 @@ function tick() {
 window.__selquest = { state, player, npcActors, camera, renderer };
 
 scormInit();
+setMusic(state.musicOn !== false);
+dom.startButton.disabled = false;
 applyLanguage();
 applyMoodsFromState();
 refreshMarkers();

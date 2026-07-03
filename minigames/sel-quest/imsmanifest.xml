@@ -25,6 +25,21 @@
       <file href="data.js"/>
       <file href="scormdriver.js"/>
       <file href="vendor/three/three.module.js"/>
+      <file href="vendor/three/GLTFLoader.js"/>
+      <file href="vendor/three/BufferGeometryUtils.js"/>
+      <file href="assets/LICENSE-kenney.md"/>
+      <file href="assets/models/platformer/character.glb"/>
+      <file href="assets/models/platformer/flag.glb"/>
+      <file href="assets/models/platformer/Textures/colormap.png"/>
+      <file href="assets/models/city/building-small-a.glb"/>
+      <file href="assets/models/city/building-small-b.glb"/>
+      <file href="assets/models/city/building-small-c.glb"/>
+      <file href="assets/models/city/building-small-d.glb"/>
+      <file href="assets/models/city/building-garage.glb"/>
+      <file href="assets/models/city/pavement-fountain.glb"/>
+      <file href="assets/models/city/grass-trees.glb"/>
+      <file href="assets/models/city/grass-trees-tall.glb"/>
+      <file href="assets/models/city/Textures/colormap.png"/>
     </resource>
   </resources>
 </manifest>

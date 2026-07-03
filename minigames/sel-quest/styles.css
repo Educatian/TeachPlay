@@ -496,6 +496,7 @@ html, body {
 
 .action-button:hover { filter: brightness(1.06); }
 .action-button:active { transform: scale(0.97); }
+.action-button:disabled { opacity: 0.55; cursor: wait; transform: none; filter: none; }
 
 .action-button.solid { background: var(--accent); color: #fff; }
 .action-button.ghost {
