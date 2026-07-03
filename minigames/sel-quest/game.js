@@ -37,6 +37,16 @@ const dom = {
   dialogueContinue: document.getElementById("dialogueContinue"),
   journalButton: document.getElementById("journalButton"),
   musicButton: document.getElementById("musicButton"),
+  soundPanel: document.getElementById("soundPanel"),
+  soundTitle: document.getElementById("soundTitle"),
+  musicLabel: document.getElementById("musicLabel"),
+  sfxLabel: document.getElementById("sfxLabel"),
+  musicVolInput: document.getElementById("musicVolInput"),
+  sfxVolInput: document.getElementById("sfxVolInput"),
+  customizeTitle: document.getElementById("customizeTitle"),
+  playerNameInput: document.getElementById("playerNameInput"),
+  colorLabel: document.getElementById("colorLabel"),
+  colorSwatches: document.getElementById("colorSwatches"),
   journalOverlay: document.getElementById("journalOverlay"),
   journalTitle: document.getElementById("journalTitle"),
   journalClose: document.getElementById("journalClose"),
@@ -88,7 +98,10 @@ const state = {
   quests: {}, // id -> "locked" | "available" | "active" | "done"
   answered: {}, // "questId:nodeId" -> true, so replays never re-score a node
   reportShown: false,
-  musicOn: true,
+  musicVol: 0.6,
+  sfxVol: 0.8,
+  playerName: "",
+  playerColor: null,
   playerPos: null
 };
 
@@ -113,7 +126,11 @@ function loadSave() {
     state.quests = data.quests && typeof data.quests === "object" ? data.quests : {};
     state.answered = data.answered && typeof data.answered === "object" ? data.answered : {};
     state.reportShown = !!data.reportShown;
-    state.musicOn = data.musicOn !== false;
+    state.musicVol = Number.isFinite(data.musicVol) ? Math.min(Math.max(data.musicVol, 0), 1) : 0.6;
+    state.sfxVol = Number.isFinite(data.sfxVol) ? Math.min(Math.max(data.sfxVol, 0), 1) : 0.8;
+    if (data.musicOn === false) state.musicVol = 0; // legacy save field
+    state.playerName = typeof data.playerName === "string" ? data.playerName.slice(0, 12) : "";
+    state.playerColor = typeof data.playerColor === "string" ? data.playerColor : null;
     if (data.playerPos && Number.isFinite(data.playerPos.x) && Number.isFinite(data.playerPos.z)) {
       state.playerPos = { x: data.playerPos.x, z: data.playerPos.z };
     }
@@ -136,7 +153,10 @@ function persistSave() {
         quests: state.quests,
         answered: state.answered,
         reportShown: state.reportShown,
-        musicOn: music.on,
+        musicVol: state.musicVol,
+        sfxVol: state.sfxVol,
+        playerName: state.playerName,
+        playerColor: state.playerColor,
         playerPos: player
           ? { x: Number(player.position.x.toFixed(2)), z: Number(player.position.z.toFixed(2)) }
           : state.playerPos
@@ -278,11 +298,18 @@ function t(entry) {
 // ---------------------------------------------------------------------------
 
 let audioCtx = null;
+let musicBus = null;
+let sfxBus = null;
 
 function ensureAudio() {
   if (!audioCtx) {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      musicBus = audioCtx.createGain();
+      musicBus.connect(audioCtx.destination);
+      sfxBus = audioCtx.createGain();
+      sfxBus.connect(audioCtx.destination);
+      applyVolumes();
     } catch (error) {
       audioCtx = null;
     }
@@ -291,7 +318,15 @@ function ensureAudio() {
   startMusic();
 }
 
-function tone(freq, start, duration, type = "sine", volume = 0.08) {
+function applyVolumes() {
+  if (musicBus) musicBus.gain.value = state.musicVol;
+  if (sfxBus) sfxBus.gain.value = state.sfxVol;
+  if (dom.musicButton) dom.musicButton.textContent = state.musicVol > 0 ? "🔊" : "🔇";
+  if (dom.musicVolInput) dom.musicVolInput.value = String(Math.round(state.musicVol * 100));
+  if (dom.sfxVolInput) dom.sfxVolInput.value = String(Math.round(state.sfxVol * 100));
+}
+
+function tone(freq, start, duration, type = "sine", volume = 0.08, bus = "sfx") {
   if (!audioCtx) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
@@ -301,23 +336,24 @@ function tone(freq, start, duration, type = "sine", volume = 0.08) {
   gain.gain.setValueAtTime(0.0001, now);
   gain.gain.exponentialRampToValueAtTime(volume, now + 0.02);
   gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-  osc.connect(gain).connect(audioCtx.destination);
+  gain.connect(bus === "music" ? musicBus : sfxBus);
+  osc.connect(gain);
   osc.start(now);
   osc.stop(now + duration + 0.05);
 }
 
 // Gentle generative background music: a slow pentatonic music-box line.
-const music = { timer: null, step: 0, on: true };
+const music = { timer: null, step: 0 };
 const PENTA = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25];
 const MELODY = [0, 2, 4, 3, 5, 4, 2, 1, 3, 2, 4, 0];
 
 function musicTick() {
-  if (!audioCtx || !music.on) return;
+  if (!audioCtx || state.musicVol <= 0) return;
   const i = music.step % MELODY.length;
   const octaveLift = music.step % 24 >= 12 ? 2 : 1;
-  tone(PENTA[MELODY[i]] * octaveLift, 0, 1.6, "sine", 0.022);
+  tone(PENTA[MELODY[i]] * octaveLift, 0, 1.6, "sine", 0.022, "music");
   if (music.step % 4 === 0) {
-    tone(PENTA[MELODY[i]] / 2, 0, 2.4, "triangle", 0.014);
+    tone(PENTA[MELODY[i]] / 2, 0, 2.4, "triangle", 0.014, "music");
   }
   music.step += 1;
 }
@@ -325,11 +361,6 @@ function musicTick() {
 function startMusic() {
   if (music.timer || !audioCtx) return;
   music.timer = setInterval(musicTick, 620);
-}
-
-function setMusic(on) {
-  music.on = on;
-  if (dom.musicButton) dom.musicButton.textContent = on ? "🔊" : "🔇";
 }
 
 const sfx = {
@@ -1207,10 +1238,72 @@ function updateBursts(dt) {
   }
 }
 
-// Player — untinted hero look when the GLB character is available
+// Player — untinted hero look by default; learners can pick an outfit color
 const player = assets.character
   ? buildCharacter({ top: null })
   : buildCharacter({ skin: 0xf3cba5, hair: 0x2c2320, top: 0x2e6f5e, bottom: 0x2c3a46 });
+
+const PLAYER_COLORS = [null, "#f2b134", "#e0685f", "#4fc3f7", "#81c784", "#b39ddb", "#f48fb1"];
+let playerMeshes = null;
+let playerNameSprite = null;
+
+function setPlayerColor(color) {
+  state.playerColor = color;
+  if (!playerMeshes) {
+    playerMeshes = [];
+    player.traverse((obj) => {
+      // skip the translucent ground blob; tint only the body meshes
+      if (obj.isMesh && !(obj.material.transparent && obj.material.opacity < 0.5)) {
+        playerMeshes.push(obj);
+      }
+    });
+  }
+  playerMeshes.forEach((mesh) => {
+    if (!mesh.userData.baseMaterial) mesh.userData.baseMaterial = mesh.material;
+    mesh.material = mesh.userData.baseMaterial.clone();
+    if (color) mesh.material.color.lerp(new THREE.Color(color), 0.62);
+  });
+}
+
+function setPlayerName(rawName) {
+  state.playerName = String(rawName || "").trim().slice(0, 12);
+  if (playerNameSprite) {
+    player.remove(playerNameSprite);
+    playerNameSprite.material.map.dispose();
+    playerNameSprite.material.dispose();
+    playerNameSprite = null;
+  }
+  if (state.playerName) {
+    playerNameSprite = makeTextSprite(state.playerName, {
+      font: "700 40px sans-serif",
+      bg: "rgba(46, 111, 94, 0.82)",
+      fg: "#fdfaf2",
+      size: 0.5
+    });
+    playerNameSprite.position.y = 2.55;
+    player.add(playerNameSprite);
+  }
+}
+
+function buildSwatches() {
+  dom.colorSwatches.innerHTML = "";
+  PLAYER_COLORS.forEach((color) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.style.background = color || "#f6f1e3";
+    btn.title = color || t(UI.colorDefault);
+    if (!color) btn.textContent = "✕";
+    if ((state.playerColor || null) === color) btn.classList.add("selected");
+    btn.addEventListener("click", () => {
+      setPlayerColor(color);
+      persistSave();
+      dom.colorSwatches.querySelectorAll("button").forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      sfx.choice();
+    });
+    dom.colorSwatches.appendChild(btn);
+  });
+}
 if (state.playerPos) {
   // saved positions are untrusted: clamp to the world and push out of any
   // collider (collider layout can change between versions)
@@ -1242,6 +1335,8 @@ if (isTouch) dom.joystick.hidden = false;
 
 window.addEventListener("keydown", (e) => {
   if (e.repeat) return;
+  // never hijack keys while the learner is typing (e.g. the name input)
+  if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
   const k = e.key.toLowerCase();
   input.keys.add(k);
   if (k === "e" || k === " ") {
@@ -1586,7 +1681,7 @@ const dialogue = {
 };
 
 function speakerName(speakerId) {
-  if (speakerId === "player") return t(UI.playerName);
+  if (speakerId === "player") return state.playerName || t(UI.playerName);
   const def = NPCS[speakerId];
   return def ? t(def.name) : speakerId;
 }
@@ -1831,7 +1926,11 @@ function showReport() {
 function renderReport() {
   const score = computeScore();
   const grade = score >= 90 ? "S" : score >= 75 ? "A" : "B";
-  dom.reportTitle.textContent = t(UI.reportTitle);
+  dom.reportTitle.textContent = state.playerName
+    ? state.lang === "ko"
+      ? `${state.playerName}의 ${t(UI.reportTitle)}`
+      : `${state.playerName}'s ${t(UI.reportTitle)}`
+    : t(UI.reportTitle);
   dom.reportBadgeText.textContent = t(UI.reportBadge);
   dom.reportScoreLabel.textContent = t(UI.reportScore);
   dom.reportScoreValue.textContent = String(score);
@@ -1886,6 +1985,13 @@ function applyLanguage() {
   dom.controlsJournal.textContent = t(UI.controlsJournal);
   dom.startButton.textContent = hasSave ? t(UI.continueButton) : t(UI.startButton);
   dom.talkPrompt.textContent = t(UI.talkPrompt);
+  dom.soundTitle.textContent = t(UI.soundTitle);
+  dom.musicLabel.textContent = t(UI.musicLabel);
+  dom.sfxLabel.textContent = t(UI.sfxLabel);
+  dom.customizeTitle.textContent = t(UI.customizeTitle);
+  dom.playerNameInput.placeholder = t(UI.namePlaceholder);
+  dom.colorLabel.textContent = t(UI.colorLabel);
+  buildSwatches();
   document.title = `${t(UI.gameTitle)} — TeachPlay`;
   if (dom.levelWord) dom.levelWord.textContent = t(UI.level);
   buildCompetencyHud();
@@ -1913,7 +2019,21 @@ dom.startLangButton.addEventListener("click", () => {
 
 dom.musicButton.addEventListener("click", () => {
   ensureAudio();
-  setMusic(!music.on);
+  dom.soundPanel.hidden = !dom.soundPanel.hidden;
+});
+
+dom.musicVolInput.addEventListener("input", () => {
+  ensureAudio();
+  state.musicVol = Number(dom.musicVolInput.value) / 100;
+  applyVolumes();
+  persistSave();
+});
+
+dom.sfxVolInput.addEventListener("input", () => {
+  ensureAudio();
+  state.sfxVol = Number(dom.sfxVolInput.value) / 100;
+  applyVolumes();
+  sfx.talk(); // audible preview of the new level
   persistSave();
 });
 
@@ -2138,7 +2258,14 @@ function tick() {
 window.__selquest = { state, player, npcActors, camera, renderer };
 
 window.__selquestBootOk = true;
-setMusic(state.musicOn !== false);
+applyVolumes();
+dom.playerNameInput.value = state.playerName;
+dom.playerNameInput.addEventListener("change", () => {
+  setPlayerName(dom.playerNameInput.value);
+  persistSave();
+});
+if (state.playerColor) setPlayerColor(state.playerColor);
+if (state.playerName) setPlayerName(state.playerName);
 dom.startButton.disabled = false;
 applyLanguage();
 applyMoodsFromState();

@@ -1185,6 +1185,13 @@ export const UI = {
     ko: "저장된 진행 상황을 지우고 처음부터 시작할까요?",
     en: "Erase saved progress and start over?"
   },
+  customizeTitle: { ko: "캐릭터 설정", en: "Character Setup" },
+  namePlaceholder: { ko: "이름을 입력하세요 (선택)", en: "Enter your name (optional)" },
+  colorLabel: { ko: "옷 색깔", en: "Outfit color" },
+  colorDefault: { ko: "기본", en: "Default" },
+  soundTitle: { ko: "사운드", en: "Sound" },
+  musicLabel: { ko: "배경 음악", en: "Music" },
+  sfxLabel: { ko: "효과음", en: "Effects" },
   grades: {
     S: { ko: "마음 지킴이 (S)", en: "Heart Guardian (S)" },
     A: { ko: "마음 탐험가 (A)", en: "Heart Explorer (A)" },

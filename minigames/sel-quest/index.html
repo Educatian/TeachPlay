@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>마음 마을: 사회정서 RPG — Maeum Village: SEL Quest 3D</title>
   <meta name="description" content="A 3D RPG-style social-emotional learning simulator. Explore Maeum Village, listen to its residents, and grow the five CASEL heart skills." />
+  <meta property="og:title" content="마음 마을: 사회정서 RPG — Maeum Village: SEL Quest 3D" />
+  <meta property="og:description" content="Explore a 3D village, listen to its residents, and grow the five CASEL heart skills." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/promo/banner.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -34,6 +39,19 @@
       </div>
       <div id="questTracker" class="quest-tracker"></div>
       <p id="scormBadge" class="scorm-badge"></p>
+    </section>
+
+    <!-- Sound settings popover -->
+    <section id="soundPanel" class="hud-panel sound-panel" hidden aria-label="Sound settings">
+      <p class="card-label" id="soundTitle">사운드</p>
+      <label class="sound-row">
+        <span id="musicLabel">배경 음악</span>
+        <input id="musicVolInput" type="range" min="0" max="100" step="5" />
+      </label>
+      <label class="sound-row">
+        <span id="sfxLabel">효과음</span>
+        <input id="sfxVolInput" type="range" min="0" max="100" step="5" />
+      </label>
     </section>
 
     <!-- Bottom-center: toast + interact prompt -->
@@ -89,6 +107,14 @@
         <h1 id="startTitle">마음 마을: 사회정서 RPG</h1>
         <p id="startSubtitle" class="start-subtitle"></p>
         <p id="startBody" class="start-body"></p>
+        <div class="start-customize">
+          <p class="card-label" id="customizeTitle">캐릭터 설정</p>
+          <input id="playerNameInput" class="name-input" type="text" maxlength="12" autocomplete="off" placeholder="이름을 입력하세요 (선택)" />
+          <div class="color-row">
+            <span id="colorLabel" class="color-label">옷 색깔</span>
+            <div id="colorSwatches" class="swatches"></div>
+          </div>
+        </div>
         <div class="start-controls">
           <p class="card-label" id="controlsTitle">조작법</p>
           <ul>

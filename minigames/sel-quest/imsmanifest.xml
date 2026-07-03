@@ -42,6 +42,11 @@
       <file href="assets/models/city/grass-trees.glb"/>
       <file href="assets/models/city/grass-trees-tall.glb"/>
       <file href="assets/models/city/Textures/colormap.png"/>
+      <file href="landing.html"/>
+      <file href="assets/promo/banner.jpg"/>
+      <file href="assets/promo/shot-dialogue.jpg"/>
+      <file href="assets/promo/shot-village.jpg"/>
+      <file href="assets/promo/shot-report.jpg"/>
     </resource>
   </resources>
 </manifest>
