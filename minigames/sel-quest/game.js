@@ -452,7 +452,7 @@ const sfx = {
 // Three.js scene setup
 // ---------------------------------------------------------------------------
 
-const WORLD_BOUND = 26;
+const WORLD_BOUND = 42;
 const PLAYER_RADIUS = 0.55;
 
 // shortest-arc angle wrap, shared by every turn-toward easing
@@ -482,7 +482,7 @@ dom.root.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xbfe6f2);
-scene.fog = new THREE.Fog(0xbfe6f2, 55, 130);
+scene.fog = new THREE.Fog(0xbfe6f2, 60, 200);
 
 // Gradient sky dome
 {
@@ -500,27 +500,27 @@ scene.fog = new THREE.Fog(0xbfe6f2, 55, 130);
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   const sky = new THREE.Mesh(
-    new THREE.SphereGeometry(190, 24, 14),
+    new THREE.SphereGeometry(280, 24, 14),
     new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide, fog: false, depthWrite: false })
   );
   sky.renderOrder = -10;
   scene.add(sky);
 }
 
-const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 300);
+const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 420);
 
-const hemiLight = new THREE.HemisphereLight(0xdff3ff, 0x6a8f5a, 0.95);
+const hemiLight = new THREE.HemisphereLight(0xdff3ff, 0x6a8f5a, 1.2);
 scene.add(hemiLight);
 
-const sun = new THREE.DirectionalLight(0xfff3d6, 2.4);
-sun.position.set(28, 42, 18);
+const sun = new THREE.DirectionalLight(0xfff3d6, 2.15);
+sun.position.set(42, 58, 26);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -42;
-sun.shadow.camera.right = 42;
-sun.shadow.camera.top = 42;
-sun.shadow.camera.bottom = -42;
-sun.shadow.camera.far = 120;
+sun.shadow.camera.left = -62;
+sun.shadow.camera.right = 62;
+sun.shadow.camera.top = 62;
+sun.shadow.camera.bottom = -62;
+sun.shadow.camera.far = 170;
 sun.shadow.bias = -0.0004;
 scene.add(sun);
 
@@ -550,15 +550,19 @@ function mat(color, extra = {}) {
 
 // Ground with soft color noise
 {
-  const geo = new THREE.PlaneGeometry(140, 140, 48, 48);
+  const geo = new THREE.PlaneGeometry(230, 230, 72, 72);
   geo.rotateX(-Math.PI / 2);
   const colors = [];
   const base = new THREE.Color(0x79b45c);
   const alt = new THREE.Color(0x8cc46b);
   const pos = geo.attributes.position;
   for (let i = 0; i < pos.count; i += 1) {
-    const n = Math.sin(pos.getX(i) * 0.35) * Math.cos(pos.getZ(i) * 0.3);
-    const c = base.clone().lerp(alt, (n + 1) / 2 + (Math.sin(i * 7.13) * 0.5 + 0.5) * 0.25);
+    const x = pos.getX(i);
+    const z = pos.getZ(i);
+    const n =
+      Math.sin(x * 0.35) * Math.cos(z * 0.3) * 0.5 +
+      Math.sin(x * 0.09 + 3.1) * Math.cos(z * 0.11 + 1.7) * 0.5;
+    const c = base.clone().lerp(alt, (n + 1) / 2 + (Math.sin(i * 7.13) * 0.5 + 0.5) * 0.2);
     colors.push(c.r, c.g, c.b);
   }
   geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
@@ -590,7 +594,7 @@ function addPath(x, z, w, d, rot = 0) {
 }
 
 addPath(0, -13, 3.2, 18); // south to shop
-addPath(0, 14, 3.2, 16); // north to school
+addPath(0, 15.5, 3.2, 19); // north to the guild hall
 addPath(-13, 0, 3.2, 18, Math.PI / 2); // west
 addPath(13, 0, 3.2, 18, Math.PI / 2); // east
 addPath(-14, -8, 3, 12, Math.PI / 4); // to pond
@@ -715,10 +719,10 @@ function addBuilding({ x, z, w = 6, h = 3.4, d = 5, wall = 0xf5e9d2, roof = 0xc7
   return g;
 }
 
-addBuilding({ x: 0, z: 23, w: 15, h: 4.6, d: 8, wall: 0xf2e3c8, roof: 0x3e6f8e, sign: "GUILD", model: "houseC" });
+addBuilding({ x: 0, z: 27.5, w: 15, h: 4.6, d: 8, wall: 0xf2e3c8, roof: 0x3e6f8e, sign: "GUILD", model: "houseC" });
 addBuilding({ x: 19, z: 19.5, w: 8.4, h: 3.2, d: 6.6, wall: 0xe8dcc0, roof: 0xd98e2b, rotY: -0.35, sign: "SMITHY", model: "houseB" });
 addBuilding({ x: 6.5, z: -24.5, w: 8, h: 3.1, d: 6, wall: 0xf7ecd7, roof: 0x7fae5c, sign: "SHOP", model: "houseD" });
-addBuilding({ x: -23, z: 3, w: 7.4, h: 3, d: 5.6, wall: 0xf5e0d8, roof: 0xb56a4f, rotY: Math.PI / 2, model: "houseA" });
+addBuilding({ x: -23.5, z: 6, w: 7.4, h: 3, d: 5.6, wall: 0xf5e0d8, roof: 0xb56a4f, rotY: Math.PI / 2, model: "houseA" });
 addBuilding({ x: 23.5, z: 1.5, w: 7.4, h: 3, d: 5.6, wall: 0xe9eadd, roof: 0x8a6fae, rotY: -Math.PI / 2, model: "houseB" });
 addBuilding({ x: -9, z: 24, w: 7, h: 2.9, d: 5.4, wall: 0xfbeed9, roof: 0xc75450, rotY: 0.2, model: "houseA" });
 addBuilding({ x: -21, z: -22, w: 6.4, h: 2.6, d: 5.2, rotY: 0.7, model: "garage" });
@@ -864,7 +868,7 @@ for (let i = 0; i < 6; i += 1) {
     puff.scale.y = 0.55;
     g.add(puff);
   }
-  g.position.set(-50 + i * 20, 24 + (i % 3) * 3, -30 + ((i * 29) % 60));
+  g.position.set(-80 + i * 26, 26 + (i % 3) * 4, -70 + ((i * 29) % 140));
   scene.add(g);
   clouds.push(g);
 }
@@ -893,6 +897,331 @@ for (let i = 0; i < 7; i += 1) {
   };
   scene.add(g);
   butterflies.push(g);
+}
+
+// ---------------------------------------------------------------------------
+// Outskirts — a wider, more believable valley around the village core
+// ---------------------------------------------------------------------------
+
+// Mountain ring on the horizon
+{
+  const rockMat = mat(0x8a9198, { roughness: 1 });
+  const greenMat = mat(0x74876f, { roughness: 1 });
+  const snowMat = mat(0xf4f7fa, { roughness: 0.9 });
+  for (let i = 0; i < 16; i += 1) {
+    const a = (i / 16) * Math.PI * 2 + 0.22;
+    const r = 60 + ((i * 37) % 14);
+    const h = 15 + ((i * 53) % 16);
+    const peak = new THREE.Mesh(new THREE.ConeGeometry(h * 0.95, h, 7), i % 3 ? rockMat : greenMat);
+    peak.position.set(Math.cos(a) * r, h / 2 - 0.6, Math.sin(a) * r);
+    peak.rotation.y = i * 1.7;
+    scene.add(peak);
+    if (h > 22) {
+      const cap = new THREE.Mesh(new THREE.ConeGeometry(h * 0.3, h * 0.28, 7), snowMat);
+      cap.position.set(peak.position.x, h - h * 0.14 - 0.6, peak.position.z);
+      cap.rotation.y = peak.rotation.y;
+      scene.add(cap);
+    }
+  }
+}
+
+// River along the west side, with a plank bridge at the west road
+let riverWater = null;
+{
+  riverWater = new THREE.Mesh(
+    new THREE.PlaneGeometry(6, 96).rotateX(-Math.PI / 2),
+    new THREE.MeshStandardMaterial({ color: 0x4da4cf, roughness: 0.25, emissive: 0x15506b, emissiveIntensity: 0.25 })
+  );
+  riverWater.position.set(-34, 0.025, 0);
+  scene.add(riverWater);
+  const bankMat = mat(0x9a8f78, { roughness: 1 });
+  [-37.4, -30.6].forEach((x) => {
+    const bank = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 96).rotateX(-Math.PI / 2), bankMat);
+    bank.position.set(x, 0.03, 0);
+    scene.add(bank);
+  });
+  // the water is impassable except at the bridge gap (z in [-1, 6])
+  for (let z = -41; z <= 41; z += 4) {
+    if (z > -2 && z < 7) continue;
+    addCollider(-34, z, 2.9);
+  }
+  // plank bridge
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(8.2, 0.28, 4.4), mat(0x8a6134, { roughness: 0.9 }));
+  deck.position.set(-34, 0.32, 2.4);
+  deck.castShadow = true;
+  deck.receiveShadow = true;
+  scene.add(deck);
+  [[-0.1, 4.7], [-0.1, 0.1]].forEach(([dz, z0]) => {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(8.2, 0.14, 0.14), mat(0x6d4b28));
+    rail.position.set(-34, 1.05, z0 + dz);
+    rail.castShadow = true;
+    scene.add(rail);
+    [-3.7, 0, 3.7].forEach((dx) => {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.9, 0.16), mat(0x6d4b28));
+      post.position.set(-34 + dx, 0.75, z0 + dz);
+      post.castShadow = true;
+      scene.add(post);
+    });
+  });
+}
+
+// Windmill on the far bank
+let windmillBlades = null;
+{
+  const g = new THREE.Group();
+  const tower = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.65, 5.4, 10), mat(0xe8dcc0));
+  tower.position.y = 2.7;
+  tower.castShadow = true;
+  g.add(tower);
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(1.5, 1.5, 10), mat(0xb56a4f));
+  roof.position.y = 6.1;
+  roof.castShadow = true;
+  g.add(roof);
+  const door = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.5, 0.12), mat(0x6b4a2f));
+  door.position.set(0, 0.75, 1.55);
+  g.add(door);
+  windmillBlades = new THREE.Group();
+  for (let i = 0; i < 4; i += 1) {
+    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.5, 4.4, 0.08), mat(0xf5efdc, { roughness: 0.8 }));
+    blade.position.y = 2.0;
+    const arm = new THREE.Group();
+    arm.add(blade);
+    arm.rotation.z = (i / 4) * Math.PI * 2;
+    windmillBlades.add(arm);
+  }
+  windmillBlades.position.set(0, 5.1, 1.35);
+  g.add(windmillBlades);
+  g.position.set(-38.6, 0, 12.5);
+  g.rotation.y = 0.5;
+  scene.add(g);
+  addCollider(-38.6, 12.5, 2.1);
+}
+
+// Small farm plot on the far bank (south of the bridge)
+{
+  const soil = new THREE.Mesh(new THREE.PlaneGeometry(7, 9).rotateX(-Math.PI / 2), mat(0x6d5233, { roughness: 1 }));
+  soil.position.set(-38.6, 0.03, -14);
+  soil.receiveShadow = true;
+  scene.add(soil);
+  const crop = new THREE.InstancedMesh(new THREE.ConeGeometry(0.22, 0.55, 6), mat(0x5da24f), 28);
+  const m4 = new THREE.Matrix4();
+  let k = 0;
+  for (let row = 0; row < 4; row += 1) {
+    for (let col = 0; col < 7; col += 1) {
+      m4.makeScale(1, 0.8 + ((row + col) % 3) * 0.25, 1).setPosition(-40.6 + row * 1.4, 0.28, -17.6 + col * 1.2);
+      crop.setMatrixAt(k, m4);
+      k += 1;
+    }
+  }
+  crop.castShadow = true;
+  scene.add(crop);
+  // fence posts + rails (visual)
+  const fenceMat = mat(0x7a5a34);
+  const corners = [[-42.4, -18.8], [-34.8, -18.8], [-34.8, -9.2], [-42.4, -9.2]];
+  corners.forEach(([x, z], i) => {
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.18, 1, 0.18), fenceMat);
+    post.position.set(x, 0.5, z);
+    post.castShadow = true;
+    scene.add(post);
+    const [nx, nz] = corners[(i + 1) % 4];
+    const len = Math.hypot(nx - x, nz - z);
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(len, 0.1, 0.1), fenceMat);
+    rail.position.set((x + nx) / 2, 0.78, (z + nz) / 2);
+    rail.rotation.y = Math.atan2(nz - z, nx - x) === 0 ? 0 : Math.abs(nx - x) < 0.01 ? Math.PI / 2 : 0;
+    scene.add(rail);
+  });
+  // hay bales
+  [[-36, -10.5, 0.4], [-36.9, -10.2, 0.1]].forEach(([x, z, rot]) => {
+    const bale = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.9, 12), mat(0xd8b45a, { roughness: 1 }));
+    bale.rotation.z = Math.PI / 2;
+    bale.rotation.y = rot;
+    bale.position.set(x, 0.55, z);
+    bale.castShadow = true;
+    scene.add(bale);
+  });
+  addCollider(-36.4, -10.3, 1.1);
+}
+
+// Market stalls near the shop
+function addStall(x, z, rotY, awningColor) {
+  const g = new THREE.Group();
+  const postMat = mat(0x7a5a34);
+  [[-1.1, -0.7], [1.1, -0.7], [-1.1, 0.7], [1.1, 0.7]].forEach(([px, pz]) => {
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2, 0.12), postMat);
+    post.position.set(px, 1, pz);
+    post.castShadow = true;
+    g.add(post);
+  });
+  const awning = new THREE.Mesh(new THREE.BoxGeometry(2.7, 0.08, 2), mat(awningColor, { roughness: 0.7 }));
+  awning.position.set(0, 2.08, 0);
+  awning.rotation.x = -0.12;
+  awning.castShadow = true;
+  g.add(awning);
+  const counter = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.85, 1), mat(0x9a6b43));
+  counter.position.set(0, 0.43, 0.2);
+  counter.castShadow = true;
+  counter.receiveShadow = true;
+  g.add(counter);
+  const goodsColors = [0xe0685f, 0xf2b134, 0x81c784, 0xe0685f];
+  goodsColors.forEach((c, i) => {
+    const fruit = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), mat(c, { roughness: 0.6 }));
+    fruit.position.set(-0.75 + i * 0.5, 1.0, 0.2);
+    fruit.castShadow = true;
+    g.add(fruit);
+  });
+  g.position.set(x, 0, z);
+  g.rotation.y = rotY;
+  scene.add(g);
+  addCollider(x, z, 1.5);
+}
+addStall(12.2, -21.6, 0.5, 0xc75450);
+addStall(0.6, -28.2, -0.35, 0x4a7fb5);
+
+// Smithy props (anvil, barrels, crates) by the workshop
+{
+  const anvilBase = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.55, 0.7), mat(0x6d4b28));
+  anvilBase.position.set(15.6, 0.27, 21.9);
+  anvilBase.castShadow = true;
+  scene.add(anvilBase);
+  const anvil = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.35, 0.42), mat(0x54606c, { roughness: 0.5, metalness: 0.5 }));
+  anvil.position.set(15.6, 0.75, 21.9);
+  anvil.castShadow = true;
+  scene.add(anvil);
+  addCollider(15.6, 21.9, 0.8);
+  [[22.6, 16.9], [23.3, 17.9]].forEach(([x, z]) => {
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.42, 1.05, 12), mat(0x8a6134));
+    barrel.position.set(x, 0.53, z);
+    barrel.castShadow = true;
+    scene.add(barrel);
+  });
+  addCollider(22.9, 17.4, 1.1);
+  const crate1 = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9), mat(0xb08a52));
+  crate1.position.set(15.4, 0.45, 23.6);
+  crate1.castShadow = true;
+  scene.add(crate1);
+  const crate2 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), mat(0xa37c46));
+  crate2.position.set(15.55, 1.25, 23.5);
+  crate2.rotation.y = 0.5;
+  crate2.castShadow = true;
+  scene.add(crate2);
+  addCollider(15.4, 23.6, 0.85);
+}
+
+// Scattered rocks and bushes (instanced)
+{
+  const rand = (n) => {
+    const v = Math.sin(n * 91.7 + 47.3) * 24634.6345;
+    return v - Math.floor(v);
+  };
+  const rocks = new THREE.InstancedMesh(
+    new THREE.IcosahedronGeometry(0.55, 0),
+    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }),
+    26
+  );
+  const bushes = new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.6, 8, 6),
+    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }),
+    40
+  );
+  const m4 = new THREE.Matrix4();
+  const col = new THREE.Color();
+  const place = (mesh, count, seedBase, colorFn, yFn, scaleFn) => {
+    let placed = 0;
+    let n = seedBase;
+    while (placed < count && n < seedBase + count * 40) {
+      n += 1;
+      const x = (rand(n) - 0.5) * 2 * (WORLD_BOUND - 1.5);
+      const z = (rand(n + 999) - 0.5) * 2 * (WORLD_BOUND - 1.5);
+      if (Math.hypot(x, z) < 10.5) continue;
+      if (Math.abs(x) < 2.4 || Math.abs(z) < 2.4) continue;
+      if (x < -29) continue; // keep the river banks clear
+      if (colliders.some((c) => Math.hypot(x - c.x, z - c.z) < c.r + 0.9)) continue;
+      const s = scaleFn(rand(n + 500));
+      m4.makeScale(s, s * yFn(rand(n + 700)), s).setPosition(x, 0.1 * s, z);
+      mesh.setMatrixAt(placed, m4);
+      mesh.setColorAt(placed, colorFn(rand(n + 300)));
+      placed += 1;
+    }
+    mesh.count = placed;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+  };
+  place(rocks, 26, 5000, (r) => col.set(0x8a9198).lerp(new THREE.Color(0x6f7a84), r).clone(), (r) => 0.6 + r * 0.5, (r) => 0.5 + r * 1.4);
+  place(bushes, 40, 9000, (r) => col.set(0x4e8f43).lerp(new THREE.Color(0x3c7a38), r).clone(), (r) => 0.7 + r * 0.3, (r) => 0.7 + r * 0.9);
+}
+
+// Outer hamlet: more houses, lamps, benches, and a thicker tree line
+addBuilding({ x: 32, z: -28, w: 7.4, h: 3, d: 5.6, rotY: 2.6, model: "houseB" });
+addBuilding({ x: -28, z: -32, w: 7.4, h: 3, d: 5.6, rotY: 0.9, model: "houseA" });
+addBuilding({ x: 34, z: 24, w: 7, h: 3, d: 5.4, rotY: -1.2, model: "houseD" });
+addBuilding({ x: -8, z: -38, w: 6.4, h: 2.6, d: 5.2, rotY: 3.0, model: "garage" });
+addPath(-27.5, 0, 3, 11, Math.PI / 2); // west road to the bridge
+addPath(-38.6, 7.2, 3, 9); // far-bank lane: bridge to windmill and farm
+addPath(0, -31, 3.2, 13); // south road past the market to the hamlet
+addLamp(-29.5, 4.2);
+addLamp(2.5, -30);
+addLamp(30, -24.5);
+addBench(-37.2, 6.8, 1.35);
+addBench(28.5, -25, -0.8);
+const outerTreeSpots = [
+  [-20, 34], [-2, 37], [12, 36], [26, 30], [36, 14], [39, -3], [34, -14],
+  [24, -34], [12, -39], [-4, -41], [-18, -35], [-25, -39], [28, 5], [-27, 24],
+  [-24, 30], [39, 32], [-41, 30], [-41, -30], [-41, -2.5], [18, -28]
+];
+outerTreeSpots.forEach(([x, z], i) => {
+  const source = i % 3 === 0 ? assets.treesTall || assets.trees : assets.trees || assets.treesTall;
+  if (!source) return;
+  const size = 3.8 + ((i * 41) % 12) / 4;
+  const patch = cloneModel(source, { size });
+  patch.position.set(x, -0.04, z);
+  patch.rotation.y = (i * 2.39996) % (Math.PI * 2);
+  scene.add(patch);
+  addCollider(x, z, size * 0.28);
+});
+
+// Birds circling high over the valley
+const birds = [];
+for (let i = 0; i < 5; i += 1) {
+  const g = new THREE.Group();
+  const wingMat = new THREE.MeshBasicMaterial({ color: 0x3a444e, side: THREE.DoubleSide });
+  const wingGeo = new THREE.PlaneGeometry(0.7, 0.3);
+  const w1 = new THREE.Mesh(wingGeo, wingMat);
+  w1.position.x = -0.35;
+  const w2 = new THREE.Mesh(wingGeo, wingMat);
+  w2.position.x = 0.35;
+  g.add(w1, w2);
+  g.userData = {
+    w1, w2,
+    cx: -25 + ((i * 83) % 50),
+    cz: -25 + ((i * 47) % 50),
+    r: 13 + (i % 3) * 5,
+    y: 9 + (i % 4) * 2.2,
+    speed: 0.16 + (i % 3) * 0.05,
+    phase: i * 2.1
+  };
+  scene.add(g);
+  birds.push(g);
+}
+
+// Ducks paddling on the pond
+const ducks = [];
+for (let i = 0; i < 3; i += 1) {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.SphereGeometry(0.26, 10, 8), mat(0xf7f3e8, { roughness: 0.8 }));
+  body.scale.set(1.25, 0.85, 1);
+  body.castShadow = true;
+  g.add(body);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), mat(0xf7f3e8, { roughness: 0.8 }));
+  head.position.set(0.28, 0.22, 0);
+  g.add(head);
+  const beak = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.16, 6), mat(0xe8963c, { roughness: 0.6 }));
+  beak.rotation.z = -Math.PI / 2;
+  beak.position.set(0.46, 0.2, 0);
+  g.add(beak);
+  g.userData = { r: 1.5 + i * 0.55, speed: 0.22 + i * 0.06, phase: i * 2.4 };
+  scene.add(g);
+  ducks.push(g);
 }
 
 // ---------------------------------------------------------------------------
@@ -1179,7 +1508,7 @@ if (assets.flag) {
 
 // Wildflower sprinkles (instanced — two draw calls for the whole meadow)
 {
-  const COUNT = 90;
+  const COUNT = 170;
   const rand = (n) => {
     const v = Math.sin(n * 127.1 + 311.7) * 43758.5453;
     return v - Math.floor(v);
@@ -2465,7 +2794,27 @@ function tick() {
 
   clouds.forEach((c, i) => {
     c.position.x += dt * (0.4 + (i % 3) * 0.14);
-    if (c.position.x > 70) c.position.x = -70;
+    if (c.position.x > 110) c.position.x = -110;
+  });
+
+  if (windmillBlades) windmillBlades.rotation.z -= dt * 0.7;
+  if (riverWater) riverWater.material.emissiveIntensity = 0.22 + (Math.sin(now / 700) + 1) * 0.06;
+
+  birds.forEach((b) => {
+    const u = b.userData;
+    const a = (now / 1000) * u.speed + u.phase;
+    b.position.set(u.cx + Math.cos(a) * u.r, u.y + Math.sin(a * 1.7) * 0.8, u.cz + Math.sin(a) * u.r);
+    b.rotation.y = -a;
+    const flap = Math.sin(now / 180 + u.phase) * 0.55;
+    u.w1.rotation.y = flap;
+    u.w2.rotation.y = -flap;
+  });
+
+  ducks.forEach((d) => {
+    const u = d.userData;
+    const a = (now / 1000) * u.speed + u.phase;
+    d.position.set(-19.5 + Math.cos(a) * u.r * 1.3, 0.14 + Math.sin(now / 500 + u.phase) * 0.03, -14 + Math.sin(a) * u.r);
+    d.rotation.y = -a + Math.PI;
   });
 
   if (fountainWater) {
