@@ -103,6 +103,8 @@ const state = {
   sfxVol: 0.8,
   playerName: "",
   playerColor: null,
+  commitment: null, // {ko,en} — the skill the learner promised to use
+  commitmentWhen: null, // {ko,en} — the moment they'll use it
   playerPos: null
 };
 
@@ -132,6 +134,8 @@ function loadSave() {
     if (data.musicOn === false) state.musicVol = 0; // legacy save field
     state.playerName = typeof data.playerName === "string" ? data.playerName.slice(0, 12) : "";
     state.playerColor = typeof data.playerColor === "string" ? data.playerColor : null;
+    state.commitment = data.commitment && data.commitment.ko ? data.commitment : null;
+    state.commitmentWhen = data.commitmentWhen && data.commitmentWhen.ko ? data.commitmentWhen : null;
     if (data.playerPos && Number.isFinite(data.playerPos.x) && Number.isFinite(data.playerPos.z)) {
       state.playerPos = { x: data.playerPos.x, z: data.playerPos.z };
     }
@@ -158,6 +162,8 @@ function persistSave() {
         sfxVol: state.sfxVol,
         playerName: state.playerName,
         playerColor: state.playerColor,
+        commitment: state.commitment,
+        commitmentWhen: state.commitmentWhen,
         playerPos: player
           ? { x: Number(player.position.x.toFixed(2)), z: Number(player.position.z.toFixed(2)) }
           : state.playerPos
@@ -1691,8 +1697,11 @@ const dialogue = {
   pendingNext: null,
   lastChoice: null,
   repliedAt: 0,
+  excluded: new Set(), // choices already tried on the current node (retry loop)
   actor: null
 };
+
+const RETRY = "__retry";
 
 function speakerName(speakerId) {
   if (speakerId === "player") return state.playerName || t(UI.playerName);
@@ -1720,7 +1729,12 @@ function startInteraction(actor) {
         return;
       }
     }
-    if (questsOwnedBy(actor.def.id).some((q) => questStatus(q) === "done")) {
+    const doneQuest = questsOwnedBy(actor.def.id).find(
+      (q) => questStatus(q) === "done" && q.postLine
+    );
+    if (doneQuest) {
+      startPostDialogue(actor, doneQuest);
+    } else if (questsOwnedBy(actor.def.id).some((q) => questStatus(q) === "done")) {
       showToast(`${t(actor.def.name)} 😊`);
     } else {
       showToast(t(UI.toastLocked));
@@ -1730,7 +1744,8 @@ function startInteraction(actor) {
   ensureAudio();
   if (questStatus(quest) === "available") {
     state.quests[quest.id] = "active";
-    showToast(`${t(UI.questAccepted)} ${t(quest.title)}`);
+    const goal = quest.learningGoal ? ` · 🎯 ${t(quest.learningGoal)}` : "";
+    showToast(`${t(UI.questAccepted)} ${t(quest.title)}${goal}`, 5200);
     refreshMarkers();
     updateTracker();
     persistSave();
@@ -1738,6 +1753,24 @@ function startInteraction(actor) {
   dialogue.open = true;
   dialogue.quest = quest;
   dialogue.nodeId = quest.start;
+  dialogue.excluded = new Set();
+  dialogue.actor = actor;
+  dom.talkPrompt.hidden = true;
+  renderDialogueNode();
+}
+
+// Short one-line "thank you" scene from an NPC whose quest is finished.
+function startPostDialogue(actor, quest) {
+  ensureAudio();
+  dialogue.open = true;
+  dialogue.quest = {
+    id: "__post",
+    transient: true,
+    start: "p",
+    nodes: { p: { speaker: actor.def.id, text: quest.postLine, end: true } }
+  };
+  dialogue.nodeId = "p";
+  dialogue.excluded = new Set();
   dialogue.actor = actor;
   dom.talkPrompt.hidden = true;
   renderDialogueNode();
@@ -1747,7 +1780,7 @@ function currentNode() {
   return dialogue.quest.nodes[dialogue.nodeId];
 }
 
-function renderDialogueNode() {
+function renderDialogueNode({ retry = false } = {}) {
   const node = currentNode();
   if (!node) {
     closeDialogue();
@@ -1758,17 +1791,18 @@ function renderDialogueNode() {
   dom.dialogueBox.hidden = false;
   dom.dialogueName.textContent = speakerName(node.speaker);
   dom.dialoguePortrait.textContent = speakerEmoji(node.speaker);
-  dom.dialogueText.textContent = t(node.text);
+  if (!retry) dom.dialogueText.textContent = t(node.text);
   dom.dialogueChoices.innerHTML = "";
   dom.dialogueContinue.textContent = "";
 
   if (node.choices) {
+    const remaining = node.choices.filter((c) => !dialogue.excluded.has(c));
     const hint = document.createElement("p");
     hint.className = "choice-hint";
-    hint.textContent = t(UI.choiceHint);
+    hint.textContent = retry ? t(UI.retryHint) : t(UI.choiceHint);
     dom.dialogueChoices.appendChild(hint);
     // shuffle so the strongest answer isn't always in the same slot
-    const shuffled = node.choices
+    const shuffled = remaining
       .map((c, i) => ({ c, key: (i * 31 + t(c.text).length * 7 + hashSeed) % 23 }))
       .sort((a, b) => a.key - b.key)
       .map((x) => x.c);
@@ -1809,8 +1843,19 @@ function pickChoice(choice) {
     state.answered[answeredKey] = choice.tier;
     grantPoints(choice.stat, choice.tier);
   }
+  if (choice.remember) {
+    state[choice.remember] = choice.text;
+    persistSave();
+  }
   dialogue.phase = "reply";
-  dialogue.pendingNext = choice.next;
+  // poor choices hand the moment back to the learner: after the NPC's
+  // "that didn't land" reply, the remaining options are offered again
+  if (choice.tier === "poor") {
+    dialogue.excluded.add(choice);
+    dialogue.pendingNext = RETRY;
+  } else {
+    dialogue.pendingNext = choice.next;
+  }
   dialogue.lastChoice = choice;
   dialogue.repliedAt = performance.now();
   renderReplyView();
@@ -1823,8 +1868,14 @@ function advanceDialogue() {
   if (dialogue.phase === "reply") {
     // absorb double-clicks/taps so the reply line is actually read
     if (performance.now() - dialogue.repliedAt < 350) return;
+    if (dialogue.pendingNext === RETRY) {
+      dialogue.pendingNext = null;
+      renderDialogueNode({ retry: true });
+      return;
+    }
     dialogue.nodeId = dialogue.pendingNext;
     dialogue.pendingNext = null;
+    dialogue.excluded = new Set();
     if (!dialogue.nodeId) {
       finishQuestDialogue(node);
       return;
@@ -1838,6 +1889,7 @@ function advanceDialogue() {
     return;
   }
   dialogue.nodeId = node.next;
+  dialogue.excluded = new Set();
   renderDialogueNode();
 }
 
@@ -1853,6 +1905,7 @@ dom.talkPrompt.addEventListener("click", () => {
 function finishQuestDialogue(endNode) {
   const quest = dialogue.quest;
   closeDialogue();
+  if (quest.transient) return; // post-quest smalltalk — nothing to complete
   if (questStatus(quest) !== "done") {
     state.quests[quest.id] = "done";
     sfx.quest();
@@ -1899,12 +1952,16 @@ function renderJournal() {
     const s = questStatus(q);
     const comp = COMPETENCIES.find((c) => c.id === q.competency);
     const li = document.createElement("li");
+    const goalLine =
+      s !== "locked" && q.learningGoal
+        ? `<p class="quest-goal">🎯 ${t(UI.goalLabel)}: ${t(q.learningGoal)}</p>`
+        : "";
     li.innerHTML = `
       <div class="quest-head">
         <strong>${comp ? comp.icon + " " : "⭐ "}${t(q.title)}</strong>
         <span class="quest-status ${s}">${statusLabel[s]}</span>
       </div>
-      <p class="quest-summary">${s === "locked" ? "???" : t(q.summary)}</p>`;
+      <p class="quest-summary">${s === "locked" ? "???" : t(q.summary)}</p>${goalLine}`;
     dom.journalList.appendChild(li);
   });
 }
@@ -1952,7 +2009,11 @@ function renderReport() {
   dom.reportGradeLabel.textContent = t(UI.reportGradeLabel);
   dom.reportGradeValue.textContent = t(UI.grades[grade]);
   dom.reportHedge.textContent = t(UI.reportHedge);
-  dom.reportReflection.textContent = t(UI.reportReflection);
+  dom.reportReflection.textContent = state.commitment
+    ? `🌱 ${t(UI.commitmentLabel)}: ${t(state.commitment)}${
+        state.commitmentWhen ? ` — ${t(state.commitmentWhen)}` : ""
+      }`
+    : t(UI.reportReflection);
   dom.reportReplay.textContent = t(UI.reportReplay);
   dom.reportClose.textContent = t(UI.reportClose);
 
@@ -2127,8 +2188,15 @@ function updateCamera(dt) {
     camera.fov += (targetFov - camera.fov) * Math.min(1, dt * 5);
     camera.updateProjectionMatrix();
   }
-  const { yaw, pitch, dist } = input.cam;
+  const { yaw, pitch } = input.cam;
+  let dist = input.cam.dist;
   const target = cameraTarget.set(player.position.x, 1.7, player.position.z);
+  // conversation framing: pull in and center between the two speakers
+  if (dialogue.open && dialogue.actor) {
+    const npcPos = dialogue.actor.group.position;
+    target.set((player.position.x + npcPos.x) / 2, 1.55, (player.position.z + npcPos.z) / 2);
+    dist = Math.min(dist, 5.4);
+  }
   const offX = Math.sin(yaw) * Math.cos(pitch) * dist;
   const offY = Math.sin(pitch) * dist;
   const offZ = Math.cos(yaw) * Math.cos(pitch) * dist;

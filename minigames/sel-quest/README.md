@@ -28,7 +28,17 @@ personal report across all five competencies.
   joystick on mobile; ACES tone mapping, gradient sky dome, instanced
   wildflowers, confetti bursts, generative music-box soundtrack (toggleable)
 - Branching dialogue with tiered choices (best/good/poor). Weak choices get
-  reflective, non-punitive feedback and the scene continues
+  reflective, non-punitive feedback and hand the moment back: the NPC's
+  reply ends with a re-ask and the learner picks again (first answer is
+  what scores; the retry is practice). Option lengths are balanced so the
+  best answer can't be spotted by elaboration alone
+- Learner-facing learning goals ("I can...") shown on quest accept and in
+  the journal; the finale asks for a skill commitment plus the concrete
+  moment to use it (implementation intention), which personalizes the
+  final report
+- Helped NPCs remember it: talking to them again plays a short follow-up
+  line showing the skill in use in their life; the camera frames both
+  speakers during conversations
 - RPG progression: XP, levels, per-competency progress bars, quest markers
   (`!` available, `…` active, `✓` complete), quest journal
 - Fully bilingual (Korean/English) with an in-game toggle; UI, dialogue, and
