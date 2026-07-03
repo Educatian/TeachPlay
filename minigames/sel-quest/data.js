@@ -159,6 +159,7 @@ export const QUESTS = [
       },
       n3: {
         speaker: "hana",
+        practice: true, // tutorial item: observable recorded, never scored (ECD blueprint)
         text: {
           ko: "먼저 연습해 볼까? 내가 오늘 아침에 아끼던 화분을 깨뜨렸어. 지금 내 기분이 어떨 것 같니?",
           en: "Let's practice. This morning I broke my favorite flower pot. How do you think I feel right now?"
@@ -661,6 +662,8 @@ export const QUESTS = [
       },
       n3: {
         speaker: "minjun",
+        claim: "relationship", // cross-loaded item: hosted here, evidences relationship skills
+        crossLoaded: true,
         text: {
           ko: "너랑 이야기하니까 용기가 조금 생겼어. 저기 벤치에 앉아 있는 애들한테 가 보고 싶은데, 첫 마디를 뭐라고 하면 좋을까?",
           en: "Talking to you gave me a little courage. I want to go over to those kids by the bench — what should my first words be?"
@@ -824,6 +827,8 @@ export const QUESTS = [
       },
       n4: {
         speaker: "taeo",
+        claim: "decision", // cross-loaded item: hosted here, evidences decision-making
+        crossLoaded: true,
         text: {
           ko: "저기… 부품은 대부분 무사해. 축제까지 일주일 남았는데, 우리 어떻게 하면 좋을까?",
           en: "Hey... most of the parts survived. We have one week until the festival. What should we do?"
@@ -1070,6 +1075,7 @@ export const QUESTS = [
       },
       n2: {
         speaker: "hana",
+        assessed: false, // self-report commitment: recorded, never scored (ECD blueprint)
         text: {
           ko: "이 모든 건 네가 '들어 주는 사람'이 되어 준 덕분이야. 마지막 질문! 오늘 배운 마음의 힘 중에서, 내일 당장 네 하루에 써 보고 싶은 건 뭐니?",
           en: "It all happened because you chose to be a listener. Final question: of all the heart skills from today, which one will you try in your own day tomorrow?"
@@ -1149,6 +1155,7 @@ export const QUESTS = [
       },
       n2b: {
         speaker: "hana",
+        assessed: false, // implementation intention: recorded, never scored
         text: {
           ko: "멋진 다짐이야. 그럼 그 힘을 꺼내 쓸 '순간'도 하나 정해 두자. 미리 정해 두면 그 순간이 왔을 때 몸이 먼저 기억하거든!",
           en: "A lovely promise. Now let's pick the exact moment you'll use it. Decide in advance, and your body remembers when the moment comes!"
@@ -1160,6 +1167,7 @@ export const QUESTS = [
               en: "At school, when a friend makes my heart wobble."
             },
             tier: "best",
+            key: "school",
             remember: "commitmentWhen",
             reply: {
               ko: "좋아. 그 순간이 오면 오늘의 연습이 너를 도와줄 거야.",
@@ -1173,6 +1181,7 @@ export const QUESTS = [
               en: "At home, when talking with family makes me flare up."
             },
             tier: "best",
+            key: "home",
             remember: "commitmentWhen",
             reply: {
               ko: "좋아. 가장 가까운 사람에게 쓰는 마음의 힘이 제일 힘이 세지.",
@@ -1186,6 +1195,7 @@ export const QUESTS = [
               en: "At night, when I look back on my day before sleep."
             },
             tier: "best",
+            key: "night",
             remember: "commitmentWhen",
             reply: {
               ko: "좋아. 하루 5분의 돌아보기가 마음 근육을 키워 준단다.",

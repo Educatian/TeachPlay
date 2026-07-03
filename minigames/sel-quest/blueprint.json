@@ -1,0 +1,108 @@
+{
+  "blueprintVersion": "selquest-bp-1.0",
+  "framework": "CASEL-5",
+  "design": "Evidence-Centered Design (Mislevy, Steinberg & Almond)",
+  "evidenceLevel": "recognition-in-scripted-vignette",
+  "caveats": [
+    "Observables are recognition-level: selecting an effective response in a scripted peer vignette, not producing SEL behavior in vivo.",
+    "2-4 assessed items per claim: a formative practice snapshot, not a reliable individual measure; per-claim bars must not drive high-stakes decisions.",
+    "First attempt is scored; the retry loop is deliberate unscored practice, so later items follow corrective feedback (items are not strictly locally independent).",
+    "Single fixed form; tier assignments are author-judged pending empirical validation via the cohort-level Rasch feed."
+  ],
+  "scoring": {
+    "levels": { "best": 10, "good": 6, "poor": 2 },
+    "attempt": "first-only",
+    "retryIsPractice": true,
+    "overall": "sum(earned)/sum(max) x 100 over assessed items",
+    "grades": { "S": 90, "A": 75, "B": 0 },
+    "scormPassCut": 70
+  },
+  "claims": [
+    {
+      "id": "selfAwareness",
+      "casel": "Self-Awareness",
+      "statement": {
+        "ko": "또래 상황 대화에서 섞여 있는 감정에 이름을 붙이고 몸의 신호를 알아차리는 반응을 고를 수 있다",
+        "en": "Can select responses that name mixed feelings and identify body signals in a peer vignette"
+      },
+      "subclaims": ["invite-feeling-talk", "label-emotion", "body-signal-awareness"]
+    },
+    {
+      "id": "selfManagement",
+      "casel": "Self-Management",
+      "statement": {
+        "ko": "화가 난 또래 상황에서 멈추기, 호흡으로 진정하기, 식힌 뒤 말하기를 순서대로 고를 수 있다",
+        "en": "Can select pause, paced-breathing, and cool-first-talk-later strategies in an anger vignette"
+      },
+      "subclaims": ["pause-before-acting", "paced-breathing", "cool-then-talk"]
+    },
+    {
+      "id": "socialAwareness",
+      "casel": "Social Awareness",
+      "statement": {
+        "ko": "상대의 입장을 헤아리고 상상 대신 단서로 해석을 점검하는 반응을 고를 수 있다",
+        "en": "Can select perspective-taking responses and clue-checking over worst-case assumptions"
+      },
+      "subclaims": ["perspective-taking", "attribution-check"]
+    },
+    {
+      "id": "relationship",
+      "casel": "Relationship Skills",
+      "statement": {
+        "ko": "갈등 상황에서 차례로 듣기와 나-전달법으로 대화를 여는 반응을 고를 수 있다",
+        "en": "Can select turn-taking and I-message responses that open dialogue in a conflict"
+      },
+      "subclaims": ["turn-taking-mediation", "i-message", "approach-initiation"]
+    },
+    {
+      "id": "decision",
+      "casel": "Responsible Decision-Making",
+      "statement": {
+        "ko": "결정 전에 멈추어 선택지와 결과를 따지고 책임 있는 행동을 고를 수 있다",
+        "en": "Can select pausing, option-outcome weighing, and responsible action before deciding"
+      },
+      "subclaims": ["pause-to-deliberate", "options-and-outcomes", "responsible-action", "cooperative-plan"]
+    }
+  ],
+  "evidenceRules": [
+    { "itemId": "intro:n3", "claimId": "socialAwareness", "role": "practice", "assessed": false, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_selfAwareness:n1", "claimId": "selfAwareness", "subclaim": "invite-feeling-talk", "role": "focal", "assessed": true, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_selfAwareness:n2", "claimId": "selfAwareness", "subclaim": "label-emotion", "role": "focal", "assessed": true, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_selfAwareness:n3", "claimId": "selfAwareness", "subclaim": "body-signal-awareness", "role": "focal", "assessed": true, "tiers": ["best", "poor"] },
+    { "itemId": "q_selfManagement:n1", "claimId": "selfManagement", "subclaim": "pause-before-acting", "role": "focal", "assessed": true, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_selfManagement:n2", "claimId": "selfManagement", "subclaim": "paced-breathing", "role": "focal", "assessed": true, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_selfManagement:n3", "claimId": "selfManagement", "subclaim": "cool-then-talk", "role": "focal", "assessed": true, "tiers": ["best", "poor"] },
+    { "itemId": "q_socialAwareness:n1", "claimId": "socialAwareness", "subclaim": "perspective-taking", "role": "focal", "assessed": true, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_socialAwareness:n2", "claimId": "socialAwareness", "subclaim": "attribution-check", "role": "focal", "assessed": true, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_socialAwareness:n3", "claimId": "relationship", "subclaim": "approach-initiation", "role": "crossLoaded", "hostQuest": "q_socialAwareness", "assessed": true, "tiers": ["best", "poor"] },
+    { "itemId": "q_relationship:n2", "claimId": "relationship", "subclaim": "turn-taking-mediation", "role": "focal", "assessed": true, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_relationship:n3", "claimId": "relationship", "subclaim": "i-message", "role": "focal", "assessed": true, "tiers": ["best", "poor"] },
+    { "itemId": "q_relationship:n4", "claimId": "decision", "subclaim": "cooperative-plan", "role": "crossLoaded", "hostQuest": "q_relationship", "assessed": true, "tiers": ["best", "poor"] },
+    { "itemId": "q_decision:n1", "claimId": "decision", "subclaim": "pause-to-deliberate", "role": "focal", "assessed": true, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_decision:n2", "claimId": "decision", "subclaim": "options-and-outcomes", "role": "focal", "assessed": true, "tiers": ["best", "good", "poor"] },
+    { "itemId": "q_decision:n3", "claimId": "decision", "subclaim": "responsible-action", "role": "focal", "assessed": true, "tiers": ["best", "poor"] },
+    { "itemId": "finale:n2", "claimId": null, "role": "selfReport-commitment", "assessed": false },
+    { "itemId": "finale:n2b", "claimId": null, "role": "selfReport-implementationIntention", "assessed": false }
+  ],
+  "taskTemplate": {
+    "characteristic": [
+      "peer-conflict vignette with a distressed NPC",
+      "2-3 tiered decision nodes per quest",
+      "2-3 option choices, length-balanced to prevent test-wiseness",
+      "poor choice triggers reflective feedback and an unscored retry",
+      "NPC verbalizes the strategy chain at quest close"
+    ],
+    "variable": ["targetClaim", "npc", "setting", "emotion", "strategyChain"]
+  },
+  "assembly": {
+    "form": "fixed",
+    "population": "upper-elementary / middle-school SEL practice",
+    "questOrder": "intro-gated, free order among five, finale-gated"
+  },
+  "delivery": {
+    "standard": "SCORM 1.2",
+    "score": "cmi.core.score.raw",
+    "observables": "cmi.suspend_data (v2, keyed to this blueprintVersion)",
+    "analysisFeed": "analysis/selquest_export.py -> analysis/psychometrics.py (dichotomized: best=1)"
+  }
+}

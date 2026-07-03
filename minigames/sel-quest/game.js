@@ -99,7 +99,10 @@ const state = {
   stats: {},
   statMax: {},
   quests: {}, // id -> "locked" | "available" | "active" | "done"
-  answered: {}, // "questId:nodeId" -> true, so replays never re-score a node
+  answered: {}, // "questId:nodeId" -> tier of the first answer (the ECD observable)
+  retries: {}, // "questId:nodeId" -> count of unscored practice retries
+  commitmentSkill: null, // claim id picked at the finale commitment
+  commitmentWhenKey: null, // implementation-intention moment key (school/home/night)
   reportShown: false,
   musicVol: 0.6,
   sfxVol: 0.8,
@@ -130,6 +133,9 @@ function loadSave() {
     });
     state.quests = data.quests && typeof data.quests === "object" ? data.quests : {};
     state.answered = data.answered && typeof data.answered === "object" ? data.answered : {};
+    state.retries = data.retries && typeof data.retries === "object" ? data.retries : {};
+    state.commitmentSkill = typeof data.commitmentSkill === "string" ? data.commitmentSkill : null;
+    state.commitmentWhenKey = typeof data.commitmentWhenKey === "string" ? data.commitmentWhenKey : null;
     state.reportShown = !!data.reportShown;
     state.musicVol = Number.isFinite(data.musicVol) ? Math.min(Math.max(data.musicVol, 0), 1) : 0.6;
     state.sfxVol = Number.isFinite(data.sfxVol) ? Math.min(Math.max(data.sfxVol, 0), 1) : 0.8;
@@ -159,6 +165,9 @@ function persistSave() {
         statMax: state.statMax,
         quests: state.quests,
         answered: state.answered,
+        retries: state.retries,
+        commitmentSkill: state.commitmentSkill,
+        commitmentWhenKey: state.commitmentWhenKey,
         reportShown: state.reportShown,
         musicVol: state.musicVol,
         sfxVol: state.sfxVol,
@@ -209,14 +218,37 @@ function scormInit() {
   window.Scorm12.commit();
 }
 
-// Compact per-competency + per-item record for the teacher/LMS side
+// ECD evidence record for the teacher/LMS side, keyed to blueprint.json
 // (readable via cmi.suspend_data; stays well under the 4096-char guarantee).
+function answeredNodeOf(key) {
+  const [qid, nid] = key.split(":");
+  const quest = questById(qid);
+  return (quest && quest.nodes[nid]) || {};
+}
+
 function scormDetailPayload(score) {
-  const comps = {};
+  const claims = {};
   COMPETENCIES.forEach((c) => {
-    comps[c.id] = [state.stats[c.id], state.statMax[c.id]];
+    claims[c.id] = [state.stats[c.id], state.statMax[c.id]];
   });
-  return JSON.stringify({ v: 1, score, comps, nodes: state.answered });
+  const nodes = {};
+  const practice = {};
+  Object.entries(state.answered).forEach(([key, tier]) => {
+    const node = answeredNodeOf(key);
+    if (node.practice) practice[key] = tier;
+    else if (node.assessed === false) return; // self-report: carried in commit
+    else nodes[key] = tier;
+  });
+  return JSON.stringify({
+    v: 2,
+    bp: "selquest-bp-1.0",
+    score,
+    claims,
+    nodes,
+    practice,
+    commit: { skill: state.commitmentSkill, when: state.commitmentWhenKey },
+    retries: state.retries
+  });
 }
 
 function scormSubmit(score) {
@@ -1889,14 +1921,21 @@ function renderReplyView() {
 function pickChoice(choice) {
   sfx.choice();
   // one score per node, even across replays (reload, language toggle);
-  // the tier is recorded for teacher-facing SCORM suspend_data
+  // the tier is the ECD observable recorded for SCORM suspend_data.
+  // Practice/self-report nodes (blueprint: assessed=false) grant XP only.
+  const node = currentNode();
+  const scored = !(node.practice || node.assessed === false);
   const answeredKey = `${dialogue.quest.id}:${dialogue.nodeId}`;
   if (!state.answered[answeredKey]) {
     state.answered[answeredKey] = choice.tier;
-    grantPoints(choice.stat, choice.tier);
+    grantPoints(scored ? choice.stat : null, choice.tier);
+  } else {
+    state.retries[answeredKey] = (state.retries[answeredKey] || 0) + 1;
   }
   if (choice.remember) {
     state[choice.remember] = choice.text;
+    if (choice.remember === "commitment" && choice.stat) state.commitmentSkill = choice.stat;
+    if (choice.key) state.commitmentWhenKey = choice.key;
     persistSave();
   }
   dialogue.phase = "reply";
@@ -2447,6 +2486,24 @@ function tick() {
 // test/debug handle (harmless in production)
 window.__selquest = { state, player, npcActors, camera, renderer };
 
+// Re-derive claim scores from the recorded observables (single source of
+// truth; also cleans older saves that scored practice/self-report nodes).
+function recomputeStatsFromAnswers() {
+  COMPETENCIES.forEach((c) => {
+    state.stats[c.id] = 0;
+    state.statMax[c.id] = 0;
+  });
+  Object.entries(state.answered).forEach(([key, tier]) => {
+    const node = answeredNodeOf(key);
+    if (!node.choices || node.practice || node.assessed === false) return;
+    const stat = node.choices[0] && node.choices[0].stat;
+    if (!stat || state.stats[stat] === undefined) return;
+    state.stats[stat] += CHOICE_POINTS[tier] || 0;
+    state.statMax[stat] += CHOICE_POINTS.best;
+  });
+}
+
+recomputeStatsFromAnswers();
 window.__selquestBootOk = true;
 applyVolumes();
 dom.playerNameInput.value = state.playerName;

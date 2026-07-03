@@ -76,6 +76,41 @@ Then open `http://127.0.0.1:8765/minigames/sel-quest/`.
   earned/max points and the tier picked at every dialogue node, for
   teacher-side review or later psychometric analysis
 
+## Evidence-Centered Design (ECD)
+
+The assessment layer is explicitly connected to ECD (Mislevy, Steinberg &
+Almond) via a machine-readable blueprint shipped in the package:
+[`blueprint.json`](blueprint.json).
+
+- **Competency model** — five CASEL claims with recognition-level can-do
+  statements ("can *select* the effective strategy in a scripted peer
+  vignette") and per-quest subclaims.
+- **Evidence model** — one rule per dialogue node: 16 assessed items
+  (observable = first-answer tier, scored 10/6/2), the tutorial item
+  tagged `practice` and the finale commitment tagged self-report (both
+  recorded but never scored), and the two cross-loaded items
+  (`q_socialAwareness:n3` → relationship, `q_relationship:n4` → decision)
+  declared as such. In-game, claim scores are re-derived from the
+  recorded observables on every load, so the evidence record is the
+  single source of truth.
+- **Task model** — the shared vignette template (distressed NPC, 2-3
+  tiered nodes, length-balanced options, unscored retry loop) with its
+  characteristic vs variable features.
+- **Delivery** — `cmi.suspend_data` v2 carries the observables keyed to
+  the blueprint version: per-claim earned/max, per-item tiers, the
+  practice item, the commitment (skill + implementation-intention
+  moment), and retry counts.
+- **Analysis feed** — `analysis/selquest_export.py` converts LMS-exported
+  suspend_data into the dichotomous JSONL consumed by
+  `analysis/psychometrics.py` (Rasch/2PL, KR-20), plus a polytomous CSV
+  for graded-model extensions; cohort-level runs can then empirically
+  validate the author-assigned tiers.
+
+Caveats stated in the blueprint and honored by the UI: evidence is
+recognition-level, 2-4 items per claim (formative snapshot, hedged in
+the report), first-attempt scoring with practice retries, single fixed
+form.
+
 ## Credits
 
 3D models come from open-source game asset kits — the same asset
