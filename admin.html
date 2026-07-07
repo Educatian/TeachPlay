@@ -653,6 +653,10 @@
     var passLevel = data.meta.pass_level; // Proficient
     var html = '';
 
+    // GenAI provenance log (read-only, advisory). Filled asynchronously by
+    // loadProvenanceLog() below — context for scoring, never part of the gate.
+    html += '<div id="prov-log-block"></div>';
+
     // Uploaded artifact files (screenshots, GDD, …). Downloaded through an
     // authenticated fetch so the Bearer key is never put in a URL.
     if (files.length) {
@@ -708,6 +712,7 @@
 
     document.getElementById('score-body').innerHTML = html;
     updateVerdictLine(data.verdict);
+    loadProvenanceLog(scoreState.learnerId);
 
     // Wire evidence-file downloads (authenticated fetch -> blob).
     document.getElementById('score-body').querySelectorAll('.evi-file-dl').forEach(function (btn) {
@@ -749,6 +754,57 @@
         recomputeLocalVerdict();
       });
     });
+  }
+
+  /* ── GenAI provenance log (read-only, advisory) ──
+     Learner-declared AI use per deliverable (AI Assessment Scale levels,
+     Perkins et al. 2024). Rendered beside the rubric UI as context for the
+     instructor's judgment. It does NOT touch the credential gate or the
+     25 criteria. Feature-detected server-side (migration 0013). */
+  var AIAS_LABELS = { 1: 'No AI', 2: 'AI Planning', 3: 'AI Collaboration', 4: 'Full AI', 5: 'AI Exploration' };
+
+  async function loadProvenanceLog(learnerId) {
+    var box = document.getElementById('prov-log-block');
+    if (!box) return;
+    box.innerHTML = '<p class="loading" style="font-size:12.5px;color:#888;">Loading provenance log…</p>';
+    try {
+      var res = await fetch('/api/admin/provenance?learner_id=' + encodeURIComponent(learnerId), {
+        headers: { 'Authorization': 'Bearer ' + apiKey }
+      });
+      var data = await res.json();
+      if (!res.ok || !data.ok) { box.innerHTML = ''; return; }
+      if (data.enabled === false) {
+        box.innerHTML = '<div class="deliv-block"><div class="deliv-block__head"><h3>GenAI provenance log</h3>' +
+          '<span class="sub">advisory</span></div><div class="deliv-block__art">' +
+          '<span class="not-submitted">Provenance log not enabled on this deployment yet (migration 0013 pending).</span></div></div>';
+        return;
+      }
+      var html = '<div class="deliv-block"><div class="deliv-block__head"><h3>GenAI provenance log</h3>' +
+        '<span class="sub">' + data.total + ' entr' + (data.total === 1 ? 'y' : 'ies') +
+        ' · declared AI use (AIAS) · advisory only</span></div><div class="deliv-block__art">';
+      if (!data.total) {
+        html += '<span class="not-submitted">No provenance entries declared by this learner yet.</span>';
+      } else {
+        ['D1', 'D2', 'D3', 'D4', 'D5'].forEach(function (d) {
+          var entries = (data.by_deliverable && data.by_deliverable[d]) || [];
+          if (!entries.length) return;
+          html += '<h4 style="margin:12px 0 6px;font-size:12px;letter-spacing:0.08em;">' + d +
+                  ' <small style="color:#888;font-weight:400;">' + entries.length + ' entr' + (entries.length === 1 ? 'y' : 'ies') + '</small></h4>';
+          entries.forEach(function (e) {
+            html += '<dl style="margin:0 0 10px;padding:8px 10px;background:#fafafa;border:1px solid #eee;">' +
+              '<dt>Declared</dt><dd><strong>AIAS ' + esc(e.aias_level) + ' · ' + esc(AIAS_LABELS[e.aias_level] || '') + '</strong>' +
+              (e.tool_name ? ' — ' + esc(e.tool_name) : '') +
+              ' <small style="color:#888;">' + esc((e.created_at || '').slice(0, 16)) + '</small></dd>';
+            if (e.prompt_text)    html += '<dt>Prompt</dt><dd>' + esc(String(e.prompt_text).slice(0, 1200)) + '</dd>';
+            if (e.output_excerpt) html += '<dt>Output</dt><dd>' + esc(String(e.output_excerpt).slice(0, 1200)) + '</dd>';
+            if (e.revision_note)  html += '<dt>Revision</dt><dd>' + esc(String(e.revision_note).slice(0, 1200)) + '</dd>';
+            html += '</dl>';
+          });
+        });
+      }
+      html += '</div></div>';
+      box.innerHTML = html;
+    } catch (_) { box.innerHTML = ''; }
   }
 
   function recomputeLocalVerdict() {

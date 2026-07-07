@@ -55,10 +55,11 @@ const GROUPS = [
   {
     key: 'credential',
     label: 'Credential',
-    pages: ['credential.html', 'portfolio.html', 'verifier.html'],
+    pages: ['credential.html', 'portfolio.html', 'provenance.html', 'verifier.html'],
     items: [
       ['About the Credential', 'credential.html', 'Open Badges 3.0 / VC'],
       ['Portfolio',            'portfolio.html',  'Your five deliverables'],
+      ['GenAI Provenance Log', 'provenance.html', 'Declare your AI use'],
       ['Verify a Credential',  'verifier.html',   'For employers & registrars'],
     ],
   },

@@ -17,6 +17,66 @@ import {
 
 const TEMPLATE_PATH = '/credential/assertion-example-v3.unsigned.json';
 
+/**
+ * Program-level Evidence entry stamped into every issued credential.
+ *
+ * OB 3.0 Final defines `evidence` (via the VC 2.0 base context) and the
+ * Evidence class (OB v3 context) — both are present in the vendored contexts
+ * (src/lib/contexts/ob-v3p0.js + @digitalbazaar/credentials-context), so the
+ * eddsa-rdfc-2022 canonicalization stays deterministic and offline. The
+ * narrative documents WHAT was verified, not who the learner is: no PII beyond
+ * what the credential already carries (hashed email + subject id).
+ */
+const PROGRAM_EVIDENCE = {
+  type: ['Evidence'],
+  name: 'Program completion evidence — reviewed portfolio',
+  narrative:
+    'The learner submitted a five-deliverable evidence portfolio (D1 Design ' +
+    'Problem Statement, D2 Objective × Mechanic Crosswalk, D3 Paper Prototype ' +
+    '+ Facilitator Guide, D4 Playtest Report, D5 Implementation Spec) and was ' +
+    'scored at Proficient or above on all 25 criteria of the non-compensatory ' +
+    'rubric by an instructor. The learner completed all 12 sessions of the ' +
+    'program and the post-program survey.',
+  genre: 'Reviewed portfolio + completion record',
+  audience: 'Employers, registrars, and credential verifiers',
+};
+
+/**
+ * External-framework alignment stamped onto the embedded Achievement.
+ *
+ * Mirrors the Alignment shape already published in
+ * credential/badge-class-v3.json (type/targetName/targetUrl/targetDescription/
+ * targetFramework/targetType — all defined in the vendored OB v3 context).
+ * Framework-aligned metadata is what makes the credential legible to
+ * third-party consumers (Ward et al., 2024, IEEE Trans. on Education).
+ */
+const ACHIEVEMENT_ALIGNMENT = [
+  {
+    type: ['Alignment'],
+    targetName: 'UNESCO AI Competency Framework for Teachers',
+    targetUrl: 'https://doi.org/10.54675/ZJTE2084',
+    targetDescription:
+      'Maps primarily to the AI pedagogy, Ethics of AI, and AI foundations ' +
+      'and applications competency dimensions: designing AI-enhanced learning ' +
+      'activities, auditing them for ethical risk and excluded populations, ' +
+      'and applying GenAI tools with documented, accountable use.',
+    targetFramework: 'UNESCO AI Competency Framework for Teachers (2024)',
+    targetType: 'ceasn:Competency',
+  },
+  {
+    type: ['Alignment'],
+    targetName: 'TeachPlay Learning Outcome Alignment Matrix (LO ↔ Session ↔ Deliverable ↔ Rubric ↔ Standards)',
+    targetUrl: 'https://teachplay.dev/alignment.html',
+    targetDescription:
+      'The program’s constructive-alignment matrix: every learning ' +
+      'outcome traces to the session activity that produces evidence, the ' +
+      'deliverable it feeds, the rubric criterion it is scored on, and the ' +
+      'external standards it advances.',
+    targetFramework: 'TeachPlay — AI-enhanced Educational Game Design',
+    targetType: 'CFRubric',
+  },
+];
+
 export const ID_PATTERN = /^[a-zA-Z0-9_-]{2,64}$/;
 export const COHORT_PATTERN = /^[a-z0-9-]{2,32}$/;
 
@@ -69,6 +129,18 @@ function customize(template, { id, name, cohort, validFrom, statusEntry }, ident
           .replace(/\/portfolios\/[^/]+\//, `/portfolios/${id}/`);
       }
     }
+  }
+
+  // OB 3.0 evidence + alignment embed (see the constants above). Both are
+  // idempotent against template drift: the program-level Evidence entry is
+  // appended only if the template doesn't already carry one, and alignment
+  // is only set when the template's Achievement has none of its own.
+  if (!Array.isArray(c.evidence)) c.evidence = [];
+  if (!c.evidence.some(ev => ev && ev.name === PROGRAM_EVIDENCE.name)) {
+    c.evidence.push(JSON.parse(JSON.stringify(PROGRAM_EVIDENCE)));
+  }
+  if (subj.achievement && !Array.isArray(subj.achievement.alignment)) {
+    subj.achievement.alignment = JSON.parse(JSON.stringify(ACHIEVEMENT_ALIGNMENT));
   }
 
   return c;
