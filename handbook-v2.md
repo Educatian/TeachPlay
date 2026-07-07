@@ -88,6 +88,8 @@ On completion, learners will be able to:
 
 Outcomes 1–4 are cognitive. Outcomes 5–9 are productive. Outcome 10 is metacognitive. The deliverable map in Section 4 and the rubrics in Part 4 are aligned to this distinction.
 
+These ten program outcomes are operationalized by the 54 session-level learning objectives mapped on the platform's alignment page (alignment.html); every session LO traces up to one or more of the outcomes above. In compact form: outcomes 1–2 → Sessions 1–2; outcome 3 → Sessions 2–3; outcome 4 → Sessions 3–5; outcome 5 → Session 6; outcome 6 → Sessions 7–8; outcome 7 → Session 9 plus the week-10 playtest window; outcome 8 → Session 10; outcome 9 → Sessions 8 and 12; outcome 10 → Sessions 11–12.
+
 ---
 
 ## 3. Design principles and their sources
@@ -134,26 +136,27 @@ Every tier produces the same five core deliverables; the tiers differ in the dep
 
 ### 4.2 Deliverable map
 
-Five core deliverables are required for credential award. Each is tied to specific program outcomes and has a rubric in Part 4.
+Five core deliverables are required for credential award. Each is tied to specific program outcomes, has a five-criterion rubric in Part 4, and is due in a fixed week of the standard timeline (§11).
 
-| # | Deliverable | Maps to outcomes | Rubric in |
-|---|---|---|---|
-| D1 | Learner and context analysis report | 1, 2 | §12.1 |
-| D2 | Educational game design brief | 2, 3, 4 | §12.2 |
-| D3 | Low- or medium-fidelity prototype + build-ready specification | 4, 6, 9 | §12.3 |
-| D4 | Playtest report with revision plan | 7 | §12.4 |
-| D5 | Final portfolio and reflective statement | 5, 8, 10 | §12.5 |
+| # | Deliverable | Produced in | Due | Maps to outcomes | Rubric in |
+|---|---|---|---|---|---|
+| D1 | Design Problem Statement | Session 02 | End of week 2 | 1, 2 | §12.1 |
+| D2 | Objective × Mechanic Crosswalk | Session 03 | End of week 5 | 2, 3, 4 | §12.2 |
+| D3 | Paper Prototype + Facilitator Guide | Session 07 | End of week 8 | 5, 6 | §12.3 |
+| D4 | Playtest Report + recording | Session 09 | End of week 10 | 7, 8 | §12.4 |
+| D5 | Implementation Spec | Session 12 | Week 12, at presentation | 6, 9, 10 | §12.5 |
 
 ### 4.3 Credential award requirements
 
-To be awarded the credential, a learner must:
+The credential is pass-bar based, not point based. There is no weighting, no averaging, and no compensation between criteria: a strong score on one criterion cannot rescue a weak score on another. To be awarded the credential, a learner must:
 
-- Submit all five deliverables by published deadlines.
-- Score at least 70% overall weighted across deliverables.
-- Score at least 60% on D2 (design brief) and D3 (prototype) individually.
-- Submit D4 based on a playtest with at least three target learners (or an approved alternative arrangement described in Section 15.3 for learners without classroom or training-site access).
-- Attend at least 80% of synchronous sessions.
-- Pass an academic-integrity check including the generative-AI disclosure required under Section 7.
+- Complete all 12 sessions. Session completion is a **prerequisite to submit** the portfolio; it is not itself a scored criterion.
+- Submit all five deliverables (D1–D5) to the portfolio server by the published deadlines, each accompanied by a complete GenAI Provenance Log (a submission-completeness requirement, not a scored dimension — see §7.3 and §12).
+- Reach **Proficient or better on every one of the 25 rubric criteria** (five criteria per deliverable, §12). This floor is non-compensatory: Exemplary on 24 criteria does not offset Developing on the 25th.
+- Base D4 on a playtest with at least three target learners (or an approved alternative arrangement described in Section 15.3 for learners without classroom or training-site access) — this is enforced through the D4 *Protocol design* criterion.
+- Complete the post-program survey. Survey completion is a **claim-time condition** on releasing the credential, not a scored criterion.
+
+Why non-compensatory? Each deliverable certifies a distinct, non-substitutable competency in the design chain (problem framing → alignment → prototyping → evidence → specification). Averaging would allow a credential to be issued to someone who cannot, for example, run a defensible playtest — exactly the certification failure a microcredential exists to prevent. This is the structural property that distinguishes a microcredential from a course grade.
 
 ---
 
@@ -286,7 +289,7 @@ Each deliverable includes a short appendix titled *AI Use Disclosure* with three
 
 The three items may be assembled directly from your Provenance Log entries.
 
-A missing or obviously untrue disclosure is a breach of academic integrity and fails the deliverable.
+A complete GenAI Provenance Log (provenance.html) — every substantive AI interaction logged with an AIAS level — is a **submission-completeness requirement** for every deliverable. Submissions without it are returned for completion before scoring (not scored lower). Disclosure is therefore not one of the 25 scored rubric criteria; a future cohort may promote disclosure to scored criteria, but the current 25-criterion gate is unchanged. A disclosure shown to be fabricated is handled as an academic-integrity matter under institutional policy, outside the rubric.
 
 ### 7.4 Rationale
 
@@ -365,7 +368,7 @@ Deviations from this template are noted in individual session plans when they oc
 
 **Assessment link.** Inputs to D1.
 
-**Asynchronous follow-up (approx. 90 min).** Draft the project candidate statement. Read the Learner and Context Analysis template (§12.1) and begin D1.
+**Asynchronous follow-up (approx. 90 min).** Draft the project candidate statement. Read the Design Problem Statement template (§17.2) and rubric (§12.1) and begin D1.
 
 ---
 
@@ -384,7 +387,7 @@ Deviations from this template are noted in individual session plans when they oc
 | 1:45–2:20 | Workshop B: problem statement writing — one page | Crystallize |
 | 2:20–2:40 | Peer exchange on problem statements | Surface weak spots |
 
-**Artifacts produced.** Persona sheet, constraint map, one-page problem statement — these three together compose D1.
+**Artifacts produced.** Persona sheet, constraint map, one-page problem statement. The scored artifact is the one-page **D1 — Design Problem Statement**; the persona sheet and constraint map travel with it as its evidence pack, alongside the tracked-changes workshop version and one quoted peer-review comment (§12.1).
 
 **Assessment link.** D1 due end of week 2.
 
@@ -405,9 +408,9 @@ Deviations from this template are noted in individual session plans when they oc
 | 1:45–2:25 | Workshop B: crosswalk application — each team fills out the mapping from §5.3 for their top three objectives | Apply the course's signature instrument |
 | 2:25–2:40 | Exit ticket: one objective whose mechanic you had to change after doing the crosswalk | Surface learning |
 
-**Artifacts produced.** Objectives list in crosswalk format. Partially completed design-brief mechanic section.
+**Artifacts produced.** Objectives list in crosswalk format — the first full draft of **D2 — Objective × Mechanic Crosswalk** itself.
 
-**Assessment link.** Inputs to D2; scored portions of D2 (§12.2) specifically reward this workshop's output.
+**Assessment link.** D2 is produced in this session and due at the end of week 5; the D2 rubric (§12.2) scores exactly this workshop's output — objective specificity, mechanic rationale, risk identification, the declined alternative, and traceability to D1.
 
 ---
 
@@ -451,7 +454,7 @@ Deviations from this template are noted in individual session plans when they oc
 | 1:50–2:25 | Workshop: choose collaboration / competition / solo structure, with justification | Apply |
 | 2:25–2:40 | Peer exchange | Surface blind spots |
 
-**Artifacts produced.** Role definition. Collaboration/competition structure statement with justification.
+**Artifacts produced.** Role definition. Collaboration/competition structure statement with justification — this statement is appended to the crosswalk and counts as part of D2's evidence pack.
 
 **Assessment link.** D2 due at end of week 5.
 
@@ -467,7 +470,7 @@ Deviations from this template are noted in individual session plans when they oc
 
 | Time | Activity | Purpose |
 |---|---|---|
-| 0:00–0:15 | Return on design briefs | Consolidate |
+| 0:00–0:15 | Return on crosswalks (D2) | Consolidate |
 | 0:15–1:00 | Concept input + case: two facilitator guides compared, one weak, one strong | Core content |
 | 1:00–1:15 | Transition and break | — |
 | 1:15–2:00 | Workshop: write the pre-brief (what the facilitator says before play) and debrief (what questions the facilitator asks after) | Apply |
@@ -476,7 +479,7 @@ Deviations from this template are noted in individual session plans when they oc
 
 **Artifacts produced.** Facilitator guide v1: pre-brief script, debrief questions, risk-mitigation table.
 
-**Assessment link.** Feeds D2 and D5.
+**Assessment link.** Feeds D3 — the facilitator guide is scored inside D3's *Facilitator guide completeness* criterion (§12.3) — and informs the facilitator-enactment segment of the Session 12 presentation.
 
 ---
 
@@ -497,9 +500,9 @@ Deviations from this template are noted in individual session plans when they oc
 | 2:00–2:30 | Peer table-test rounds (two five-minute plays, two five-minute debriefs) | First feedback |
 | 2:30–2:40 | Revision plan: what the team will change before Session 8 | Plan |
 
-**Artifacts produced.** Low-fidelity prototype. Revision plan one page.
+**Artifacts produced.** Low-fidelity (paper) prototype. Revision plan one page.
 
-**Assessment link.** Inputs to D3.
+**Assessment link.** This session produces the core of **D3 — Paper Prototype + Facilitator Guide** (due end of week 8). D3 combines this session's prototype and iteration log with the Session 6 facilitator guide (§12.3).
 
 ---
 
@@ -520,9 +523,9 @@ Deviations from this template are noted in individual session plans when they oc
 
 **Optional extension (post-session, asynchronous, for simulation-heavy teams only).** Session 5 deferred *systems thinking and simulation fidelity* content; teams whose projects use simulation mechanics complete a 60-minute asynchronous module on modeling decisions: what to simulate, at what fidelity, and what to abstract.
 
-**Artifacts produced.** State machine, event-feedback matrix, Three.js bridge document. These three together compose D3.
+**Artifacts produced.** State machine, event-feedback matrix, Three.js bridge document. These three become the core of **D5 — Implementation Spec** (due week 12, at presentation), which absorbs and cites D1–D4.
 
-**Assessment link.** D3 due at end of week 8.
+**Assessment link.** Inputs to D5 (§12.5). Separately, D3 — Paper Prototype + Facilitator Guide — is due at the end of week 8.
 
 ---
 
@@ -578,9 +581,9 @@ Deviations from this template are noted in individual session plans when they oc
 
 **Effective time plan (160 min).** This session is deliberately unstructured. The standard template is suspended. Teams work on their revisions; instructors rotate for short clinic conversations. A 15-minute midpoint check-in and a 10-minute closing status check are the only scheduled interruptions.
 
-**Artifacts produced.** Revised design brief, revised prototype, revised facilitator guide. Together with the playtest observations they compose D4 and the body of D5.
+**Artifacts produced.** Revised crosswalk, revised prototype, revised facilitator guide. The revisions this session executes come from the D4 revision backlog and feed directly into D5's spec decisions and Known Limits annex.
 
-**Assessment link.** D4 due at end of week 11.
+**Assessment link.** D4 was due at the end of week 10, at the close of the playtest window; Session 11's revisions feed D5 (due week 12).
 
 ---
 
@@ -607,11 +610,13 @@ Deviations from this template are noted in individual session plans when they oc
 | 0:00–0:15 | Credential review standards briefing |
 | 0:15–2:10 | Presentations: 6 × (12 min present + 6 min questions + 1 min reset) |
 | 2:10–2:30 | Cross-team peer assessment writing |
-| 2:30–2:40 | Reflection writing — opening of D5 reflective statement |
+| 2:30–2:40 | Closing reflection writing (advisory — see note below) |
 
 For cohorts larger than 6 teams, Session 12 is extended or split across two blocks; see Section 16.1 for cohort-size operational guidance.
 
-**Artifacts produced.** Final portfolio D5.
+**Presentation and reflection guidance (advisory, not scored).** The scored artifact of this session is D5 — Implementation Spec (§12.5). The presentation itself and the closing written reflection are not among the 25 scored criteria, but both remain required session activities because they reliably improve the D5 that is scored. Presentations should be clear, evidence-anchored, and responsive to questions; the strongest ones name specific design decisions that were wrong or uncertain, explain how they were revised, and say what the team would still change with more time. That same material belongs in D5's *Coherence with D1–D4* citations and *Known Limits* annex — the reflection is the cheapest way to draft it. A design a teacher outside the team could run tomorrow (facilitator usability) is the standard the facilitator-enactment segment of the presentation should be held to.
+
+**Artifacts produced.** D5 — Implementation Spec, submitted at presentation.
 
 ---
 
@@ -630,9 +635,9 @@ The v1 handbook did not show how asynchronous work was distributed across the 12
 | 7 | Session 7 | Revision plan for low-fi prototype | — |
 | 8 | Session 8 | **D3 due end of week 8** | Third deliverable gate |
 | 9 | Session 9 | Playtest protocol finalized, recruitment confirmed | — |
-| 10 | **No synchronous session — external playtest window** | Playtest conducted with at least 3 target learners; observations documented | Mandatory |
+| 10 | **No synchronous session — external playtest window** | Playtest conducted with at least 3 target learners; **D4 due end of week 10** | Fourth deliverable gate; mandatory window |
 | 11 | Session 10 + Session 11 back-to-back (6 hours, one day) OR Session 10 (week 11a) + Session 11 (week 11b) | Audit sheet; revisions drafted | Two scheduling variants |
-| 12 | Session 12 | **D4 and D5 due at presentation** | Credential review |
+| 12 | Session 12 | **D5 due at presentation** | Credential review |
 
 **Variants.**
 
@@ -644,65 +649,93 @@ The v1 handbook did not show how asynchronous work was distributed across the 12
 
 ## 12. Per-deliverable rubrics
 
-These rubrics replace the single shared rubric in the v1 handbook. Each deliverable has its own dimensions, each dimension is scored on a 4-level scale, and the mapping to percentage scores is shown below.
+These rubrics replace the single shared rubric in the v1 handbook. Each deliverable is judged against **five criteria** — 25 criteria across the portfolio — at four performance levels: **Emerging, Developing, Proficient, Exemplary**. The full rubric text below is identical to the platform's rubric viewer (rubrics.html), which is the canonical published version.
 
-**Score-to-percentage mapping (all rubrics).** Exceeds = 4 pts (100% of dimension). Meets = 3 pts (80%). Partially meets = 2 pts (60%). Does not yet meet = 1 pt (35%). Dimension scores are averaged within a deliverable, then the deliverable weight is applied (see §13 for deliverable weights).
+**How the levels work (all rubrics).** The levels are not grades and are never converted to points or percentages. **Proficient is the credential floor on every criterion.** Criterion scores are not averaged within or across deliverables, and no criterion compensates for another: Exemplary on four rows cannot rescue a Developing on the fifth. An artifact scored below Proficient on any criterion returns to the learner with one revision path and a clear resubmission deadline; a revision that reaches Proficient earns the credit, and the original is not averaged in. Exemplary is recognized but never required.
 
-### 12.1 Deliverable 1 — Learner and Context Analysis (15% of course grade)
+**AI-use disclosure (submission completeness, not a scored criterion).** A complete GenAI Provenance Log (provenance.html) — every substantive AI interaction logged with an AIAS level — is a submission-completeness requirement for every deliverable. Submissions without it are returned for completion before scoring (not scored lower). A future cohort may promote disclosure to scored criteria; the current 25-criterion gate is unchanged.
 
-| Dimension | Exceeds | Meets | Partially meets | Does not yet meet |
+### 12.1 Deliverable 1 — Design Problem Statement (5 criteria)
+
+A one-page statement of learner, context, constraint, and the measurable shift the design intends to produce. Everything downstream cites D1.
+
+| Criterion | Emerging | Developing | Proficient (floor) | Exemplary |
 |---|---|---|---|---|
-| Problem definition | Problem is crisply stated; stakes and boundary are explicit; non-problem scope is named | Problem is clearly stated | Problem statement conflates symptoms and causes | No coherent problem statement |
-| Learner characterization | Persona reflects real or observed learners with variance across at least three dimensions | Persona reflects typical learner attributes | Persona is generic | Persona is absent or unusable |
-| Context and constraints | Constraints mapped on time, equipment, physical setting, facilitator availability, prior knowledge; their design implications are traced | Constraints mapped but design implications implicit | Partial mapping | Missing |
-| Success criteria | Success criteria are observable, with evidence type named for each | Success criteria stated but evidence type vague | Success criteria aspirational, not observable | Missing |
-| Ethical and access considerations | Identifies at least two risks (data, accessibility, power dynamics) with mitigation | One risk identified with mitigation | Risks mentioned, no mitigation | Not addressed |
+| Learner specificity — named, not "students" | "Students" or a whole course; no differentiation | A population (e.g., "first-year residents") with one trait | A named population with role, prior knowledge, and at least one motivational condition | Proficient plus named variation within the population that changes design decisions |
+| Context constraints — observable, not inferred | No constraints named, or only generic ones ("busy," "limited time") | Two constraints named but without source or observable trigger | Three or more context constraints, each observable and each one that will force a design decision | Proficient plus the constraint most likely to be violated by a naive design, flagged |
+| Measurable shift — verb, baseline, target | Outcome is a feeling or attitude with no measurement path | Observable verb, but baseline or target is missing | Observable verb, stated baseline, stated target, and a realistic window for the shift | Proficient plus the discrimination this shift tests (performance ≠ understanding) |
+| Evidence of the problem — why now, not invented | No evidence; the problem is assumed | Anecdote or one secondary source; could be generalized | At least one primary-source data point (observation, artifact, interview) that the problem exists in this context | Proficient plus a disconfirming check — what would make this not the problem? |
+| Revision response — log + rationale | No revision log, or cosmetic edits only | One revision with what changed but not why | One revision based on specific peer feedback; what changed and why, in ≤3 sentences | Proficient plus one piece of feedback the author chose not to apply and the reason |
 
-### 12.2 Deliverable 2 — Educational Game Design Brief (25% of course grade)
+*Evidence required.* The one-page D1 artifact, the tracked-changes version from the Session 02 workshop, and one peer-review comment quoted in the change log. The Session 02 persona sheet and constraint map travel with D1 as its evidence pack.
 
-| Dimension | Exceeds | Meets | Partially meets | Does not yet meet |
+*Advisory (not scored in D1).* Ethical and access risks — data handling, accessibility, power dynamics — are introduced in Session 2 and belong in the D1 evidence pack as working notes. They are audited explicitly in Session 10 and scored where they bite: consent inside D4's *Protocol design* criterion, and accessibility inside D5's device-floor and fallback specifications.
+
+### 12.2 Deliverable 2 — Objective × Mechanic Crosswalk (5 criteria)
+
+Two to four objectives mapped to mechanics with rationale, risks, and a declined alternative. D2 is the spine of the design — every session from S4 onward cites it.
+
+| Criterion | Emerging | Developing | Proficient (floor) | Exemplary |
 |---|---|---|---|---|
-| Objective formulation | All objectives typed (§5.1), observable, evidence named | Objectives typed and observable | Some typing missing or non-observable objectives | No typing; mechanic-first |
-| Mechanic justification via crosswalk | Every primary mechanic justified against crosswalk; at least one documented rejected mechanic | Primary mechanics justified | Mechanic choices stated without crosswalk use | Mechanic-driven design |
-| Feedback and failure design | Feedback specified by event, modality, and delay; failure state is pedagogically productive | Feedback and failure specified | One is specified, the other sketchy | Missing |
-| Role, collaboration, narrative coherence | Choices across these three cohere with each other and with objectives | Choices stated and justified | Choices stated without justification | Missing or incoherent |
-| Facilitator integration | Facilitator moves referenced in brief; facilitator guide exists and is internally consistent with brief | Facilitator guide exists and is consistent | Facilitator guide exists but weak | Missing |
-| AI-use disclosure | Precise, honest, traceable | Present and credible | Present but vague | Missing or implausible |
+| Objective specificity — verb, condition, criterion | Objectives are topics, not behaviors ("fractions," "triage") | Observable verbs but no condition or criterion | Every objective has verb + condition + success criterion; types are named (skill / concept / judgment / disposition) | Proficient plus objectives tagged to Bloom or equivalent taxonomy with justification for the tag |
+| Mechanic rationale — why this, not another | Mechanic named without rationale; "it will be fun" | Rationale is generic (e.g., "engaging") without link to the objective type | Each row explains why this mechanic fits this objective type and this learner context | Proficient plus a citation to a worked case (Casebook handout or external) supporting the choice |
+| Risk identification — named, specific | No risks, or "might not work" | Generic risks (too hard, too long) | Each row names at least one risk specific to the mechanic–objective pair and how it would show up in play | Proficient plus the leading indicator that would tell you the risk is materializing during playtest |
+| Declined alternative — the honesty column | No declined row | A declined row exists but reads as a straw man | At least one objective the author was tempted to include, named, with a one-sentence reason for exclusion | Proficient plus the condition under which the declined row would re-enter scope |
+| Traceability to D1 — constraint-linked | D2 does not reference D1 | One row references a D1 element | Every row cites at least one specific D1 context constraint that shaped the mechanic choice | Proficient plus a row where a D1 constraint forced the author to reject their first mechanic choice |
 
-### 12.3 Deliverable 3 — Prototype + Build-Ready Specification (20% of course grade)
+*Evidence required.* The crosswalk table (markdown or .csv), version-stamped in the repo. The Session 5 collaboration-structure appendix counts as part of D2.
 
-| Dimension | Exceeds | Meets | Partially meets | Does not yet meet |
+*Advisory (not scored in D2).* The design work that surrounds the crosswalk still happens and still matters: the Session 4 feedback and failure-state specifications, and the Session 5 role / collaboration / narrative choices, travel as D2 appendices. They are scored where they become load-bearing — the facilitator guide inside D3, and the event → feedback map inside D5. Feedback specified by event, modality, and delay, with a pedagogically productive failure state, remains the standard those appendices should meet.
+
+### 12.3 Deliverable 3 — Paper Prototype + Facilitator Guide (5 criteria)
+
+A paper prototype playable at the table in five minutes, plus the facilitator guide that lets a colleague run it without you. Playability is the rubric bar.
+
+| Criterion | Emerging | Developing | Proficient (floor) | Exemplary |
 |---|---|---|---|---|
-| Minimum loop playability | Core loop runs end-to-end, at least once, in under 10 minutes, in front of a naive user | Core loop runs end-to-end | Core loop has gaps requiring verbal bridging | Loop not complete |
-| State machine fidelity | States, transitions, and triggers are exhaustive for the minimum loop | State machine covers the loop | Partial state machine | Missing or incoherent |
-| Event-feedback mapping | Every action has feedback; modality and delay specified | Every action has feedback | Most actions mapped | Missing |
-| Three.js bridge document | All eight sections (§8.1) complete and internally consistent | All eight sections present | Most sections present | Major sections missing |
-| Build-readiness | A developer not on the design team could plausibly build this | Mostly buildable with some clarification | Requires substantial redesign | Not buildable |
+| Playability — colleague-run, 5 min to loop | Author must explain to start; loop not reached | Runs with author present; stalls on one rule | A colleague picks it up from the guide and reaches the full loop within 5 minutes, no author present | Proficient plus two independent runners reach consistent decisions on the same scenario |
+| Loop fidelity — matches the D2 row | Prototype demonstrates a different mechanic than D2 | Core mechanic present but the feedback channel differs from D2 | Prototype implements the mechanic, feedback kind, and one risk case named in the chosen D2 row | Proficient plus the prototype reveals a D2 assumption the author did not know they were making |
+| Facilitator guide completeness — setup · rules · edges · debrief | No guide, or rules only | Setup + rules; no edge cases or debrief prompts | Setup, rules, at least three edge cases with resolutions, and three debrief prompts targeting the learning objective | Proficient plus a facilitator calibration note — the one rule runners disagree on and how to hold the line |
+| Artifact quality — no placeholder play | Cards/boards have "TBD" or lorem text in play area | Real content but inconsistent (one theme, many voices) | All play-area text is real content at final voice; art placeholders clearly marked and do not block play | Proficient plus content audited for accuracy by a domain expert or a cited source |
+| Iteration log — 3+ cycles | No log; one pass only | Two cycles logged; changes not tied to observations | Three or more cycles; each entry names what was observed, what changed, and what the next test will check | Proficient plus one cycle where the author reverted a change after evidence against it |
 
-### 12.4 Deliverable 4 — Playtest Report with Revision Plan (15% of course grade)
+*Evidence required.* Photographs of the prototype, a PDF of the facilitator guide, the iteration log, and one 2-minute video of a non-author running the loop.
 
-| Dimension | Exceeds | Meets | Partially meets | Does not yet meet |
+*Advisory (not scored beyond the criterion).* The facilitator guide criterion operationalizes the course's strongest research finding (§3.1, principle 3): a teacher not on the design team should be able to run this tomorrow. Hold the guide to that standard, not just to the four-part completeness checklist.
+
+### 12.4 Deliverable 4 — Playtest Report (5 criteria)
+
+Protocol, three or more target-learner sessions, observations separated from interpretation, and an evidence-ranked revision plan. Not peers. Target learners.
+
+| Criterion | Emerging | Developing | Proficient (floor) | Exemplary |
 |---|---|---|---|---|
-| Target-learner authenticity | At least three target learners; recruitment rationale clear; consent documented | Three target learners with consent | Fewer than three, or peer substitutes without approval | No target learners |
-| Observation rigor | Usability and learnability findings distinguished, with evidence for each | Both present | One dominates; the other sparse | Anecdotes only |
-| Evidence–revision linkage | Every top-priority revision traced to a specific observation | Most revisions traced | Some revisions untraced | Revisions are wishlist |
-| Ethics and data handling | Consent, data retention, and de-identification documented | Present | Partial | Missing |
-| AI-use disclosure | Precise, honest, traceable | Present and credible | Present but vague | Missing |
+| Protocol design — target learners, consent | Peers playtested; no protocol document | Mix of peers and target learners; protocol thin | Three or more target-learner sessions; written protocol with consent language, task brief, capture method, and debrief script | Proficient plus the protocol evolved between sessions and the change is documented |
+| Evidence base — capture + traceability | Notes from memory; no raw capture | One capture mode (notes only, or video only) | At least two capture modes (e.g., observation notes + artifacts + recording); every finding traceable to a specific capture moment | Proficient plus structured event logging against the S10 taxonomy |
+| Observation vs. interpretation — separated, labeled | Observations and interpretations mixed; no labels | Labels present but inconsistent; interpretations imported as observations | Every finding is written as an observation first (what was seen/heard), then one interpretation, with the boundary visible on the page | Proficient plus at least one observation the author cannot yet interpret — flagged as open |
+| Finding taxonomy — severity × domain | Findings as a flat list; no severity or domain | One dimension (severity or domain), not both | Every finding tagged with severity (stopper / major / minor) and domain (mechanic / UX / content / ethics / tech) | Proficient plus inter-rater check — a peer tagged a sample of findings and disagreements are discussed |
+| Revision plan — impact × effort, cut line | "Fix everything" or no plan | Ranked list; no explicit cut line; effort not estimated | Backlog with impact (1–5) and effort (1–5) per item, a drawn cut line for S11, and a one-sentence reason for each decline | Proficient plus the item the author most wanted to do but cut, and the condition that would bring it above the line |
 
-### 12.5 Deliverable 5 — Final Portfolio and Reflective Statement (25% of course grade)
+*Evidence required.* Protocol PDF, consent records (scrubbed), raw capture (notes and/or recording links), tagged findings table, and the ranked backlog. Consent, data retention, and de-identification documentation lives inside the protocol and its data appendix — thin ethics handling blocks Proficient on *Protocol design*.
 
-| Dimension | Exceeds | Meets | Partially meets | Does not yet meet |
+### 12.5 Deliverable 5 — Implementation Spec (5 criteria)
+
+State machine, event map, asset list, and a Three.js bridge for one hero scene. D5 is what a developer could build from. It absorbs D1–D4 into a single implementation artifact.
+
+| Criterion | Emerging | Developing | Proficient (floor) | Exemplary |
 |---|---|---|---|---|
-| Coherence across deliverables | D1–D4 form a single coherent design story; tensions are surfaced and addressed | Coherent | Some inconsistencies unaddressed | Incoherent or fragmented |
-| Facilitator usability | A teacher not in the team could run this tomorrow | Runnable with minor questions | Runnable with significant questions | Not runnable |
-| Reflection quality | Names specific design decisions that were wrong or uncertain; explains how they were revised; names what the learner would still change with more time | Reflects on specific decisions and revisions | Reflects generally | Reflection is praise or complaint, not analysis |
-| Implementation readiness | Three.js bridge is implementable; a follow-on developer has a clear first-month plan | Bridge is implementable | Bridge is incomplete | Not implementable |
-| Presentation quality | Clear, evidence-anchored, responsive to questions | Clear and evidence-anchored | Clear but light on evidence | Unclear |
-| AI-use disclosure | Precise, honest, traceable across all deliverables | Present and credible across all | Present on some deliverables only | Missing |
+| State machine — one page, fully guarded | Prose description; no diagram | Diagram exists; states or transitions unguarded | Single-page diagram; every state has entry and exit; every transition has event + guard; two designers reading it produce the same mental model | Proficient plus a runnable reference (Codex-generated state-machine runtime) passing the included assertions |
+| Event → feedback map — every cell specified | Prose; no table | Table exists; >20% of cells blank | All cells filled or marked "none" intentionally; events tagged with reward_kind against the S4 taxonomy | Proficient plus a gap audit (Codex lint or manual) showing zero silent cells |
+| Three.js bridge — scene purpose, graph, budget | 3D gestured at; no spec | Scene graph present; no camera, input, or perf budget | One hero scene fully specified: purpose, graph, camera, input, entry/exit, assets with budgets, and a named 2D fallback condition | Proficient plus a scaffold produced from the spec with the bridge handout's prompt, running on a device-floor target |
+| Coherence with D1–D4 — cited, not restated | D5 reads as if D1–D4 do not exist | Prior deliverables cited once or twice | Every major spec decision cites the D1 constraint, D2 row, D3 iteration, or D4 finding that forced it; divergences are called out | Proficient plus a "changed my mind" annex — one D2 decision the author reversed between D3 and D5 and why |
+| Known limits — above-the-line honesty | No limits section, or "no known issues" | Limits list is generic ("needs more testing") | A "Known Limits" annex drawn from the S11 backlog items above the line; each with the condition under which it would be resolved | Proficient plus a limit the author considers disqualifying for a next audience the game should not yet be used with |
+
+*Evidence required.* The spec document (PDF or web), state-machine diagram file, event map table, Three.js bridge document, and links to any Codex scaffolds produced from the spec.
+
+*Advisory (not scored beyond the criteria).* D5 is a compound artifact that carries its history visibly — learners who treat it as a fresh start reliably miss the *Coherence with D1–D4* floor. The Session 12 written reflection and presentation (see Session 12 guidance) are the working method for producing honest *Coherence* citations and a credible *Known Limits* annex.
 
 ### 12.6 Reviewer calibration
 
-Before assessing learner work, reviewers (instructor and any co-assessors) calibrate on two past exemplars — one strong, one weak — for each deliverable type. Where more than one reviewer scores a deliverable, any dimension differing by two or more levels is discussed and resolved before the final score is recorded. The v1 handbook did not have this step and its rubric did not require it; the revised rubric does.
+Before assessing learner work, reviewers (instructor and any co-assessors) calibrate on two past exemplars — one strong, one weak — for each deliverable type. Where more than one reviewer scores a deliverable, any criterion on which the reviewers differ by two or more levels — or on which they disagree about whether the Proficient floor is reached — is discussed and resolved before the final score is recorded. The v1 handbook did not have this step and its rubric did not require it; the revised rubric does.
 
 ---
 
@@ -712,28 +745,25 @@ Before assessing learner work, reviewers (instructor and any co-assessors) calib
 
 ## 13. Grading and credential award
 
-### 13.1 Weights
+### 13.1 The pass bar
 
-| Deliverable | Weight |
-|---|---:|
-| D1 — Learner and Context Analysis | 15% |
-| D2 — Educational Game Design Brief | 25% |
-| D3 — Prototype + Build-Ready Specification | 20% |
-| D4 — Playtest Report with Revision Plan | 15% |
-| D5 — Final Portfolio and Reflective Statement | 25% |
+There are no deliverable weights and no course percentage. The credential is awarded when the submitted D1–D5 portfolio reaches **Proficient or better on all 25 rubric criteria** (§12) under instructor review. Every criterion is a floor; every floor is required. Criterion levels are never averaged, and no criterion compensates for another — an Exemplary on D4 does not cover a Developing on D2.
 
-Participation and peer-feedback quality are not separately weighted. Peer feedback is a required input to revision; its quality is reflected in D4 and D5 rubric scores.
+Participation and peer-feedback quality are not separately scored. Peer feedback is a required input to revision; its quality surfaces in the criteria that depend on it (D1 *Revision response*, D3 *Iteration log*, D4 *Revision plan*).
 
-### 13.2 Thresholds
+### 13.2 Conditions that are not scored criteria
 
-- Overall weighted score ≥ 70%.
-- D2 and D3 each ≥ 60%.
-- D4 target-learner authenticity dimension ≥ Meets (unless approved alternative under §15.3 applies).
-- Any deliverable with a missing or implausible AI-use disclosure fails that deliverable regardless of other dimension scores.
+Three requirements sit outside the 25-criterion rubric:
 
-### 13.3 Reassessment
+- **Session completion.** Completing all 12 sessions is a prerequisite to submit the portfolio. It makes the learner eligible for scoring; it is not itself a credential criterion.
+- **GenAI Provenance Log.** A complete Provenance Log is a submission-completeness requirement for every deliverable (§7.3, §12). Submissions without it are returned for completion before scoring — not scored lower.
+- **Post-program survey.** Completing the post-program survey is a claim-time condition on releasing the credential.
 
-A learner scoring below threshold on one deliverable may resubmit it once within two weeks of the final presentation, addressing the reviewer's written comments. A learner scoring below threshold on more than one deliverable is not awarded the credential on that run and may re-enroll.
+The D4 target-learner requirement (three or more target-learner sessions, or an approved §15.3 alternative) is enforced *inside* the rubric, through the D4 *Protocol design* criterion.
+
+### 13.3 Revision and resubmission
+
+Any artifact scored below Proficient on one or more criteria returns to the learner with the reviewer's written comments, one revision path, and a clear resubmission deadline. Resubmission is available once per deliverable within the course window; a revision that reaches Proficient on every criterion earns the credit, and the original score is not averaged in. A learner whose portfolio still misses the floor after the available resubmissions is not awarded the credential on that run and may re-enroll.
 
 ---
 
@@ -785,16 +815,16 @@ The v1 handbook did not estimate instructor workload. This omission is operation
 
 | Deliverable | Length of typical artifact | Time per submission |
 |---|---|---:|
-| D1 | 4–6 pages | 0.5 h |
-| D2 | 10–15 pages | 1.0 h |
-| D3 | Prototype + 8–10 pages of spec | 1.0 h |
-| D4 | 5–8 pages with appendices | 0.5 h |
-| D5 | Portfolio + 3–5 page reflection + presentation | 1.0 h |
+| D1 — Design Problem Statement | 1 page + evidence pack | 0.5 h |
+| D2 — Objective × Mechanic Crosswalk | Crosswalk table + appendices | 1.0 h |
+| D3 — Paper Prototype + Facilitator Guide | Photos + guide PDF + iteration log + run video | 1.0 h |
+| D4 — Playtest Report + recording | 5–8 pages with appendices | 0.5 h |
+| D5 — Implementation Spec | Spec + diagrams + bridge document + presentation | 1.0 h |
 | **Per-learner-or-team total** | — | **4.0 h** |
 
 **Total instructor assessment time by cohort configuration:**
 
-| Cohort | Teaming | Units to assess | Assessment hours | Teaching hours (36 h synchronous) | Prep + office hours | Estimated total |
+| Cohort | Teaming | Units to assess | Assessment hours | Teaching hours (12 × 180-min scheduled blocks = 36 h; 32 h effective) | Prep + office hours | Estimated total |
 |---|---|---:|---:|---:|---:|---:|
 | 10 learners | Individual | 10 | 40 | 36 | 24 | **≈ 100 h** |
 | 20 learners | Pairs (10 units) | 10 | 40 | 36 | 24 | **≈ 100 h** |
@@ -818,7 +848,7 @@ Not every learner on this course has a standing group of target learners to test
 3. **Remote playtest.** Synchronous remote playtests are acceptable when target learners cannot meet in person. Recording consent and observation protocol adaptations are required.
 4. **Target-adjacent substitute.** For learners whose target audience is a restricted population (for example, a specific clinical group), a target-adjacent substitute — people similar in role and prior knowledge, not in diagnosis — is acceptable with prior instructor approval. This must be declared in the playtest plan and discussed in D4's reflection.
 
-A peer-only playtest is *not* an approved alternative and does not satisfy D4's target-learner dimension.
+A peer-only playtest is *not* an approved alternative and does not reach Proficient on D4's *Protocol design* criterion.
 
 ### 15.4 Delivery modes
 
@@ -840,9 +870,9 @@ The course runs in-person, hybrid, or fully online. The 160-minute effective-tim
 
 1. **Letting teams start building before Session 3 is complete.** Remedy: enforce a no-build rule until the crosswalk has been applied for at least three objectives.
 2. **Praising engagement without checking learning.** Remedy: every time a team shows an engaging prototype, ask the mechanic-to-objective question before anything else.
-3. **Neglecting facilitator design.** Remedy: never allow D2 to be accepted without a facilitator guide, even a weak one, so the iteration conversation exists.
+3. **Neglecting facilitator design.** Remedy: never allow D3 to be accepted without a facilitator guide, even a weak one, so the iteration conversation exists — the guide is a scored D3 criterion (§12.3).
 4. **Allowing a peer-only playtest.** Remedy: the playtest window is the week-10 instructional expectation; target-learner access is checked in Session 9 recruitment confirmation.
-5. **Grading for aesthetic completeness rather than rubric dimensions.** Remedy: use the per-deliverable rubrics (§12) and the calibration step (§12.6).
+5. **Grading for aesthetic completeness rather than rubric criteria.** Remedy: use the per-deliverable rubrics (§12) and the calibration step (§12.6).
 6. **Under-investing in the revision studio (Session 11).** Remedy: treat Session 11 as the highest-value coaching session of the course and plan rotation schedule accordingly.
 
 ### 16.3 Instructor moves that reliably produce better work
@@ -867,55 +897,53 @@ Every session closes with a two-minute written exit ticket. Three prompts rotate
 
 Exit tickets are not graded. They are read by the instructor before the next session and inform the opening of that session.
 
-### 17.2 D1 template (Learner and Context Analysis)
+### 17.2 D1 template (Design Problem Statement)
 
-1. Problem statement — one page.
-2. Persona — one page.
-3. Constraint map — time, equipment, setting, facilitator, prior knowledge, one row each.
-4. Success criteria — each with named evidence type.
-5. Ethical and access risk table.
-6. AI-use disclosure appendix — export from your Provenance Log entries tagged D1.
+1. Problem statement — one page: learner, context, constraint, measurable shift (verb + baseline + target + window), and the evidence the problem exists. This page is the scored artifact.
+2. Persona — one page (evidence pack).
+3. Constraint map — time, equipment, setting, facilitator, prior knowledge, one row each (evidence pack).
+4. Revision log — the tracked-changes workshop version plus one quoted peer-review comment, with what changed and why.
+5. Ethical and access risk notes (advisory working notes; audited in Session 10, scored later via D4 and D5).
+6. Provenance Log entries tagged D1 — completeness requirement for submission.
 
-### 17.3 D2 template (Design Brief)
+### 17.3 D2 template (Objective × Mechanic Crosswalk)
 
 1. Project title and one-sentence problem restatement.
-2. Learning objectives (each typed per §5.1, each with evidence).
-3. Mechanic map (per §5.3) — primary, amplifying, rejected, with justifications.
-4. Feedback and failure specification.
-5. Role, collaboration/competition, and narrative statement.
-6. Facilitator guide (pre-brief, in-play, debrief, risk mitigation).
-7. Accessibility and ethics statement.
-8. AI-use disclosure appendix — export from your Provenance Log entries tagged D2.
+2. The crosswalk table — two to four objectives, one row each: objective (verb + condition + criterion, typed per §5.1), primary mechanic with rationale against the crosswalk row (§5.2–5.3), amplifying mechanics, at least one named risk per row, and a D1 constraint citation per row.
+3. The declined alternative — at least one objective you were tempted to include, with the one-sentence reason for exclusion.
+4. Appendices (advisory, travel with D2): feedback and failure specification (Session 4); role, collaboration/competition, and narrative statement (Session 5 — this appendix counts as part of D2).
+5. Provenance Log entries tagged D2 — completeness requirement for submission.
 
-### 17.4 D3 template (Prototype + Specification)
+### 17.4 D3 template (Paper Prototype + Facilitator Guide)
 
-1. Prototype (physical or digital).
-2. Minimum-loop description — what happens in one play, step by step.
-3. State machine.
-4. Event-feedback matrix.
-5. Three.js bridge document (eight sections per §8.1).
-6. Known limitations.
-7. AI-use disclosure appendix — export from your Provenance Log entries tagged D3.
+1. Paper prototype — playable at the table in five minutes; photographs submitted.
+2. Minimum-loop description — what happens in one play, step by step, and which D2 row it implements.
+3. Facilitator guide — setup, rules, at least three edge cases with resolutions, three debrief prompts targeting the learning objective, plus pre-brief and risk-mitigation material from Session 6.
+4. Iteration log — three or more cycles: observed, changed, next check.
+5. Run video — one 2-minute video of a non-author running the loop.
+6. Provenance Log entries tagged D3 — completeness requirement for submission.
 
 ### 17.5 D4 template (Playtest Report)
 
 1. Playtest goals — what was being learned about the design.
 2. Participant description (de-identified).
-3. Protocol as run, with any deviations from the Session 9 plan.
-4. Observations — usability and learnability sections kept distinct.
-5. Analysis — what these observations suggest about the design.
-6. Revision plan — prioritized, with each revision traced to an observation.
+3. Protocol as run, with consent language, task brief, capture method, debrief script, and any deviations from the Session 9 plan.
+4. Observations — written as observations first, each with one labeled interpretation; the boundary visible on the page.
+5. Findings table — every finding tagged with severity (stopper / major / minor) and domain (mechanic / UX / content / ethics / tech), traceable to a capture moment.
+6. Revision backlog — impact (1–5) × effort (1–5) per item, a drawn cut line for Session 11, and a one-sentence reason for each decline.
 7. Data and ethics appendix (consent, retention, de-identification).
-8. AI-use disclosure appendix — export from your Provenance Log entries tagged D4.
+8. Provenance Log entries tagged D4 — completeness requirement for submission.
 
-### 17.6 D5 template (Final Portfolio)
+### 17.6 D5 template (Implementation Spec)
 
 1. Executive summary — one page.
-2. Linked versions of D1–D4 (latest revisions).
-3. Reflective statement — four to five pages on (a) what the team got right, (b) what they got wrong, (c) what they would change with more time, (d) what they learned about educational game design from doing it.
-4. Facilitator guide — final revision, stand-alone.
-5. Implementation roadmap — one page; what a developer would do in the first month.
-6. AI-use disclosure — consolidated across deliverables; export from your Provenance Log entries consolidated across D1–D5.
+2. State-machine diagram — single page, every state with entry/exit, every transition with event + guard.
+3. Event → feedback matrix — all cells filled or intentionally marked "none", tagged with reward_kind (S4 taxonomy).
+4. Three.js bridge document (eight sections per §8.1) — one hero scene with purpose, graph, camera, input, entry/exit, asset budgets, and a 2D fallback condition.
+5. Coherence citations — every major spec decision cites the D1 constraint, D2 row, D3 iteration, or D4 finding that forced it; divergences called out.
+6. Known Limits annex — drawn from the Session 11 backlog items above the line, each with its resolution condition.
+7. Reflective statement (advisory annex, not scored) — what the team got right, got wrong, would change with more time, and learned; the raw material for items 5 and 6 and for the Session 12 presentation.
+8. Provenance Log entries consolidated across D1–D5 — completeness requirement for submission.
 
 ---
 
@@ -931,10 +959,10 @@ Where the hosting institution wishes to signal intermediate progress, the creden
 
 | Stackable badge | Requires |
 |---|---|
-| Game-Based Learning Foundations | D1 completed at Meets or above |
-| Educational Mechanics and Prototyping | D2 and D3 completed at Meets or above |
-| Playtesting and Facilitation | D4 completed at Meets or above; facilitator guide in D2 completed at Meets or above |
-| Educational Game Design Capstone | D5 completed at Meets or above |
+| Game-Based Learning Foundations | D1 at Proficient or above on all five criteria |
+| Educational Mechanics and Prototyping | D2 and D3 at Proficient or above on all criteria |
+| Playtesting and Facilitation | D4 at Proficient or above on all criteria (the facilitator guide is already covered by D3's *Facilitator guide completeness* criterion) |
+| Educational Game Design Capstone | D5 at Proficient or above on all five criteria |
 
 Awarding all four produces the full credential. The stackable form is not the default because it can encourage learners to treat deliverables as separable when the course's design treats them as a coupled sequence.
 
@@ -1015,7 +1043,7 @@ This section exists because claims about how a course was designed should be tra
 | v1 position | v2 position | Reason |
 |---|---|---|
 | "Research-based minimum of 8 sessions" | "Practitioner lower bound of 8 sessions; the recommendation is 12" | v1 language overstated the evidence; no empirical study supports the 8-session threshold |
-| Single shared rubric of 7 "common criteria" applied to all deliverables | Per-deliverable rubrics (§12), each with 4–6 dimensions and a 4-level scale | Shared rubric could not produce reliable scoring across deliverable types |
+| Single shared rubric of 7 "common criteria" applied to all deliverables | Per-deliverable rubrics (§12), five criteria each (25 total) at four levels (Emerging / Developing / Proficient / Exemplary), with a non-compensatory Proficient floor on every criterion | Shared rubric could not produce reliable scoring across deliverable types; averaging masked per-competency gaps |
 | 180-minute session plans scheduling all 180 minutes | 180-minute blocks planned as 160 effective minutes plus 20 minutes buffer | v1 plans chronically over-ran because transitions were not budgeted |
 | "Mechanic literacy I and II" each covering 5 concepts | Mechanic literacy I covers challenge/feedback/failure; II covers narrative/role/collaboration; reward moved to Session 10 audit; systems thinking and simulation fidelity become optional extension | v1 sessions 4 and 5 overloaded learners |
 | Sessions 7 and 8 with overlapping artifacts | Session 7 produces a playable low-fi prototype; Session 8 produces specification (no new prototype) | Learners could not tell the sessions apart in v1 |
@@ -1049,4 +1077,4 @@ These are named so that institutions adopting the handbook can make informed loc
 
 ## 21. One-paragraph summary
 
-Educational game design is the work of aligning a learning objective, a game mechanic, a facilitator's moves, and the cognitive and motivational conditions of real learners. No policy specifies a minimum number of sessions for crediting this work; on practical grounds, eight three-hour sessions is the lowest defensible configuration and twelve is recommended. The course is built around five required deliverables — learner analysis, design brief, build-ready prototype specification, playtest report with revisions, and final portfolio — each with its own rubric, each tied to specific program outcomes, all subject to an explicit generative-AI use policy. Sessions run at 160 effective minutes within 180-minute blocks, a week of external playtesting with target learners is reserved in the timeline, and the compressed 8-session tier is described honestly, including what each compression costs. The handbook's claims about what is research-supported, and what is practitioner judgment, are traceable in the text.
+Educational game design is the work of aligning a learning objective, a game mechanic, a facilitator's moves, and the cognitive and motivational conditions of real learners. No policy specifies a minimum number of sessions for crediting this work; on practical grounds, eight three-hour sessions is the lowest defensible configuration and twelve is recommended. The course is built around five required deliverables — design problem statement, objective × mechanic crosswalk, paper prototype with facilitator guide, playtest report, and implementation spec — each with its own five-criterion rubric, each tied to specific program outcomes, all gated by a non-compensatory Proficient floor on every criterion and subject to an explicit generative-AI use policy. Sessions run at 160 effective minutes within 180-minute blocks, a week of external playtesting with target learners is reserved in the timeline, and the compressed 8-session tier is described honestly, including what each compression costs. The handbook's claims about what is research-supported, and what is practitioner judgment, are traceable in the text.
