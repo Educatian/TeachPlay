@@ -64,7 +64,7 @@ Where research on serious and educational game design does produce stable findin
 - Teacher facilitation and curriculum guides are decisive for whether game-based learning transfers to classroom outcomes (Jong, Dong, & Luk, 2017; Nousiainen, Kangas, Rikala, & Vesisenaho, 2018; Sharma et al., 2024).
 - Alignment between learning objectives and game mechanics is the single most consistent predictor in framework literature (Plass, Homer, & Kinzer, 2015; Annetta, 2010; Arnab et al., 2015).
 - Gamification effects on learning are modest and highly moderated by design quality and context (Sailer & Homner, 2020).
-- Meta-analyses on game-based learning report consistent but small-to-moderate effects on specific outcomes such as critical thinking and computational thinking (Mao, Cui, Chiu, & Lei, 2022; Ma, Zhang, Zhu, Zhao, & Wang, 2023).
+- Meta-analyses on game-based learning report moderate-to-large effects on specific outcomes such as critical thinking and computational thinking (Mao, Cui, Chiu, & Lei, 2022; Lu, Chiu, Cui, Mao, & Lei, 2023).
 - Playtesting with target learners, not proxy users, is the most frequent recommendation in stakeholder-centered design frameworks (Bunt, Greeff, & Taylor, 2024; Silva, 2020).
 
 This handbook is built from these five findings outward. Every design tool in Part 2 and every required deliverable in Part 3 is traceable to one or more of them; see the traceability table in Section 3.2.
@@ -276,11 +276,15 @@ This policy is binding from 2026 onward. It applies to all five deliverables.
 
 ### 7.3 Required disclosure
 
+Operationally, disclosures are captured as entries in the platform's GenAI Provenance Log (provenance.html), each declared on the AIAS five-level scale.
+
 Each deliverable includes a short appendix titled *AI Use Disclosure* with three items:
 
 1. Which tool(s) were used.
 2. On which sections.
 3. What the learner changed after the tool's contribution.
+
+The three items may be assembled directly from your Provenance Log entries.
 
 A missing or obviously untrue disclosure is a breach of academic integrity and fails the deliverable.
 
@@ -870,7 +874,7 @@ Exit tickets are not graded. They are read by the instructor before the next ses
 3. Constraint map — time, equipment, setting, facilitator, prior knowledge, one row each.
 4. Success criteria — each with named evidence type.
 5. Ethical and access risk table.
-6. AI-use disclosure appendix.
+6. AI-use disclosure appendix — export from your Provenance Log entries tagged D1.
 
 ### 17.3 D2 template (Design Brief)
 
@@ -881,7 +885,7 @@ Exit tickets are not graded. They are read by the instructor before the next ses
 5. Role, collaboration/competition, and narrative statement.
 6. Facilitator guide (pre-brief, in-play, debrief, risk mitigation).
 7. Accessibility and ethics statement.
-8. AI-use disclosure appendix.
+8. AI-use disclosure appendix — export from your Provenance Log entries tagged D2.
 
 ### 17.4 D3 template (Prototype + Specification)
 
@@ -891,7 +895,7 @@ Exit tickets are not graded. They are read by the instructor before the next ses
 4. Event-feedback matrix.
 5. Three.js bridge document (eight sections per §8.1).
 6. Known limitations.
-7. AI-use disclosure appendix.
+7. AI-use disclosure appendix — export from your Provenance Log entries tagged D3.
 
 ### 17.5 D4 template (Playtest Report)
 
@@ -902,7 +906,7 @@ Exit tickets are not graded. They are read by the instructor before the next ses
 5. Analysis — what these observations suggest about the design.
 6. Revision plan — prioritized, with each revision traced to an observation.
 7. Data and ethics appendix (consent, retention, de-identification).
-8. AI-use disclosure appendix.
+8. AI-use disclosure appendix — export from your Provenance Log entries tagged D4.
 
 ### 17.6 D5 template (Final Portfolio)
 
@@ -911,7 +915,7 @@ Exit tickets are not graded. They are read by the instructor before the next ses
 3. Reflective statement — four to five pages on (a) what the team got right, (b) what they got wrong, (c) what they would change with more time, (d) what they learned about educational game design from doing it.
 4. Facilitator guide — final revision, stand-alone.
 5. Implementation roadmap — one page; what a developer would do in the first month.
-6. AI-use disclosure — consolidated across deliverables.
+6. AI-use disclosure — consolidated across deliverables; export from your Provenance Log entries consolidated across D1–D5.
 
 ---
 
@@ -960,11 +964,11 @@ These are the sources that either (a) ground a claim in Parts 1–2 or (b) are u
 
 10. Jong, M. S. Y., Dong, A., & Luk, E. (2017). Design-based research on teacher facilitation practices for serious gaming in formal schooling. *Research and Practice in Technology Enhanced Learning, 12*, Article 19. https://doi.org/10.1186/s41039-017-0056-6
 
-11. Ma, J., Zhang, Y., Zhu, Z., Zhao, S., & Wang, Q. (2023). Game-based learning for students' computational thinking: A meta-analysis. *Simulation & Gaming, 54*(4), 421–448. https://doi.org/10.1177/10468781231178948
+11. Lu, Z., Chiu, M. M., Cui, Y., Mao, W., & Lei, H. (2023). Effects of game-based learning on students' computational thinking: A meta-analysis. *Journal of Educational Computing Research, 61*(1), 235–256. https://doi.org/10.1177/07356331221100740
 
-12. Mao, W., Cui, Y., Chiu, M. M., & Lei, H. (2022). Effects of game-based learning on students' critical thinking: A meta-analysis. *Simulation & Gaming, 53*(1), 5–35. https://doi.org/10.1177/10468781211007098
+12. Mao, W., Cui, Y., Chiu, M. M., & Lei, H. (2022). Effects of game-based learning on students' critical thinking: A meta-analysis. *Journal of Educational Computing Research, 59*(8), 1682–1708. https://doi.org/10.1177/07356331211007098
 
-13. MICROBOL. (2022). *Micro-credentials linked to the Bologna Key Commitments: Common framework.* Bologna Follow-Up Group. https://microcredentials.eu/microbol/
+13. MICROBOL. (2022). *Micro-credentials linked to the Bologna Key Commitments: Common framework.* Bologna Follow-Up Group. https://microbol.microcredentials.eu/
 
 14. MicroHE Consortium. (2020). *The Micro-Credential Users' Guide.* MicroHE. https://microcredentials.eu/wp-content/uploads/sites/20/2021/05/D3_3_MicroHE-Users-Guide.pdf
 
@@ -978,25 +982,27 @@ These are the sources that either (a) ground a claim in Parts 1–2 or (b) are u
 
 19. OECD. (2023). *Micro-credentials for lifelong learning and employability: Uses and possibilities.* OECD Publishing. https://doi.org/10.1787/9c4b7b68-en
 
-20. Plass, J. L., Homer, B. D., & Kinzer, C. K. (2015). Foundations of game-based learning. *Educational Psychologist, 50*(4), 258–283. https://doi.org/10.1080/00461520.2015.1122533
+20. Perkins, M., Furze, L., Roe, J., & MacVaugh, J. (2024). The Artificial Intelligence Assessment Scale (AIAS): A framework for ethical integration of generative AI in educational assessment. *Journal of University Teaching and Learning Practice, 21*(6). https://doi.org/10.53761/q3azde36
 
-21. Sailer, M., & Homner, L. (2020). The gamification of learning: A meta-analysis. *Educational Psychology Review, 32*, 77–112. https://doi.org/10.1007/s10648-019-09498-w
+21. Plass, J. L., Homer, B. D., & Kinzer, C. K. (2015). Foundations of game-based learning. *Educational Psychologist, 50*(4), 258–283. https://doi.org/10.1080/00461520.2015.1122533
 
-22. Sharma, R., Tan, C., Gomez, D., Xu, C., & Dubé, A. K. (2024). Guiding teachers' game-based learning: How user experience of a digital curriculum guide impacts teachers' self-efficacy and acceptance of educational games. *Teaching and Teacher Education, 148*, 104915. https://doi.org/10.1016/j.tate.2024.104915
+22. Sailer, M., & Homner, L. (2020). The gamification of learning: A meta-analysis. *Educational Psychology Review, 32*, 77–112. https://doi.org/10.1007/s10648-019-09498-w
 
-23. Silva, F. G. M. (2020). Practical methodology for the design of educational serious games. *Information, 11*(1), 14. https://doi.org/10.3390/info11010014
+23. Sharma, R., Tan, C., Gomez, D., Xu, C., & Dubé, A. K. (2024). Guiding teachers' game-based learning: How user experience of a digital curriculum guide impacts teachers' self-efficacy and acceptance of educational games. *Teaching and Teacher Education, 155*, 104915. https://doi.org/10.1016/j.tate.2024.104915
 
-24. Sweller, J., van Merriënboer, J. J. G., & Paas, F. (2019). Cognitive architecture and instructional design: 20 years later. *Educational Psychology Review, 31*, 261–292. https://doi.org/10.1007/s10648-019-09465-5
+24. Silva, F. G. M. (2020). Practical methodology for the design of educational serious games. *Information, 11*(1), 14. https://doi.org/10.3390/info11010014
 
-25. Varadarajan, S., Koh, J. H. L., & Daniel, B. K. (2023). A systematic review of the opportunities and challenges of micro-credentials for multiple stakeholders: Learners, employers, higher education institutions and government. *International Journal of Educational Technology in Higher Education, 20*, Article 13. https://doi.org/10.1186/s41239-023-00381-x
+25. Sweller, J., van Merriënboer, J. J. G., & Paas, F. (2019). Cognitive architecture and instructional design: 20 years later. *Educational Psychology Review, 31*, 261–292. https://doi.org/10.1007/s10648-019-09465-5
 
-26. three.js manual. (accessed 2026-04-18). Creating a scene. https://threejs.org/manual/en/creating-a-scene.html
+26. Varadarajan, S., Koh, J. H. L., & Daniel, B. K. (2023). A systematic review of the opportunities and challenges of micro-credentials for multiple stakeholders: Learners, employers, higher education institutions and government. *International Journal of Educational Technology in Higher Education, 20*, Article 13. https://doi.org/10.1186/s41239-023-00381-x
 
-27. three.js manual. (accessed 2026-04-18). Picking. https://threejs.org/manual/en/picking.html
+27. three.js manual. (accessed 2026-04-18). Creating a scene. https://threejs.org/manual/en/creating-a-scene.html
 
-28. three.js documentation. (accessed 2026-04-18). Raycaster. https://threejs.org/docs/?q=Raycaster#api/en/core/Raycaster
+28. three.js manual. (accessed 2026-04-18). Picking. https://threejs.org/manual/en/picking.html
 
-29. Wiggins, G., & McTighe, J. (2005). *Understanding by Design* (2nd ed.). ASCD.
+29. three.js documentation. (accessed 2026-04-18). Raycaster. https://threejs.org/docs/?q=Raycaster#api/en/core/Raycaster
+
+30. Wiggins, G., & McTighe, J. (2005). *Understanding by Design* (2nd ed.). ASCD.
 
 ---
 

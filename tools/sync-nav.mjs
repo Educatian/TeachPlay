@@ -49,7 +49,7 @@ const GROUPS = [
       ['AI Use Policy',    'ai-use-policy.html',  'Binding from 2026'],
       ['Alignment',        'alignment.html',      'Standards crosswalk'],
       ['Resource Library', 'resources.html',      'Companion handouts'],
-      ['References',       'references.html',     '29 sources, APA 7'],
+      ['References',       'references.html',     '30 sources, APA 7'],
     ],
   },
   {
