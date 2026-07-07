@@ -90,6 +90,7 @@
   line-height: 1.65;
   color: var(--gray-100);
   max-width: 720px;
+  overflow-wrap: break-word;
 }
 .doc__kicker {
   font-family: var(--font-sans);
@@ -111,6 +112,7 @@
   margin: 0 0 36px;
   padding-bottom: 24px;
   border-bottom: 3px solid var(--crimson);
+  text-wrap: balance;
 }
 .doc h2 {
   font-family: var(--font-display);
@@ -121,6 +123,7 @@
   margin: 56px 0 20px;
   padding-top: 8px;
   scroll-margin-top: 20px;
+  text-wrap: balance;
 }
 .doc h3 {
   font-family: var(--font-sans);
@@ -166,7 +169,7 @@
 .tag-badge[data-tag="RISK"]     { background: #B42318; }
 .tag-badge[data-tag="LINKS"]    { background: #334155; }
 
-.doc p { margin: 0 0 18px; }
+.doc p { margin: 0 0 18px; text-wrap: pretty; }
 .doc p:last-child { margin-bottom: 0; }
 .doc a { color: var(--crimson); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .doc a:hover { background: rgba(158, 27, 50, 0.08); }

@@ -128,7 +128,21 @@
     document.head.appendChild(s);
   }
 
+  // Hold toasts while the enroll modal owns the screen; flush once it closes
+  // so first-visit achievements don't paint on top of the registration dialog.
+  var pendingToasts = [];
+  document.addEventListener('hb:enroll-close', function () {
+    var queued = pendingToasts.splice(0, pendingToasts.length);
+    queued.forEach(function (spec, i) {
+      setTimeout(function () { toast(spec); }, 400 + i * 600);
+    });
+  });
+
   function toast(spec) {
+    if (document.getElementById('hb-enroll-overlay')) {
+      pendingToasts.push(spec);
+      return;
+    }
     injectStyles();
     var el = document.createElement('div');
     el.className = 'hb-ach-toast';

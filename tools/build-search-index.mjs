@@ -30,6 +30,7 @@ const SKIP = new Set([
 function stripChrome(html) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<nav[\s\S]*?<\/nav>/gi, ' ')
     .replace(/<footer[\s\S]*?<\/footer>/gi, ' ')

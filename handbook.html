@@ -35,14 +35,14 @@
   }
 
   /* Prose */
-  .hb-prose { max-width: 780px; min-width: 0; font-family: var(--font-serif, Georgia, serif); font-size: 16px; line-height: 1.7; color: #1a1a1a; }
+  .hb-prose { max-width: 720px; min-width: 0; font-family: var(--font-serif, Georgia, serif); font-size: 18px; line-height: 1.7; color: #1a1a1a; overflow-wrap: break-word; }
   .hb-prose a { word-break: break-word; overflow-wrap: anywhere; }
   .hb-prose pre, .hb-prose code { max-width: 100%; overflow-x: auto; }
-  .hb-prose h1 { font-family: var(--font-display, Georgia, serif); font-size: 38px; line-height: 1.15; margin: 48px 0 18px; color: #1a1a1a; border-bottom: 3px solid var(--crimson); padding-bottom: 10px; }
+  .hb-prose h1 { font-family: var(--font-display, Georgia, serif); font-size: 38px; line-height: 1.15; margin: 48px 0 18px; color: #1a1a1a; border-bottom: 3px solid var(--crimson); padding-bottom: 10px; text-wrap: balance; }
   .hb-prose h1:first-child { margin-top: 0; }
-  .hb-prose h2 { font-family: var(--font-sans, -apple-system, sans-serif); font-size: 26px; line-height: 1.2; margin: 36px 0 14px; color: var(--crimson); }
+  .hb-prose h2 { font-family: var(--font-sans, -apple-system, sans-serif); font-size: 26px; line-height: 1.2; margin: 36px 0 14px; color: var(--crimson); text-wrap: balance; }
   .hb-prose h3 { font-family: var(--font-sans, -apple-system, sans-serif); font-size: 19px; line-height: 1.3; margin: 28px 0 10px; color: #1a1a1a; }
-  .hb-prose p { margin: 0 0 14px; }
+  .hb-prose p { margin: 0 0 14px; text-wrap: pretty; }
   .hb-prose ul, .hb-prose ol { margin: 0 0 16px 0; padding-left: 26px; }
   .hb-prose li { margin-bottom: 6px; }
   .hb-prose strong { color: #1a1a1a; }
@@ -290,11 +290,27 @@
     return out.join('\n');
   }
 
+  // The marked.js <script> above is async, so it can finish loading after the
+  // handbook fetch resolves. Wait for it (bounded) before falling back, or GFM
+  // tables/lists/hr in the handbook render as raw text.
+  function ensureMarked() {
+    if (window.marked && window.marked.parse) return Promise.resolve();
+    var s = document.querySelector('script[src*="marked"]');
+    if (!s) return Promise.resolve();
+    return new Promise(function (resolve) {
+      var t = setTimeout(resolve, 5000);
+      function done() { clearTimeout(t); resolve(); }
+      s.addEventListener('load', done);
+      s.addEventListener('error', done);
+    });
+  }
+
   try {
     var resp = await fetch('handbook-v2.md');
     if (!resp.ok) throw new Error('fetch failed: ' + resp.status);
     var md = await resp.text();
-    if (!window.marked) {
+    await ensureMarked();
+    if (!window.marked || !window.marked.parse) {
       window.marked = { setOptions: function () {}, parse: fallbackMarkdown };
     }
     marked.setOptions({ gfm: true, breaks: false, headerIds: true });

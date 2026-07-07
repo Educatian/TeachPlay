@@ -134,6 +134,9 @@
   }
 
   function showModal() {
+    // Signal other first-visit surfaces (achievement toasts, storage banner)
+    // to hold back while the modal owns the screen.
+    document.dispatchEvent(new CustomEvent('hb:enroll-open'));
     const overlay = document.createElement('div');
     overlay.id = 'hb-enroll-overlay';
     overlay.style.cssText = [
@@ -268,6 +271,7 @@
     function close() {
       releaseTrap();
       removeModal(overlay);
+      document.dispatchEvent(new CustomEvent('hb:enroll-close'));
     }
 
     // Close on backdrop click (outside the dialog panel only).

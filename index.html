@@ -140,8 +140,24 @@
         };
 
         improveLearnerEntry();
-        const observer = new MutationObserver(improveLearnerEntry);
-        observer.observe(document.getElementById('root'), { childList: true, subtree: true });
+        // Disconnect while rewriting and debounce to one pass per frame:
+        // reacting to our own mutations re-entered improveLearnerEntry in a
+        // feedback loop, thrashing React-owned subtrees (remounting <video>/
+        // <audio> mid-preload → repeated ERR_ABORTED media requests).
+        const observedRoot = document.getElementById('root');
+        let rewriteScheduled = false;
+        const observer = new MutationObserver(() => {
+          if (rewriteScheduled) return;
+          rewriteScheduled = true;
+          requestAnimationFrame(() => {
+            rewriteScheduled = false;
+            observer.disconnect();
+            try { improveLearnerEntry(); } finally {
+              observer.observe(observedRoot, { childList: true, subtree: true });
+            }
+          });
+        });
+        observer.observe(observedRoot, { childList: true, subtree: true });
       });
     </script>
   </head>

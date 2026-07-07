@@ -92,8 +92,18 @@
     if (ack()) return;
     // Don't blast it on the privacy page itself — they're already there.
     if (/privacy\.html/.test(location.pathname)) { setAck(); return; }
-    // Tiny delay so the banner doesn't compete with first-paint.
-    setTimeout(show, 1200);
+    // Tiny delay so the banner doesn't compete with first-paint. If the
+    // enroll modal is up (first visit to a session page), hold the banner
+    // until the modal is dismissed so interruptions arrive one at a time.
+    setTimeout(function () {
+      if (document.getElementById('hb-enroll-overlay')) {
+        document.addEventListener('hb:enroll-close', function () {
+          setTimeout(show, 600);
+        }, { once: true });
+        return;
+      }
+      show();
+    }, 1200);
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
