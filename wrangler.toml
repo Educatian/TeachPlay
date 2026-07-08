@@ -20,6 +20,10 @@ enabled = true
 [assets]
 directory = "./"
 binding = "ASSETS"
+# Serve /404.html (with a real 404 status) for asset paths that don't
+# exist — without this, unknown URLs like /session-99.html return an
+# empty-body 404 and the branded 404 page never appears.
+not_found_handling = "404-page"
 
 # DEPRECATED — per-cohort BitstringStatusList state moved to D1 (migration
 # 0007). Workers KV has no compare-and-swap, so the old get→put index

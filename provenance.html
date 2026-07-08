@@ -319,6 +319,8 @@
       </div>
     </div>
     <button type="submit" class="pv-submit" id="pv-submit">Add to my provenance log</button>
+    <p id="pv-form-error" role="alert" hidden
+       style="margin: 10px 0 0; color: #a50000; font-family: var(--font-sans); font-size: 13px;"></p>
   </form>
 </section>
 
@@ -455,11 +457,16 @@
     ev.preventDefault();
     show('pv-saved-notice', false);
     show('pv-offline-notice', false);
+    var formError = document.getElementById('pv-form-error');
+    formError.hidden = true;
 
     var entry = collectEntry();
-    if (!entry.aias_level) return;
-    if (entry.aias_level > 1 && !entry.tool_name && !entry.prompt_text && !entry.output_excerpt && !entry.revision_note) {
-      alert('Add at least one of: tool, prompt, output excerpt, or revision note.');
+    // Inline validation (not alert()): an empty submit must visibly explain
+    // what's missing, right next to the button the learner just pressed.
+    if (!entry.aias_level ||
+        (entry.aias_level > 1 && !entry.tool_name && !entry.prompt_text && !entry.output_excerpt && !entry.revision_note)) {
+      formError.textContent = 'Add at least a prompt or an output excerpt, and pick a deliverable.';
+      formError.hidden = false;
       return;
     }
 

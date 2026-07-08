@@ -47,6 +47,7 @@ const Quiz = (() => {
 .quiz__complete-btn:hover { background: #8f1527; }
 .quiz__complete-btn[disabled] { background: #767676; cursor: default; }
 .quiz__gate-notice { margin-top: 10px; font-size: 12px; color: var(--gray-40, #888); text-align: center; font-family: var(--font-sans, inherit); }
+.quiz__gate-reason { margin: 8px 0 0; font-size: 12px; line-height: 1.5; color: var(--gray-40, #666); font-family: var(--font-sans, inherit); text-align: right; }
 /* WCAG AA: opacity-based dimming made foreground text composite to colors
    that fail 4.5:1. Use full-strength gray instead so disabled cells stay
    readable while still visually distinct from active links. */
@@ -318,13 +319,47 @@ const Quiz = (() => {
 
     // gate: 'attempt' — lock next-nav and mark-done until all answered
     var gatedEls = [];
+    var gateReasonEl = null;
+
+    function gateMessage() {
+      return 'Answer the ' + total + ' check questions above to unlock — ' +
+        answeredCount + ' of ' + total + ' answered';
+    }
+
+    // Keep the visible reason line AND the hover tooltip in sync with the
+    // live answered count; drop the line entirely once the gate opens.
+    function updateGateStatus() {
+      if (options.gate !== 'attempt') return;
+      if (answeredCount >= total) {
+        if (gateReasonEl && gateReasonEl.parentNode) gateReasonEl.parentNode.removeChild(gateReasonEl);
+        gateReasonEl = null;
+        return;
+      }
+      var msg = gateMessage();
+      gatedEls.forEach(function (el) { el.setAttribute('title', msg); });
+      if (gateReasonEl) gateReasonEl.textContent = msg;
+    }
+
     if (options.gate === 'attempt') {
       var markDoneBtn = document.querySelector('[data-mark-done]');
       var nextNavLink = document.querySelector('.session-nav__next');
       if (markDoneBtn) gatedEls.push(markDoneBtn);
       if (nextNavLink) gatedEls.push(nextNavLink);
       if (answeredCount < total) {
-        _applyGate(gatedEls, 'Answer all quiz questions to unlock session completion and the next session.');
+        _applyGate(gatedEls, gateMessage());
+        // Visible explanation under the disabled button — a hover-only
+        // tooltip is invisible on touch devices and easy to miss.
+        if (markDoneBtn) {
+          gateReasonEl = document.createElement('p');
+          gateReasonEl.className = 'quiz__gate-reason';
+          gateReasonEl.textContent = gateMessage();
+          var headerRow = markDoneBtn.closest('.session-header__top');
+          if (headerRow && headerRow.parentNode) {
+            headerRow.insertAdjacentElement('afterend', gateReasonEl);
+          } else if (markDoneBtn.parentNode) {
+            markDoneBtn.insertAdjacentElement('afterend', gateReasonEl);
+          }
+        }
       }
     }
 
@@ -396,6 +431,7 @@ const Quiz = (() => {
         state.selections[index] = selectedIndex;
         state.updatedAt = new Date().toISOString();
         _saveState(storageKey, state);
+        updateGateStatus();
 
         if (answeredCount === total) {
           state.completed = true;
@@ -431,6 +467,7 @@ const Quiz = (() => {
     if (answeredCount >= total && options.gate === 'attempt') {
       _releaseGate(gatedEls);
     }
+    updateGateStatus();
     renderSummary();
 
     quizEl.appendChild(summaryEl);

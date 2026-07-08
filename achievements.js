@@ -170,6 +170,9 @@
     var a = document.createElement('a');
     a.href = '#'; a.id = 'hb-ach-toggle'; a.className = 'hb-ach-badge';
     a.innerHTML = '🏆 <span data-count>0/' + ACHIEVEMENTS.length + '</span>';
+    // "1/11" alone reads like session progress — say what it actually counts.
+    a.title = 'Achievements unlocked (0 of ' + ACHIEVEMENTS.length + ')';
+    a.setAttribute('aria-label', 'Achievements unlocked (0 of ' + ACHIEVEMENTS.length + ')');
     a.addEventListener('click', function (e) { e.preventDefault(); togglePanel(); });
     slot.insertBefore(a, slot.firstChild);
     badge = a;
@@ -185,6 +188,9 @@
     badge.style.display = '';
     var c = badge.querySelector('[data-count]');
     if (c) c.textContent = unlocked().length + '/' + ACHIEVEMENTS.length;
+    var label = 'Achievements unlocked (' + unlocked().length + ' of ' + ACHIEVEMENTS.length + ')';
+    badge.title = label;
+    badge.setAttribute('aria-label', label);
   }
   function ensurePanel() {
     if (panel) return panel;

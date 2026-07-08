@@ -19,14 +19,34 @@
   // deep routes) as well as the root-served static handbook pages.
   var INDEX_URL = '/search-index.json';
   var indexPromise = null;
+
+  // The prebuilt index stores titles/snippets HTML-escaped (e.g. "Learner
+  // &amp; context"). Decode once at load time so rendering (which escapes
+  // again) doesn't double-escape, and so queries like "learner & context"
+  // match the plain text.
+  function decodeEntities(s) {
+    return String(s || '').replace(/&(amp|lt|gt|quot|#39|#x27);/g, function (_, name) {
+      return ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'", '#x27': "'" })[name];
+    });
+  }
+  function decodePage(p) {
+    if (!p || typeof p !== 'object') return p;
+    if (p.title)       p.title       = decodeEntities(p.title);
+    if (p.description) p.description = decodeEntities(p.description);
+    if (p.body)        p.body        = decodeEntities(p.body);
+    if (Array.isArray(p.headings)) p.headings = p.headings.map(decodeEntities);
+    if (Array.isArray(p.figures))  p.figures  = p.figures.map(decodeEntities);
+    return p;
+  }
+
   function loadIndex() {
     if (!indexPromise) {
       indexPromise = fetch(INDEX_URL)
         .then(function (r) { return r.ok ? r.json() : { pages: [] }; })
         .then(function (data) {
           // Backwards compat: pre-envelope versions returned a flat array.
-          if (Array.isArray(data)) return data;
-          return data.pages || [];
+          var pages = Array.isArray(data) ? data : (data.pages || []);
+          return pages.map(decodePage);
         })
         .catch(function () { return []; });
     }

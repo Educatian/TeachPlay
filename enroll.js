@@ -183,7 +183,7 @@
           'font-size:0.9rem;',
           'color:#555;',
           'line-height:1.5;',
-        '">Your progress will be saved to your account so you can resume on any device.</p>',
+        '">We’ll record your enrollment and session completions to your learner record. Highlights, notes, and quiz answers stay in this browser.</p>',
 
         // Form
         '<form id="hb-enroll-form" novalidate>',
@@ -349,8 +349,37 @@
           localStorage.setItem('hb:learner_name', name);
           localStorage.setItem('hb:learner_email', email.toLowerCase());
           if (data.session_token) localStorage.setItem('hb:learner_token', data.session_token);
-          close();
-          startTracking(learnerId);
+
+          // Reflect the new state in the chrome immediately — no reload needed.
+          wirePrimaryCta();
+          renderEnrolledChip();
+
+          // Brief inline success state before the modal closes, so the
+          // learner sees the enrollment actually registered.
+          var form = document.getElementById('hb-enroll-form');
+          var okEl = document.createElement('p');
+          okEl.id = 'hb-enroll-success';
+          okEl.setAttribute('role', 'status');
+          okEl.style.cssText = [
+            'margin:0',
+            'padding:14px 0 4px',
+            'font-size:1rem',
+            'font-weight:600',
+            'color:#1a7f37',
+            'text-align:center',
+          ].join(';');
+          okEl.textContent = 'Enrolled as ' + name + ' ✓';
+          if (form && form.parentNode) {
+            form.parentNode.insertBefore(okEl, form);
+            form.style.display = 'none';
+          }
+          var skipEl = document.getElementById('hb-enroll-skip');
+          if (skipEl && skipEl.parentNode) skipEl.parentNode.style.display = 'none';
+
+          setTimeout(function () {
+            close();
+            startTracking(learnerId);
+          }, 1200);
         })
         .catch(function (err) {
           btn.disabled    = false;
@@ -411,6 +440,9 @@
       if (!cta.dataset.enrollWired) {
         cta.dataset.enrollWired = '1';
         cta.addEventListener('click', function (e) {
+          // If enrollment happened after wiring (same page, no reload), let
+          // the re-pointed href navigate instead of re-opening the modal.
+          if (localStorage.getItem(LEARNER_KEY)) return;
           e.preventDefault();
           showModal();
         });
@@ -438,6 +470,42 @@
     }
   }
 
+  // ── "Enrolled: {first name}" header chip ─────────────────────────────────
+  // Small persistent identity cue next to the primary CTA so an enrolled
+  // learner can see, on every load, which record their work attaches to.
+  function renderEnrolledChip() {
+    if (document.getElementById('hb-enrolled-chip')) return;
+    if (!localStorage.getItem(LEARNER_KEY)) return;
+    var name = (localStorage.getItem('hb:learner_name') || '').trim();
+    if (!name) return;
+    var cta = document.getElementById('primary-cta') || document.getElementById('register-link');
+    if (!cta || !cta.parentNode) return;
+    var first = name.split(/\s+/)[0];
+    var chip = document.createElement('span');
+    chip.id = 'hb-enrolled-chip';
+    chip.title = 'Enrolled as ' + name;
+    chip.style.cssText = [
+      'display:inline-flex',
+      'align-items:center',
+      'gap:5px',
+      'margin-right:10px',
+      'padding:4px 10px',
+      'border:1px solid #d8d4cc',
+      'border-radius:999px',
+      'font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+      'font-size:11.5px',
+      'font-weight:600',
+      'color:#444',
+      'background:#f6f5f2',
+      'white-space:nowrap',
+    ].join(';');
+    chip.innerHTML = '<span aria-hidden="true" style="color:#1a7f37;">●</span>Enrolled: ' +
+      String(first).replace(/[&<>"']/g, function (c) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+      });
+    cta.parentNode.insertBefore(chip, cta);
+  }
+
   function init() {
     var learnerId = localStorage.getItem(LEARNER_KEY);
     if (learnerId) {
@@ -452,6 +520,7 @@
       enrolled: function () { return !!localStorage.getItem(LEARNER_KEY); },
     };
     wirePrimaryCta();
+    renderEnrolledChip();
     window.addEventListener('hb:progress-updated', wirePrimaryCta);
   }
 

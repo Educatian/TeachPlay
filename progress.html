@@ -137,10 +137,13 @@
 
   var learnerId = localStorage.getItem('hb:learner_id');
 
-  if (learnerId) {
-    loadProgress('GET', null, learnerId);
-  } else {
-    document.getElementById('lookup-section').style.display = '';
+  var lookupWired = false;
+  function showLookupSection() {
+    // 'block', not '' — the stylesheet defaults these sections to display:none,
+    // so clearing the inline style would leave them hidden.
+    document.getElementById('lookup-section').style.display = 'block';
+    if (lookupWired) return;
+    lookupWired = true;
     document.getElementById('lookup-btn').addEventListener('click', function () {
       var email = document.getElementById('email-input').value.trim();
       if (!email) return;
@@ -152,6 +155,12 @@
     document.getElementById('email-input').addEventListener('keydown', function (e) {
       if (e.key === 'Enter') document.getElementById('lookup-btn').click();
     });
+  }
+
+  if (learnerId) {
+    loadProgress('GET', null, learnerId);
+  } else {
+    showLookupSection();
   }
 
   async function loadProgress(method, email, id) {
@@ -179,6 +188,10 @@
       }
 
       if (!res.ok || !data.ok) {
+        // A saved learner_id whose token no longer validates (or any GET
+        // failure) must not leave the page blank — surface the lookup form
+        // so the learner can recover by email.
+        showLookupSection();
         document.getElementById('lookup-error').textContent = data.error || 'Not found. Check your email address.';
         document.getElementById('lookup-error').style.display = '';
         document.getElementById('lookup-btn').disabled = false;
@@ -188,6 +201,7 @@
 
       render(data);
     } catch (e) {
+      showLookupSection();
       document.getElementById('lookup-error').textContent = 'Network error: ' + e.message;
       document.getElementById('lookup-error').style.display = '';
       document.getElementById('lookup-btn').disabled = false;
@@ -197,7 +211,7 @@
 
   function render(data) {
     document.getElementById('lookup-section').style.display = 'none';
-    document.getElementById('progress-section').style.display = '';
+    document.getElementById('progress-section').style.display = 'block';
 
     var completion = data.completion || {};
     var quiz = data.quiz || {};
