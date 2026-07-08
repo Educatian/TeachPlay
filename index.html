@@ -6,6 +6,30 @@
     <meta name="theme-color" content="#be1a2f" />
     <link rel="icon" type="image/svg+xml" href="assets/gameicon-favicon.svg" />
 <script>
+      // The frozen learner bundle mounts <video>/<audio preload="metadata">
+      // pairs for the avatar lectures; Chromium eagerly fetches hundreds of
+      // KB per file and aborts (each webm was downloading ~3x per home load,
+      // ~2.5MB wasted). Coerce media preloads to 'none' before any fetch
+      // starts — posters still render, playback fetches on user play.
+      (() => {
+        const proto = window.HTMLMediaElement && HTMLMediaElement.prototype;
+        if (!proto) return;
+        const desc = Object.getOwnPropertyDescriptor(proto, 'preload');
+        if (desc && desc.set) {
+          Object.defineProperty(proto, 'preload', {
+            configurable: true,
+            get() { return desc.get.call(this); },
+            set(v) { desc.set.call(this, v === 'metadata' || v === 'auto' ? 'none' : v); },
+          });
+        }
+        const setAttr = proto.setAttribute;
+        proto.setAttribute = function (name, value) {
+          if (String(name).toLowerCase() === 'preload' && (value === 'metadata' || value === 'auto')) value = 'none';
+          return setAttr.call(this, name, value);
+        };
+      })();
+    </script>
+<script>
       (() => {
         const lockThemeColor = () => {
           const meta = document.querySelector('meta[name="theme-color"]');
