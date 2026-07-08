@@ -142,12 +142,36 @@
             }
           });
 
+          // Enrolled learners (handbook enrollment stores hb:learner_name)
+          // get greeted by first name instead of the "Guest" preview copy.
+          // Both branches are idempotent under the mutation observer: the
+          // rewritten output never contains the source string.
+          let tpFirstName = '';
+          try {
+            tpFirstName = (localStorage.getItem('hb:learner_name') || '').trim().split(/\s+/)[0] || '';
+          } catch (_) {}
+
           replaceText(document.getElementById('root'), [
             ['Admin Portal', 'Instructor Portal Preview'],
             ['Super Admin', 'Instructor Preview'],
             ['Test Role:', 'Preview Role:'],
-            ['Welcome back, Guest. Track your progress and badges.', 'Preview dashboard for a sample learner. Sign in to save progress, certificates, and submissions.'],
+            tpFirstName
+              ? ['Welcome back, Guest. Track your progress and badges.', 'Welcome back, ' + tpFirstName + '. Your handbook progress is recorded to your learner record.']
+              : ['Welcome back, Guest. Track your progress and badges.', 'Preview dashboard for a sample learner. Sign in to save progress, certificates, and submissions.'],
           ]);
+
+          // The dashboard greeting renders as three sibling text nodes
+          // ("Welcome back, " + "Guest" + ". Track your progress and
+          // badges."), so the per-text-node pass above cannot match it —
+          // rewrite the whole paragraph. Idempotent: the rewritten text
+          // never re-matches the source sentence.
+          [...document.querySelectorAll('#root p')].forEach((p) => {
+            const text = p.textContent.replace(/\s+/g, ' ').trim();
+            if (text !== 'Welcome back, Guest. Track your progress and badges.') return;
+            p.textContent = tpFirstName
+              ? 'Welcome back, ' + tpFirstName + '. Your handbook progress is recorded to your learner record.'
+              : 'Preview dashboard for a sample learner. Sign in to save progress, certificates, and submissions.';
+          });
 
           const logoHeading = [...document.querySelectorAll('h1')]
             .find((heading) => heading.textContent.replace(/\s+/g, ' ').trim() === 'TeachPlay');
@@ -159,7 +183,9 @@
           });
 
           ensureSinglePageHeading();
-          addPreviewNote('My Dashboard', 'tp-dashboard-preview-note', 'This dashboard is a signed-out preview. Learners should sign in before submitting evidence or expecting progress to persist.');
+          addPreviewNote('My Dashboard', 'tp-dashboard-preview-note', tpFirstName
+            ? 'Preview dashboard — your handbook progress is recorded to your learner record; sign-in for saved submissions is coming.'
+            : 'This dashboard is a signed-out preview. Learners should sign in before submitting evidence or expecting progress to persist.');
           addPreviewNote('Management Console', 'tp-instructor-preview-note', 'Instructor tools are preview-only until an authorized instructor signs in.');
         };
 

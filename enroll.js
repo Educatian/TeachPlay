@@ -183,7 +183,7 @@
           'font-size:0.9rem;',
           'color:#555;',
           'line-height:1.5;',
-        '">We’ll record your enrollment and session completions to your learner record. Highlights, notes, and quiz answers stay in this browser.</p>',
+        '">We’ll record your enrollment and session completions to your learner record — sessions you complete follow you to any browser you enroll in with this email. Highlights, notes, and quiz answers stay in this browser.</p>',
 
         // Form
         '<form id="hb-enroll-form" novalidate>',
