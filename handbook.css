@@ -3167,6 +3167,9 @@ button, .btn, a.btn, input, select, textarea { border-radius: 4px; font-family: 
 .sidebar-brand{padding:0 24px 20px;border-bottom:1px solid var(--figma-border)}
 .sidebar-brand__title{font-family:Inter,sans-serif;font-size:16px;letter-spacing:-.02em;color:#161616}
 .sidebar-brand__eyebrow,.sidebar__section-label{font-family:Inter,sans-serif;color:#6b7278;letter-spacing:.08em}
+.sidebar-brand{background:#9e1b32;color:#fff}
+.sidebar-brand__title{color:#fff}
+.sidebar-brand__eyebrow,.sidebar-brand__meta{color:#f2d79a}
 .sidebar__item{border-left:2px solid transparent;border-radius:0;padding:10px 24px;font-family:Inter,sans-serif;color:#4a4a4a}
 .sidebar__item.is-active{background:#fdf4f5;color:#9e1b32;border-left-color:#9e1b32;font-weight:700}
 .main{min-width:0;background:#fff}
