@@ -18,7 +18,11 @@ const server = http.createServer((req, res) => {
   if (url.pathname === '/api/completion-check') return json(res, 200, { ok: true, completed: false, test: true });
   if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: 'method_not_allowed' });
 
-  const requested = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
+  const requested = decodeURIComponent(
+    url.pathname === '/' ? '/index.html' :
+    (url.pathname === '/app' || url.pathname === '/app/') ? '/index.html' :
+    url.pathname
+  );
   const file = path.resolve(root, `.${requested}`);
   if (!file.startsWith(root) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });

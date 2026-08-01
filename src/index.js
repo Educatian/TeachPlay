@@ -89,6 +89,12 @@ export default {
       return handleStatusList(request, env, ctx, cohort);
     }
 
+    // Keep the historical /app/ entrypoint compatible with the canonical root
+    // learner workspace. The root page is the deployed source of truth.
+    if (p === '/app' || p === '/app/') {
+      return Response.redirect(new URL('/index.html', request.url), 302);
+    }
+
     // Anything else: fall through to static assets.
     return env.ASSETS.fetch(request);
   },
