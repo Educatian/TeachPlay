@@ -214,6 +214,9 @@
         // when the audit (and assistive technology) may inspect the shell.
         const headingGuard = window.setInterval(normalizePageHeadings, 50);
         window.setTimeout(() => window.clearInterval(headingGuard), 3000);
+        const headingObserver = new MutationObserver(normalizePageHeadings);
+        headingObserver.observe(document.documentElement, { childList: true, subtree: true });
+        window.setTimeout(() => headingObserver.disconnect(), 5000);
         // Disconnect while rewriting and debounce to one pass per frame:
         // reacting to our own mutations re-entered improveLearnerEntry in a
         // feedback loop, thrashing React-owned subtrees (remounting <video>/
