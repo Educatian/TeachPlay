@@ -3109,6 +3109,11 @@ body {
 button, .btn, a.btn, input, select, textarea { border-radius: 4px; font-family: 'Inter', sans-serif; }
 .primary-nav__trigger, .primary-nav > a, .primary-nav__cta { min-height: 44px; }
 .hero, .credential-hero { background: var(--figma-ink); color: #fff; border-radius: 0; }
+.hero { background: var(--figma-ink) !important; min-height: 360px; }
+.hero__bg, .hero__wave { display: none !important; }
+.hero__content { padding-top: 80px; }
+.hero__title { color: #fff !important; }
+.hero__lede { color: #bfbfbf !important; }
 .hero__content, .section, .content, .session-header, .credential-hero { width: min(var(--figma-content), calc(100% - 128px)); margin-inline: auto; }
 .hero__title, .credential-hero__text h1, .section__title, .page-title { font-family: 'Inter', sans-serif; letter-spacing: -.035em; font-weight: 700; }
 .section__eyebrow, .hero__eyebrow, .eyebrow { font-family: 'Inter', sans-serif; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
