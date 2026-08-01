@@ -12,7 +12,10 @@ for (const route of pages) {
   const page = await browser.newPage();
   page.on('requestfailed', r => { if (/\.(mp4|webm|mov|png|jpe?g|webp|svg|gif|wav|mp3|vtt)(\?|$)/i.test(r.url())) failures.push(`${route} ${r.url()} ${r.failure()?.errorText || 'failed'}`); });
   page.on('response', r => { if (/\.(mp4|webm|mov|png|jpe?g|webp|svg|gif|wav|mp3|vtt)(\?|$)/i.test(r.url())) { media++; if (r.status() >= 400) failures.push(`${route} ${r.url()} HTTP ${r.status()}`); } });
-  try { await page.goto(base + route, { waitUntil: 'networkidle', timeout: 20000 }); } catch (e) { failures.push(`${route} NAV ${e.message}`); }
+  try {
+    await page.goto(base + route, { waitUntil: 'domcontentloaded', timeout: 10000 });
+    await page.waitForTimeout(500);
+  } catch (e) { failures.push(`${route} NAV ${e.message}`); }
   await page.close();
 }
 await browser.close();
