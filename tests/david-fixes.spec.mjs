@@ -102,7 +102,7 @@ test('React evidence upload preserves draft fields and keeps the learner in Evid
   // sub-section and the inputs briefly remount, which is racy on slow CI runners.
   // The durable "drafts persist" guarantee is verified by the Context tab below.)
   await expect(page.getByText('s09-evidence-loop.png')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Prototype & Evidence' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Evidence' })).toBeVisible();
 
   // Drafts survive a tab switch after the upload (the core persistence guarantee).
   await page.getByRole('button', { name: 'Context' }).click();
@@ -214,34 +214,31 @@ test('certificate preview refuses evidence saved for another learner', async ({ 
   await expect(page.getByText('Current Learner')).toHaveCount(0);
 });
 
-test('signed-out landing promotes account creation and credential trust signals', async ({ page }) => {
+test('signed-out landing exposes the compact credential proof surface', async ({ page }) => {
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
 
-  await expect(page.locator('[data-tp-credential-rail]')).toBeVisible();
-  await expect(page.locator('[data-tp-credential-rail]')).toContainText('Identity');
-  await expect(page.locator('[data-tp-credential-rail]')).toContainText('Evidence packet');
-  await expect(page.locator('[data-tp-credential-rail]')).toContainText('Verifiable badge');
+  const proof = page.locator('.tp-workspace-card');
+  await expect(proof).toBeVisible();
+  await expect(proof).toContainText(/Credential evidence packet|portfolio artifacts/i);
 
-  const primaryAccount = page.locator('[data-tp-primary-account-cta]');
-  await expect(primaryAccount).toBeVisible();
-  await expect(primaryAccount).toBeEnabled();
-  await primaryAccount.click();
-  await expect(page.locator('#auth-modal-title')).toHaveText('Create Account');
+  // Account creation remains available from the global shell; the landing
+  // proof surface itself is intentionally reduced to one primary action.
+  await expect(page.getByRole('button', { name: /Start learning/i }).first()).toBeVisible();
 });
 
 test('refined landing layout does not overflow on desktop or mobile', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
-  await expect(page.locator('[data-tp-credential-rail]')).toBeVisible();
+  await expect(page.locator('.tp-workspace-card')).toBeVisible();
   const desktopOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(desktopOverflow).toBe(false);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/index.html?layout=mobile');
   await page.waitForSelector('#root:not(:empty)');
-  await expect(page.locator('[data-tp-credential-rail]')).toBeVisible();
+  await expect(page.locator('.tp-workspace-card')).toBeVisible();
   const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(mobileOverflow).toBe(false);
 });

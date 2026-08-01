@@ -743,6 +743,70 @@
           max-width: 100vw;
         }
       }
+      /* Learner workspace: a calm canvas rather than a stack of dashboard
+         cards. The authored lesson content remains unchanged; this only
+         establishes the spatial hierarchy around it. */
+      body:has(.tp12-course) {
+        background: #f6f7f5 !important;
+      }
+      body:has(.tp12-course) main.flex-grow {
+        background:
+          linear-gradient(rgba(255,255,255,.52) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,.52) 1px, transparent 1px),
+          #f6f7f5 !important;
+        background-size: 32px 32px !important;
+      }
+      body:has(.tp12-course) aside {
+        background: #fbfbfa !important;
+        border-right: 1px solid #dedfdb !important;
+        box-shadow: none !important;
+      }
+      body:has(.tp12-course) .tp12-sidebar-note,
+      body:has(.tp12-course) .tp12-checkpoint-group {
+        border-color: #dedfdb;
+        border-radius: 6px;
+        box-shadow: none;
+      }
+      body:has(.tp12-course) .tp12-sidebar-start {
+        border-radius: 5px;
+      }
+      body:has(.tp12-course) main.flex-grow .max-w-4xl {
+        max-width: 880px !important;
+      }
+      body:has(.tp12-course) main.flex-grow .max-w-4xl > article,
+      body:has(.tp12-course) main.flex-grow .max-w-4xl > section:not(.tp12-course) {
+        border: 1px solid #dedfdb !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+      }
+      body:has(.tp12-course) .tp12-course {
+        margin-top: 28px;
+        border: 0;
+        border-top: 1px solid #cfd2cc;
+        border-radius: 0;
+        background: transparent;
+        padding: 28px 0 56px;
+        box-shadow: none;
+      }
+      body:has(.tp12-course) .tp12-course .tp12-module-card {
+        min-height: 0;
+        border-color: #dedfdb;
+        border-radius: 6px;
+        background: #fff;
+        box-shadow: none;
+      }
+      body:has(.tp12-course) .tp12-course .tp12-summary span {
+        border-radius: 4px;
+        background: #fff;
+      }
+      @media (max-width: 760px) {
+        body:has(.tp12-course) main.flex-grow {
+          background-size: 24px 24px !important;
+        }
+        body:has(.tp12-course) .tp12-course {
+          padding-inline: 12px;
+        }
+      }
     `;
     document.head.appendChild(style);
   };

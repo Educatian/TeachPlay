@@ -28,6 +28,37 @@
 
   const safeGet = (key) => { try { return localStorage.getItem(key) || ''; } catch (_) { return ''; } };
 
+  // The frozen React editor remounts its Context and Evidence panels. Keep the
+  // two learner-authored planning fields stable across that tab switch so the
+  // canvas behaves like a real draft workspace, not a disposable form.
+  const DRAFT_KEY = 'tp:evidence-draft:v1';
+  const draftFields = () => [...document.querySelectorAll('input, textarea')].filter((el) => {
+    const hint = `${el.getAttribute('placeholder') || ''} ${el.getAttribute('aria-label') || ''}`.toLowerCase();
+    return /biology|trainee|classroom|context|audience|feedback|summary/.test(hint);
+  });
+  const readDraft = () => { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}'); } catch (_) { return {}; } };
+  const saveDraft = (el) => {
+    const hint = `${el.getAttribute('placeholder') || ''} ${el.getAttribute('aria-label') || ''}`.toLowerCase();
+    const key = /audience|biology|trainee/.test(hint) ? 'audience' : /context|classroom/.test(hint) ? 'context' : /feedback|summary/.test(hint) ? 'feedback' : null;
+    if (!key) return;
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...readDraft(), [key]: el.value })); } catch (_) {}
+  };
+  const restoreDraft = () => {
+    const draft = readDraft();
+    draftFields().forEach((el) => {
+      const hint = `${el.getAttribute('placeholder') || ''} ${el.getAttribute('aria-label') || ''}`.toLowerCase();
+      const key = /audience|biology|trainee/.test(hint) ? 'audience' : /context|classroom/.test(hint) ? 'context' : /feedback|summary/.test(hint) ? 'feedback' : null;
+      if (key && draft[key] && !el.value) {
+        const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value')?.set;
+        setter?.call(el, draft[key]);
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+  };
+  document.addEventListener('input', (event) => saveDraft(event.target), true);
+  new MutationObserver(restoreDraft).observe(document.documentElement, { childList: true, subtree: true });
+  window.setTimeout(restoreDraft, 120);
+
   // Same identity backfill as the evidence-submission guard: a Supabase-
   // authenticated learner has no hb:learner_id, which used to make file uploads
   // fail with 401 even though they were "signed in". Resolve the identity from
