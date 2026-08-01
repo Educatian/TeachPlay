@@ -199,6 +199,27 @@
       .tp-bespoke-topnav svg {
         color: #172033 !important;
       }
+      /* Reduce visual noise in the learner workspace: actions read as controls,
+         not floating bubbles. Keep the existing crimson/blue theme and reserve
+         pill shapes for status labels only. */
+      .tp-bespoke-home #root button {
+        border-radius: 6px !important;
+        box-shadow: none !important;
+        transform: none !important;
+      }
+      .tp-bespoke-home #root button[class*="rounded-full"] {
+        border-radius: 6px !important;
+      }
+      .tp-bespoke-home #root [class*="shadow-2xl"],
+      .tp-bespoke-home #root [class*="shadow-xl"] {
+        box-shadow: 0 8px 24px rgba(16, 24, 40, .08) !important;
+      }
+      .tp-bespoke-home #root [class*="rounded-3xl"] {
+        border-radius: 10px !important;
+      }
+      .tp-bespoke-home #root [class*="rounded-2xl"] {
+        border-radius: 8px !important;
+      }
       /* WCAG 2.5.8 / coarse-pointer affordance: compact icon and text links
          remain visually light while exposing a reliable 44px tap target. */
       @media (pointer: coarse), (max-width: 720px) {
