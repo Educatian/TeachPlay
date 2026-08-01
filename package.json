@@ -17,6 +17,7 @@
     "build:sitemap": "node tools/build-sitemap.mjs",
     "build": "npm run build:nav && npm run build:search && npm run build:sitemap",
     "smoke": "playwright test tests/smoke.spec.mjs --reporter=list",
+    "dev:worker": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-local-worker.ps1",
     "audit": "playwright test tests/audit.spec.mjs --reporter=list",
     "a11y":  "playwright test tests/a11y.spec.mjs --reporter=list",
     "test:unit": "node --test \"tests/unit/*.test.mjs\"",
