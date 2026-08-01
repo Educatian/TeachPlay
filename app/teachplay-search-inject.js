@@ -34,7 +34,7 @@
       '#tp-app-search input[type="search"]::-webkit-search-cancel-button { cursor: pointer; }',
       '#tp-app-search .site-header__search-btn {',
       '  border: 0; background: #be1a2f; color: #fff; cursor: pointer;',
-      '  width: 30px; height: 30px; border-radius: 50%; font-size: 14px;',
+      '  width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 50%; font-size: 14px;',
       '  display: flex; align-items: center; justify-content: center; flex: 0 0 auto;',
       '}',
       '#tp-app-search .site-header__search-btn:hover { background: #9c1526; }',

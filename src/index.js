@@ -34,6 +34,7 @@ import { handleProgress } from './api/progress.js';
 import { handleEvidence } from './api/evidence.js';
 import { handleProvenance, handleAdminProvenance } from './api/provenance.js';
 import { handleEvidenceFile, handleAdminEvidenceFileDownload } from './api/evidence-file.js';
+import { handlePortfolioReview, handleAdminPortfolioReview, handleAdminStorage } from './api/portfolio-review.js';
 import { handleAdminEvidence, handleAdminScore } from './api/admin-evidence.js';
 import { handlePostCompletionSurvey } from './api/post-completion-survey.js';
 import { handleLog } from './api/log.js';
@@ -69,6 +70,9 @@ export default {
     if (p === '/api/provenance')         return handleProvenance(request, env, ctx);
     if (p === '/api/admin/provenance')   return handleAdminProvenance(request, env, ctx);
     if (p === '/api/evidence-file')      return handleEvidenceFile(request, env, ctx);
+    if (p === '/api/portfolio-review')  return handlePortfolioReview(request, env, ctx);
+    if (p === '/api/admin/portfolio-review') return handleAdminPortfolioReview(request, env, ctx);
+    if (p === '/api/admin/storage')     return handleAdminStorage(request, env);
     if (p === '/api/completion-check')   return handleCompletionCheck(request, env, ctx);
     if (p === '/api/log/conversation')   return handleLog(request, env, ctx, 'conversation');
     if (p === '/api/log/gameplay')       return handleLog(request, env, ctx, 'gameplay');

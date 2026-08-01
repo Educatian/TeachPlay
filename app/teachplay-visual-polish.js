@@ -199,6 +199,35 @@
       .tp-bespoke-topnav svg {
         color: #172033 !important;
       }
+      /* WCAG 2.5.8 / coarse-pointer affordance: compact icon and text links
+         remain visually light while exposing a reliable 44px tap target. */
+      @media (pointer: coarse), (max-width: 720px) {
+        #root button:not([disabled]),
+        #root [role="button"]:not([aria-disabled="true"]) {
+          min-width: 44px;
+          min-height: 44px;
+        }
+        #root a {
+          min-height: 44px;
+          display: inline-flex;
+          align-items: center;
+        }
+        #root footer a,
+        #root nav a {
+          padding-top: 8px;
+          padding-bottom: 8px;
+        }
+        .tp12-module-topline a,
+        .tp12-reference-link,
+        .tp12-sidebar-modules a {
+          min-height: 44px;
+          display: inline-flex;
+          align-items: center;
+        }
+        .tp12-sidebar-modules a {
+          display: grid;
+        }
+      }
       .tp-workspace-media {
         display: grid;
         grid-template-columns: 1fr 1fr;

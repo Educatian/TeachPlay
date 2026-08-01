@@ -74,3 +74,11 @@ database_id = "c2749430-248b-4c85-b224-e9e24424e8aa"
 # [[r2_buckets]]
 # binding = "EVIDENCE_BUCKET"
 # bucket_name = "teachplay-evidence"
+
+# Enabled production bindings for portfolio artifacts and optional AI review.
+[[r2_buckets]]
+binding = "EVIDENCE_BUCKET"
+bucket_name = "teachplay-evidence"
+
+[ai]
+binding = "AI"

@@ -19,7 +19,8 @@
   --gray-70: #4a4a4a;
   --gray-60: #666666;
   --gray-50: #828A8F;
-  --gray-40: #a8acaf;
+  /* #a8acaf failed 4.5:1 contrast on white in quiz/session helper text. */
+  --gray-40: #667085;
   --gray-30: #c9ccce;
   --gray-20: #e4e6e8;
   --gray-15: #eceeef;

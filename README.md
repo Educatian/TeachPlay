@@ -46,6 +46,16 @@ The repository is also a **reference implementation** of a credential stack — 
 
 The updated learner platform screenshots are tracked in [`docs/screenshots/`](docs/screenshots/). The larger activity and content gallery is in [`docs/screenshots/activity-content/`](docs/screenshots/activity-content/). The end-to-end student onboarding guide, with screen recording, captions, narration, and certificate handoff notes, is in [`docs/student-completion-guide.html`](docs/student-completion-guide.html) for repo review and published at [`/guides/student-completion-guide.html`](https://www.teachplay.dev/guides/student-completion-guide.html).
 
+## Portfolio review workflow
+
+The updated learner workspace now includes a portfolio-link submission panel. A learner can submit a Google AI Studio prototype (or a hosted prototype on GitHub Pages, Cloudflare Pages, Vercel, or Netlify) for a bounded computational artifact analysis.
+
+The analysis is focused on learning-objective alignment in the artifact itself: the agent inspects observable game loops and state transitions, computational rules, input/output behavior, feedback, accessibility, AI provenance, and evidence traces that make the intended learning visible. It separates observable implementation evidence from claims that require instructor verification. OpenRouter is the primary model gateway (`OPENROUTER_API_KEY`, configurable with `OPENROUTER_MODEL`), with Gemini and Workers AI fallbacks.
+
+The workflow is deliberately two-stage: automated analysis produces `needs_review` findings only; an instructor must final-approve the review, score the D1–D5 rubric, and pass the existing completion gate before the signed credential and Open Badges badge are issued. AI analysis can recommend or flag evidence, but it cannot mint or approve a credential.
+
+Portfolio artifacts are stored in the Cloudflare R2 `teachplay-evidence` bucket when the binding is enabled. The system retains a guarded D1-inline fallback for small files, while the production path uses R2 for larger screenshots, documents, and prototypes. The admin storage diagnostic is available at `GET /api/admin/storage`.
+
 <table>
   <tr>
     <td width="50%"><img src="docs/screenshots/01-home-desktop.png" alt="TeachPlay learner workspace home page" /></td>
