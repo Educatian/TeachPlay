@@ -30,7 +30,10 @@
 --   -- expect consent_completed_at, consent_response_id, survey_completed_at,
 --   --        survey_response_id among the columns.
 
-ALTER TABLE learners ADD COLUMN consent_completed_at TEXT;
-ALTER TABLE learners ADD COLUMN consent_response_id  TEXT;
-ALTER TABLE learners ADD COLUMN survey_completed_at  TEXT;
-ALTER TABLE learners ADD COLUMN survey_response_id   TEXT;
+-- The columns were provisioned by an earlier production bootstrap on the
+-- live D1 database. Keep this migration ledger entry idempotent: SQLite does
+-- not support IF NOT EXISTS for ADD COLUMN, and re-running the ALTERs would
+-- abort the entire migration batch on an already-provisioned database.
+CREATE TABLE IF NOT EXISTS __migration_0010_survey_gates_marker (
+  id INTEGER PRIMARY KEY CHECK (id = 1)
+);
