@@ -10,6 +10,19 @@
 <link rel="icon" type="image/svg+xml" href="assets/gameicon-favicon.svg" />
 <link rel="stylesheet" href="handbook.css" />
 <style>
+  /* Keep the long-form handbook readable while reducing shell noise. */
+  .utility{display:none!important}
+  .site-header{border-top:6px solid #9e1b32}
+  .site-header__row{min-height:60px;width:min(1312px,calc(100% - 128px));margin:auto}
+  .site-header__section{font-size:0;color:transparent!important;overflow:hidden}
+  .site-header__section:after{content:'TEACHPLAY';font:700 15px/1 Inter,sans-serif;color:#9e1b32}
+  .site-header__search{display:none}
+  .primary-nav{width:min(1312px,calc(100% - 128px));margin:auto;border-top:1px solid #e4e6e8}
+  .primary-nav__panel{display:none!important}.primary-nav__group.instructor-only{display:none}
+  .primary-nav__cta{background:#9e1b32!important;color:#fff!important;border-radius:4px!important}
+  @media(max-width:760px){.site-header__row,.primary-nav{width:calc(100% - 40px)}.primary-nav{overflow:auto}}
+</style>
+<style>
   /* Layout: sticky TOC on the left, prose on the right */
   .hb-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 36px; max-width: 1200px; margin: 0 auto; padding: 32px 36px 64px; }
   @media (max-width: 1000px) { .hb-layout { grid-template-columns: 1fr; padding: 24px; } }
