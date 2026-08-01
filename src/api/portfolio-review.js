@@ -137,7 +137,10 @@ export async function handleAdminPortfolioReview(request, env) {
   const auth = checkPortfolioAdminAuth(request, env); if (!auth.ok) return json(auth.body, auth.code);
   if (!env.DB || !(await tableExists(env))) return json({ error: 'portfolio review not enabled' }, 503);
   if (request.method === 'GET') {
-    const rows = await env.DB.prepare('SELECT id, learner_id, url, provider, status, analysis_json, error_message, created_at, updated_at, final_reviewed_at, final_reviewed_by FROM portfolio_reviews ORDER BY created_at DESC LIMIT 100').all();
+    // The queue schema calls the original submission timestamp submitted_at;
+    // expose the stable created_at name expected by the review surface without
+    // querying a column that does not exist in D1.
+    const rows = await env.DB.prepare('SELECT id, learner_id, url, provider, status, analysis_json, error_message, submitted_at AS created_at, updated_at, final_reviewed_at, final_reviewed_by FROM portfolio_reviews ORDER BY submitted_at DESC LIMIT 100').all();
     return json({ ok: true, reviews: (rows.results || []).map((row) => ({ ...row, analysis: row.analysis_json ? JSON.parse(row.analysis_json) : null })) });
   }
   let body; try { body = await request.json(); } catch { return json({ error: 'Invalid JSON body' }, 400); }
