@@ -22,3 +22,20 @@ test('instructor review console loads analysis and final-approve action', async 
   expect(action).toEqual({ id: 'r1', action: 'final_approve' });
   await expect(page.getByText('No portfolio reviews yet.')).toBeVisible();
 });
+
+test('instructor review console restores an existing Access session on load', async ({ page }) => {
+  let calls = 0;
+  await page.route('**/api/admin/portfolio-review', async (route) => {
+    calls += 1;
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, reviews: [] })
+    });
+  });
+
+  await page.goto('/admin-review.html');
+  await expect(page.getByText('Loaded through Cloudflare Access.')).toBeVisible();
+  await expect(page.getByText('No portfolio reviews yet.')).toBeVisible();
+  expect(calls).toBeGreaterThanOrEqual(1);
+});
