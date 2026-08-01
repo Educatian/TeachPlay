@@ -46,7 +46,7 @@ function json(body, status = 200) {
 
 // Hard ceilings. R2 can hold large artifacts; D1 cannot — its per-row limit is
 // 2 MB, so inline base64 is capped with headroom for the other columns.
-const MAX_FILE_BYTES   = 25 * 1024 * 1024;   // absolute cap (any backend)
+const MAX_FILE_BYTES   = 100 * 1024 * 1024;  // one portfolio artifact, R2-backed
 const MAX_D1_B64_CHARS = 1_400_000;          // ~1.05 MB original; safely under D1's 2 MB row cap
 
 const DELIVERABLE_SET = new Set(DELIVERABLES);
@@ -172,7 +172,7 @@ export async function handleEvidenceFile(request, env) {
       // Fail loudly so the learner compresses or links the artifact instead of
       // silently "succeeding" with no stored bytes.
       return json({
-        error: `File is ${(bytes.length / 1024 / 1024).toFixed(1)} MB. This deployment can store files up to about 1 MB. Please compress the file (or attach the prototype as a link), or ask the administrator to enable R2 storage.`,
+        error: `File is ${(bytes.length / 1024 / 1024).toFixed(1)} MB. This deployment can store files up to about 1 MB without R2. Please attach the prototype as a link or ask the administrator to enable R2 storage.`,
       }, 413);
     }
     file_b64 = b64;

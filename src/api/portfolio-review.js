@@ -141,5 +141,5 @@ export async function handleAdminStorage(request, env) {
     files = await env.DB.prepare('SELECT COUNT(*) AS count, COALESCE(SUM(file_size), 0) AS bytes FROM evidence_files').first();
   }
   const r2 = !!(env.EVIDENCE_BUCKET && typeof env.EVIDENCE_BUCKET.put === 'function');
-  return json({ ok: true, backend: r2 ? 'r2' : 'd1-inline', r2_configured: r2, evidence_files_table: hasFiles, files: { count: Number(files.count) || 0, bytes: Number(files.bytes) || 0 }, limits: { max_upload_bytes: 25 * 1024 * 1024, max_without_r2_bytes: 1_400_000, note: r2 ? 'R2-backed uploads support the 25 MB application cap.' : 'R2 is not bound; inline D1 uploads are capped at about 1 MB. Enable EVIDENCE_BUCKET for production portfolio artifacts.' } });
+  return json({ ok: true, backend: r2 ? 'r2' : 'd1-inline', r2_configured: r2, evidence_files_table: hasFiles, files: { count: Number(files.count) || 0, bytes: Number(files.bytes) || 0 }, limits: { max_upload_bytes: 100 * 1024 * 1024, max_without_r2_bytes: 1_400_000, note: r2 ? 'R2-backed uploads support the 100 MB application cap.' : 'R2 is not bound; inline D1 uploads are capped at about 1 MB. Enable EVIDENCE_BUCKET for production portfolio artifacts.' } });
 }

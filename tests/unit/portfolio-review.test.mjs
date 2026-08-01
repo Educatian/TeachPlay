@@ -1,0 +1,71 @@
+import { test, afterEach } from 'node:test';
+import assert from 'node:assert/strict';
+import { handlePortfolioReview, handleAdminPortfolioReview } from '../../src/api/portfolio-review.js';
+
+const originalFetch = globalThis.fetch;
+afterEach(() => { globalThis.fetch = originalFetch; });
+
+function request(method, body, headers = {}) {
+  return new Request('https://teachplay.dev/api/portfolio-review', {
+    method,
+    headers: { 'content-type': 'application/json', ...headers },
+    body: body == null ? undefined : JSON.stringify(body),
+  });
+}
+
+function dbMock({ learner = { id: 'L1', session_token: 'tok' }, rows = [], changes = 1 } = {}) {
+  const calls = [];
+  return {
+    calls,
+    prepare(sql) {
+      return {
+        bind(...args) {
+          calls.push({ sql, args });
+          return {
+            async first() {
+              if (sql.includes('sqlite_master')) return { ok: 1 };
+              if (sql.includes('FROM learners')) return learner;
+              return null;
+            },
+            async all() { return { results: rows }; },
+            async run() { return { success: true, meta: { changes } }; },
+          };
+        },
+        async first() { return sql.includes('sqlite_master') ? { ok: 1 } : null; },
+      };
+    },
+  };
+}
+
+test('portfolio review rejects unsupported hosts before creating a queue row', async () => {
+  const db = dbMock();
+  const res = await handlePortfolioReview(request('POST', { url: 'https://example.com/private' }, { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok' }), { DB: db });
+  assert.equal(res.status, 400);
+  assert.equal(db.calls.some((call) => /INSERT INTO portfolio_reviews/.test(call.sql)), false);
+});
+
+test('portfolio review stores conservative OpenRouter analysis and exposes it on GET', async () => {
+  const rows = [];
+  const db = dbMock({ rows });
+  globalThis.fetch = async (url) => {
+    if (String(url).includes('openrouter.ai')) {
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ learning_objective: 'Predict trajectories', computational_artifact_summary: 'A stateful projectile loop', observable_mechanics: ['angle input'], evidence_traces: ['revision trace'], alignment_findings: ['objective is observable'], strengths: ['clear feedback'], risks: ['public link may hide runtime state'], evidence_questions: ['show the revision log'], recommended_status: 'needs_review', rubric_hints: [{ deliverable: 'D2', rationale: 'links mechanic to objective' }] }) } }] }), { status: 200 });
+    }
+    return new Response('<html><body>prototype objective feedback revision</body></html>', { status: 200, headers: { 'content-type': 'text/html' } });
+  };
+  const pending = [];
+  const post = await handlePortfolioReview(request('POST', { url: 'https://aistudio.google.com/app/prompts/demo' }, { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok' }), { DB: db }, { waitUntil: (work) => pending.push(work) });
+  assert.equal(post.status, 202);
+  await Promise.all(pending);
+  assert.ok(db.calls.some((call) => /INSERT INTO portfolio_reviews/.test(call.sql)));
+  assert.ok(db.calls.some((call) => /UPDATE portfolio_reviews SET status/.test(call.sql)));
+});
+
+test('admin portfolio review requires auth and only final-approves needs_review rows', async () => {
+  const unauthorized = await handleAdminPortfolioReview(request('POST', { id: 'r1', action: 'final_approve' }), { DB: dbMock(), ISSUER_API_KEY: 'secret' });
+  assert.equal(unauthorized.status, 401);
+  const db = dbMock();
+  const approved = await handleAdminPortfolioReview(request('POST', { id: 'r1', action: 'final_approve' }, { authorization: 'Bearer secret' }), { DB: db, ISSUER_API_KEY: 'secret' });
+  assert.equal(approved.status, 200);
+  assert.match((await approved.json()).next, /Submit rubric scores/);
+});
