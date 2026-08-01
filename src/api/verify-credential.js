@@ -11,7 +11,7 @@
 import { cryptosuite as eddsaRdfc2022 } from '@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
 import { DataIntegrityProof } from '@digitalbazaar/data-integrity';
 import * as vc from '@digitalbazaar/vc';
-import { contexts as vcContexts } from '@digitalbazaar/credentials-context';
+import { contexts as vcContexts } from '../lib/contexts/credential-contexts.js';
 import obV3Context from '../lib/contexts/ob-v3p0.js';
 import { decodeBitstring, getBit } from '../lib/status-list.js';
 import { getClientIp, rateLimit } from '../lib/security.js';

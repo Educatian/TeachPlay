@@ -18,7 +18,7 @@ import * as Ed25519Multikey from '@digitalbazaar/ed25519-multikey';
 import { cryptosuite as eddsaRdfc2022 } from '@digitalbazaar/eddsa-rdfc-2022-cryptosuite';
 import { DataIntegrityProof } from '@digitalbazaar/data-integrity';
 import * as vc from '@digitalbazaar/vc';
-import { contexts as vcContexts } from '@digitalbazaar/credentials-context';
+import { contexts as vcContexts } from './contexts/credential-contexts.js';
 import obV3Context from './contexts/ob-v3p0.js';
 
 const embeddedContexts = new Map(vcContexts);
