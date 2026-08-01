@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TeachPlay · Instructor review</title>
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;color:#101828;background:#f6f8fb}body{margin:0}main{max-width:1100px;margin:0 auto;padding:32px 20px}header{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:24px}h1{margin:0;font-size:28px}p{color:#475467;line-height:1.5}.panel,article{background:#fff;border:1px solid #d9e1ec;border-radius:10px;padding:18px;margin:14px 0}form{display:flex;gap:10px;flex-wrap:wrap}input,button{font:inherit;min-height:42px;border-radius:7px;padding:8px 12px}input{border:1px solid #98a2b3;flex:1 1 360px}button{border:0;background:#9e1b32;color:white;font-weight:700;cursor:pointer}button.secondary{background:#1f3a5f}button.danger{background:#6b1022}.meta{font-size:13px;color:#667085}.status{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2f6;font-weight:700;font-size:12px}.status.needs_review{background:#fff4d6;color:#7a4b00}.status.approved{background:#e6f7f2;color:#08745c}.status.rejected{background:#fdecec;color:#9b1c1c}pre{white-space:pre-wrap;background:#f8fafc;padding:12px;border-radius:7px;max-height:260px;overflow:auto}button:disabled{opacity:.55;cursor:not-allowed}
+  </style>
+</head>
+<body><main>
+  <header><div><p class="meta">TeachPlay / protected instructor surface</p><h1>Portfolio final review</h1><p>Automated analysis is advisory only. Final approval here does not issue a credential until the rubric and credential gate also pass.</p></div></header>
+  <section class="panel"><form id="auth"><label class="meta" for="key">Issuer API key</label><input id="key" type="password" autocomplete="off" required placeholder="Enter key for this session only"><button class="secondary">Load reviews</button></form><p id="message" role="status"></p></section>
+  <section id="reviews" aria-live="polite"></section>
+</main><script>
+(() => { const auth = document.querySelector('#auth'), key = document.querySelector('#key'), message = document.querySelector('#message'), reviews = document.querySelector('#reviews'); let issuerKey = '';
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const load = async () => { const r = await fetch('/api/admin/portfolio-review', {headers:{Authorization:'Bearer '+issuerKey}}); const d = await r.json(); if(!r.ok) throw Error(d.error || 'Could not load reviews'); reviews.innerHTML = (d.reviews||[]).map(x => { const a=x.analysis||{}; return `<article><span class="status ${esc(x.status)}">${esc(x.status)}</span><p class="meta">${esc(x.id)} · learner ${esc(x.learner_id)} · ${esc(x.created_at)}</p><p><a href="${esc(x.url)}" target="_blank" rel="noreferrer">${esc(x.url)}</a></p><p>${esc(a.computational_artifact_summary || x.error_message || 'No analysis returned.')}</p>${a.risks?.length?`<p><strong>Risks</strong>: ${esc(a.risks.join(' · '))}</p>`:''}${x.status==='needs_review'?`<button data-action="final_approve" data-id="${esc(x.id)}">Final approve</button> <button class="danger" data-action="reject" data-id="${esc(x.id)}">Reject</button>`:''}</article>`; }).join('') || '<div class="panel">No portfolio reviews yet.</div>'; };
+  auth.addEventListener('submit', async e => { e.preventDefault(); issuerKey=key.value; message.textContent='Loading…'; try { await load(); message.textContent='Loaded. The key remains only in this page session.'; } catch(err) { message.textContent=err.message; } });
+  reviews.addEventListener('click', async e => { const b=e.target.closest('button[data-action]'); if(!b) return; b.disabled=true; try { const r=await fetch('/api/admin/portfolio-review',{method:'POST',headers:{Authorization:'Bearer '+issuerKey,'Content-Type':'application/json'},body:JSON.stringify({id:b.dataset.id,action:b.dataset.action})}); const d=await r.json(); if(!r.ok) throw Error(d.error||'Action failed'); message.textContent=d.next; await load(); } catch(err) { message.textContent=err.message; b.disabled=false; } });
+})();</script></body></html>

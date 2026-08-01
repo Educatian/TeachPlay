@@ -120,9 +120,13 @@ export async function handlePortfolioReview(request, env, ctx) {
   return json({ ok: true, id, status: 'analyzing', message: 'Link received. Automated pre-review will never issue a credential; an instructor must final-approve it.' }, 202);
 }
 export async function handleAdminPortfolioReview(request, env) {
-  if (request.method !== 'POST') return json({ error: 'POST required' }, 405);
+  if (!['GET', 'POST'].includes(request.method)) return json({ error: 'GET or POST required' }, 405);
   const auth = checkAdminAuth(request, env); if (!auth.ok) return json(auth.body, auth.code);
   if (!env.DB || !(await tableExists(env))) return json({ error: 'portfolio review not enabled' }, 503);
+  if (request.method === 'GET') {
+    const rows = await env.DB.prepare('SELECT id, learner_id, url, provider, status, analysis_json, error_message, created_at, updated_at, final_reviewed_at, final_reviewed_by FROM portfolio_reviews ORDER BY created_at DESC LIMIT 100').all();
+    return json({ ok: true, reviews: (rows.results || []).map((row) => ({ ...row, analysis: row.analysis_json ? JSON.parse(row.analysis_json) : null })) });
+  }
   let body; try { body = await request.json(); } catch { return json({ error: 'Invalid JSON body' }, 400); }
   const { id, action } = body || {};
   if (!id || !['final_approve', 'reject'].includes(action)) return json({ error: 'id and action (final_approve|reject) required' }, 400);
