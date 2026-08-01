@@ -559,20 +559,17 @@
         box-shadow: none;
       }
       .tp12-default .tp12-summary,
-      .tp12-default .tp12-intro,
-      .tp12-default .tp12-module-card .tp12-outcome,
-      .tp12-default .tp12-module-card dl,
-      .tp12-default .tp12-module-card details,
-      .tp12-default .tp12-reference-row {
-        display: none;
+      .tp12-default .tp12-intro {
+        display: flex;
       }
+      .tp12-default .tp12-intro { display: block; }
       .tp12-default .tp12-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 16px;
       }
       .tp12-default .tp12-module-card {
-        min-height: 88px;
-        display: block;
+        min-height: 220px;
+        display: grid;
         padding: 18px;
         border-radius: 0;
         background: #fff;
@@ -595,10 +592,18 @@
         font-size: 12px;
       }
       .tp12-default .tp12-module-card h3 {
-        display: inline;
+        display: block;
         color: #161616;
         font-size: 16px;
       }
+      .tp12-default .tp12-module-card .tp12-outcome,
+      .tp12-default .tp12-module-card dl,
+      .tp12-default .tp12-module-card details,
+      .tp12-default .tp12-reference-row {
+        display: grid;
+      }
+      .tp12-default .tp12-module-card dl { gap: 6px; }
+      .tp12-default .tp12-module-card details { align-self: end; }
       @media (max-width: 760px) {
         .tp12-default .tp12-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       }
