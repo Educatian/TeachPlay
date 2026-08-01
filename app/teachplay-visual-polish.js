@@ -445,6 +445,19 @@
         border-radius: 8px !important;
         background: #0b1220 !important;
       }
+      /* Learning view: treat the lesson and worksheet as a calm canvas. */
+      .tp-learning-canvas #root [class*="rounded-3xl"],
+      .tp-learning-canvas #root [class*="rounded-2xl"] { border-radius: 8px !important; }
+      .tp-learning-canvas #root [class*="rounded-xl"] { border-radius: 6px !important; }
+      .tp-learning-canvas #root button[class*="rounded-full"] { border-radius: 4px !important; }
+      .tp-learning-canvas #root [class*="shadow-xl"],
+      .tp-learning-canvas #root [class*="shadow-2xl"] { box-shadow: none !important; }
+      .tp-learning-canvas #root textarea:focus,
+      .tp-learning-canvas #root input:focus { outline: 3px solid rgba(158,27,50,.16); outline-offset: 1px; }
+      .tp-learning-canvas #root [class*="bg-gray-50"] { background-color: #f7f7f6 !important; }
+      .tp-learning-canvas #root [class*="bg-slate-50"] { background-color: #fafafa !important; }
+      .tp-learning-canvas #root [class*="border-gray-100"],
+      .tp-learning-canvas #root [class*="border-slate-200"] { border-color: #e4e6e8 !important; }
       @media (max-width: 980px) {
         .tp-landing-polished {
           background:
@@ -624,9 +637,15 @@
     footer?.classList.add('tp-workspace-footer');
   };
 
+  const polishLearning = () => {
+    if (!findByText('div, p, span', /Lesson brief/i, root)) return;
+    document.body.classList.add('tp-learning-canvas');
+  };
+
   const run = () => {
     injectStyles();
     polishLanding();
+    polishLearning();
   };
 
   window.addEventListener('DOMContentLoaded', run);
