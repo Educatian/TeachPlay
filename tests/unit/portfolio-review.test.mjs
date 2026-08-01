@@ -48,16 +48,19 @@ test('portfolio review rejects unsupported hosts before creating a queue row', a
 test('portfolio review stores conservative OpenRouter analysis and exposes it on GET', async () => {
   const rows = [];
   const db = dbMock({ rows });
-  globalThis.fetch = async (url) => {
+  let openRouterRequest;
+  globalThis.fetch = async (url, options = {}) => {
     if (String(url).includes('openrouter.ai')) {
+      openRouterRequest = JSON.parse(options.body);
       return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ learning_objective: 'Predict trajectories', computational_artifact_summary: 'A stateful projectile loop', observable_mechanics: ['angle input'], evidence_traces: ['revision trace'], alignment_findings: ['objective is observable'], strengths: ['clear feedback'], risks: ['public link may hide runtime state'], evidence_questions: ['show the revision log'], recommended_status: 'needs_review', rubric_hints: [{ deliverable: 'D2', rationale: 'links mechanic to objective' }] }) } }] }), { status: 200 });
     }
     return new Response('<html><body>prototype objective feedback revision</body></html>', { status: 200, headers: { 'content-type': 'text/html' } });
   };
   const pending = [];
-  const post = await handlePortfolioReview(request('POST', { url: 'https://aistudio.google.com/app/prompts/demo' }, { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok' }), { DB: db }, { waitUntil: (work) => pending.push(work) });
+  const post = await handlePortfolioReview(request('POST', { url: 'https://aistudio.google.com/app/prompts/demo' }, { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok' }), { DB: db, OPENROUTER_API_KEY: 'test-key' }, { waitUntil: (work) => pending.push(work) });
   assert.equal(post.status, 202);
   await Promise.all(pending);
+  assert.equal(openRouterRequest.model, 'google/gemini-3.5-flash');
   assert.ok(db.calls.some((call) => /INSERT INTO portfolio_reviews/.test(call.sql)));
   assert.ok(db.calls.some((call) => /UPDATE portfolio_reviews SET status/.test(call.sql)));
 });
