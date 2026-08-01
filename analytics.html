@@ -319,6 +319,32 @@
     margin: 0 0 12px;
   }
 </style>
+<style id="micro-analytics-surface">
+  /* Instructor analytics follows the Micro admin frame: quiet chrome first,
+     dense data only where the operator asks for it. */
+  body:has(.an-stats) { background:#fff; color:#161616; font-family:Inter,ui-sans-serif,system-ui,sans-serif; }
+  body:has(.an-stats) .utility { display:none; }
+  body:has(.an-stats) .site-header { border-top:4px solid #a71935; box-shadow:none; }
+  body:has(.an-stats) .site-header__row { min-height:50px; max-width:1312px; }
+  body:has(.an-stats) .site-header__section { font-size:0; color:#a71935; }
+  body:has(.an-stats) .site-header__section::after { content:'TEACHPLAY / ANALYTICS'; font:800 13px/1 Inter,ui-sans-serif,sans-serif; letter-spacing:.02em; }
+  body:has(.an-stats) .site-header__search, body:has(.an-stats) .site-header__panels { display:none; }
+  body:has(.an-stats) main#main { width:min(1312px,calc(100% - 128px)); margin:0 auto; }
+  body:has(.an-stats) main#main > .hero { background:#161616 !important; min-height:0; padding:58px 0 44px !important; border-radius:0; }
+  body:has(.an-stats) main#main > .hero .hero__bg, body:has(.an-stats) main#main > .hero .hero__wave { display:none; }
+  body:has(.an-stats) main#main > .hero .hero__content { width:100%; padding:0 !important; }
+  body:has(.an-stats) .hero__title { font:700 clamp(36px,4vw,56px)/1.02 Inter,ui-sans-serif,sans-serif; letter-spacing:-.045em; }
+  body:has(.an-stats) .hero__lede { max-width:760px; color:#c8c8c8 !important; font:400 15px/1.55 Inter,ui-sans-serif,sans-serif; }
+  body:has(.an-stats) .section { padding:32px 0 !important; margin:0; }
+  body:has(.an-stats) .an-bar { border:1px solid #e2e4e7; background:#fafafa; border-radius:8px; padding:12px; }
+  body:has(.an-stats) .an-stat { border:1px solid #e2e4e7; border-radius:8px; box-shadow:none; padding:16px; }
+  body:has(.an-stats) .an-stat__num { font:700 32px/1 Inter,ui-sans-serif,sans-serif; color:#a71935; }
+  body:has(.an-stats) .an-section { margin:0 0 32px; }
+  body:has(.an-stats) .an-section__head { margin-bottom:12px; }
+  body:has(.an-stats) .an-section h2 { font:650 22px/1.15 Inter,ui-sans-serif,sans-serif; letter-spacing:-.025em; }
+  body:has(.an-stats) .an-heat, body:has(.an-stats) .an-funnel, body:has(.an-stats) .an-stream { border-color:#e2e4e7; border-radius:8px; box-shadow:none; }
+  @media(max-width:760px){body:has(.an-stats) main#main{width:calc(100% - 36px)}body:has(.an-stats) .hero__title{font-size:38px}}
+</style>
 </head>
 <body>
 <noscript>
