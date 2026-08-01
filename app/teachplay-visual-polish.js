@@ -89,6 +89,66 @@
         color: #5b131f !important;
         border-color: #cdb8b8 !important;
       }
+      /* Home hero: match Micro's confident dark editorial entry point. */
+      .tp-landing-polished .tp-hero-grid {
+        min-height: 560px;
+        padding-top: 64px;
+        padding-bottom: 44px;
+        grid-template-columns: minmax(0, 1fr) minmax(300px, .62fr);
+        gap: 28px;
+      }
+      .tp-landing-polished .tp-hero-copy {
+        padding: clamp(24px, 3vw, 40px);
+        border-radius: 8px;
+        background: #5b131f;
+        color: #fff8f6;
+        box-shadow: 0 20px 44px rgba(91,19,31,.18);
+      }
+      .tp-landing-polished .tp-hero-copy .tp-hero-title,
+      .tp-landing-polished .tp-hero-copy .tp-hero-lede,
+      .tp-landing-polished .tp-hero-copy .tp-hero-kicker {
+        color: #fff8f6;
+      }
+      .tp-landing-polished .tp-hero-copy .tp-hero-lede { color: #f1dfe0; }
+      .tp-landing-polished .tp-hero-copy .tp-hero-actions button:first-child {
+        background: #fff8f6 !important;
+        color: #5b131f !important;
+        border-color: #fff8f6 !important;
+      }
+      .tp-landing-polished .tp-hero-copy .tp-hero-actions button:nth-child(2) {
+        background: transparent !important;
+        color: #fff8f6 !important;
+        border-color: rgba(255,248,246,.55) !important;
+      }
+      .tp-landing-polished .tp-hero-copy .tp-beginner-hero-cue {
+        background: rgba(255,248,246,.08);
+        border-color: rgba(255,248,246,.28);
+        border-left-color: #f4caca;
+        color: #f7e9e8;
+      }
+      .tp-landing-polished .tp-hero-copy .tp-beginner-hero-cue strong { color: #fff8f6; }
+      .tp-landing-polished .tp-hero-copy .tp-beginner-hero-cue button {
+        background: #fff8f6;
+        color: #5b131f;
+        border-color: #fff8f6;
+      }
+      .tp-landing-polished .tp-hero-copy .tp-stat-grid {
+        background: rgba(255,248,246,.08);
+        border-color: rgba(255,248,246,.25);
+      }
+      .tp-landing-polished .tp-hero-copy .tp-stat-grid { display: none; }
+      .tp-landing-polished .tp-hero-copy .tp-beginner-hero-cue { margin-top: 12px; }
+      .tp-landing-polished .tp-hero-copy .tp-hero-actions { margin-top: 22px; }
+      .tp-landing-polished .tp-hero-title { font-size: clamp(38px, 4.4vw, 58px); }
+      .tp-landing-polished .tp-hero-lede { margin-top: 16px; font-size: 17px; line-height: 1.48; }
+      .tp-landing-polished .tp-hero-copy .tp-stat-chip {
+        color: #fff8f6 !important;
+        border-right-color: rgba(255,248,246,.2) !important;
+      }
+      @media (max-width: 820px) {
+        .tp-landing-polished .tp-hero-grid { width: min(100% - 28px, 680px); padding-top: 72px; }
+        .tp-landing-polished .tp-hero-copy { padding: 28px 22px; }
+      }
       .tp-landing-polished::before {
         content: "";
         position: absolute;
