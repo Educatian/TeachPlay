@@ -54,6 +54,8 @@ The analysis is focused on learning-objective alignment in the artifact itself: 
 
 The workflow is deliberately two-stage: automated analysis produces `needs_review` findings only; an instructor must final-approve the review, score the D1–D5 rubric, and pass the existing completion gate before the signed credential and Open Badges badge are issued. AI analysis can recommend or flag evidence, but it cannot mint or approve a credential.
 
+The research-grounded computational analysis protocol is documented in [`docs/computational-artifact-analysis-plan.md`](docs/computational-artifact-analysis-plan.md). It formalizes the learning objective, reconstructs the artifact's state/input/rule/output/feedback loop, evaluates learning-mechanics alignment, and inspects evidence traces while labeling findings as observed, claimed, or not verifiable.
+
 Portfolio artifacts are stored in the Cloudflare R2 `teachplay-evidence` bucket when the binding is enabled. The system retains a guarded D1-inline fallback for small files, while the production path uses R2 for larger screenshots, documents, and prototypes. The admin storage diagnostic is available at `GET /api/admin/storage`.
 
 <table>
