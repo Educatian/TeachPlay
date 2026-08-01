@@ -70,7 +70,7 @@
     <a href="analytics.html"><span>02</span><strong>Score rubric</strong><small>25 criteria · Proficient floor</small></a>
     <a href="admin.html"><span>03</span><strong>Issue credential</strong><small>Gate, sign, and claim</small></a>
   </nav>
-  <section class="panel"><form id="auth"><label class="meta" for="key">Optional issuer key</label><input id="key" type="password" autocomplete="off" placeholder="Not required when Cloudflare Access recognizes you"><button class="secondary">Load reviews</button></form><p id="message" role="status"></p></section>
+  <section class="panel"><form id="auth"><label class="meta" for="key">Instructor access</label><input id="key" type="password" autocomplete="off" placeholder="Continue with Cloudflare Access, or enter an issuer key"><button class="secondary">Continue with Access · Load reviews</button></form><p id="message" role="status"></p></section>
   <section id="reviews" aria-live="polite"></section>
 </main><script>
 (() => { const auth = document.querySelector('#auth'), key = document.querySelector('#key'), message = document.querySelector('#message'), reviews = document.querySelector('#reviews'); let issuerKey = '';
