@@ -30,7 +30,22 @@ const server = http.createServer((req, res) => {
   }
   res.writeHead(200, { 'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream' });
   if (req.method === 'HEAD') return res.end();
-  fs.createReadStream(file).pipe(res);
+  const stream = fs.createReadStream(file);
+  // Playwright may close a response while navigating rapidly between pages.
+  // Swallow that expected disconnect so one aborted asset cannot terminate the
+  // shared static server halfway through the suite.
+  stream.on('error', (error) => {
+    if (res.headersSent) return res.destroy();
+    res.writeHead(error.code === 'ENOENT' ? 404 : 500, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end(error.code === 'ENOENT' ? 'Not found' : 'Read error');
+  });
+  res.on('error', () => {});
+  stream.pipe(res);
 });
 
+server.on('clientError', (error, socket) => socket.destroy());
+server.on('error', (error) => {
+  console.error(`TeachPlay test server error: ${error.message}`);
+  process.exitCode = 1;
+});
 server.listen(port, '127.0.0.1', () => console.log(`TeachPlay test server listening on http://127.0.0.1:${port}`));
