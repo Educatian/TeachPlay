@@ -37,3 +37,17 @@ export function checkAdminAuth(request, env) {
   }
   return { ok: true };
 }
+
+/**
+ * Instructor-facing admin gate. Cloudflare Access is the preferred
+ * production path; the issuer key remains available for controlled scripts
+ * and migrations. Access must be an explicit allowlist match, never merely a
+ * present header.
+ */
+export function checkAdminOrAccessAuth(request, env) {
+  const email = (request.headers.get('CF-Access-Authenticated-User-Email') || '').trim().toLowerCase();
+  const allowlist = String(env.ADMIN_ACCESS_EMAILS || '')
+    .split(',').map((value) => value.trim().toLowerCase()).filter(Boolean);
+  if (email && allowlist.includes(email)) return { ok: true, via: 'cloudflare-access' };
+  return checkAdminAuth(request, env);
+}

@@ -9,7 +9,7 @@
  */
 
 import { escapeHtml, getClientIp, rateLimit } from '../lib/security.js';
-import { checkAdminAuth } from '../lib/auth.js';
+import { checkAdminOrAccessAuth } from '../lib/auth.js';
 import { evaluateCredentialGate } from '../lib/gate.js';
 
 function json(body, status = 200) {
@@ -65,7 +65,7 @@ export async function handleAdminApprove(request, env) {
 
   // Shared constant-time admin gate (handles the unset-key 500, case-insensitive
   // Bearer, and x-api-key fallback) instead of a hand-rolled `!==` compare.
-  const auth = checkAdminAuth(request, env);
+  const auth = checkAdminOrAccessAuth(request, env);
   if (!auth.ok) return json(auth.body, auth.code);
 
   let body;

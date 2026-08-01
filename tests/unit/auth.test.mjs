@@ -3,7 +3,7 @@
 // the pure logic the audit found had zero coverage.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { timingSafeEqualStr, checkAdminAuth } from '../../src/lib/auth.js';
+import { timingSafeEqualStr, checkAdminAuth, checkAdminOrAccessAuth } from '../../src/lib/auth.js';
 
 test('timingSafeEqualStr: equal strings match', () => {
   assert.equal(timingSafeEqualStr('s3cr3t-key', 's3cr3t-key'), true);
@@ -47,4 +47,20 @@ test('checkAdminAuth: ok on matching Bearer (case-insensitive)', () => {
 test('checkAdminAuth: ok on matching x-api-key fallback', () => {
   const r = checkAdminAuth(reqWith({ 'x-api-key': 'right' }), { ISSUER_API_KEY: 'right' });
   assert.equal(r.ok, true);
+});
+
+test('checkAdminOrAccessAuth: allowlisted Cloudflare Access instructor can pass without issuer key', () => {
+  const r = checkAdminOrAccessAuth(reqWith({ 'cf-access-authenticated-user-email': 'Instructor@Example.edu' }), {
+    ADMIN_ACCESS_EMAILS: 'other@example.edu, instructor@example.edu',
+  });
+  assert.equal(r.ok, true);
+  assert.equal(r.via, 'cloudflare-access');
+});
+
+test('checkAdminOrAccessAuth: non-allowlisted Access identity fails closed', () => {
+  const r = checkAdminOrAccessAuth(reqWith({ 'cf-access-authenticated-user-email': 'student@example.edu' }), {
+    ADMIN_ACCESS_EMAILS: 'instructor@example.edu',
+  });
+  assert.equal(r.ok, false);
+  assert.equal(r.code, 500);
 });
