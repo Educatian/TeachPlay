@@ -332,9 +332,40 @@
       .tp-bespoke-home #root [class*="bg-red"] {
         background-color: #5b131f !important;
       }
-      .tp-bespoke-home #root [class*="text-ua-crimson"],
-      .tp-bespoke-home #root [class*="text-red"] {
+      .tp-bespoke-home #root button[class*="text-ua-crimson"],
+      .tp-bespoke-home #root button[class*="text-red"] {
         color: #5b131f !important;
+      }
+      .tp-bespoke-home #root [class*="text-ua-crimson"]:not(button),
+      .tp-bespoke-home #root [class*="text-red"]:not(button) {
+        color: #f2d79a !important;
+      }
+      .tp-bespoke-home #root [class*="bg-ua-crimson"].text-xl {
+        color: #fff !important;
+      }
+      .tp-bespoke-home #root [class*="bg-ua-crimson"] .text-xl,
+      .tp-bespoke-home #root [class*="bg-red"] .text-xl {
+        color: #fff !important;
+      }
+      .tp-bespoke-home #root [class*="bg-white"] [class*="text-ua-crimson"],
+      .tp-bespoke-home #root [class*="bg-slate-50"] [class*="text-ua-crimson"] {
+        color: #5b131f !important;
+      }
+      .tp-bespoke-home #root p[class*="text-ua-crimson"],
+      .tp-bespoke-home #root [class*="bg-ua-crimson/10"] {
+        color: #5b131f !important;
+      }
+      .tp-bespoke-home .tp-bespoke-topnav .text-xl {
+        color: #fff !important;
+      }
+      .tp-bespoke-home #root .gap-4.justify-between.items-center > div > .text-xl {
+        color: #fff !important;
+      }
+      .tp-bespoke-home #root .border-b [class*="text-ua-crimson"] {
+        color: #f2d79a !important;
+      }
+      .tp-bespoke-home #root [class*="text-red-100"] {
+        color: #f2d79a !important;
       }
       .tp-bespoke-home #root [class*="border-ua-crimson"],
       .tp-bespoke-home #root [class*="border-red"] {

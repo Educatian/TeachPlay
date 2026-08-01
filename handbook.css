@@ -2841,7 +2841,7 @@ a.deliverable:hover {
 }
 
 .tp-enterprise-shell .hero__eyebrow {
-  color: #a0152b;
+  color: #f2d79a;
 }
 
 .tp-enterprise-shell .hero__title,
@@ -3114,6 +3114,8 @@ button, .btn, a.btn, input, select, textarea { border-radius: 4px; font-family: 
 .hero__content { padding-top: 80px; }
 .hero__title { color: #fff !important; }
 .hero__lede { color: #bfbfbf !important; }
+.tp-enterprise-shell .hero__lede strong { color: #fff !important; }
+.tp-enterprise-shell .hero__eyebrow { color: #f2d79a !important; }
 .hero__content, .section, .content, .session-header, .credential-hero { width: min(var(--figma-content), calc(100% - 128px)); margin-inline: auto; }
 .hero__title, .credential-hero__text h1, .section__title, .page-title { font-family: 'Inter', sans-serif; letter-spacing: -.035em; font-weight: 700; }
 .section__eyebrow, .hero__eyebrow, .eyebrow { font-family: 'Inter', sans-serif; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }

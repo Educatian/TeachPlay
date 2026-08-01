@@ -88,6 +88,14 @@
         line-height: 1.5;
       }
     </style>
+    <style>
+      /* Keep the Micro crimson-on-ink surfaces readable in the learner workspace. */
+      #root .text-ua-crimson,
+      #root button.text-ua-crimson { color: #f2d79a !important; }
+      #root .bg-ua-crimson.text-xl,
+      #root [class*="bg-ua-crimson"].text-xl { color: #fff !important; }
+      #root .text-red-100 { color: #f2d79a !important; }
+    </style>
     <script>
       window.addEventListener('DOMContentLoaded', () => {
         const preserveChildrenAs = (node, tagName) => {
