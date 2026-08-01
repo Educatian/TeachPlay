@@ -61,6 +61,13 @@
   .agentic-analysis__objective { grid-column:1/-1; background:#fdf4f5 !important; border-color:#e7b9c1 !important; }
   .agentic-analysis__grid strong { display:block; color:#6b6f73; font-size:11px; letter-spacing:.06em; text-transform:uppercase; }
   .agentic-analysis__grid ul { margin:8px 0 0; padding-left:18px; color:#4a4a4a; font-size:13px; line-height:1.45; }
+  button, input, summary, a { -webkit-tap-highlight-color: transparent; }
+  button, input { transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease; }
+  button:hover { background:#72111f; }
+  button.secondary:hover { background:#162b46; }
+  button.danger:hover { background:#4f0c19; }
+  :where(button, input, summary, a):focus-visible { outline:3px solid #cbb677; outline-offset:3px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior:auto !important; transition-duration:0.01ms !important; animation-duration:0.01ms !important; } }
   @media(max-width:760px){.agentic-analysis__grid{grid-template-columns:1fr}}
 </style>
 </head>
