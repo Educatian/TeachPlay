@@ -32,6 +32,7 @@ function dbMock({ learner = { id: 'L1', session_token: 'tok' }, rows = [], chang
           };
         },
         async first() { return sql.includes('sqlite_master') ? { ok: 1 } : null; },
+        async all() { return { results: rows }; },
       };
     },
   };
@@ -68,4 +69,12 @@ test('admin portfolio review requires auth and only final-approves needs_review 
   const approved = await handleAdminPortfolioReview(request('POST', { id: 'r1', action: 'final_approve' }, { authorization: 'Bearer secret' }), { DB: db, ISSUER_API_KEY: 'secret' });
   assert.equal(approved.status, 200);
   assert.match((await approved.json()).next, /Submit rubric scores/);
+});
+
+test('admin portfolio review GET returns analysis rows with admin auth', async () => {
+  const row = { id: 'r1', learner_id: 'L1', status: 'needs_review', analysis_json: JSON.stringify({ risks: ['show trace'] }) };
+  const db = dbMock({ rows: [row] });
+  const res = await handleAdminPortfolioReview(request('GET', null, { authorization: 'Bearer secret' }), { DB: db, ISSUER_API_KEY: 'secret' });
+  assert.equal(res.status, 200);
+  assert.deepEqual((await res.json()).reviews[0].analysis, { risks: ['show trace'] });
 });
