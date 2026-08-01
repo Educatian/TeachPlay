@@ -283,9 +283,9 @@
         letter-spacing: 0;
       }
       .tp-bespoke-topnav {
-        background: rgba(246,248,251,.88) !important;
+        background: #ffffff !important;
         border-bottom: 1px solid rgba(201,212,226,.72);
-        backdrop-filter: blur(14px);
+        backdrop-filter: none;
       }
       .tp-bespoke-topnav button,
       .tp-bespoke-topnav [class*="text-white"] {
@@ -311,7 +311,7 @@
          not floating bubbles. Keep the existing crimson/blue theme and reserve
          pill shapes for status labels only. */
       .tp-bespoke-home #root button {
-        border-radius: 6px !important;
+        border-radius: 4px !important;
         box-shadow: none !important;
         transform: none !important;
       }
