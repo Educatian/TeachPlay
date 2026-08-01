@@ -501,9 +501,9 @@ test('25. handbook-v2.md is served at the repo root', async ({ request }) => {
   expect(txt.length).toBeGreaterThan(60_000);
 });
 
-test('19. references.html lists 29 sources + traceability table', async ({ page }) => {
+test('19. references.html lists 30 sources + traceability table', async ({ page }) => {
   await page.goto(BASE + '/references.html');
-  await expect(page.locator('.ref-list li')).toHaveCount(29);
+  await expect(page.locator('.ref-list li')).toHaveCount(30);
   await expect(page.locator('.traceability tbody tr')).toHaveCount(9);
 });
 
@@ -511,7 +511,7 @@ test('20. ai-use-policy.html shows permitted + not-permitted lists + disclosure'
   await page.goto(BASE + '/ai-use-policy.html');
   await expect(page.locator('.policy-card.is-permit li')).toHaveCount(4);
   await expect(page.locator('.policy-card.is-deny li')).toHaveCount(4);
-  await expect(page.locator('.disclosure ol li')).toHaveCount(3);
+  await expect(page.locator('.disclosure ol li')).toHaveCount(8);
 });
 
 test('21. cognitive-load.html shows three-load grid + three tensions', async ({ page }) => {
