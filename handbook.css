@@ -3160,6 +3160,47 @@ button, .btn, a.btn, input, select, textarea { border-radius: 4px; font-family: 
 .credential-hero__text h1 { color: #fff !important; }
 .credential-hero__text p { color: #d9ccd1 !important; }
 .credential-hero__text .hero__eyebrow { color: var(--gold) !important; }
+
+/* Figma Micro session template: quiet navigation rail and readable lesson column. */
+.shell{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:calc(100vh - 66px);background:#fff}
+.shell .sidebar{position:sticky;top:0;height:calc(100vh - 66px);background:#fafafa;border-right:1px solid var(--figma-border);box-shadow:none;padding:24px 0}
+.sidebar-brand{padding:0 24px 20px;border-bottom:1px solid var(--figma-border)}
+.sidebar-brand__title{font-family:Inter,sans-serif;font-size:16px;letter-spacing:-.02em;color:#161616}
+.sidebar-brand__eyebrow,.sidebar__section-label{font-family:Inter,sans-serif;color:#6b7278;letter-spacing:.08em}
+.sidebar__item{border-left:2px solid transparent;border-radius:0;padding:10px 24px;font-family:Inter,sans-serif;color:#4a4a4a}
+.sidebar__item.is-active{background:#fdf4f5;color:#9e1b32;border-left-color:#9e1b32;font-weight:700}
+.main{min-width:0;background:#fff}
+.session-header{width:min(900px,calc(100% - 128px));margin:0;padding:48px 0 28px}
+.session-header__top{display:flex;justify-content:space-between;gap:24px;align-items:center}
+.session-header__crumbs{font:400 13px/1.4 Inter,sans-serif;color:#6b7278}
+.session-header__session-num{color:#9e1b32;font-weight:700}
+.session-header__title{font:750 48px/1.08 Inter,sans-serif;letter-spacing:-.04em;color:#161616;margin:28px 0 14px}
+.session-header__title em{color:#9e1b32;font-style:normal}
+.session-header__lede{font:400 18px/1.5 Inter,sans-serif;color:#4a4a4a;max-width:720px}
+.session-meta{display:flex;border-top:1px solid var(--figma-border);border-bottom:1px solid var(--figma-border);margin-top:28px;padding:16px 0;gap:32px}
+.session-meta__label{font:700 11px/1.2 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#6b7278}
+.session-meta__value{font:700 20px/1.2 Inter,sans-serif;color:#161616}
+.session-meta__sub{font:400 12px/1.4 Inter,sans-serif;color:#6b7278}
+.content{width:min(900px,calc(100% - 128px));margin:0;padding:8px 0 64px}
+.block{border-top:1px solid var(--figma-border);padding:40px 0}
+.block__kicker{font:700 12px/1.2 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#9e1b32}
+.block__title{font:750 32px/1.12 Inter,sans-serif;letter-spacing:-.03em;color:#161616}
+.block p,.lead,.outcomes__text{font:400 16px/1.55 Inter,sans-serif;color:#333}
+.card,.asset-figure,.deliverable,.quiz{border:1px solid var(--figma-border);border-radius:8px;box-shadow:none}
+.btn--solid,.btn--ghost{border-radius:4px;font-family:Inter,sans-serif}
+.btn--solid{background:#9e1b32;color:#fff;border-color:#9e1b32}
+.btn--ghost{background:#fff;color:#9e1b32;border-color:#9e1b32}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.shell .sidebar{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--figma-border);padding:12px 0}.sidebar__nav{display:flex;overflow:auto}.sidebar__item{white-space:nowrap}.session-header,.content{width:calc(100% - 40px)}.session-header__title{font-size:38px}.session-header__top{align-items:flex-start;flex-direction:column}.session-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
+body:has(.session-header) .utility{display:none!important}
+body:has(.session-header) .site-header{border-top:6px solid #9e1b32}
+body:has(.session-header) .site-header__row{min-height:60px;width:min(1312px,calc(100% - 128px));margin:auto}
+body:has(.session-header) .site-header__section{font-size:0;color:transparent!important;overflow:hidden}
+body:has(.session-header) .site-header__section:after{content:'TEACHPLAY';font:700 15px/1 Inter,sans-serif;color:#9e1b32}
+body:has(.session-header) .site-header__search{display:none}
+body:has(.session-header) .primary-nav{width:min(1312px,calc(100% - 128px));margin:auto;border-top:1px solid var(--figma-border)}
+body:has(.session-header) .primary-nav__panel{display:none!important}
+body:has(.session-header) .primary-nav__group.instructor-only{display:none}
+body:has(.session-header) .primary-nav__cta{background:#9e1b32!important;color:#fff!important;border-radius:4px!important}
 .tp-credential-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
 .tp-credential-actions a, .tp-credential-actions button { border-radius: 4px; }
 .fg-toc, .fg-session, .fg-workload, .fg-stance { border-radius: 8px; box-shadow: none; }
