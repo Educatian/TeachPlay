@@ -78,3 +78,9 @@ test('admin portfolio review GET returns analysis rows with admin auth', async (
   assert.equal(res.status, 200);
   assert.deepEqual((await res.json()).reviews[0].analysis, { risks: ['show trace'] });
 });
+
+test('admin portfolio review accepts an allowlisted Cloudflare Access identity', async () => {
+  const db = dbMock({ rows: [] });
+  const res = await handleAdminPortfolioReview(request('GET', null, { 'CF-Access-Authenticated-User-Email': 'instructor@example.edu' }), { DB: db, ADMIN_ACCESS_EMAILS: 'instructor@example.edu' });
+  assert.equal(res.status, 200);
+});

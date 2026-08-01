@@ -2,6 +2,13 @@
 import { getClientIp, learnerTokenDecision, rateLimit } from '../lib/security.js';
 import { checkAdminAuth } from '../lib/auth.js';
 
+function checkPortfolioAdminAuth(request, env) {
+  const accessEmail = (request.headers.get('CF-Access-Authenticated-User-Email') || '').trim().toLowerCase();
+  const allowlist = String(env.ADMIN_ACCESS_EMAILS || '').split(',').map((value) => value.trim().toLowerCase()).filter(Boolean);
+  if (accessEmail && allowlist.includes(accessEmail)) return { ok: true, via: 'cloudflare-access' };
+  return checkAdminAuth(request, env);
+}
+
 const MAX_URL = 2048;
 const MAX_TEXT = 100_000;
 const ALLOWED_HOSTS = [
@@ -121,7 +128,7 @@ export async function handlePortfolioReview(request, env, ctx) {
 }
 export async function handleAdminPortfolioReview(request, env) {
   if (!['GET', 'POST'].includes(request.method)) return json({ error: 'GET or POST required' }, 405);
-  const auth = checkAdminAuth(request, env); if (!auth.ok) return json(auth.body, auth.code);
+  const auth = checkPortfolioAdminAuth(request, env); if (!auth.ok) return json(auth.body, auth.code);
   if (!env.DB || !(await tableExists(env))) return json({ error: 'portfolio review not enabled' }, 503);
   if (request.method === 'GET') {
     const rows = await env.DB.prepare('SELECT id, learner_id, url, provider, status, analysis_json, error_message, created_at, updated_at, final_reviewed_at, final_reviewed_by FROM portfolio_reviews ORDER BY created_at DESC LIMIT 100').all();

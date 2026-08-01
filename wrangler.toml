@@ -17,6 +17,12 @@ compatibility_flags = ["nodejs_compat"]
 [observability]
 enabled = true
 
+[vars]
+# Portfolio review is additionally gated by Cloudflare Access. Keep this
+# allowlist limited to authorized instructor identities; credential issuance
+# endpoints continue to require the issuer secret.
+ADMIN_ACCESS_EMAILS = "jewoong.moon@gmail.com,jewoong87@gmail.com"
+
 [assets]
 directory = "./"
 binding = "ASSETS"
