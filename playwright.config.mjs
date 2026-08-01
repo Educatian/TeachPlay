@@ -27,7 +27,7 @@ export default defineConfig({
   // Make the gate self-contained: start the same static server the tests
   // expect. reuseExistingServer keeps a hand-started dev server working too.
   webServer: {
-    command: 'python -m http.server 8765',
+    command: 'node scripts/test-server.mjs',
     url: 'http://127.0.0.1:8765/index.html',
     reuseExistingServer: true,
     timeout: 30_000,
