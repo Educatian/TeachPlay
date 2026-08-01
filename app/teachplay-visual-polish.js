@@ -458,6 +458,35 @@
           border-bottom: 0 !important;
         }
       }
+      /* Final home composition: keep the entry point short and intentional.
+         These rules live last so legacy responsive polish cannot re-expand it. */
+      .tp-landing-polished {
+        background: #fbf8f7 !important;
+      }
+      .tp-landing-polished::before {
+        background: linear-gradient(90deg, rgba(251,248,247,.98), rgba(251,248,247,.86)) !important;
+      }
+      .tp-landing-polished .tp-hero-grid {
+        min-height: 0 !important;
+        padding: 72px 0 48px !important;
+        grid-template-columns: minmax(0, 680px) !important;
+        justify-content: center;
+      }
+      .tp-landing-polished .tp-hero-copy {
+        padding: 32px !important;
+        background: #5b131f !important;
+        border-radius: 8px !important;
+        box-shadow: 0 16px 36px rgba(91,19,31,.14) !important;
+      }
+      .tp-landing-polished .tp-hero-title { font-size: clamp(38px, 6vw, 58px) !important; }
+      .tp-landing-polished .tp-hero-lede { max-width: 560px; margin-top: 14px !important; }
+      .tp-landing-polished .tp-stat-grid,
+      .tp-landing-polished .tp-workspace-card { display: none !important; }
+      .tp-landing-polished .tp-hero-actions { margin-top: 22px !important; }
+      @media (max-width: 640px) {
+        .tp-landing-polished .tp-hero-grid { padding: 48px 0 32px !important; }
+        .tp-landing-polished .tp-hero-copy { padding: 24px 20px !important; }
+      }
     `;
     document.head.appendChild(style);
   };
