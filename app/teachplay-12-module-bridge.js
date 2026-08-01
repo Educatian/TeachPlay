@@ -547,6 +547,61 @@
         font-size: 12px;
         font-weight: 800;
       }
+      /* Landing uses the Micro compact pathway; the course view keeps the
+         full evidence/readings detail below. */
+      .tp12-default {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 56px 0 64px;
+        border: 0;
+        border-radius: 0;
+        background: #f4f5f6;
+        box-shadow: none;
+      }
+      .tp12-default .tp12-summary,
+      .tp12-default .tp12-intro,
+      .tp12-default .tp12-module-card .tp12-outcome,
+      .tp12-default .tp12-module-card dl,
+      .tp12-default .tp12-module-card details,
+      .tp12-default .tp12-reference-row {
+        display: none;
+      }
+      .tp12-default .tp12-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .tp12-default .tp12-module-card {
+        min-height: 88px;
+        display: block;
+        padding: 18px;
+        border-radius: 0;
+        background: #fff;
+      }
+      .tp12-default .tp12-module-card:nth-child(4n),
+      .tp12-default .tp12-module-card:nth-child(8n),
+      .tp12-default .tp12-module-card:nth-child(12n) {
+        border-color: #9e1b32;
+        background: #fdf4f5;
+      }
+      .tp12-default .tp12-module-topline a { display: none; }
+      .tp12-default .tp12-module-topline span {
+        width: auto;
+        height: auto;
+        display: inline;
+        margin-right: 8px;
+        border-radius: 0;
+        background: transparent;
+        color: #6a727a;
+        font-size: 12px;
+      }
+      .tp12-default .tp12-module-card h3 {
+        display: inline;
+        color: #161616;
+        font-size: 16px;
+      }
+      @media (max-width: 760px) {
+        .tp12-default .tp12-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
       .tp12-module-card details[open] summary {
         margin-bottom: 8px;
       }

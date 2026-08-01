@@ -203,7 +203,8 @@
     injectStyles();
     iconifyThemeControls();
     promoteSignedOutAction();
-    injectCredentialRail();
+    // The Micro landing frame carries credential proof in its hero preview;
+    // do not add a second trust rail beneath the CTA.
   };
 
   window.addEventListener('DOMContentLoaded', run);
