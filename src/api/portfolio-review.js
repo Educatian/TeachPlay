@@ -6,6 +6,12 @@ function checkPortfolioAdminAuth(request, env) {
   const accessEmail = (request.headers.get('CF-Access-Authenticated-User-Email') || '').trim().toLowerCase();
   const allowlist = String(env.ADMIN_ACCESS_EMAILS || '').split(',').map((value) => value.trim().toLowerCase()).filter(Boolean);
   if (accessEmail && allowlist.includes(accessEmail)) return { ok: true, via: 'cloudflare-access' };
+  // Do not turn a missing Access session into a misleading server error when
+  // this deployment intentionally has no issuer key configured.
+  const suppliedCredential = request.headers.get('authorization') || request.headers.get('x-api-key');
+  if (!suppliedCredential && !env.ISSUER_API_KEY) {
+    return { ok: false, code: 401, body: { error: 'Cloudflare Access instructor session required. Sign in through the full page, then reload.' } };
+  }
   return checkAdminAuth(request, env);
 }
 

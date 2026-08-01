@@ -84,3 +84,9 @@ test('admin portfolio review accepts an allowlisted Cloudflare Access identity',
   const res = await handleAdminPortfolioReview(request('GET', null, { 'CF-Access-Authenticated-User-Email': 'instructor@example.edu' }), { DB: db, ADMIN_ACCESS_EMAILS: 'instructor@example.edu' });
   assert.equal(res.status, 200);
 });
+
+test('admin portfolio review returns a clear 401 when Access session is missing', async () => {
+  const res = await handleAdminPortfolioReview(request('GET'), { DB: dbMock() });
+  assert.equal(res.status, 401);
+  assert.match((await res.json()).error, /Cloudflare Access instructor session required/);
+});
