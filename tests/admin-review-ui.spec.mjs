@@ -15,7 +15,7 @@ test('instructor review console loads analysis and final-approve action', async 
   await page.locator('#key').fill('test-only-key');
   await page.getByRole('button', { name: 'Load reviews' }).click();
   await expect(page.getByText('Stateful learning loop with observable feedback.')).toBeVisible();
-  await page.getByText('Analysis evidence · inspect before approval').click();
+  await expect(page.locator('details.agentic-analysis')).toHaveAttribute('open', '');
   await expect(page.getByText('Predict → act → feedback')).toBeVisible();
   await expect(page.getByText('D2: Mechanic maps to objective')).toBeVisible();
   await page.getByRole('button', { name: 'Final approve' }).click();
