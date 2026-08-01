@@ -41,6 +41,54 @@
         color: #101828;
         border-bottom: 1px solid #d9e1ec;
       }
+      /* Micro prototype alignment: restrained burgundy shell, compact editorial
+         spacing, and flat panels. Keep the existing theme switch and content
+         hierarchy; this only changes the shared visual treatment. */
+      .tp-landing-polished {
+        background: #fbf8f7;
+        color: #241316;
+        border-bottom-color: #e6d8d7;
+      }
+      .tp-landing-polished::before {
+        background:
+          linear-gradient(90deg, rgba(251,248,247,.98) 0%, rgba(251,248,247,.96) 48%, rgba(251,248,247,.78) 100%),
+          repeating-linear-gradient(90deg, rgba(91,19,31,.035) 0 1px, transparent 1px 96px);
+      }
+      .tp-landing-polished .tp-hero-title {
+        color: #5b131f;
+        font-family: Georgia, "Times New Roman", serif;
+        letter-spacing: -.02em;
+      }
+      .tp-landing-polished .tp-hero-lede { color: #5b4b4e; }
+      .tp-landing-polished .tp-hero-actions button:first-child,
+      .tp-landing-polished .tp-beginner-hero-cue button {
+        background: #5b131f !important;
+        border-color: #5b131f !important;
+      }
+      .tp-landing-polished .tp-hero-actions button:nth-child(2) {
+        color: #5b131f !important;
+        border-color: #cdb8b8 !important;
+        background: #fff !important;
+      }
+      .tp-landing-polished .tp-workspace-card {
+        border-color: #cdb8b8 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 18px 40px rgba(91,19,31,.12) !important;
+      }
+      .tp-landing-polished .tp-stat-grid { border-color: #decaca; }
+      .tp-landing-polished .tp-stat-chip { border-right-color: #eadfdf !important; }
+      .tp-landing-polished .tp-beginner-hero-cue {
+        border-color: #decaca;
+        border-left-color: #5b131f;
+      }
+      .tp-bespoke-topnav {
+        background: rgba(251,248,247,.94) !important;
+        border-bottom-color: #e6d8d7;
+      }
+      .tp-bespoke-topnav button[aria-label*="Sign in"] {
+        color: #5b131f !important;
+        border-color: #cdb8b8 !important;
+      }
       .tp-landing-polished::before {
         content: "";
         position: absolute;
@@ -219,6 +267,18 @@
       }
       .tp-bespoke-home #root [class*="rounded-2xl"] {
         border-radius: 8px !important;
+      }
+      .tp-bespoke-home #root [class*="bg-ua-crimson"],
+      .tp-bespoke-home #root [class*="bg-red"] {
+        background-color: #5b131f !important;
+      }
+      .tp-bespoke-home #root [class*="text-ua-crimson"],
+      .tp-bespoke-home #root [class*="text-red"] {
+        color: #5b131f !important;
+      }
+      .tp-bespoke-home #root [class*="border-ua-crimson"],
+      .tp-bespoke-home #root [class*="border-red"] {
+        border-color: #cdb8b8 !important;
       }
       /* WCAG 2.5.8 / coarse-pointer affordance: compact icon and text links
          remain visually light while exposing a reliable 44px tap target. */
