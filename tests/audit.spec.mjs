@@ -79,6 +79,18 @@ async function gotoReady(page, page_) {
 
 test.describe.configure({ mode: 'serial' });
 
+test('audit · protected instructor and learner utility surfaces render their entry states', async ({ page }) => {
+  const errors = [];
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  await page.goto(`${BASE}/admin.html`, { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { name: 'TeachPlay Admin' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Continue with Access/i })).toBeVisible();
+  await page.goto(`${BASE}/progress.html`, { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { name: 'My Progress' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'TEACHPLAY' })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 // Mobile pages to spot-check at 390×844 (iPhone 14 Pro). Full traversal
 // would double the audit runtime — sample the most-visited pages instead.
 const MOBILE_SAMPLE = ['index.html', 'rubrics.html', 'examples.html', 'handbook.html', 'session-03.html', 'credential.html'];
