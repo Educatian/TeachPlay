@@ -398,9 +398,12 @@ test('33. sitemap.xml + robots.txt are served and reference each other', async (
 
 test('34. references.html li items have anchor IDs (citation deep-linking)', async ({ page }) => {
   await page.goto(BASE + '/references.html');
-  // All 29 li now have id="..."
+  // Every reference entry carries an anchor ID; the reference list may grow
+  // as the handbook adds sources, so keep this invariant count-independent.
   const withId = await page.locator('.ref-list li[id]').count();
-  expect(withId).toBe(29);
+  const total = await page.locator('.ref-list li').count();
+  expect(withId).toBe(total);
+  expect(total).toBeGreaterThan(0);
   // A known ID resolves
   await expect(page.locator('#plass-2015')).toHaveCount(1);
 });
