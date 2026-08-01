@@ -458,34 +458,52 @@
           border-bottom: 0 !important;
         }
       }
-      /* Final home composition: keep the entry point short and intentional.
-         These rules live last so legacy responsive polish cannot re-expand it. */
+      /* Final Micro landing composition. Match the inspected Figma frame:
+         white nav, ink hero, credential preview, proof tiles, pathway. */
       .tp-landing-polished {
-        background: #fbf8f7 !important;
+        background: #161616 !important;
       }
       .tp-landing-polished::before {
-        background: linear-gradient(90deg, rgba(251,248,247,.98), rgba(251,248,247,.86)) !important;
+        background: none !important;
       }
       .tp-landing-polished .tp-hero-grid {
-        min-height: 0 !important;
-        padding: 72px 0 48px !important;
-        grid-template-columns: minmax(0, 680px) !important;
-        justify-content: center;
+        width: min(1120px, calc(100% - 48px)) !important;
+        min-height: 580px !important;
+        padding: 80px 0 64px !important;
+        grid-template-columns: minmax(0, 1fr) 480px !important;
+        gap: 48px !important;
+        justify-content: initial;
       }
       .tp-landing-polished .tp-hero-copy {
-        padding: 32px !important;
-        background: #5b131f !important;
-        border-radius: 8px !important;
-        box-shadow: 0 16px 36px rgba(91,19,31,.14) !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
       }
-      .tp-landing-polished .tp-hero-title { font-size: clamp(38px, 6vw, 58px) !important; }
-      .tp-landing-polished .tp-hero-lede { max-width: 560px; margin-top: 14px !important; }
-      .tp-landing-polished .tp-stat-grid,
-      .tp-landing-polished .tp-workspace-card { display: none !important; }
-      .tp-landing-polished .tp-hero-actions { margin-top: 22px !important; }
+      .tp-landing-polished .tp-hero-title { font-size: 64px !important; color: #fff !important; }
+      .tp-landing-polished .tp-hero-lede { max-width: 560px; margin-top: 20px !important; }
+      .tp-landing-polished .tp-stat-grid { display: grid !important; }
+      .tp-landing-polished .tp-workspace-card { display: block !important; }
+      .tp-landing-polished .tp-hero-actions { margin-top: 34px !important; }
+      .tp-landing-polished .tp-workspace-card {
+        min-height: 300px;
+        background: #5a0d18 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+      }
+      .tp-landing-polished .tp-stat-grid {
+        grid-column: 1 / -1;
+        margin-top: 12px !important;
+        border-radius: 8px !important;
+      }
       @media (max-width: 640px) {
-        .tp-landing-polished .tp-hero-grid { padding: 48px 0 32px !important; }
-        .tp-landing-polished .tp-hero-copy { padding: 24px 20px !important; }
+        .tp-landing-polished .tp-hero-grid {
+          width: min(100% - 28px, 680px) !important;
+          padding: 52px 0 36px !important;
+          grid-template-columns: 1fr !important;
+          gap: 28px !important;
+        }
+        .tp-landing-polished .tp-hero-title { font-size: 42px !important; }
       }
     `;
     document.head.appendChild(style);
