@@ -341,6 +341,12 @@
   body:has(.an-stats) .an-stat__num { font:700 32px/1 Inter,ui-sans-serif,sans-serif; color:#a71935; }
   body:has(.an-stats) .an-section { margin:0 0 32px; }
   body:has(.an-stats) .an-section__head { margin-bottom:12px; }
+  body:has(.an-stats) details.an-section--collapsible { border-top:1px solid #e2e4e7; padding:18px 0; margin:0; }
+  body:has(.an-stats) details.an-section--collapsible > summary { cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0; }
+  body:has(.an-stats) details.an-section--collapsible > summary::-webkit-details-marker { display:none; }
+  body:has(.an-stats) details.an-section--collapsible > summary::after { content:'+'; color:#a71935; font-size:22px; font-weight:500; }
+  body:has(.an-stats) details.an-section--collapsible[open] > summary::after { content:'−'; }
+  body:has(.an-stats) details.an-section--collapsible[open] > summary { margin-bottom:12px; }
   body:has(.an-stats) .an-section h2 { font:650 22px/1.15 Inter,ui-sans-serif,sans-serif; letter-spacing:-.025em; }
   body:has(.an-stats) .an-heat, body:has(.an-stats) .an-funnel, body:has(.an-stats) .an-stream { border-color:#e2e4e7; border-radius:8px; box-shadow:none; }
   @media(max-width:760px){body:has(.an-stats) main#main{width:calc(100% - 36px)}body:has(.an-stats) .hero__title{font-size:38px}}
@@ -1428,5 +1434,28 @@
 <script src="achievements.js"></script>
 <script src="handbook-polish.js"></script>
 <script src="survey-gate-ui.js"></script>
+<script>
+  // Keep the analytics landing view calm while preserving every detailed panel.
+  // The first section remains visible; secondary analyses are user-opened.
+  (() => {
+    const sections = [...document.querySelectorAll('.an-section')];
+    sections.slice(1).forEach((section) => {
+      if (section.tagName === 'DETAILS' || section.dataset.collapsible === 'true') return;
+      const head = section.querySelector('.an-section__head');
+      if (!head) return;
+      const details = document.createElement('details');
+      details.className = 'an-section an-section--collapsible';
+      details.dataset.collapsible = 'true';
+      const summary = document.createElement('summary');
+      summary.className = 'an-section__head';
+      while (head.firstChild) summary.appendChild(head.firstChild);
+      details.appendChild(summary);
+      [...section.children].forEach((child) => {
+        if (child !== head) details.appendChild(child);
+      });
+      section.replaceWith(details);
+    });
+  })();
+</script>
 </body>
 </html>
