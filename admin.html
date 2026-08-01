@@ -137,6 +137,38 @@
     .psy-dist .l0 { background: #d6d3cd; } .psy-dist .l1 { background: #f0b860; } .psy-dist .l2 { background: #5aa469; } .psy-dist .l3 { background: #0e6027; }
     .psy-insufficient { color: #888; font-style: italic; font-size: 13px; }
   </style>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#161616;background:#fff}
+    body{background:#fff;color:#161616}
+    body:before{content:"";display:block;height:6px;background:#9e1b32}
+    #auth-gate{min-height:calc(100vh - 6px);padding:32px 20px;align-items:center}
+    .auth-card{border:1px solid #e4e6e8;border-radius:8px;padding:32px;max-width:440px;box-shadow:0 12px 32px rgba(22,22,22,.06)}
+    .auth-card h1{font:750 32px/1.1 Inter,sans-serif;letter-spacing:-.03em;margin-bottom:12px}
+    .auth-card p{color:#4a4a4a;line-height:1.55}
+    .auth-card input{border-color:#c9ccce;border-radius:4px;min-height:40px}
+    .btn{background:#9e1b32;border-radius:4px;padding:10px 16px}
+    .btn--outline{background:#fff;color:#9e1b32;border-color:#9e1b32}
+    .topbar{background:#161616;padding:18px 64px;border-top:1px solid #2a2a2a}
+    .topbar h1{font:700 16px/1.2 Inter,sans-serif;letter-spacing:.01em}
+    .content{max-width:1440px;padding:72px 64px 80px}
+    .kpi-row{gap:12px;margin-bottom:28px}
+    .kpi,.card{border:1px solid #e4e6e8;border-radius:8px;background:#fff}
+    .kpi{padding:18px}
+    .kpi__val{font-size:30px;color:#9e1b32}
+    .kpi__label{color:#6b6f73}
+    .card{padding:20px;margin-bottom:16px}
+    .card h2{color:#4a4a4a;font-size:12px;letter-spacing:.08em}
+    .funnel-bar__track,.q-row__track{background:#f1f2f3}
+    .funnel-bar__fill,.skill-bar--post{background:#9e1b32}
+    .learner-table{font-size:13px}
+    .learner-table th{border-bottom:1px solid #c9ccce;color:#6b6f73}
+    .learner-table td{border-bottom:1px solid #f0f1f2}
+    .badge,.rubric-pill{border-radius:4px}
+    .score-card{border-radius:8px}
+    .score-card__head{background:#161616;border-radius:8px 8px 0 0}
+    .score-close{border-radius:4px}
+    @media(max-width:760px){.topbar{padding:16px 20px}.content{padding:48px 20px 60px}.kpi-row{grid-template-columns:repeat(2,minmax(0,1fr))}.card{overflow-x:auto}.learner-table{min-width:700px}.auth-card{padding:26px 22px}}
+  </style>
 </head>
 <body>
 <noscript>
