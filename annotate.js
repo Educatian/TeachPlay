@@ -296,19 +296,23 @@
   function ensureBadge() {
     if (badge) return badge;
     var slot = document.querySelector('.utility__right');
-    if (!slot) return null;
+    var utility = document.querySelector('.utility');
+    var floating = utility && (getComputedStyle(utility).display === 'none' || (slot && getComputedStyle(slot).display === 'none'));
+    if (!slot && !floating) return null;
     var a = document.createElement('a');
     a.href = '#'; a.id = 'hb-anno-toggle';
     a.style.display = 'inline-flex';
     a.style.alignItems = 'center';
     a.style.gap = '4px';
     a.textContent = 'Notes';
+    if (floating) a.className = 'hb-anno-floating-toggle';
     var n = document.createElement('span');
     n.className = 'hb-anno-badge'; n.textContent = '0';
     a.appendChild(n);
     a.addEventListener('click', function (e) { e.preventDefault(); togglePanel(); });
     // Insert before any existing trailing link (e.g. myBama)
-    slot.insertBefore(a, slot.firstChild);
+    if (floating) document.body.appendChild(a);
+    else slot.insertBefore(a, slot.firstChild);
     badge = n;
     return badge;
   }
@@ -578,6 +582,13 @@
       '  background: #be1a2f; color: #fff;',
       '  font-size: 11px; font-weight: 700; text-align: center;',
       '}',
+      '.hb-anno-floating-toggle {',
+      '  position: fixed; right: 18px; top: 82px; z-index: 99997;',
+      '  padding: 9px 12px; border: 1px solid #9e1b32; border-radius: 4px;',
+      '  background: #fff; color: #9e1b32; font: 600 13px/1.2 Inter, sans-serif;',
+      '  box-shadow: 0 6px 18px rgba(22,22,22,.12);',
+      '}',
+      '.hb-anno-floating-toggle:hover { background: #fdf4f5; }',
       '.hb-anno-badge:empty, .hb-anno-badge[data-zero] { display: none; }',
 
       '.hb-anno-panel {',
