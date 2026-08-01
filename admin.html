@@ -183,10 +183,10 @@
 <div id="auth-gate">
   <div class="auth-card">
     <h1>TeachPlay Admin</h1>
-    <p>Enter your issuer API key to view analytics.</p>
+    <p>Cloudflare Access instructors can continue without a key. Use the issuer key only for controlled scripts or migrations.</p>
     <label for="api-key-input" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;">Issuer API key</label>
     <input type="password" id="api-key-input" placeholder="ISSUER_API_KEY" autocomplete="off" aria-label="Issuer API key"/>
-    <button class="btn" id="auth-btn" style="width:100%;">Sign in →</button>
+    <button class="btn" id="auth-btn" style="width:100%;">Continue with Access →</button>
     <p class="error" id="auth-error" style="display:none;"></p>
   </div>
 </div>
@@ -313,10 +313,15 @@
   var verdictCache = {};   // learner_id -> verdict {passed, proficient_count, total_criteria, ...}
   var lastLearners = [];   // most recent learner list, for re-render after scoring
 
+  function adminHeaders(extra) {
+    var headers = Object.assign({}, extra || {});
+    if (apiKey) headers.Authorization = 'Bearer ' + apiKey;
+    return headers;
+  }
+
   /* ── Auth ── */
   document.getElementById('auth-btn').addEventListener('click', function () {
     var key = document.getElementById('api-key-input').value.trim();
-    if (!key) return;
     apiKey = key;
     document.getElementById('auth-gate').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
@@ -330,12 +335,12 @@
   async function loadData() {
     try {
       var res = await fetch('/api/admin/analytics', {
-        headers: { 'Authorization': 'Bearer ' + apiKey }
+        headers: adminHeaders()
       });
       if (res.status === 401) {
         document.getElementById('auth-gate').style.display = '';
         document.getElementById('dashboard').style.display = 'none';
-        document.getElementById('auth-error').textContent = 'Invalid API key.';
+        document.getElementById('auth-error').textContent = apiKey ? 'Invalid API key.' : 'Your Cloudflare Access instructor session was not recognized.';
         document.getElementById('auth-error').style.display = '';
         return;
       }
@@ -351,7 +356,7 @@
   /* ── Measurement & validity (psychometrics) ── */
   async function loadPsychometrics() {
     try {
-      var res = await fetch('/api/admin/psychometrics', { headers: { 'Authorization': 'Bearer ' + apiKey } });
+      var res = await fetch('/api/admin/psychometrics', { headers: adminHeaders() });
       var data = await res.json();
       renderPsychometrics(data);
     } catch (e) {
@@ -439,7 +444,7 @@
   // Authenticated download helper (export endpoints need the Bearer header).
   async function downloadExport(format, filename) {
     try {
-      var res = await fetch('/api/admin/export?format=' + format, { headers: { 'Authorization': 'Bearer ' + apiKey } });
+      var res = await fetch('/api/admin/export?format=' + format, { headers: adminHeaders() });
       if (!res.ok) { alert('Export failed (' + res.status + ')'); return; }
       var blob = await res.blob();
       var url = URL.createObjectURL(blob);
@@ -613,7 +618,7 @@
       var res = await fetch('/api/admin/approve', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer ' + apiKey,
+          ...adminHeaders(),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ learner_id: learnerId }),
@@ -655,7 +660,7 @@
     document.getElementById('score-modal').classList.add('open');
     try {
       var res = await fetch('/api/admin/evidence?learner_id=' + encodeURIComponent(learnerId), {
-        headers: { 'Authorization': 'Bearer ' + apiKey }
+        headers: adminHeaders()
       });
       var data = await res.json();
       if (!res.ok || !data.ok) {
@@ -754,7 +759,7 @@
         btn.disabled = true;
         try {
           var res = await fetch('/api/admin/evidence-file?id=' + encodeURIComponent(id), {
-            headers: { 'Authorization': 'Bearer ' + apiKey }
+            headers: adminHeaders()
           });
           if (!res.ok) { alert('Download failed (' + res.status + ')'); return; }
           var blob = await res.blob();
@@ -801,7 +806,7 @@
     box.innerHTML = '<p class="loading" style="font-size:12.5px;color:#888;">Loading provenance log…</p>';
     try {
       var res = await fetch('/api/admin/provenance?learner_id=' + encodeURIComponent(learnerId), {
-        headers: { 'Authorization': 'Bearer ' + apiKey }
+        headers: adminHeaders()
       });
       var data = await res.json();
       if (!res.ok || !data.ok) { box.innerHTML = ''; return; }
@@ -876,7 +881,7 @@
       return { criterion_id: cid, level: scoreState.selections[cid] };
     });
     try {
-      var headers = { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' };
+      var headers = adminHeaders({ 'Content-Type': 'application/json' });
       var scorer = (document.getElementById('score-scorer-email').value || '').trim();
       if (scorer) headers['X-Scorer-Email'] = scorer; // records this rater for IRR
       var res = await fetch('/api/admin/score', {
