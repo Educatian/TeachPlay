@@ -3116,6 +3116,51 @@ button, .btn, a.btn, input, select, textarea { border-radius: 4px; font-family: 
 .tour-step, .card, .credential-card, .verification-panel, .portfolio-row, .deliverable-row { border: 1px solid var(--figma-border); border-radius: 8px; box-shadow: none; }
 .tour-step__num { border-radius: 4px; }
 .site-footer { background: var(--figma-ink); }
+.tp-credential-trust-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 720px) minmax(0, 552px);
+  gap: 40px;
+  align-items: start;
+}
+.tp-credential-trust-card {
+  border: 1px solid var(--figma-border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+  padding: 28px;
+}
+.tp-credential-trust-card__eyebrow,
+.fg-stance__eyebrow,
+.fg-workload__eyebrow {
+  color: var(--crimson);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.tp-credential-trust-card__head h2,
+.tp-credential-trust-card__head h3,
+.fg-stance__title,
+.fg-workload__title,
+.fg-session__title {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -.025em;
+}
+.tp-credential-trust-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.tp-credential-trust-grid > div { border-top: 1px solid var(--figma-border); padding-top: 14px; }
+.tp-credential-trust-card .tp-trust-status { border-radius: 4px; }
+.credential-hero__text h1 { color: #fff !important; }
+.credential-hero__text p { color: #d9ccd1 !important; }
+.credential-hero__text .hero__eyebrow { color: var(--gold) !important; }
+.tp-credential-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.tp-credential-actions a, .tp-credential-actions button { border-radius: 4px; }
+.fg-toc, .fg-session, .fg-workload, .fg-stance { border-radius: 8px; box-shadow: none; }
+.fg-session { border: 1px solid var(--figma-border); }
+.fg-session__head { border-bottom-color: var(--figma-border); }
+@media (max-width: 900px) {
+  .tp-credential-trust-panel { grid-template-columns: 1fr; }
+}
 @media (max-width: 760px) {
   .site-header__row, .primary-nav, .hero__content, .section, .content, .session-header, .credential-hero { width: min(100% - 40px, 680px); }
 }
