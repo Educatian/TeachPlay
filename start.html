@@ -45,6 +45,24 @@
     .tour-step { grid-template-columns: 1fr; padding: 22px 24px; }
     .tour-step__num { width: 44px; height: 44px; font-size: 18px; }
   }
+  /* Figma Micro Start frame: ink hero and quiet, evidence-led cards. */
+  body { font-family: Inter, Arial, sans-serif; background: #fff; color: #161616; }
+  .hero { background: #161616 !important; min-height: 360px; padding: 0 0 56px !important; color: #fff; }
+  .hero__bg, .hero__wave { display: none !important; }
+  .hero__content { width: min(1312px, calc(100% - 128px)); margin: 0 auto; padding-top: 80px !important; }
+  .hero__eyebrow { color: #cbb677; font-family: Inter, sans-serif; font-weight: 600; letter-spacing: .08em; }
+  .hero__title { color: #fff !important; font-family: Inter, sans-serif !important; font-size: 52px !important; letter-spacing: -.04em; }
+  .hero__lede { color: #bfbfbf !important; font-family: Inter, sans-serif; max-width: 720px !important; }
+  .section { width: min(1312px, calc(100% - 128px)); margin-inline: auto; }
+  .tour-step { max-width: none; border-radius: 8px; border-color: #e4e6e8; box-shadow: none; }
+  .tour-step__num { border-radius: 4px; background: #9e1b32; font-family: Inter, sans-serif; }
+  .tour-step__body h3 { font-family: Inter, sans-serif; }
+  .tour-step__body p, .tour-step__body li { font-family: Inter, sans-serif; }
+  @media (max-width: 760px) {
+    .hero__content, .section { width: min(100% - 40px, 680px); }
+    .hero__content { padding-top: 56px !important; }
+    .hero__title { font-size: 40px !important; }
+  }
 </style>
 </head>
 <body>
