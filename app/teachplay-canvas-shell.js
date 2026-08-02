@@ -280,6 +280,165 @@
         line-height: 1.04 !important;
       }
 
+      /* Learner landing: match the current Figma landing composition. */
+      body.tp-bespoke-home .tp-canvas-context[hidden] { display: none !important; }
+      body.tp-bespoke-home #tp-presurvey-banner {
+        height: 34px !important;
+        min-height: 34px !important;
+        padding: 6px 24px !important;
+        border-bottom: 1px solid #cbb677 !important;
+        background: #fff7e6 !important;
+        color: #4a4a4a !important;
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+      }
+      body.tp-bespoke-home #tp-app-search,
+      body.tp-bespoke-home button[aria-label="Open AI tutor"] { display: none !important; }
+      body.tp-bespoke-home .tp-landing-polished {
+        margin-top: 0 !important;
+        background: #161616 !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-hero-grid {
+        width: min(1120px, calc(100% - 48px)) !important;
+        min-height: 0 !important;
+        padding: 128px 0 64px !important;
+        align-items: start !important;
+        grid-template-columns: minmax(0, 1fr) 480px !important;
+        gap: 48px !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-hero-copy {
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-hero-title {
+        max-width: 620px !important;
+        font-size: clamp(48px, 5.2vw, 68px) !important;
+        line-height: 1.04 !important;
+        letter-spacing: -.035em !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-hero-lede {
+        max-width: 595px !important;
+        margin-top: 20px !important;
+        color: #c9c9c9 !important;
+        font-size: 18px !important;
+        line-height: 1.45 !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-hero-actions { margin-top: 30px !important; }
+      body.tp-bespoke-home .tp-landing-polished .tp-beginner-hero-cue { display: none !important; }
+      body.tp-bespoke-home .tp-landing-polished .tp-workspace-card {
+        width: 480px !important;
+        min-height: 0 !important;
+        height: auto !important;
+        border: 0 !important;
+        border-radius: 8px !important;
+        background: #5a0d18 !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-workspace-card > div:first-child {
+        min-height: 72px !important;
+        padding: 16px 20px !important;
+        border-bottom-color: rgba(255,255,255,.28) !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-workspace-media {
+        height: 92px !important;
+        margin: 12px 20px 0 !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-workspace-media figure,
+      body.tp-bespoke-home .tp-landing-polished .tp-workspace-media img { height: 92px !important; }
+      body.tp-bespoke-home .tp-landing-polished .tp-workspace-card > div:last-child {
+        display: grid !important;
+        gap: 8px !important;
+        padding: 12px 20px 16px !important;
+        background: #0b1220 !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-workspace-card > div:last-child > .tp-workspace-row {
+        min-height: 58px !important;
+        padding: 10px 12px !important;
+        border-radius: 4px !important;
+      }
+      body.tp-bespoke-home .tp-landing-polished .tp-workspace-card > div:last-child > .tp-workspace-footer {
+        min-height: 64px !important;
+        padding: 12px 14px !important;
+        border-radius: 4px !important;
+      }
+      body.tp-bespoke-home .tp-landing-proof-band { padding: 60px 0 !important; background: #fff !important; }
+      body.tp-bespoke-home .tp-landing-proof-band__inner {
+        width: min(1120px, calc(100% - 48px));
+        margin: 0 auto;
+      }
+      body.tp-bespoke-home .tp-landing-proof-band .tp-stat-grid {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 32px !important;
+        border: 0 !important;
+        overflow: visible !important;
+        background: transparent !important;
+      }
+      body.tp-bespoke-home .tp-landing-proof-band .tp-stat-chip {
+        min-height: 120px !important;
+        padding: 24px !important;
+        border: 1px solid #e4e6e8 !important;
+        border-radius: 8px !important;
+        background: #fafafa !important;
+        color: #161616 !important;
+      }
+      body.tp-bespoke-home .tp-landing-proof-band .tp-stat-chip > div:nth-child(2) {
+        color: #6a727a !important;
+      }
+      body.tp-bespoke-home .tp-landing-proof-band .tp-stat-chip:last-child { border-right: 1px solid #e4e6e8 !important; }
+      body.tp-bespoke-home .tp-landing-pathway,
+      body.tp-bespoke-home .tp-landing-primer,
+      body.tp-bespoke-home .tp-landing-curriculum {
+        background: #f4f5f6 !important;
+        border-color: #e4e6e8 !important;
+      }
+      body.tp-bespoke-home .tp-landing-pathway .tp-beginner-start,
+      body.tp-bespoke-home .tp-landing-assets .tp-student-guide-links {
+        width: min(1120px, calc(100% - 48px)) !important;
+        margin: 0 auto !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
+      body.tp-bespoke-home .tp-landing-pathway .tp-beginner-start { background: transparent !important; }
+      body.tp-bespoke-home .tp-landing-pathway .tp-beginner-start article,
+      body.tp-bespoke-home .tp-landing-assets .tp-student-guide-links a {
+        border-radius: 4px !important;
+        border-color: #e4e6e8 !important;
+        box-shadow: none !important;
+      }
+      body.tp-bespoke-home .tp-landing-access,
+      body.tp-bespoke-home .tp-landing-cta { background: #fff !important; }
+      body.tp-bespoke-home .tp-landing-standards { background: #5a0d18 !important; color: #fff !important; }
+      body.tp-bespoke-home .tp-landing-standards [class*="text-slate"],
+      body.tp-bespoke-home .tp-landing-standards [class*="text-gray"] { color: #f8e9ce !important; }
+      body.tp-bespoke-home .tp-landing-curriculum article { border-radius: 4px !important; box-shadow: none !important; }
+      body.tp-bespoke-home .tp-landing-footer { background: #161616 !important; }
+
+      @media (max-width: 900px) {
+        body.tp-bespoke-home .tp-landing-polished .tp-hero-grid {
+          width: min(720px, calc(100% - 32px)) !important;
+          grid-template-columns: 1fr !important;
+          gap: 32px !important;
+        }
+        body.tp-bespoke-home .tp-landing-polished .tp-workspace-card { width: 100% !important; }
+        body.tp-bespoke-home .tp-landing-proof-band .tp-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+      }
+      @media (max-width: 640px) {
+        body.tp-bespoke-home #tp-presurvey-banner { padding: 6px 14px !important; overflow: hidden; white-space: nowrap; }
+        body.tp-bespoke-home .tp-landing-polished .tp-hero-grid,
+        body.tp-bespoke-home .tp-landing-proof-band__inner,
+        body.tp-bespoke-home .tp-landing-pathway .tp-beginner-start,
+        body.tp-bespoke-home .tp-landing-assets .tp-student-guide-links { width: min(100% - 28px, 680px) !important; }
+        body.tp-bespoke-home .tp-landing-polished .tp-hero-grid { padding-top: 96px !important; }
+        body.tp-bespoke-home .tp-landing-polished .tp-hero-title { font-size: 42px !important; }
+        body.tp-bespoke-home .tp-landing-proof-band .tp-stat-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+      }
+
       @media (max-width: 900px) {
         body.tp-bespoke-home .tp-canvas-sidebar { display: none; }
         body.tp-bespoke-home.tp-canvas-workspace #root > div,
@@ -356,6 +515,57 @@
     const headingText = normalize([...root.querySelectorAll('h1')].find((element) => normalize(element.textContent))?.textContent);
     const isLanding = headingText === 'Build serious learning games educators can actually defend.';
     const isWorkspace = !isLanding;
+    document.body.classList.toggle('tp-learner-landing', isLanding);
+    if (isLanding) {
+      const landingSections = [...document.querySelectorAll('#root section')];
+      const mark = (className, pattern) => {
+        landingSections.find((section) => pattern.test(normalize(section.textContent)))?.classList.add(className);
+      };
+      mark('tp-landing-pathway', /Start here: create an account/i);
+      mark('tp-landing-assets', /Use the completion guide before starting/i);
+      mark('tp-landing-access', /How students access, learn, and submit/i);
+      mark('tp-landing-primer', /From objective to mechanic/i);
+      mark('tp-landing-curriculum', /embedded 12-module sequence/i);
+      mark('tp-landing-standards', /FOR EDUCATOR PD, GRADUATE COURSES, AND CE PROGRAMS/i);
+      mark('tp-landing-cta', /Start with the credential pathway/i);
+      [...document.querySelectorAll('#root footer')].forEach((footer) => footer.classList.add('tp-landing-footer'));
+
+      const hero = document.querySelector('.tp-landing-polished');
+      const stats = document.querySelector('.tp-stat-grid');
+      if (hero && stats && !stats.dataset.tpProofMoved) {
+        const proof = document.createElement('section');
+        proof.className = 'tp-landing-proof-band';
+        proof.setAttribute('aria-label', 'Credential at a glance');
+        const inner = document.createElement('div');
+        inner.className = 'tp-landing-proof-band__inner';
+        proof.appendChild(inner);
+        inner.appendChild(stats);
+        hero.insertAdjacentElement('afterend', proof);
+        stats.dataset.tpProofMoved = 'true';
+      }
+
+      const workspace = document.querySelector('.tp-workspace-card');
+      if (workspace) {
+        workspace.querySelectorAll('.tp-workspace-row, .tp-workspace-footer').forEach((node) => {
+          node.classList.remove('tp-workspace-row', 'tp-workspace-footer');
+        });
+        const body = [...workspace.children].find((child) =>
+          ['Map the learning problem', 'Prototype with governance', 'Playtest and defend']
+            .every((label) => normalize(child.textContent).includes(label))
+        );
+        if (body) {
+          [...body.children].forEach((child) => {
+            const text = normalize(child.textContent);
+            if (/Map the learning problem|Prototype with governance|Playtest and defend/i.test(text)) {
+              child.classList.add('tp-workspace-row');
+            }
+            if (/Credential evidence packet/i.test(text)) {
+              child.classList.add('tp-workspace-footer');
+            }
+          });
+        }
+      }
+    }
     document.body.classList.toggle('tp-canvas-workspace', isWorkspace);
     if (isWorkspace) {
       createSidebar();
