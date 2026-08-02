@@ -28,6 +28,13 @@ The browser smoke and surface audits were previously recorded as 53 smoke passes
 
 ## Production acceptance status
 
+Read-only production D1 checks on 2026-08-01 found the seeded demo review
+`demo-review-2026-08-01` for `demo-learner-2026-08-01`. It is an actual
+`openrouter` review with 4,881 characters of analysis and a conservative
+`needs_review` recommendation. The same learner currently has 0 completed
+session events, 0 evidence deliverables, and 0 Proficient/Exemplary rubric
+scores, so the issuance gate correctly cannot pass yet.
+
 The complete production sequence is **not yet claimed as passed**. The remaining evidence must come from one authenticated browser session and must include:
 
 1. a real learner portfolio submission;
