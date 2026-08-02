@@ -226,7 +226,7 @@ test('signed-out landing exposes the compact credential proof surface', async ({
 
   const proof = page.locator('.tp-workspace-card');
   await expect(proof).toBeVisible();
-  await expect(proof).toContainText(/Credential evidence packet|portfolio artifacts/i);
+  await expect(proof).toContainText(/View credential evidence|portfolio artifacts/i);
 
   // Account creation remains available from the global shell; the landing
   // proof surface itself is intentionally reduced to one primary action.

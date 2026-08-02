@@ -7,7 +7,9 @@ test('learner landing follows the current Figma Canvas composition', async ({ pa
 
   await expect(page.locator('.tp-fidelity-hero h1')).toHaveText(/AI-enhancedEducationalGame Design/);
   await expect(page.locator('.tp-fidelity-card')).toContainText('A verifiable credential');
-  await expect(page.locator('.tp-fidelity-card')).toContainText('Credential evidence packet');
+  await expect(page.locator('.tp-fidelity-card a')).toHaveAttribute('href', '/credential.html');
+  await expect(page.locator('.tp-fidelity-outcome')).toContainText('Five evidence-ready deliverables');
+  await expect(page.locator('.tp-fidelity-lede')).toContainText('educators and learning designers');
   await expect(page.locator('.tp-fidelity-stat')).toHaveCount(3);
   await expect(page.locator('.tp-fidelity-session')).toHaveCount(12);
   await expect(page.getByRole('button', { name: /Start learning in Session 01/i })).toBeVisible();

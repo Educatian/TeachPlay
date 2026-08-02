@@ -616,6 +616,20 @@
         font-size: 18px;
         line-height: 1.32;
       }
+      body.tp-fidelity-mode .tp-fidelity-outcome {
+        max-width: 595px;
+        margin: 16px 0 0;
+        color: #f2f2f2;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+      body.tp-fidelity-mode .tp-fidelity-outcome strong {
+        margin-right: 8px;
+        color: #cbb677;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .08em;
+      }
       body.tp-fidelity-mode .tp-fidelity-actions {
         display: flex;
         gap: 16px;
@@ -701,6 +715,17 @@
         font-weight: 700;
         letter-spacing: .04em;
         text-transform: uppercase;
+      }
+      body.tp-fidelity-mode .tp-fidelity-card-link {
+        display: inline-block;
+        color: #cbb677;
+        text-decoration: none;
+        text-underline-offset: 4px;
+      }
+      body.tp-fidelity-mode .tp-fidelity-card-link:hover,
+      body.tp-fidelity-mode .tp-fidelity-card-link:focus-visible {
+        color: #fff;
+        text-decoration: underline;
       }
       body.tp-fidelity-mode .tp-fidelity-proof {
         height: 240px;
@@ -985,11 +1010,12 @@
             <div class="tp-fidelity-hero-copy">
               <p class="tp-fidelity-eyebrow">THE UNIVERSITY OF ALABAMA · COLLEGE OF EDUCATION</p>
               <h1>AI-enhanced<br>Educational<br>Game Design</h1>
-              <p class="tp-fidelity-lede">A twelve-session microcredential. One objective, one designed artifact, every week, scored against 25 criteria you can read before you start.</p>
+              <p class="tp-fidelity-lede">For educators and learning designers: a twelve-session microcredential where each week turns one objective into one designed artifact, scored against 25 criteria you can read before you start.</p>
               <div class="tp-fidelity-actions">
                 <button type="button" aria-label="Start learning in Session 01">Start Session 01</button>
                 <button type="button" aria-label="Read the rubrics before starting">Read the rubrics first</button>
               </div>
+              <p class="tp-fidelity-outcome"><strong>YOU LEAVE WITH</strong>Five evidence-ready deliverables, not just course completion.</p>
               <div class="tp-fidelity-notice" hidden></div>
             </div>
             <section class="tp-workspace-card tp-fidelity-card" aria-labelledby="tp-fidelity-card-title">
@@ -1002,7 +1028,7 @@
                 <li>Skills mapped to ESCO + Lightcast</li>
                 <li>Displayable in Achievement Studio</li>
               </ul>
-              <p class="tp-fidelity-card-proof">Credential evidence packet</p>
+              <p class="tp-fidelity-card-proof"><a class="tp-fidelity-card-link" href="/credential.html">View credential evidence →</a></p>
             </section>
           </div>
         </header>
@@ -1017,8 +1043,8 @@
         <section class="tp-fidelity-pathway" aria-labelledby="tp-fidelity-pathway-heading">
           <div class="tp-fidelity-band-inner">
             <p class="tp-fidelity-section-label">THE PATHWAY</p>
-            <h2 id="tp-fidelity-pathway-heading">Twelve sessions, five deliverables</h2>
-            <p class="tp-fidelity-section-lede">Each session pairs one learning objective with one artifact you actually build.</p>
+            <h2 id="tp-fidelity-pathway-heading">Twelve sessions, five evidence milestones</h2>
+            <p class="tp-fidelity-section-lede">Each session pairs one learning objective with one artifact you actually build, test, or defend.</p>
             <div class="tp-fidelity-session-grid"></div>
           </div>
         </section>
