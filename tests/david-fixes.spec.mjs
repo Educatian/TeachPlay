@@ -77,6 +77,7 @@ test('React evidence upload preserves draft fields and keeps the learner in Evid
 
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
+  await page.waitForSelector('body.tp-fidelity-mode #tp-fidelity-landing');
   await page.getByRole('button', { name: /Start learning/i }).click();
   await page.getByRole('button', { name: /Enter guided course/i }).click();
   await page.getByRole('button', { name: /Open final submission/i }).click();
@@ -113,6 +114,7 @@ test('React evidence upload preserves draft fields and keeps the learner in Evid
 test('completed lessons route to evidence submission before certificate preview', async ({ page }) => {
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
+  await page.waitForSelector('body.tp-fidelity-mode #tp-fidelity-landing');
   await page.getByRole('button', { name: /Start learning/i }).click();
   await page.getByRole('button', { name: /Enter guided course/i }).click();
 
@@ -141,6 +143,7 @@ test('certificate preview requires a real learner identity before issuance', asy
 
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
+  await page.waitForSelector('body.tp-fidelity-mode #tp-fidelity-landing');
   await page.getByRole('button', { name: /Start learning/i }).click();
   await page.getByRole('button', { name: /Enter guided course/i }).click();
 
@@ -168,6 +171,7 @@ test('certificate preview is awarded to the registered learner identity', async 
 
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
+  await page.waitForSelector('body.tp-fidelity-mode #tp-fidelity-landing');
   await page.getByRole('button', { name: /Start learning/i }).click();
   await page.getByRole('button', { name: /Enter guided course/i }).click();
 
@@ -199,6 +203,7 @@ test('certificate preview refuses evidence saved for another learner', async ({ 
 
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
+  await page.waitForSelector('body.tp-fidelity-mode #tp-fidelity-landing');
   await page.getByRole('button', { name: /Start learning/i }).click();
   await page.getByRole('button', { name: /Enter guided course/i }).click();
 
@@ -217,6 +222,7 @@ test('certificate preview refuses evidence saved for another learner', async ({ 
 test('signed-out landing exposes the compact credential proof surface', async ({ page }) => {
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
+  await page.waitForSelector('body.tp-fidelity-mode #tp-fidelity-landing');
 
   const proof = page.locator('.tp-workspace-card');
   await expect(proof).toBeVisible();
@@ -231,6 +237,7 @@ test('refined landing layout does not overflow on desktop or mobile', async ({ p
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto('/index.html');
   await page.waitForSelector('#root:not(:empty)');
+  await page.waitForSelector('body.tp-fidelity-mode #tp-fidelity-landing');
   await expect(page.locator('.tp-workspace-card')).toBeVisible();
   const desktopOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(desktopOverflow).toBe(false);
@@ -238,6 +245,7 @@ test('refined landing layout does not overflow on desktop or mobile', async ({ p
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/index.html?layout=mobile');
   await page.waitForSelector('#root:not(:empty)');
+  await page.waitForSelector('body.tp-fidelity-mode #tp-fidelity-landing');
   await expect(page.locator('.tp-workspace-card')).toBeVisible();
   const mobileOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(mobileOverflow).toBe(false);
