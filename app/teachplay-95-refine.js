@@ -91,7 +91,7 @@
         margin: 24px 0 18px;
         overflow: hidden;
         border: 1px solid #d7dee8;
-        border-radius: 8px;
+        border-radius: 4px;
         background: rgba(255, 255, 255, 0.94);
         box-shadow: 0 14px 36px rgba(15, 23, 42, 0.07);
       }

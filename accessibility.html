@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#be1a2f" />
 <title>Accessibility · AI-enhanced Educational Game Design</title>
-<meta name="description" content="Accessibility statement for the AI-enhanced Educational Game Design micro-credential — WCAG 2.1 AA conformance target, known issues, complaint mechanism, and the design choices behind the site's interactive surfaces." />
+<meta name="description" content="Accessibility statement for the AI-enhanced Educational Game Design micro-credential — WCAG 2.2 AA target, known issues, complaint mechanism, and the design choices behind the site's interactive surfaces." />
 <link rel="canonical" href="https://teachplay.dev/accessibility.html" />
 <link rel="icon" type="image/svg+xml" href="assets/gameicon-favicon.svg" />
 <link rel="stylesheet" href="handbook.css" />
@@ -110,10 +110,10 @@
 <section class="hero" style="padding-bottom: 56px;">
   <div class="hero__bg"></div>
   <div class="hero__content">
-    <div class="hero__eyebrow">Accessibility · WCAG 2.1 AA target</div>
+    <div class="hero__eyebrow">Accessibility · WCAG 2.2 AA target</div>
     <h1 class="hero__title" style="font-size: 52px; line-height: 1.05;">What you can expect.<br/>What we know is broken.</h1>
     <p class="hero__lede" style="max-width: 780px;">
-      This is a federally-adjacent ACHE-funded learning surface. We treat WCAG 2.1 AA as
+      This is a federally-adjacent ACHE-funded learning surface. We treat WCAG 2.2 AA as
       the floor, not the ceiling, and we surface the gaps we already know about — because
       a credential page that hides its accessibility limits isn't credible.
     </p>
@@ -125,11 +125,11 @@
 
 <section class="section">
   <span class="section__eyebrow">Conformance target</span>
-  <h2 class="section__title">WCAG 2.1 AA, partial conformance.</h2>
+  <h2 class="section__title">WCAG 2.2 AA target, partial conformance.</h2>
 
   <div class="a11y-section">
     <p>
-      The site targets <strong>WCAG 2.1 Level AA</strong>. That means meaningful image
+      The site targets <strong>WCAG 2.2 Level AA</strong>. That means meaningful image
       alt text, captioned video, color-contrast ratios above 4.5:1 for body text,
       keyboard operability for core navigation and content, no reliance on color alone,
       and no content that could induce seizures. We do not yet claim full conformance:
@@ -210,15 +210,20 @@
   <span class="section__eyebrow">Tooling we use to check ourselves</span>
   <h2 class="section__title">Automated audit, every push.</h2>
   <div class="a11y-section">
-    <p>The site has a Playwright-driven audit suite that runs on every push to <code>main</code>:</p>
+    <p>The site has a Playwright-driven audit suite that runs in the release workflow. It checks
+       representative pages and interactions; passing automated checks is not, by itself, a
+       claim of full WCAG conformance. Manual keyboard, screen-reader, zoom, captions, and
+       assistive-technology review remain required. The latest manual review record is
+       <a href="docs/manual-accessibility-review-2026-08-01.md">available here</a>; it records
+       keyboard and caption evidence separately from the still-pending screen-reader pass.</p>
     <ul>
       <li><strong>Structural a11y:</strong> exactly one <code>&lt;h1&gt;</code> per page, viewport meta present, theme-color set, no missing image alts.</li>
       <li><strong>Console + network:</strong> no uncaught JS errors, no broken internal links.</li>
-      <li><strong>Mobile viewport:</strong> 6 representative pages spot-checked at 390×844 (iPhone 14 Pro). Every interactive element has a tap target ≥ 24×24 (32×32 target).</li>
+      <li><strong>Mobile viewport:</strong> 6 representative pages spot-checked at 390×844 (iPhone 14 Pro). The interactive elements sampled there have tap targets ≥ 24×24 (32×32 target); this is not a claim about every control on every page.</li>
     </ul>
     <p>Source: <code>tests/audit.spec.mjs</code> in the
       <a href="https://github.com/Educatian/TeachPlay" target="_blank" rel="noopener">project repository</a>.
-      Most recent run: 0 errors, 0 warnings across 26 pages.</p>
+      Most recent run: 0 errors, 0 warnings across 30 audited pages; representative-page coverage is not full conformance evidence.</p>
   </div>
 </section>
 
@@ -327,7 +332,7 @@
   </div>
 
   <p style="font-size: 12px; color: #888; max-width: 880px; margin-top: 16px;">
-    Statement last reviewed 2026-05-05. The site is in active development; this page is
+    Statement last reviewed 2026-08-01. The site is in active development; this page is
     revised when conformance status changes.
   </p>
 </section>

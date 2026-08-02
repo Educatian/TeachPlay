@@ -162,6 +162,9 @@
               A spec with "target learner access unavailable" documented is stronger than a report padded with
               peer sessions labeled as playtests. Own the limit; it shapes what D5 claims.
             </p>
+            <p><strong>Scope of the floor:</strong> the rubric's 3+ target-learner sessions are a course evidence
+              minimum for disciplined observation, not a statistical power rule or proof of transfer. Claims about
+              learning effects still require a design and sample appropriate to the question.</p>
           </div>
         </div>
       </section>
@@ -477,7 +480,7 @@ Keep the log beginner-readable: timestamp, event name, state, player action, sys
         <div class="block__kicker">08 · Tools — Google AI Studio</div>
         <h2 class="block__title">Turning 45 minutes of transcript into evidence</h2>
         <p class="lead">
-          Playtest data is cheap to collect and expensive to read. A single 45-minute session produces 20+
+          Playtest data is easy to collect and expensive to read. A single 45-minute session can produce many
           pages of think-aloud transcript plus observation notes. Reading that honestly — without
           confirmation-biasing toward your favorite mechanics — is hard. AI Studio is the second reader you
           wish you had, and unlike a human it has no stake in your game.
@@ -501,7 +504,7 @@ Keep the log beginner-readable: timestamp, event name, state, player action, sys
           </div>
           <div class="aitool__body">
             <p>
-              This is the single highest-leverage use of AI in the program. You wrote three hypotheses before
+              This is one useful, bounded use of AI in the program. You wrote three hypotheses before
               the playtest. The model reads the transcript and marks every utterance or observation as
               supporting, contradicting, or silent on each hypothesis. No interpretation — just evidence
               location.
@@ -545,6 +548,8 @@ H3. No player will report that the time pressure felt "arbitrary" on
               data-ai-touchpoint
               data-ai-session="s09-hypothesis-falsifiability"
               data-ai-lo="LO 9.1"
+              data-ai-model="gemini-2.5-flash"
+              data-ai-temperature="0.2"
               data-ai-placeholder="Paste 1–3 draft hypotheses, one per line. These should be statements you expect to be true after the playtest."
               data-ai-prompt-system="You are critiquing pre-registered playtest hypotheses for FALSIFIABILITY before the playtest runs. The learner will use these hypotheses to tag transcripts later; a hypothesis that cannot be falsified produces useless tagging.
 
@@ -721,5 +726,6 @@ Constraints:
 <script src="lightbox.js"></script>
 <script src="handbook-polish.js"></script>
 <script src="survey-gate-ui.js"></script>
+<script src="content-evidence-rails.js"></script>
 </body>
 </html>

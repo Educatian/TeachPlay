@@ -74,6 +74,10 @@ The stored pre-review contains:
   "observable_mechanics": [],
   "evidence_traces": [],
   "alignment_findings": [],
+  "trace_coverage": [],
+  "observability": [],
+  "feedback_validity": [],
+  "assessment_validity": [],
   "strengths": [],
   "risks": [],
   "evidence_questions": [],
@@ -82,6 +86,11 @@ The stored pre-review contains:
   "recommended_status": "needs_review"
 }
 ```
+
+The system also stores a generated `source_snapshot` record containing the requested
+URL, final fetched URL, content type, fetch time, and counts of inline and same-origin
+script assets inspected. This is provenance for the bounded pre-review, not a claim
+that the full runtime, private state, or learner behavior was observed.
 
 The model can recommend `needs_review` or `rejected`; it can never produce `approved` and never mints a credential. The instructor must inspect the artifact, resolve evidence questions, score all D1–D5 criteria, and use the existing final approval/credential gate.
 

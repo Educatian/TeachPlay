@@ -207,7 +207,7 @@
         width: min(1120px, calc(100% - 32px));
         margin: 32px auto;
         border: 1px solid #d7dee8;
-        border-radius: 8px;
+        border-radius: 4px;
         background: #ffffff;
         color: #111827;
         padding: 24px;
@@ -349,7 +349,7 @@
         background: #ffffff;
         padding: 16px;
         color: #111827;
-        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
         opacity: 0;
         transform: translateY(12px);
         transition: opacity .2s ease, transform .2s ease;
@@ -376,7 +376,7 @@
       .tp-beginner-toast button {
         justify-self: start;
         border: 1px solid #9e1b32;
-        border-radius: 8px;
+        border-radius: 4px;
         background: #9e1b32;
         color: #ffffff;
         padding: 9px 12px;

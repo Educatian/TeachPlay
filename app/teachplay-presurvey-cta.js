@@ -67,7 +67,7 @@
       a.textContent = ctaLabel;
       a.style.cssText =
         'display:inline-block;background:#be1a2f;color:#fff;text-decoration:none;' +
-        'padding:7px 16px;border-radius:999px;font-weight:600;font-size:13.5px;white-space:nowrap;';
+        'padding:7px 14px;border-radius:4px;font-weight:600;font-size:13.5px;white-space:nowrap;';
       bar.appendChild(a);
     }
     const x = document.createElement('button');

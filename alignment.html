@@ -144,6 +144,9 @@
 
   .frame-list { display: flex; flex-wrap: wrap; gap: 4px; }
   .frame-list .chip { padding: 3px 8px; font-size: 11.5px; cursor: default; }
+  .alignment-source { font-size: 11.5px; color: #525252; min-width: 180px; }
+  .alignment-source a { color: var(--crimson); text-decoration: none; }
+  .alignment-source a:hover { text-decoration: underline; }
 
   .align-empty {
     padding: 60px 24px;
@@ -258,7 +261,7 @@
     <div class="align-stats__cell"><span class="align-stats__num">12</span><span class="align-stats__label">Sessions</span></div>
     <div class="align-stats__cell"><span class="align-stats__num">5</span><span class="align-stats__label">Deliverables</span></div>
     <div class="align-stats__cell"><span class="align-stats__num">25</span><span class="align-stats__label">Rubric criteria</span></div>
-    <div class="align-stats__cell"><span class="align-stats__num">6</span><span class="align-stats__label">External standards</span></div>
+    <div class="align-stats__cell"><span class="align-stats__num">6</span><span class="align-stats__label">Reference frameworks</span></div>
   </div>
 </section>
 
@@ -277,6 +280,16 @@
       The pattern matters as much as the cells. Dense crimson down UDL/ISTE; thinner across NGSS — that's a deliberate choice this program defends, not an oversight.
     </figcaption>
   </figure>
+  <p class="section__lede" style="max-width: 820px; font-size: 12.5px;">
+    <strong>Scope note:</strong> this static overview shows six reference frameworks:
+    <a href="https://iste.org/standards/educators" target="_blank" rel="noopener" style="color: var(--crimson);">ISTE Educator Standards</a>,
+    <a href="https://udlguidelines.cast.org/" target="_blank" rel="noopener" style="color: var(--crimson);">UDL Guidelines 3.0</a>,
+    <a href="https://csteachers.org/2017standards/interactive/" target="_blank" rel="noopener" style="color: var(--crimson);">CSTA K–12 CS Standards, revised 2017</a>,
+    <a href="https://www.nextgenscience.org/standards" target="_blank" rel="noopener" style="color: var(--crimson);">NGSS</a>,
+    <a href="https://catalog.ua.edu/undergraduate/about/academic-regulations/curriculum/core-curriculum-general-education-requirements/" target="_blank" rel="noopener" style="color: var(--crimson);">UA Core Curriculum</a>, and
+    <a href="https://www.imsglobal.org/spec/ob/v3p0" target="_blank" rel="noopener" style="color: var(--crimson);">Open Badges 3.0</a>.
+    The interactive matrix below exposes five direct filters; the UNESCO AI-CFT mapping is shown in the separate table above.
+  </p>
 </section>
 
 <section class="section" id="unesco-ai-cft">
@@ -289,6 +302,12 @@
     AI Competency Framework for Teachers (2024)</a> and at this page. The framework has five
     competency dimensions; the program hits three of them hard and two of them partially — the
     table says which is which, honestly.
+  </p>
+  <p class="section__lede" style="max-width: 820px; font-size: 13px;">
+    <strong>Interpretation:</strong> “Primary” and “Supporting” describe the strength of the
+    curriculum-to-framework mapping in this program. They are not an external accreditation,
+    UNESCO endorsement, or evidence that every learner has mastered the full framework. Framework
+    version used here: UNESCO AI Competency Framework for Teachers (2024).
   </p>
   <table class="align-tbl">
     <thead>
@@ -349,6 +368,16 @@
     evidence, the deliverable it feeds, the rubric criterion it maps to, and the external standards it
     advances.
   </p>
+  <p style="font-size: 12.5px; color: #525252; max-width: 860px; margin: 8px 0 24px;">
+    <strong>Version ledger:</strong>
+    <a href="https://doi.org/10.54675/ZJTE2084" target="_blank" rel="noopener">UNESCO AI-CFT (2024)</a> ·
+    <a href="https://udlguidelines.cast.org/" target="_blank" rel="noopener">UDL Guidelines 3.0</a> ·
+    <a href="https://tech.ed.gov/netp/" target="_blank" rel="noopener">NETP (2024)</a> ·
+    <a href="https://iste.org/standards/educators" target="_blank" rel="noopener">ISTE Educator Standards (current crosswalk)</a> ·
+    CSTA K–12 CS Standards (revised 2017; 2026 revision in progress) · NGSS (final release 2013) ·
+    UA Core Curriculum (current catalog) · Open Badges Specification 3.0.
+    These are reference mappings, not certification claims; verify the cited source and local version before using the credential for a compliance decision.
+  </p>
 
   <div class="align-filters">
     <div class="align-filter__group">
@@ -386,7 +415,7 @@
       </div>
     </div>
     <div class="align-filter__group">
-      <span class="align-filter__label">Skill (ESCO / Lightcast)</span>
+      <span class="align-filter__label">Provisional skill tags</span>
       <div class="align-filter__chips" data-filter-group="skill">
         <span class="chip is-active" data-val="all">All</span>
         <span class="chip" data-val="LXD">Learning Exp. Design</span>
@@ -401,8 +430,9 @@
     </div>
   </div>
   <p style="font-size: 12.5px; color: #525252; max-width: 860px; margin: 8px 0 24px;">
-    Skill tags crosswalk to public taxonomies (ESCO, Lightcast Open Skills) so employers and registrars
-    can reason about transferability. See
+    Skill tags are working labels inspired by public taxonomies (ESCO, Lightcast Open Skills); the current
+    file still contains identifiers marked TBV (to be verified). They support curriculum discussion but do
+    not establish employer recognition or credential transferability. See
     <a href="credential/skills-crosswalk.json" style="color: var(--crimson);">skills-crosswalk.json</a>
     for the full per-criterion mapping.
   </p>
@@ -417,6 +447,7 @@
         <th style="width: 90px;">Deliverable</th>
         <th style="width: 180px;">Rubric criterion</th>
         <th style="width: 220px;">Frameworks</th>
+        <th style="width: 210px;">Source / version</th>
         <th style="width: 180px;">Skills (ESCO / Lightcast)</th>
       </tr>
     </thead>
@@ -524,6 +555,13 @@ document.getElementById('stat-lo').textContent = ROWS.length;
 
 const FRAME_CLS = { "ISTE-5":"chip--iste", "ISTE-6":"chip--iste", "ISTE-7":"chip--iste", "UDL":"chip--udl", "NETP":"chip--netp" };
 const FRAME_LABEL = { "ISTE-5":"ISTE 5 Designer", "ISTE-6":"ISTE 6 Facilitator", "ISTE-7":"ISTE 7 Analyst", "UDL":"UDL 3.0", "NETP":"NETP 2024" };
+const FRAME_SOURCE = {
+  "ISTE-5": { label: "ISTE Educator Standards · current crosswalk", href: "https://iste.org/standards/educators" },
+  "ISTE-6": { label: "ISTE Educator Standards · current crosswalk", href: "https://iste.org/standards/educators" },
+  "ISTE-7": { label: "ISTE Educator Standards · current crosswalk", href: "https://iste.org/standards/educators" },
+  "UDL": { label: "CAST UDL Guidelines 3.0", href: "https://udlguidelines.cast.org/" },
+  "NETP": { label: "U.S. NETP 2024", href: "https://tech.ed.gov/netp/" }
+};
 
 // Skill tags keyed by rubric criterion ref. Short codes map to the chips in the
 // Skill filter and are defined in credential/skills-crosswalk.json.
@@ -598,6 +636,10 @@ function render(){
       : `<span class="rubric-ref">${r.r}</span>`;
     const delivCls = r.d.startsWith("→") ? "deliv" : "deliv deliv--support";
     const frames = r.f.map(k => `<span class="chip ${FRAME_CLS[k]}">${FRAME_LABEL[k]}</span>`).join("");
+    const sources = [...new Map(r.f.map(k => [FRAME_SOURCE[k]?.label, FRAME_SOURCE[k]])).values()]
+      .filter(Boolean)
+      .map(source => `<a href="${source.href}" target="_blank" rel="noopener">${source.label}</a>`)
+      .join("<br>");
     const skills = skillsFor(r.r).map(k => `<span class="chip chip--skill">${SKILL_LABEL[k]}</span>`).join("");
     return `
       <tr>
@@ -608,6 +650,7 @@ function render(){
         <td class="${delivCls}">${r.d}</td>
         <td>${rubricCell}</td>
         <td><div class="frame-list">${frames}</div></td>
+        <td class="alignment-source">${sources || '<span style="color:#8d8d8d;font-size:11.5px;">No direct filter</span>'}</td>
         <td><div class="frame-list">${skills || '<span style="color:#8d8d8d;font-size:11.5px;">—</span>'}</div></td>
       </tr>`;
   }).join("");

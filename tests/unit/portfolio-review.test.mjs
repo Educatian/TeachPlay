@@ -52,15 +52,17 @@ test('portfolio review stores conservative OpenRouter analysis and exposes it on
   globalThis.fetch = async (url, options = {}) => {
     if (String(url).includes('openrouter.ai')) {
       openRouterRequest = JSON.parse(options.body);
-      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ learning_objective: 'Predict trajectories', computational_artifact_summary: 'A stateful projectile loop', observable_mechanics: ['angle input'], evidence_traces: ['revision trace'], alignment_findings: ['objective is observable'], strengths: ['clear feedback'], risks: ['public link may hide runtime state'], evidence_questions: ['show the revision log'], recommended_status: 'needs_review', rubric_hints: [{ deliverable: 'D2', rationale: 'links mechanic to objective' }] }) } }] }), { status: 200 });
+      return new Response(JSON.stringify({ choices: [{ message: { content: JSON.stringify({ learning_objective: 'Predict trajectories', computational_artifact_summary: 'A stateful projectile loop', observable_mechanics: ['angle input'], evidence_traces: ['revision trace'], alignment_findings: ['objective is observable'], trace_coverage: ['angle input is visible; revision history is not'], observability: ['A reviewer can see the final result but not the full state transition'], feedback_validity: ['feedback names the outcome but not the changed strategy'], assessment_validity: ['success is not yet tied to a criterion'], strengths: ['clear feedback'], risks: ['public link may hide runtime state'], evidence_questions: ['show the revision log'], finding_labels: ['observed', 'claimed', 'not_verifiable'], recommended_status: 'needs_review', rubric_hints: [{ deliverable: 'D2', rationale: 'links mechanic to objective' }] }) } }] }), { status: 200 });
     }
-    return new Response('<html><body>prototype objective feedback revision</body></html>', { status: 200, headers: { 'content-type': 'text/html' } });
+    return new Response('<html><body>prototype objective feedback revision<script>const state = "start"; function act(input) { return input ? "feedback" : state; }</script></body></html>', { status: 200, headers: { 'content-type': 'text/html' } });
   };
   const pending = [];
   const post = await handlePortfolioReview(request('POST', { url: 'https://aistudio.google.com/app/prompts/demo' }, { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok' }), { DB: db, OPENROUTER_API_KEY: 'test-key' }, { waitUntil: (work) => pending.push(work) });
   assert.equal(post.status, 202);
   await Promise.all(pending);
   assert.equal(openRouterRequest.model, 'google/gemini-3.5-flash');
+  assert.match(openRouterRequest.messages[1].content, /INLINE SCRIPT/);
+  assert.match(openRouterRequest.messages[1].content, /const state/);
   assert.ok(db.calls.some((call) => /INSERT INTO portfolio_reviews/.test(call.sql)));
   assert.ok(db.calls.some((call) => /UPDATE portfolio_reviews SET status/.test(call.sql)));
 });

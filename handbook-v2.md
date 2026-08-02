@@ -241,7 +241,7 @@ Cognitive load theory distinguishes three contributions to working-memory load: 
 
 ### 6.2 Motivation and the engagement–transfer tension
 
-Engagement without transfer is the most common failure mode in educational games. The symptoms are a game that playtests well (learners stay engaged, report enjoyment) but produces no measurable learning gain.
+Engagement without transfer is a recurring design risk in educational games. The symptoms are a game that playtests well (learners stay engaged, report enjoyment) but produces no measurable learning gain. Treat this as a hypothesis to test, not a universal diagnosis.
 
 The tension has three frequent sources:
 
@@ -464,7 +464,7 @@ Deviations from this template are noted in individual session plans when they oc
 
 **Session-level outcomes.** Learners produce a facilitator guide for their design: pre-brief, in-play moves, debrief, and risk mitigation. A colleague not on the design team could run the experience from this guide.
 
-**Why this session is non-negotiable.** The strongest and most consistent finding in the game-based learning literature is that teacher facilitation and curriculum guides decide whether classroom use produces learning. This session does for the facilitator what Sessions 3–5 did for the player.
+**Why this session matters.** Evidence across game-based learning studies repeatedly points to implementation conditions, teacher facilitation, and curriculum support as important moderators of classroom use and learning. This session makes those conditions explicit; it does not claim that facilitation alone determines outcomes.
 
 **Effective time plan (160 min).**
 

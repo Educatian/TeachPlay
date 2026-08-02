@@ -210,7 +210,7 @@
 
 <section class="section section--tint">
   <span class="section__eyebrow">Who sees it</span>
-  <h2 class="section__title">Three people. No third parties.</h2>
+  <h2 class="section__title">People and service providers.</h2>
 
   <div class="pp-section">
     <table class="pp-tbl">
@@ -231,8 +231,20 @@
       </tbody>
     </table>
     <p>The site's xAPI endpoint and admin endpoints are gated by an issuer API key held
-      by the PI. There are no third-party data processors beyond Cloudflare (the hosting
-      provider).</p>
+      by the PI. Cloudflare hosts and protects the service. When an instructor submits a
+      portfolio for automated computational-artifact analysis, the submitted URL and the
+      bounded fetched artifact text are sent to the configured AI provider (currently OpenRouter)
+      for a conservative, advisory analysis; the provider must not be treated as the credential
+      issuer. Do not include unnecessary names, email addresses, or other sensitive information
+      in a public artifact URL.</p>
+    <div class="pp-callout" id="ai-processing-notice">
+      <strong>Deployment-specific AI processing notice.</strong> The provider and model are
+      deployment settings, not a permanent promise of this static page. The current Worker uses
+      OpenRouter's API and defaults to <code>google/gemini-3.5-flash</code> when
+      <code>OPENROUTER_MODEL</code> is not set; a deployment may override that model. The review
+      stores a bounded source snapshot and the resulting advisory analysis. Re-check this notice,
+      the deployment configuration, and the provider's terms whenever the AI provider or model changes.
+    </div>
   </div>
 </section>
 

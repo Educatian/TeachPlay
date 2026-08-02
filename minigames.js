@@ -99,7 +99,7 @@
     var body = shell(mount, {
       kicker: '08 · Minigame — 5 min',
       title: 'Persona, stereotype, or unfalsifiable?',
-      subtitle: 'Eight one-sentence learner descriptions pulled from real design briefs. For each, decide whether it is an evidence-based persona, a stereotype, or a claim that cannot be tested. Answers lock on first click.',
+      subtitle: 'Eight constructed one-sentence learner descriptions based on recurring design-brief patterns. For each, decide whether it is an evidence-based persona, a stereotype, or a claim that cannot be tested. Answers lock on first click.',
       mgTitle: 'Learner-description triage',
       hint: '~4 min · click to answer'
     });
