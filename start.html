@@ -41,6 +41,26 @@
   .tour-cta a.btn { background: var(--crimson); color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: 700; text-decoration: none; }
   .tour-cta a.btn:hover { background: #9c1526; }
   .tour-cta a.btn--ghost { background: transparent; border: 1px solid rgba(255,255,255,0.4); margin-left: 10px; }
+  .system-video {
+    margin: 0 0 18px;
+    padding: 18px;
+    background: #161616;
+    border-radius: 8px;
+  }
+  .system-video video {
+    display: block;
+    width: 100%;
+    max-height: 70vh;
+    background: #061d43;
+    border-radius: 4px;
+  }
+  .system-video figcaption {
+    margin-top: 12px;
+    color: #e8e8e8;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .system-video a { color: #f0c44a; }
   @media (max-width: 600px) {
     .tour-step { grid-template-columns: 1fr; padding: 22px 24px; }
     .tour-step__num { width: 44px; height: 44px; font-size: 18px; }
@@ -150,6 +170,26 @@
   <svg class="hero__wave" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="M0,60 C240,100 480,0 720,40 C960,80 1200,20 1440,60 L1440,100 L0,100 Z" fill="#ffffff"/>
   </svg>
+</section>
+
+<section class="section section--tint" aria-labelledby="system-video-title">
+  <span class="section__eyebrow">Watch first</span>
+  <h2 class="section__title" id="system-video-title">See how the site holds the learning loop.</h2>
+  <div class="tour-step">
+    <div class="tour-step__num" aria-hidden="true">▶</div>
+    <div class="tour-step__body">
+      <h3>A five-minute tour of the learner-to-credential pathway.</h3>
+      <p>Start with the learner landing page, move through the catalog and Session 01, then follow the portfolio, instructor review, analytics, rubrics, and verifiable credential surfaces. The recording also shows where a Google AI Studio prototype enters the evidence workflow.</p>
+      <figure class="system-video">
+        <video controls preload="metadata" poster="docs/videos/teachplay-system-introduction-en-5min-poster.jpg" aria-describedby="system-video-caption">
+          <source src="docs/videos/teachplay-system-introduction-en-5min.mp4" type="video/mp4" />
+          Your browser does not support the video element. <a href="docs/videos/teachplay-system-introduction-en-5min.mp4">Download the video</a>.
+        </video>
+        <figcaption id="system-video-caption">English narrated overview with Playwright-captured website screens and a live website playcast. <a href="docs/videos/teachplay-system-introduction-en-5min-transcript.txt">Read the narration transcript</a>.</figcaption>
+      </figure>
+      <div class="tour-step__hint"><strong>After watching:</strong> open <a href="session-01.html">Session 01</a> if you are learning, or <a href="facilitator.html">the facilitator guide</a> if you are preparing to teach.</div>
+    </div>
+  </div>
 </section>
 
 <section class="section">
