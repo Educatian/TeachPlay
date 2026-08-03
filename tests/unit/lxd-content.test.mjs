@@ -24,4 +24,6 @@ test('LXD media has a complete accessible bundle for every primer', () => {
   assert.equal((bridge.match(/feedback:/g) || []).length, 12);
   assert.match(bridge, /Video anchor/);
   assert.match(bridge, /The written session is the primary instruction/);
+  assert.match(bridge, /Evidence & integrations/);
+  assert.match(bridge, /integration-boundary note/);
 });

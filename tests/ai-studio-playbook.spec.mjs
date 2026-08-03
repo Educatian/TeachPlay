@@ -9,6 +9,9 @@ test('Google AI Studio playbook exposes prompts, integrations, and evidence visu
   await expect(page.getByRole('heading', { name: /From AI Studio prompt to a reviewable educational game/i })).toBeVisible();
   await expect(page.getByRole('heading', { name: /Use Firebase when the game needs/i })).toBeVisible();
   await expect(page.getByRole('heading', { name: /Use Google Workspace for review/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Rehearse the game-to-evidence handoff/i })).toBeVisible();
+  await expect(page.locator('a[href="#integration-rehearsal"]')).toHaveCount(1);
+  await expect(page.getByText(/The integration boundary is part of the learning design/i)).toBeVisible();
   await expect(page.getByRole('heading', { name: /Playwright checks the shared game/i })).toBeVisible();
   await expect(page.locator('img[src*="google-ai-studio-build-to-submit"]')).toHaveCount(1);
   await expect(page.locator('img[src*="google-ai-studio-evidence-packet"]')).toHaveCount(1);

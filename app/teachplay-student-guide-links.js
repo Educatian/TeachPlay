@@ -9,6 +9,11 @@
       note: 'Step-by-step guide from sign-in to learning, evidence submission, completion, and certificate handoff.'
     },
     {
+      href: '/guides/google-ai-studio-playbook.html#integration-rehearsal',
+      label: 'Rehearse the integration handoff',
+      note: 'Practice the AI Studio game loop and document safe Firebase, Drive, and Sheets boundaries before submission.'
+    },
+    {
       href: '/media/student-completion/teachplay-student-completion-walkthrough.webm',
       label: 'Watch walkthrough recording',
       note: 'Playwright screen recording with the complete learner journey.'

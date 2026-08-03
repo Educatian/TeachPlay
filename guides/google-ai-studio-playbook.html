@@ -63,6 +63,7 @@
         <a href="#prompts">Prompt sequence</a>
         <a href="#firebase">Firebase</a>
         <a href="#workspace">Workspace</a>
+        <a href="#integration-rehearsal">Practice rehearsal</a>
         <a href="#higgsfield">Higgsfield</a>
         <a href="#playwright">Playwright</a>
         <a href="#submit">Submission</a>
@@ -224,8 +225,40 @@ await addDoc(collection(db, "games", GAME_ID, "attempts"), {
         <p class="source-note">For a production Workspace integration, deploy the receiver to the intended domain, validate the caller, keep the sheet ID in script properties, and do not accept arbitrary Drive IDs from the browser.</p>
       </section>
 
+      <section id="integration-rehearsal">
+        <p class="kicker">05 · Practice rehearsal</p>
+        <h2>Rehearse the game-to-evidence handoff before you submit.</h2>
+        <p>The integration boundary is part of the learning design, not a checklist of fashionable tools. Use the playable <strong>Mechanic Match</strong> example to rehearse one complete loop: choose a mechanic, inspect feedback, revise a decision, and explain where the evidence would live.</p>
+        <div class="grid">
+          <div class="card"><span class="tag">01 · Game state</span><h3>AI Studio Preview</h3><p>Run the game through <code>INTRO → PLAY → FEEDBACK → REVISE → COMPLETE</code>. Capture the learner choice, the feedback explanation, and the revision rationale.</p></div>
+          <div class="card"><span class="tag">02 · Learner trace</span><h3>Firebase boundary</h3><p>Describe the trace that would belong to Firebase Auth and Firestore: learner identity, attempt state, feedback viewed, outcome, and changed variable. During rehearsal, local mock data is enough.</p></div>
+          <div class="card"><span class="tag">03 · Evidence packet</span><h3>Drive boundary</h3><p>Put the README, preview URL, screenshots, recording, provenance note, and revision log in one evidence folder. Use a learner pseudonym in the practice packet.</p></div>
+          <div class="card"><span class="tag">04 · Review queue</span><h3>Sheets boundary</h3><p>Map the sanitized summary to an instructor queue: artifact URL, observed breakdown, evidence link, revision decision, and reviewer status. Never paste secrets or raw student data.</p></div>
+        </div>
+        <h3>Five-minute rehearsal</h3>
+        <ol>
+          <li><strong>Predict:</strong> state the objective and choose the mechanic that should make the target behavior observable.</li>
+          <li><strong>Act:</strong> run the Preview and make one deliberate choice. Record what the player did, not what you hoped they learned.</li>
+          <li><strong>Inspect:</strong> read the feedback and open <em>Evidence &amp; integrations</em>. Identify the trace, folder item, and review-row fields that would be saved.</li>
+          <li><strong>Revise:</strong> change one variable or rationale, then state the next test you would run.</li>
+          <li><strong>Handoff:</strong> save two screenshots, the public or exported link, the exact prompt, and a boundary note that says whether each service is live or mocked.</li>
+        </ol>
+        <h3>Practice prompt</h3>
+        <pre><code>Use the existing Mechanic Match learning objective.
+Run the Preview through INTRO, PLAY, FEEDBACK, REVISE, and COMPLETE.
+Keep the Firebase/Auth, Google Drive, and Sheets/Apps Script surfaces as
+an instructor-facing Evidence &amp; integrations drawer.
+
+For this rehearsal, use local mock data only. Show which learner trace,
+evidence-folder item, and review-queue row would be created at each step.
+Do not claim that a live backend is connected. End with a short evidence
+checklist and one known limitation.</code></pre>
+        <div class="callout"><strong>Rehearsal output:</strong> a learner can explain the interaction loop, the artifact trace, and the review boundary in under ten minutes. The rehearsal demonstrates system thinking; it does not prove that Firebase, Drive, or Sheets is connected in production.</div>
+        <div class="callout warn"><strong>Before a real connection:</strong> add Authentication, Firestore Rules/App Check, OAuth scope review, server-side secret handling, and an instructor approval step. Keep the practice version explicitly labeled <code>mock</code>.</div>
+      </section>
+
       <section id="higgsfield">
-        <p class="kicker">05 · Visual production</p>
+        <p class="kicker">06 · Visual production</p>
         <h2>Use Higgsfield for purposeful visual assets, not evidence substitution.</h2>
         <p>Use Higgsfield when the game needs a short concept clip, character motion, or scene reference that helps learners communicate the intended interaction. Keep the asset prompt and license/usage note in the AI provenance log. A generated clip can illustrate a mechanic; it cannot replace a real playtest or prove a learning outcome.</p>
         <pre><code>Create a 10-second, 16:9 instructional game-loop reference clip.
@@ -237,7 +270,7 @@ concept reference for a prototype, not a record of learner performance.</code></
       </section>
 
       <section id="playwright">
-        <p class="kicker">06 · Verify the public artifact</p>
+        <p class="kicker">07 · Verify the public artifact</p>
         <h2>Playwright checks the shared game after AI Studio, not the private editor.</h2>
         <p>After publishing or exporting the game, set <code>GAME_URL</code> to the public preview. The test below checks the first interaction, captures a screenshot, and fails on uncaught page errors. Add project-specific locators for the actual state machine.</p>
         <pre><code>import { test, expect } from "@playwright/test";
@@ -260,7 +293,7 @@ test("public game exposes the learning loop", async ({ page }) => {
       </section>
 
       <section id="submit">
-        <p class="kicker">07 · Final handoff</p>
+        <p class="kicker">08 · Final handoff</p>
         <h2>Submit a packet an instructor can inspect in ten minutes.</h2>
         <figure>
           <img src="../assets/generated/google-ai-studio-evidence-packet.png" alt="Four-panel visual showing a playable game preview, design crosswalk, playtest observation, and revision record connected in a submission packet." loading="lazy" />
@@ -276,7 +309,7 @@ test("public game exposes the learning loop", async ({ page }) => {
         <p><a href="../portfolio.html#ai-studio-submit">Open the TeachPlay submission portfolio ↗</a> · <a href="../admin-review.html">Instructor computational-artifact review ↗</a></p>
       </section>
       <section id="sources">
-        <p class="kicker">08 · Source links</p>
+        <p class="kicker">09 · Source links</p>
         <h2>Use the provider documentation as the implementation boundary.</h2>
         <p class="source-note">These links are the approved starting points for the examples above. Provider behavior, quotas, and scopes can change; record the version and date in the learner's provenance log.</p>
         <ul>
