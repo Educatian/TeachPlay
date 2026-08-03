@@ -12,5 +12,8 @@ test('Google AI Studio playbook exposes prompts, integrations, and evidence visu
   await expect(page.getByRole('heading', { name: /Playwright checks the shared game/i })).toBeVisible();
   await expect(page.locator('img[src*="google-ai-studio-build-to-submit"]')).toHaveCount(1);
   await expect(page.locator('img[src*="google-ai-studio-evidence-packet"]')).toHaveCount(1);
+  await expect(page.locator('.copy-code')).toHaveCount(await page.locator('pre').count());
+  await page.locator('.copy-code').first().click();
+  await expect(page.locator('.copy-code').first()).toHaveText(/Copied|Select manually/);
   expect(failures).toEqual([]);
 });

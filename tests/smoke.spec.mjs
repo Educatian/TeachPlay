@@ -614,7 +614,9 @@ test('47. completed preview learner can reach certificate handoff', async ({ pag
     }));
   });
   await page.goto(BASE + '/index.html');
-  await page.getByRole('button', { name: /Start learning/i }).click();
+  const firstLesson = page.getByRole('button', { name: /Start learning in Session 01/i });
+  await expect(firstLesson).toBeVisible();
+  await firstLesson.evaluate((button) => button.click());
   await page.getByRole('button', { name: /Enter guided course/i }).click();
   for (let i = 0; i < 8; i++) {
     const complete = page.getByRole('button', { name: /Mark Complete|Next Lesson/i }).first();
@@ -921,7 +923,9 @@ test('52. mobile learner can move from course structure to the first lesson', as
     localStorage.setItem('hb:learner_id', 'mobile-beginner');
   });
   await page.goto(BASE + '/index.html');
-  await page.getByRole('button', { name: /Start learning/i }).click();
+  const firstLesson = page.getByRole('button', { name: /Start learning in Session 01/i });
+  await expect(firstLesson).toBeVisible();
+  await firstLesson.evaluate((button) => button.click());
   await page.getByRole('button', { name: /Enter guided course/i }).click();
   await expect(page.locator('.tp12-sidebar-start')).toBeVisible();
   await expect(page.locator('.tp-beginner-toast')).toHaveCount(0);

@@ -32,7 +32,11 @@
     .card { border:1px solid var(--line); border-radius:8px; padding:18px; background:#fff; }
     .card small { display:block; color:var(--muted); margin-top:8px; }
     ol, ul { padding-left:23px; }
-    pre { overflow:auto; padding:18px; border-radius:8px; background:#101b2b; color:#e7eef8; font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace; white-space:pre-wrap; }
+    .code-wrap { position:relative; margin:18px 0; }
+    pre { overflow:auto; padding:48px 18px 18px; margin:0; border-radius:8px; background:#101b2b; color:#e7eef8; font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace; white-space:pre-wrap; }
+    .copy-code { position:absolute; top:10px; right:10px; z-index:1; border:1px solid #62748b; border-radius:5px; padding:5px 9px; background:#17263a; color:#fff; font:700 12px/1.2 ui-sans-serif,system-ui,sans-serif; cursor:pointer; }
+    .copy-code:hover, .copy-code:focus-visible { background:#2a405d; }
+    .copy-code[data-copied="true"] { background:#237d7a; border-color:#237d7a; }
     code { background:#eef1f4; padding:1px 4px; border-radius:4px; }
     pre code { background:transparent; padding:0; }
     figure { margin:18px 0; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#f3efe7; }
@@ -271,7 +275,43 @@ test("public game exposes the learning loop", async ({ page }) => {
         </ol>
         <p><a href="../portfolio.html#ai-studio-submit">Open the TeachPlay submission portfolio ↗</a> · <a href="../admin-review.html">Instructor computational-artifact review ↗</a></p>
       </section>
+      <section id="sources">
+        <p class="kicker">08 · Source links</p>
+        <h2>Use the provider documentation as the implementation boundary.</h2>
+        <p class="source-note">These links are the approved starting points for the examples above. Provider behavior, quotas, and scopes can change; record the version and date in the learner's provenance log.</p>
+        <ul>
+          <li><a href="https://ai.google.dev/gemini-api/docs/aistudio-build-mode" target="_blank" rel="noopener">Google AI Studio Build mode</a> — build, inspect, and revise a runnable prototype.</li>
+          <li><a href="https://ai.google.dev/gemini-api/docs/aistudio-deploying" target="_blank" rel="noopener">AI Studio deployment guidance</a> — publish a preview without exposing secrets.</li>
+          <li><a href="https://firebase.google.com/docs/firestore/security/rules-conditions" target="_blank" rel="noopener">Firestore security rules</a> and <a href="https://firebase.google.com/docs/app-check" target="_blank" rel="noopener">Firebase App Check</a> — protect learner-owned traces.</li>
+          <li><a href="https://developers.google.com/workspace/drive/api/guides/api-specific-auth" target="_blank" rel="noopener">Google Drive API scopes</a> and <a href="https://developers.google.com/apps-script/guides/sheets" target="_blank" rel="noopener">Apps Script Sheets</a> — keep review sharing narrow and auditable.</li>
+        </ul>
+      </section>
     </main>
   </div>
+  <script>
+    document.querySelectorAll('pre').forEach((pre, index) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'code-wrap';
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'copy-code';
+      button.textContent = 'Copy';
+      button.setAttribute('aria-label', `Copy code example ${index + 1}`);
+      button.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(pre.innerText);
+          button.textContent = 'Copied';
+          button.dataset.copied = 'true';
+          window.setTimeout(() => { button.textContent = 'Copy'; delete button.dataset.copied; }, 1400);
+        } catch (_) {
+          button.textContent = 'Select manually';
+          window.setTimeout(() => { button.textContent = 'Copy'; }, 1800);
+        }
+      });
+      wrap.appendChild(button);
+    });
+  </script>
 </body>
 </html>

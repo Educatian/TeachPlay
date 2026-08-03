@@ -56,6 +56,8 @@ The workflow is deliberately two-stage: automated analysis produces `needs_revie
 
 The research-grounded computational analysis protocol is documented in [`docs/computational-artifact-analysis-plan.md`](docs/computational-artifact-analysis-plan.md). It formalizes the learning objective, reconstructs the artifact's state/input/rule/output/feedback loop, evaluates learning-mechanics alignment, and inspects evidence traces while labeling findings as observed, claimed, or not verifiable.
 
+The concrete learner handoff is in the [Google AI Studio build-to-submit playbook](https://teachplay.dev/guides/google-ai-studio-playbook): it includes copyable game-design prompts, Firebase and Google Workspace examples, a Higgsfield visual prompt, and a Playwright public-artifact check. The current release evidence is summarized in the [quality scorecard](docs/quality-scorecard-2026-08-03.md).
+
 Portfolio artifacts are stored in the Cloudflare R2 `teachplay-evidence` bucket when the binding is enabled. The system retains a guarded D1-inline fallback for small files, while the production path uses R2 for larger screenshots, documents, and prototypes. The admin storage diagnostic is available at `GET /api/admin/storage`.
 
 <table>
