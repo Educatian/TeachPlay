@@ -80,7 +80,9 @@ async function fetchArtifactResource(url, env, options = {}) {
   if (isCanonicalArtifactUrl(url) && env?.ASSETS?.fetch) {
     // Avoid a Cloudflare-to-Cloudflare loop when the Worker analyzes its own
     // canonical static artifact. Read the same asset binding directly.
-    return env.ASSETS.fetch(new Request(url, {
+    const parsed = new URL(url);
+    const assetUrl = `https://teachplay-assets.internal${parsed.pathname}${parsed.search}`;
+    return env.ASSETS.fetch(new Request(assetUrl, {
       method: 'GET',
       headers: options.headers || {},
     }));
