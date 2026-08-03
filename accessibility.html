@@ -133,8 +133,9 @@
       alt text, captioned video, color-contrast ratios above 4.5:1 for body text,
       keyboard operability for core navigation and content, no reliance on color alone,
       and no content that could induce seizures. We do not yet claim full conformance:
-      a few interactive minigames are still being brought to full keyboard support (see
-      below). The known gaps below describe where we fall short and what we plan to fix.
+      manual screen-reader and assistive-technology verification remains a required
+      review step. The known gaps below describe where we fall short and what we plan
+      to fix.
     </p>
   </div>
 
@@ -148,10 +149,10 @@
   <div class="a11y-section">
     <h3><span class="a11y-status a11y-status--partial">Partial</span>Keyboard navigation</h3>
     <p>The primary nav, search dropdown (↑↓ + Enter + Esc), lightbox close (Esc), Note
-       drawer Save/Cancel (Cmd/Ctrl + Enter, Esc), and the achievements panel are all
-       reachable and operable from the keyboard. Two interactive minigames (the
-       Session 7 paper-prototype and Session 11 revision-triage activities) are
-       currently mouse-only; full keyboard support for them is in progress.</p>
+       drawer Save/Cancel (Cmd/Ctrl + Enter, Esc), achievements panel, Session 7
+       paper-prototype parts, and Session 11 revision-triage cards are reachable and
+       operable from the keyboard. The remaining gap is manual screen-reader and
+       assistive-technology verification across every interactive state.</p>
   </div>
 
   <div class="a11y-section">
@@ -178,31 +179,29 @@
     <h3><span class="a11y-status a11y-status--ok">Conforms</span>Modal focus management</h3>
     <p>The lightbox, note drawer, and achievements panel each <em>open</em> with focus
        moved into them, <em>trap</em> focus so Tab cycles within the modal, and
-       <em>close</em> by returning focus to the trigger element. The enrollment modal's
-       focus management is being brought up to the same standard.</p>
+       <em>close</em> by returning focus to the trigger element, including the enrollment
+       modal.</p>
   </div>
 
   <div class="a11y-section">
-    <h3><span class="a11y-status a11y-status--known">Known issue</span>Custom cursor</h3>
+    <h3><span class="a11y-status a11y-status--ok">Conforms</span>Native pointer</h3>
     <div class="a11y-known">
-      <p>The site offers a custom cursor (small dot + lagging ring) that hides the
-         operating-system cursor on hover-capable, non-touch viewports. <strong>This is a
-         known accessibility risk</strong>: users who rely on OS-level cursor settings
-         (high contrast, large pointer, motion trails) lose those settings while on
-         this site.</p>
-      <p style="margin-top: 8px;"><strong>Mitigation:</strong> the custom cursor is
-         disabled when <code>prefers-reduced-motion: reduce</code> is set, on touch
-         devices, on viewports under 720&nbsp;px, and via the
-         <code>localStorage.setItem('hb:cursor-off', '1')</code> opt-out. We are
-         considering an in-page toggle for the next pass.</p>
+      <p>The production surface keeps the operating-system pointer visible. The former
+         game-style cursor is disabled fail-safe, so high-contrast, large-pointer, and
+         motion-trail preferences remain available to the learner.</p>
+      <p style="margin-top: 8px;"><strong>Verification:</strong> automated reduced-motion
+         coverage and the manual review record both treat the native pointer as the
+         expected state.</p>
     </div>
   </div>
 
   <div class="a11y-section">
     <h3><span class="a11y-status a11y-status--known">Known issue</span>Embedded video captions</h3>
-    <p>The "Watch the workflow" videos are YouTube embeds. Captions exist via YouTube's
-       auto-caption system; manual caption review is not yet completed. Learners with
-       hearing impairments should expect auto-caption quality, not human-edited.</p>
+    <p>The bundled avatar primers expose WebVTT captions and text transcripts alongside
+       the WebM/WAV media. The separate "Watch the workflow" videos are YouTube embeds;
+       those still rely on YouTube captions and have not completed a manual caption
+       quality review. The distinction is intentional so learners can use the local
+       transcript when an external caption track is not sufficient.</p>
   </div>
 </section>
 
@@ -238,8 +237,8 @@
   <div class="a11y-settings" data-a11y-settings>
     <div class="a11y-toggle">
       <div>
-        <strong>Custom cursor</strong>
-        <p>Hides the OS pointer and replaces it with a small dot + lagging ring. Some users with motor impairments or OS-level cursor settings prefer this off.</p>
+        <strong>Native pointer</strong>
+        <p>The production surface keeps the operating-system pointer visible. The former game-style cursor is disabled fail-safe so pointer preferences remain available.</p>
       </div>
       <button type="button" class="a11y-toggle__btn" data-toggle="cursor" aria-pressed="true">…</button>
     </div>
@@ -289,7 +288,7 @@
   <script>
     (function () {
       var keys = {
-        cursor: { storage: 'hb:cursor-off',  onLabel: 'Enhanced',     offLabel: 'Native pointer' },
+        cursor: { storage: 'hb:cursor-off',  onLabel: 'Native pointer', offLabel: 'Native pointer' },
         gamify: { storage: 'hb:no-gamify',    onLabel: 'On (toasts)',  offLabel: 'Muted' },
         motion: { storage: 'hb:reduce-motion', onLabel: 'Animated',     offLabel: 'Reduced' },
       };

@@ -117,72 +117,96 @@
     '01': {
       reading: 'Read Session 01 first, then write the learning-problem statement before choosing a game genre.',
       video: 'Watch the learning-problem concept primer in the guided course.',
+      activity: 'Write one learner, one target behavior, and one observable sign that the behavior occurred.',
+      feedback: 'Use the session exit ticket to remove genre language and keep the learning claim testable.',
       connects: 'This module creates the problem frame that Module 02 turns into a learner/context profile.',
       reference: '/references.html'
     },
     '02': {
       reading: 'Read Session 02 and use the constraint questions to describe one learner group, setting, time limit, and access condition.',
       video: 'Use the learning-problem concept primer as the video anchor, then apply it to your own learner context.',
+      activity: 'Complete the six-field learner/context brief, then ask a peer to identify one ambiguous constraint.',
+      feedback: 'Revise the brief from the peer question before it becomes the D1 baseline.',
       connects: 'Your learner/context profile becomes the boundary condition for the Module 03 crosswalk.',
       reference: '/facilitator.html'
     },
     '03': {
       reading: 'Read Session 03 and the worked examples before drafting the objective-to-mechanic crosswalk.',
       video: 'Watch the objective-to-mechanic concept primer in the guided course.',
+      activity: 'Draft one crosswalk row linking objective, player action, feedback, evidence, and reviewer claim.',
+      feedback: 'Reject generic engagement claims; the worked example shows what a defensible trace looks like.',
       connects: 'The crosswalk becomes the design spine for Modules 04 and 05.',
       reference: '/examples.html'
     },
     '04': {
       reading: 'Read Session 04 to decide what learners predict, what feedback they receive, and what they revise.',
       video: 'Use the objective-to-mechanic concept primer as the video anchor for feedback alignment.',
+      activity: 'Draw one predict-act-feedback-revise loop and label the information carried by a wrong path.',
+      feedback: 'Run the productive-failure sandbox and revise the loop when failure only punishes or decorates.',
       connects: 'The feedback loop gives Module 05 a role and narrative purpose instead of decoration.',
       reference: '/cognitive-load.html'
     },
     '05': {
       reading: 'Read Session 05 and compare your role design with the Chalk and Chance teacher-simulation case.',
       video: 'Use the AI provenance concept primer as the video anchor when role or AI behavior shapes the interaction.',
+      activity: 'Write an AI or player role card: allowed actions, prohibited actions, and visible teaching decisions.',
+      feedback: 'Compare the role card with the case study and remove any AI behavior that is not reviewable.',
       connects: 'The role card tells Module 06 what a facilitator must set up, monitor, and debrief.',
       reference: '/ai-use-policy.html'
     },
     '06': {
       reading: 'Read Session 06 and turn the activity into instructions another instructor could run.',
       video: 'Use the five-minute-loop concept primer as the video anchor for keeping facilitation practical.',
+      activity: 'Write opening, mid-play recovery, and debrief scripts, then hand the guide to a partner to run.',
+      feedback: 'Treat every question or recovery failure as a missing facilitator instruction, not as user error.',
       connects: 'The facilitation guide defines the minimum playable conditions for Module 07.',
       reference: '/facilitator.html'
     },
     '07': {
       reading: 'Read Session 07 and reduce the game to one playable slice that proves the learning loop.',
       video: 'Watch the five-minute-loop concept primer in the guided course.',
+      activity: 'Build and run a five-minute paper or low-code prototype; record one cut and one observed breakdown.',
+      feedback: 'Use the prototype minigame and a peer run to decide whether the loop is actually playable.',
       connects: 'The prototype slice becomes the state/event system specified in Module 08.',
       reference: '/examples.html'
     },
     '08': {
       reading: 'Read Session 08 and specify states, player actions, system responses, failure states, and saved evidence.',
       video: 'Use the prototype/provenance-log concept primer as the video anchor for making implementation decisions reviewable.',
+      activity: 'Draw a guarded state machine and event map, including one invalid action and its feedback response.',
+      feedback: 'Check every transition against the prototype and name the evidence trace that should be saved.',
       connects: 'The interaction spec tells Module 09 what traces the playtest must collect.',
       reference: '/portfolio.html'
     },
     '09': {
       reading: 'Read Session 09 and design a small playtest around the riskiest learning claim.',
       video: 'Watch the playtest-evidence concept primer in the guided course.',
+      activity: 'Pre-register hypotheses, run with target learners, collect three traces, and ask one debrief question.',
+      feedback: 'Separate observation, interpretation, and revision; peers are rehearsal, not target-learner evidence.',
       connects: 'The playtest evidence becomes the raw material for the Module 10 audit and Module 11 revision plan.',
       reference: '/rubrics.html'
     },
     '10': {
       reading: 'Read Session 10 and audit cognitive load, accessibility, privacy, AI use, and reward alignment.',
       video: 'Use the playtest-evidence concept primer as the video anchor when interpreting breakdowns and risks.',
+      activity: 'Audit one high-risk interaction and rank a concrete change before the final implementation pass.',
+      feedback: 'Use the reward-mix and accessibility lenses to surface a risk the designer would otherwise overlook.',
       connects: 'The audit identifies which problems Module 11 should revise first.',
       reference: '/cognitive-load.html'
     },
     '11': {
       reading: 'Read Session 11 and rank revisions by evidence strength, learning impact, and effort.',
       video: 'Use the final-defense concept primer as the video anchor for turning changes into a defensible design story.',
+      activity: 'Turn playtest findings into a ranked backlog with problem, evidence, fix, impact, and known limit.',
+      feedback: 'Keep only revisions that change the learning claim, the playable loop, or a documented access risk.',
       connects: 'The revision rationale becomes part of the final defense in Module 12.',
       reference: '/rubrics.html'
     },
     '12': {
       reading: 'Read Session 12 and assemble the blueprint, prototype, AI disclosure, playtest evidence, audit, and revision story.',
       video: 'Watch the final-defense concept primer in the guided course before submitting the portfolio packet.',
+      activity: 'Defend one learning claim with one live loop, one artifact, one evidence trace, and one stated limit.',
+      feedback: 'Use the rubric and reviewer questions to expose unsupported claims before final submission.',
       connects: 'This module closes the pathway by preparing the evidence packet for review and certificate handoff.',
       reference: '/guides/student-completion-guide.html'
     }
@@ -218,6 +242,8 @@
         <div><dt>Case use</dt><dd>${module.caseUse}</dd></div>
         <div><dt>Reading</dt><dd>${support.reading}</dd></div>
         <div><dt>Video anchor</dt><dd>${support.video} The written session is the primary instruction; the avatar clip is a one-minute concept primer.</dd></div>
+        <div><dt>Do</dt><dd>${support.activity || 'Complete the session activity and save the working artifact.'}</dd></div>
+        <div><dt>Feedback</dt><dd>${support.feedback || 'Use the rubric and peer or instructor feedback to revise the artifact.'}</dd></div>
         <div><dt>Connection</dt><dd>${support.connects}</dd></div>
       </dl>
       <details>

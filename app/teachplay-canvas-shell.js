@@ -830,6 +830,28 @@
         line-height: 1.2;
       }
       body.tp-fidelity-mode .tp-fidelity-session-name { margin-top: 2px; }
+      body.tp-fidelity-mode .tp-fidelity-review-band {
+        min-height: 330px;
+        padding: 56px 0 60px;
+        background: #fff;
+        border-top: 1px solid #e4e6e8;
+      }
+      body.tp-fidelity-mode .tp-fidelity-review-band .tp-fidelity-section-lede {
+        max-width: 720px;
+      }
+      body.tp-fidelity-mode .tp-fidelity-review-band #tp-portfolio-review {
+        width: 100%;
+        max-width: none;
+        margin: 24px 0 0;
+        padding: 24px;
+        border-color: #d9dee7;
+        box-shadow: 0 6px 20px rgba(31, 41, 55, .08);
+      }
+      body.tp-fidelity-mode .tp-fidelity-review-band #tp-portfolio-review h2 {
+        margin-top: 0;
+        color: #161616;
+        font-size: 20px;
+      }
       body.tp-fidelity-mode .tp-fidelity-standards {
         height: 240px;
         overflow: hidden;
@@ -884,6 +906,8 @@
         body.tp-fidelity-mode .tp-fidelity-proof .tp-fidelity-band-inner { grid-template-columns: 1fr; gap: 12px; padding-top: 40px; }
         body.tp-fidelity-mode .tp-fidelity-session-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 24px; }
         body.tp-fidelity-mode .tp-fidelity-pathway h2 { font-size: 28px; }
+        body.tp-fidelity-mode .tp-fidelity-review-band { padding: 40px 0 44px; }
+        body.tp-fidelity-mode .tp-fidelity-review-band #tp-portfolio-review { padding: 18px; }
         body.tp-fidelity-mode .tp-fidelity-standard-row { font-size: 16px; word-spacing: 8px; line-height: 1.5; }
       }
     `;
@@ -1010,7 +1034,7 @@
             <div class="tp-fidelity-hero-copy">
               <p class="tp-fidelity-eyebrow">THE UNIVERSITY OF ALABAMA · COLLEGE OF EDUCATION</p>
               <h1>AI-enhanced<br>Educational<br>Game Design</h1>
-              <p class="tp-fidelity-lede">For educators and learning designers: a twelve-session microcredential where each week turns one objective into one designed artifact, scored against 25 criteria you can read before you start.</p>
+              <p class="tp-fidelity-lede">For educators and learning designers: a twelve-session microcredential where each week advances one learning objective through a focused activity, evidence step, or deliverable, scored against 25 criteria you can read before you start.</p>
               <div class="tp-fidelity-actions">
                 <button type="button" aria-label="Start learning in Session 01">Start Session 01</button>
                 <button type="button" aria-label="Read the rubrics before starting">Read the rubrics first</button>
@@ -1035,7 +1059,7 @@
         <section class="tp-fidelity-proof" aria-labelledby="tp-fidelity-proof-heading">
           <h2 id="tp-fidelity-proof-heading" class="sr-only">Credential at a glance</h2>
           <div class="tp-fidelity-band-inner">
-            <div class="tp-fidelity-stat"><div class="tp-fidelity-stat-label">Sessions</div><div class="tp-fidelity-stat-value">12</div><div class="tp-fidelity-stat-meta">one objective, one artifact each</div></div>
+            <div class="tp-fidelity-stat"><div class="tp-fidelity-stat-label">Sessions</div><div class="tp-fidelity-stat-value">12</div><div class="tp-fidelity-stat-meta">one learning objective per session</div></div>
             <div class="tp-fidelity-stat"><div class="tp-fidelity-stat-label">Rubric criteria</div><div class="tp-fidelity-stat-value">25</div><div class="tp-fidelity-stat-meta">published before you enrol</div></div>
             <div class="tp-fidelity-stat"><div class="tp-fidelity-stat-label">Contact hours</div><div class="tp-fidelity-stat-value">36</div><div class="tp-fidelity-stat-meta">3 per session, 12 weeks</div></div>
           </div>
@@ -1044,8 +1068,16 @@
           <div class="tp-fidelity-band-inner">
             <p class="tp-fidelity-section-label">THE PATHWAY</p>
             <h2 id="tp-fidelity-pathway-heading">Twelve sessions, five evidence milestones</h2>
-            <p class="tp-fidelity-section-lede">Each session pairs one learning objective with one artifact you actually build, test, or defend.</p>
+            <p class="tp-fidelity-section-lede">Each session advances one learning objective through a focused activity, evidence step, or portfolio deliverable.</p>
             <div class="tp-fidelity-session-grid"></div>
+          </div>
+        </section>
+        <section class="tp-fidelity-review-band" aria-labelledby="tp-fidelity-review-heading">
+          <div class="tp-fidelity-band-inner">
+            <p class="tp-fidelity-section-label">PORTFOLIO TOOL</p>
+            <h2 id="tp-fidelity-review-heading">Pre-review the computational artifact</h2>
+            <p class="tp-fidelity-section-lede">For enrolled learners: submit a hosted prototype for bounded AI analysis, then take the evidence questions to your instructor.</p>
+            <div id="tp-fidelity-review-mount"></div>
           </div>
         </section>
         <section class="tp-fidelity-standards" aria-labelledby="tp-fidelity-standards-heading">
@@ -1064,16 +1096,16 @@
 
       const sessionLabels = [
         ['01', 'Framing', 'session-01.html'],
-        ['02', 'Objectives', 'session-02.html'],
-        ['03', 'Mechanics', 'session-03.html'],
-        ['04', 'Prototyping · D3', 'session-04.html', true],
-        ['05', 'Playtesting', 'session-05.html'],
-        ['06', 'Feedback loops', 'session-06.html'],
-        ['07', 'Accessibility', 'session-07.html'],
-        ['08', 'Ethics of AI · D4', 'session-08.html', true],
-        ['09', 'Cognitive load', 'session-09.html'],
-        ['10', 'Calibration', 'session-10.html'],
-        ['11', 'Implementation', 'session-11.html'],
+        ['02', 'Learner + context', 'session-02.html'],
+        ['03', 'Objectives × mechanic', 'session-03.html'],
+        ['04', 'Mechanics I', 'session-04.html'],
+        ['05', 'Mechanics II', 'session-05.html'],
+        ['06', 'Facilitation', 'session-06.html'],
+        ['07', 'Prototyping · D3', 'session-07.html', true],
+        ['08', 'Interaction spec', 'session-08.html'],
+        ['09', 'Playtesting · D4', 'session-09.html', true],
+        ['10', 'Audit', 'session-10.html'],
+        ['11', 'Revision', 'session-11.html'],
         ['12', 'Capstone · D5', 'session-12.html', true],
       ];
       const grid = landing.querySelector('.tp-fidelity-session-grid');
