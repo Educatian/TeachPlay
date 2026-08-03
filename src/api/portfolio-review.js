@@ -73,11 +73,25 @@ function externalScriptUrls(html, baseUrl) {
     .filter((url, index, urls) => urls.indexOf(url) === index)
     .slice(0, MAX_EXTERNAL_SCRIPTS);
 }
-async function fetchExternalScriptText(html, baseUrl) {
+function isCanonicalArtifactUrl(value) {
+  try { return new URL(value).hostname.toLowerCase() === 'teachplay.dev'; } catch { return false; }
+}
+async function fetchArtifactResource(url, env, options = {}) {
+  if (isCanonicalArtifactUrl(url) && env?.ASSETS?.fetch) {
+    // Avoid a Cloudflare-to-Cloudflare loop when the Worker analyzes its own
+    // canonical static artifact. Read the same asset binding directly.
+    return env.ASSETS.fetch(new Request(url, {
+      method: 'GET',
+      headers: options.headers || {},
+    }));
+  }
+  return fetch(url, options);
+}
+async function fetchExternalScriptText(html, baseUrl, env) {
   const blocks = [];
   for (const scriptUrl of externalScriptUrls(html, baseUrl)) {
     try {
-      const response = await fetch(scriptUrl, {
+      const response = await fetchArtifactResource(scriptUrl, env, {
         redirect: 'manual',
         headers: { accept: 'application/javascript,text/javascript,text/plain;q=0.8' },
         signal: AbortSignal.timeout(5000),
@@ -141,11 +155,11 @@ async function analyzeWithGemini(env, url, text) {
   try { parsed = JSON.parse(raw); } catch { parsed = { summary: raw.slice(0, 4000), strengths: [], risks: ['AI returned non-JSON output; instructor verification required.'], evidence_questions: [], finding_labels: ['not_verifiable'], rubric_hints: [] }; }
   return { status: 'needs_review', provider, ...parsed };
 }
-async function fetchPreview(url) {
+async function fetchPreview(url, env) {
   let current = url;
   let response;
   for (let hop = 0; hop < 3; hop += 1) {
-    response = await fetch(current, { redirect: 'manual', headers: { accept: 'text/html,text/plain;q=0.9' }, signal: AbortSignal.timeout(8000) });
+    response = await fetchArtifactResource(current, env, { redirect: 'manual', headers: { accept: 'text/html,text/plain;q=0.9' }, signal: AbortSignal.timeout(8000) });
     if (![301, 302, 303, 307, 308].includes(response.status)) break;
     const next = parseUrl(new URL(response.headers.get('location') || '', current).toString());
     if (!next) throw new Error('Prototype redirected to a non-approved host');
@@ -162,7 +176,7 @@ async function fetchPreview(url) {
     `[CONTENT TYPE]\n${response.headers.get('content-type') || 'unknown'}`,
     `[VISIBLE TEXT]\n${visibleText}`,
     ...inlineScriptBlocks(html),
-    ...(await fetchExternalScriptText(html, fetchedUrl)),
+    ...(await fetchExternalScriptText(html, fetchedUrl, env)),
   ];
   return {
     text: blocks.join('\n\n').slice(0, MAX_TEXT),
@@ -206,7 +220,7 @@ export async function handlePortfolioReview(request, env, ctx) {
   await env.DB.prepare("INSERT INTO portfolio_reviews (id, learner_id, url, provider, status) VALUES (?, ?, ?, ?, 'analyzing')").bind(id, auth.learner_id, url, providerFor(url)).run();
   const work = (async () => {
     try {
-      const preview = await fetchPreview(url);
+      const preview = await fetchPreview(url, env);
       const analysis = await analyzeWithGemini(env, url, preview.text);
       analysis.source_snapshot = preview.meta;
       await env.DB.prepare("UPDATE portfolio_reviews SET status = ?, analysis_json = ?, updated_at = datetime('now') WHERE id = ?").bind(analysis.status, JSON.stringify(analysis), id).run();

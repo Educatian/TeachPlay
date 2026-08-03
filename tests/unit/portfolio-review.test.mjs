@@ -48,8 +48,8 @@ test('portfolio review rejects unsupported hosts before creating a queue row', a
 test('portfolio review accepts the canonical TeachPlay learner artifact host', async () => {
   const db = dbMock();
   const pending = [];
-  globalThis.fetch = async () => new Response('<html><body>TeachPlay learner game</body></html>', { status: 200, headers: { 'content-type': 'text/html' } });
-  const res = await handlePortfolioReview(request('POST', { url: 'https://teachplay.dev/app/?landing=fidelity' }, { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok' }), { DB: db }, { waitUntil: (work) => pending.push(work) });
+  const assets = { fetch: async () => new Response('<html><body>TeachPlay learner game</body></html>', { status: 200, headers: { 'content-type': 'text/html' } }) };
+  const res = await handlePortfolioReview(request('POST', { url: 'https://teachplay.dev/app/?landing=fidelity' }, { 'X-Learner-ID': 'L1', 'X-Learner-Token': 'tok' }), { DB: db, ASSETS: assets }, { waitUntil: (work) => pending.push(work) });
   assert.equal(res.status, 202);
   await Promise.all(pending);
   assert.ok(db.calls.some((call) => /INSERT INTO portfolio_reviews/.test(call.sql)));
