@@ -28,6 +28,18 @@ The current full CI rerun recorded 117 browser passes with 3 intentional legacy 
 
 ## Production acceptance status
 
+### 2026-08-03 live learner-to-analysis evidence
+
+Using a synthetic `example.invalid` demo mailbox (no personal email), the canonical
+production route completed this partial production sequence:
+
+1. `POST /api/enroll` returned a new learner session token.
+2. `POST /api/portfolio-review` accepted `https://teachplay.dev/app/?landing=fidelity` and returned `202 analyzing`.
+3. The production queue settled at `needs_review` with `provider=openrouter` and no error message.
+4. The stored source snapshot recorded `text/html`, 3 inline script blocks, and 6 same-origin script assets; the analysis returned 6 observable-mechanic findings and 4 evidence-trace findings.
+
+This is stronger evidence than the unit-only path, but it is intentionally not a claim that the artifact is educationally effective or ready for credential issuance.
+
 Read-only production D1 checks on 2026-08-01 found the seeded demo review
 `demo-review-2026-08-01` for `demo-learner-2026-08-01`. It is an actual
 `openrouter` review with 4,881 characters of analysis and a conservative
@@ -35,15 +47,15 @@ Read-only production D1 checks on 2026-08-01 found the seeded demo review
 session events, 0 evidence deliverables, and 0 Proficient/Exemplary rubric
 scores, so the issuance gate correctly cannot pass yet.
 
-The complete production sequence is **not yet claimed as passed**. The remaining evidence must come from one authenticated browser session and must include:
+The complete production sequence is **not yet claimed as passed**. The remaining evidence must come from one fresh authenticated browser session and must include:
 
-1. a real learner portfolio submission;
-2. the resulting OpenRouter analysis record in the production review queue;
+1. a real learner portfolio submission by the intended learner;
+2. the resulting OpenRouter analysis record in the production review queue; **the synthetic canonical-artifact run above now covers this engineering path, but not the intended learner identity**;
 3. instructor review of the evidence and final approval;
 4. production rubric scoring for all five deliverables and 25 criteria;
 5. a one-time claim link redemption and downloaded signed credential;
 6. public verifier success for that credential.
 
-The deployed review surface was rechecked through an authenticated Cloudflare Access browser session on 2026-08-01. It loaded the seeded `needs_review` review, showed the stored analysis evidence, and rendered no `[object Object]` placeholder. This confirms the protected review read path, not the complete production learner-to-credential sequence.
+The historical 2026-08-01 authenticated Access note confirms the protected review read path, but it is not treated as a fresh current-session proof for this audit. The current audit therefore leaves instructor final approval and credential handoff open.
 
 Current deployment checked: `a983f669-eee4-4c54-b240-93ec9d400715`.
