@@ -20,6 +20,10 @@ const MAX_TEXT = 100_000;
 const MAX_SCRIPT_BLOCK = 24_000;
 const MAX_EXTERNAL_SCRIPTS = 6;
 const ALLOWED_HOSTS = [
+  // The canonical learner experience is hosted on the same controlled
+  // domain as this API. Keep this exact-host allowlist entry narrow rather
+  // than allowing arbitrary TeachPlay subdomains.
+  /^teachplay\.dev$/i,
   /^aistudio\.google\.com$/i,
   /(^|\.)googleusercontent\.com$/i,
   /(^|\.)github\.com$/i,
