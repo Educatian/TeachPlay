@@ -1,0 +1,29 @@
+Welcome to TeachPlay, a micro-credential learning system built around making, testing, explaining, and improving real digital artifacts.
+
+In the next five minutes, we will walk through the complete system. We will look at the learner experience, the build-and-test loop, the evidence collected from a working artifact, the connection to Google AI Studio and supporting services, and the instructor review process.
+
+TeachPlay is organized around one simple idea: learning becomes visible when a learner can make a claim, act on that claim, inspect the result, and revise the artifact. The core cycle is predict, act, feedback, and revise. It is not a decorative game loop. It is the structure that connects learning goals to observable work.
+
+The learner begins by entering a focused learning experience. The system can support an initial check, a short pre-test, or a confidence prompt. This establishes a starting point without turning the experience into a long form. The learner then moves quickly into practice. The important question is not only what the learner knows before the activity, but what the learner can build and explain after it.
+
+In TeachPlay, a practice activity can be a small interactive simulation, a mini-game, a design prototype, or another computational artifact. The artifact is the object of learning. The learner defines what the artifact should help someone understand, chooses a mechanic, and builds a first version. The interface keeps the next action clear so the learner can stay focused on the work instead of navigating a crowded dashboard.
+
+This is where Google AI Studio can become part of the learning workflow. A learner can use AI Studio to generate a starting point for a game or simulation, then inspect the code and preview. The learner is still responsible for the learning design: the goal, the rules, the evidence, and the explanation. AI can accelerate construction, but the artifact must remain understandable and testable.
+
+The practice loop is visible in the artifact itself. First, the learner predicts what will happen. Next, the learner acts by running the game or simulation. Then the system presents feedback based on the interaction. Finally, the learner revises the rule, prompt, interface, or explanation. This loop changes a one-time submission into a short cycle of inquiry.
+
+The feedback stage is especially important. A result is not only a score. It should help the learner decide what to change next. TeachPlay can surface evidence such as a decision, a branching choice, a visible state change, a short explanation, or a comparison between the first and revised versions. These details make the learning process inspectable.
+
+The system also supports a practical integration rehearsal. In Google AI Studio, learners can explore how a game or prototype might connect to Firebase for data, authentication, or a lightweight backend. They can also examine Google Workspace patterns such as Drive for artifacts, Sheets for structured records, or Docs for design notes and reflection. These are introduced as implementation choices, not as magic buttons. Each integration needs a clear purpose, a test, and a boundary for what the learner is actually claiming.
+
+When a learner is ready, the submission brings together the artifact link, the learning goal, the evidence, and a short reflection. If automated analysis is enabled, the submission can be routed to the analysis service for a first pass across the artifact and the learner's explanation. The analysis is supporting evidence, not a replacement for inspection. The real artifact remains the source that an instructor must review.
+
+The instructor view is designed around that decision. It brings the submission status, learner context, artifact link, analysis evidence, risks, and review actions into one place. An instructor can inspect the artifact, compare the evidence with the learning goal, identify gaps, and decide whether the work is ready, needs revision, or should be discussed further.
+
+This structure also supports computational analysis of the artifact. The instructor can ask whether the interaction expresses the intended concept, whether the feedback is connected to the learner's action, whether the revision changes the underlying design, and whether the evidence is sufficient for the credential. The system helps organize those questions; professional judgment remains with the instructor.
+
+The final step is not simply completion. The learner should be able to explain what was built, what changed, what the evidence shows, and what the next improvement would be. That explanation is what turns a working prototype into a meaningful portfolio artifact.
+
+TeachPlay connects learning goals, computational making, evidence, and review in one continuous flow. Learners build with purpose. They test their ideas. They use feedback to revise. Instructors can see the artifact and the reasoning behind it. And the micro-credential is grounded in work that can be inspected, discussed, and improved.
+
+That is the TeachPlay system: learn by building, test what you made, make the evidence visible, and revise toward a stronger result.
