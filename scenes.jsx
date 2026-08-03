@@ -8,7 +8,9 @@ const C = {
   line: '#e0e0e0',
   line2: '#c6c6c6',
   layer: '#f4f4f4',
-  blue: '#0f62fe',
+  // Keep the explainer's small labels above AA contrast on the light-gray
+  // crosswalk cells at mobile audit widths.
+  blue: '#0b4f9c',
   blueBg: '#edf5ff',
   blueDeep: '#002d9c',
   red: '#da1e28',

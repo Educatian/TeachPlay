@@ -86,7 +86,17 @@ function extractFigureText(html) {
 }
 
 const root = process.cwd();
-const files = readdirSync(root).filter(f => f.endsWith('.html') && !SKIP.has(f));
+function collectHtml(dir, prefix = '') {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) return collectHtml(join(dir, entry.name), rel);
+    return entry.name.endsWith('.html') ? [rel] : [];
+  });
+}
+const files = collectHtml(root)
+  .filter(file => !SKIP.has(file))
+  .filter(file => !file.startsWith('docs/'))
+  .sort();
 
 const index = [];
 for (const file of files) {

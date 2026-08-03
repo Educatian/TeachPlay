@@ -26,6 +26,7 @@ const PAGES = [
   '/credential.html',
   '/accessibility.html',
   '/privacy.html',
+  '/guides/google-ai-studio-playbook.html',
 ];
 
 // Maximum allowed violations per page. 0 is the goal — we surface any new

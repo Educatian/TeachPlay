@@ -2,9 +2,9 @@
  * POST /api/enroll — register a learner in the D1 `learners` table.
  *
  * Public endpoint. Creates the learner row if it does not already exist
- * (INSERT OR IGNORE), then returns the current row so the client always
- * gets the canonical learner_id regardless of whether this was a first-
- * time enrolment or a repeat call (idempotent by email+cohort).
+ * (INSERT OR IGNORE). A new enrollment receives the first session token.
+ * Existing learners never receive their stored token from this endpoint;
+ * they must use the email recovery/sign-in flow at POST /api/progress.
  *
  * Body: { name, email, cohort? }
  *   name    — display name, ≥ 2 characters
@@ -119,16 +119,24 @@ export async function handleEnroll(request, env) {
       return json({ error: 'Enrolment failed: learner not found after insert' }, 500);
     }
 
-    // Legacy row enrolled before tokens existed: bind one now so this device
-    // (and the returning learner) gets an authenticated session.
-    if (!row.session_token) {
-      await db.prepare('UPDATE learners SET session_token = ? WHERE id = ? AND session_token IS NULL')
-        .bind(token, row.id).run();
-      row = { ...row, session_token: token };
-    }
-
     if (isNewEnrollment) {
       sendWelcomeEmail(env, { to: email, name: row.name });
+    }
+
+    // Do not turn this public, rate-limited registration endpoint into an
+    // account takeover primitive. Existing email addresses must prove control
+    // of the mailbox through POST /api/progress before receiving a token.
+    if (!isNewEnrollment) {
+      return json({
+        ok: true,
+        existing: true,
+        learner_id: row.id,
+        name: row.name,
+        cohort: row.cohort,
+        cred_status: row.cred_status,
+        auth: 'email-link',
+        message: 'This email is already enrolled. Request a sign-in link to reconnect.',
+      });
     }
 
     return json({

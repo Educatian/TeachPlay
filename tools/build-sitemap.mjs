@@ -4,7 +4,7 @@
  *
  * Excludes the same utility pages the search index excludes.
  */
-import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
+import { readdirSync, writeFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { execSync } from 'node:child_process';
 
@@ -23,9 +23,16 @@ const SKIP = new Set([
 ]);
 
 const root = process.cwd();
-const files = readdirSync(root)
-  .filter(f => f.endsWith('.html'))
-  .filter(f => !SKIP.has(f))
+function collectHtml(dir, prefix = '') {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) return collectHtml(join(dir, entry.name), rel);
+    return entry.name.endsWith('.html') ? [rel] : [];
+  });
+}
+const files = collectHtml(root)
+  .filter(file => !SKIP.has(file))
+  .filter(file => !file.startsWith('docs/'))
   .sort();
 
 const today = new Date().toISOString().slice(0, 10);
@@ -34,6 +41,7 @@ function priorityFor(file) {
   if (file === 'index.html') return '1.0';
   if (file.startsWith('session-')) return '0.8';
   if (['rubrics.html', 'examples.html', 'handbook.html', 'credential.html'].includes(file)) return '0.9';
+  if (file === 'guides/google-ai-studio-playbook.html') return '0.8';
   return '0.6';
 }
 

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#143451" />
+  <title>Google AI Studio game-build playbook · TeachPlay</title>
+  <meta name="description" content="Concrete prompts and safe Firebase, Google Workspace, Higgsfield, and Playwright patterns for building and submitting a TeachPlay educational game." />
+  <style>
+    :root { --ink:#172033; --muted:#526174; --paper:#fffdf8; --line:#d9dfe7; --navy:#143451; --crimson:#9e1b32; --teal:#237d7a; --gold:#c8a45d; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#edf1f5; font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    a { color:var(--crimson); font-weight:700; }
+    .shell { display:grid; grid-template-columns:240px minmax(0,1fr); min-height:100vh; }
+    aside { position:sticky; top:0; height:100vh; padding:26px 18px; background:var(--navy); color:#fff; }
+    aside .aside-title { font-size:18px; line-height:1.2; margin:0 0 22px; font-weight:900; }
+    aside p { color:#d8e2ee; font-size:13px; margin:0 0 20px; }
+    aside nav { display:grid; gap:4px; }
+    aside nav a { color:#fff; text-decoration:none; padding:9px 10px; border-left:3px solid transparent; font-size:14px; }
+    aside nav a:hover, aside nav a:focus-visible { border-left-color:var(--gold); background:rgba(255,255,255,.1); }
+    main { width:min(1060px,calc(100% - 36px)); margin:0 auto; padding:40px 0 70px; }
+    .hero, section { background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:clamp(24px,4vw,44px); margin-bottom:20px; box-shadow:0 14px 35px rgba(20,52,81,.06); }
+    .hero { border-top:7px solid var(--crimson); }
+    .kicker { color:var(--crimson); text-transform:uppercase; letter-spacing:.12em; font-size:12px; font-weight:800; margin:0 0 10px; }
+    h1 { font:900 clamp(32px,5vw,60px)/1.02 Georgia,"Times New Roman",serif; margin:0 0 16px; }
+    h2 { font:900 clamp(25px,3vw,38px)/1.1 Georgia,"Times New Roman",serif; margin:0 0 12px; }
+    h3 { font-size:19px; line-height:1.25; margin:0 0 8px; }
+    .lede { max-width:72ch; color:var(--muted); font-size:18px; }
+    .callout { border-left:4px solid var(--teal); padding:14px 18px; background:#eef8f6; margin-top:18px; }
+    .callout.warn { border-left-color:var(--crimson); background:#fff3f4; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:18px; }
+    .card { border:1px solid var(--line); border-radius:8px; padding:18px; background:#fff; }
+    .card small { display:block; color:var(--muted); margin-top:8px; }
+    ol, ul { padding-left:23px; }
+    pre { overflow:auto; padding:18px; border-radius:8px; background:#101b2b; color:#e7eef8; font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace; white-space:pre-wrap; }
+    code { background:#eef1f4; padding:1px 4px; border-radius:4px; }
+    pre code { background:transparent; padding:0; }
+    figure { margin:18px 0; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#f3efe7; }
+    figure img { display:block; width:100%; height:auto; }
+    figcaption { padding:10px 14px; color:var(--muted); font-size:13px; background:#fff; }
+    .tag { display:inline-block; margin:3px 5px 3px 0; padding:3px 8px; border-radius:999px; background:#e7f2f1; color:#155b59; font-size:12px; font-weight:800; }
+    .source-note { color:var(--muted); font-size:13px; }
+    @media (max-width:800px) {
+      .shell { display:block; }
+      aside { position:relative; height:auto; padding:18px; }
+      aside nav { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      main { width:min(100% - 24px,700px); padding-top:18px; }
+      .grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="aside-title">TeachPlay<br />AI Studio playbook</div>
+      <p>Build a small game, inspect it honestly, and submit the evidence that makes the learning claim reviewable.</p>
+      <nav aria-label="Playbook navigation">
+        <a href="#brief">Build brief</a>
+        <a href="#prompts">Prompt sequence</a>
+        <a href="#firebase">Firebase</a>
+        <a href="#workspace">Workspace</a>
+        <a href="#higgsfield">Higgsfield</a>
+        <a href="#playwright">Playwright</a>
+        <a href="#submit">Submission</a>
+      </nav>
+    </aside>
+    <main>
+      <header class="hero">
+        <p class="kicker">Session 08 → Session 12</p>
+        <h1>From AI Studio prompt to a reviewable educational game</h1>
+        <p class="lede">Use Google AI Studio Build mode for a bounded implementation slice. Use Firebase or Google Workspace only when the learning purpose requires persistence, collaboration, or instructor review. Use Playwright to verify the public artifact, not to bypass account permissions.</p>
+        <p><a href="https://aistudio.google.com" target="_blank" rel="noopener">Open Google AI Studio ↗</a> · <a href="../guides/student-completion-guide.html#studio-build">Return to the student completion guide</a></p>
+      </header>
+
+      <section id="brief">
+        <p class="kicker">01 · Start with the learning claim</p>
+        <h2>Write the build brief before the AI prompt.</h2>
+        <p>AI Studio can generate a polished surface very quickly. Your brief prevents the surface from becoming the assessment. Copy the five fields below from D1–D3 before you open Build mode.</p>
+        <figure>
+          <img src="../assets/generated/google-ai-studio-build-to-submit.png" alt="Editorial illustration of a learner moving from a game prototype and loop diagram to playtest evidence and a submitted folder." loading="lazy" />
+          <figcaption>Build the smallest loop first, then preserve the reasoning and evidence that make it reviewable.</figcaption>
+        </figure>
+        <div class="grid">
+          <div class="card"><h3>Learner</h3><p>One learner group, one setting, one access condition.</p><small>Example: 7th-grade pairs on shared Chromebooks in a 40-minute class.</small></div>
+          <div class="card"><h3>Target behavior</h3><p>One observable verb with a condition and a criterion.</p><small>Example: predict and revise a trajectory using mass, distance, and vector direction.</small></div>
+          <div class="card"><h3>Loop</h3><p>Predict → act → feedback → revise. Keep the first build to five minutes.</p><small>Example: choose an angle, launch, inspect the miss, change one variable, retry.</small></div>
+          <div class="card"><h3>Evidence</h3><p>What trace would let an instructor inspect the claim?</p><small>Example: input angle, target state, outcome, feedback viewed, and revision choice.</small></div>
+        </div>
+        <div class="callout"><strong>Rule:</strong> If the learner can win without doing the target thinking, the prompt is not ready. Tighten the mechanic before adding more art, levels, or AI behavior.</div>
+      </section>
+
+      <section id="prompts">
+        <p class="kicker">02 · Prompt sequence</p>
+        <h2>Use three prompts, not one giant “make my game” request.</h2>
+        <div class="grid">
+          <div class="card"><span class="tag">Prompt A · scaffold</span><h3>Generate the smallest slice</h3><p>Ask for a runnable web prototype with named states and one core decision.</p></div>
+          <div class="card"><span class="tag">Prompt B · inspect</span><h3>Make behavior observable</h3><p>Ask the agent to expose state, feedback, and learner choices without inventing outcome data.</p></div>
+          <div class="card"><span class="tag">Prompt C · revise</span><h3>Change one learning risk</h3><p>Feed in a real observation and request one evidence-linked revision.</p></div>
+          <div class="card"><span class="tag">Prompt D · handoff</span><h3>Prepare the submission</h3><p>Ask for a file map, public preview instructions, and a provenance summary. Review every line yourself.</p></div>
+        </div>
+        <h3>Copy/paste game-design prompt</h3>
+        <pre><code>Build a five-minute educational game prototype from this design brief.
+
+Learner: 7th-grade pairs on shared Chromebooks.
+Target behavior: learners predict and revise projectile trajectories using
+mass, distance, and vector direction.
+Loop: predict → choose angle and speed → launch → inspect feedback → revise.
+Evidence to expose: chosen angle, chosen speed, target state, hit/miss,
+feedback viewed, and the variable changed on the next attempt.
+
+Requirements:
+- Use a small web game with keyboard and pointer controls.
+- Keep the state machine explicit: Start, Predict, Act, Feedback, Revise, End.
+- Make the feedback explain the relevant variable; do not only show a score.
+- Add a visible "what changed?" revision note after a miss.
+- Include an accessible reset button and a text alternative for important feedback.
+- Keep all learner data local to the prototype unless I explicitly request a backend.
+- Use placeholder shapes and readable labels before adding visual polish.
+
+Do not:
+- claim that the game improves learning;
+- invent playtest findings or learner data;
+- hide the API key in client-side code;
+- add accounts, leaderboards, or analytics that are not needed for this learning claim.
+
+Return:
+1. the runnable app;
+2. a short file map;
+3. the state/event table;
+4. the exact changes I should inspect before sharing the preview.</code></pre>
+        <h3>Prompt for a real revision</h3>
+        <pre><code>Observed during a labeled rehearsal: two players changed the color but
+could not tell which variable controlled the trajectory. Keep the existing
+learning objective. Revise only the feedback state so the changed variable,
+the result, and the next actionable choice are visible. Add one test case for
+the miss path. Explain which files changed and what evidence I should capture.
+Do not write a claim about learning gains.</code></pre>
+      </section>
+
+      <section id="firebase">
+        <p class="kicker">03 · Optional runtime persistence</p>
+        <h2>Use Firebase when the game needs a learner-owned state or event log.</h2>
+        <p>Keep TeachPlay's enrollment and credential review as the authoritative course path. Add Firebase only for the game runtime when persistence is itself part of the design: resume state, a bounded event trace, or a teacher-facing replay.</p>
+        <div class="grid">
+          <div class="card"><h3>Concrete use case</h3><p>A learner's game stores the last five attempts and the variable changed after each miss. The instructor sees the replay only after the learner submits the packet.</p></div>
+          <div class="card"><h3>Minimum data model</h3><pre><code>games/{gameId}
+  ownerUid
+  objectiveCode
+  publicPreviewUrl
+
+games/{gameId}/attempts/{attemptId}
+  uid
+  state
+  input
+  outcome
+  feedbackViewed
+  changedVariable
+  createdAt</code></pre></div>
+        </div>
+        <h3>Web SDK shape</h3>
+        <pre><code>import { initializeApp } from "firebase/app";
+import { getAuth, signInAnonymously } from "firebase/auth";
+import { getFirestore, addDoc, collection, serverTimestamp } from "firebase/firestore";
+
+const app = initializeApp(firebaseConfig); // public config only; no service-account key
+const auth = getAuth(app);
+const db = getFirestore(app);
+await signInAnonymously(auth);
+
+await addDoc(collection(db, "games", GAME_ID, "attempts"), {
+  uid: auth.currentUser.uid,
+  state: "feedback",
+  input: { angle: 32, speed: 18 },
+  outcome: "short",
+  feedbackViewed: true,
+  changedVariable: "angle",
+  createdAt: serverTimestamp()
+});</code></pre>
+        <h3>Starter Firestore rule</h3>
+        <pre><code>match /games/{gameId}/attempts/{attemptId} {
+  allow create: if request.auth != null
+    && request.resource.data.uid == request.auth.uid
+    && request.resource.data.keys().hasOnly([
+      "uid", "state", "input", "outcome",
+      "feedbackViewed", "changedVariable", "createdAt"
+    ]);
+  allow read: if request.auth != null
+    && resource.data.uid == request.auth.uid;
+  allow update, delete: if false;
+}</code></pre>
+        <div class="callout warn"><strong>Do not ship a debug token or service-account key.</strong> Use Firebase Authentication and Security Rules for learner-owned data, App Check when you need abuse protection, and keep instructor exports behind a server or protected Workspace flow. The Playwright test environment needs a separate private debug-token strategy if App Check is enforced.</div>
+      </section>
+
+      <section id="workspace">
+        <p class="kicker">04 · Instructor collaboration</p>
+        <h2>Use Google Workspace for review, not as a secret database.</h2>
+        <p>Google Sheets, Forms, Drive, and Docs are useful when the instructor needs a shared review queue or a human-readable handoff. Prefer the narrowest OAuth scope, such as <code>drive.file</code>, and submit only a sanitized summary or a link to the artifact.</p>
+        <div class="grid">
+          <div class="card"><h3>Example: playtest sheet</h3><p>Columns: learner pseudonym, game URL, attempt count, observed breakdown, evidence link, revision decision, reviewer status. No raw student names or unconsented recordings.</p></div>
+          <div class="card"><h3>Example: Drive packet</h3><p>Create one folder per learner submission, share it with the instructor group, and put the README, preview URL, screenshots, recording, provenance log, and revision log inside.</p></div>
+        </div>
+        <h3>Small Apps Script receiver</h3>
+        <pre><code>function doPost(e) {
+  const body = JSON.parse(e.postData.contents);
+  const safe = [
+    body.learnerPseudonym,
+    body.gameUrl,
+    body.observedBreakdown,
+    body.revisionDecision,
+    new Date()
+  ];
+  SpreadsheetApp
+    .openById(PropertiesService.getScriptProperties().getProperty("REVIEW_SHEET_ID"))
+    .getSheetByName("Playtest review")
+    .appendRow(safe);
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}</code></pre>
+        <p class="source-note">For a production Workspace integration, deploy the receiver to the intended domain, validate the caller, keep the sheet ID in script properties, and do not accept arbitrary Drive IDs from the browser.</p>
+      </section>
+
+      <section id="higgsfield">
+        <p class="kicker">05 · Visual production</p>
+        <h2>Use Higgsfield for purposeful visual assets, not evidence substitution.</h2>
+        <p>Use Higgsfield when the game needs a short concept clip, character motion, or scene reference that helps learners communicate the intended interaction. Keep the asset prompt and license/usage note in the AI provenance log. A generated clip can illustrate a mechanic; it cannot replace a real playtest or prove a learning outcome.</p>
+        <pre><code>Create a 10-second, 16:9 instructional game-loop reference clip.
+Show one learner prediction, one visible action, a clear feedback change,
+and a deliberate revision. Use abstract geometric game elements, no logos,
+no student faces, no readable text, and no outcome claims. Keep the camera
+steady and make the changed variable visually obvious. This clip is a
+concept reference for a prototype, not a record of learner performance.</code></pre>
+      </section>
+
+      <section id="playwright">
+        <p class="kicker">06 · Verify the public artifact</p>
+        <h2>Playwright checks the shared game after AI Studio, not the private editor.</h2>
+        <p>After publishing or exporting the game, set <code>GAME_URL</code> to the public preview. The test below checks the first interaction, captures a screenshot, and fails on uncaught page errors. Add project-specific locators for the actual state machine.</p>
+        <pre><code>import { test, expect } from "@playwright/test";
+
+const gameUrl = process.env.GAME_URL;
+test.skip(!gameUrl, "Set GAME_URL to the learner's public game preview");
+
+test("public game exposes the learning loop", async ({ page }) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto(gameUrl, { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(page.getByRole("button", { name: /start|begin|play/i })).toBeVisible();
+  await page.getByRole("button", { name: /start|begin|play/i }).click();
+  await expect(page.locator("[data-state]")).toHaveAttribute("data-state", /predict|act/i);
+  await page.screenshot({ path: "output/playwright/ai-studio-game-preview.png", fullPage: true });
+  expect(errors).toEqual([]);
+});</code></pre>
+        <div class="callout"><strong>Submission evidence:</strong> keep the Playwright screenshot, the public URL, the test result, and the exact build/revision prompt together. If the game needs authentication, provide a safe demo route or reviewer account; never place a learner password or API key in the repository.</div>
+      </section>
+
+      <section id="submit">
+        <p class="kicker">07 · Final handoff</p>
+        <h2>Submit a packet an instructor can inspect in ten minutes.</h2>
+        <figure>
+          <img src="../assets/generated/google-ai-studio-evidence-packet.png" alt="Four-panel visual showing a playable game preview, design crosswalk, playtest observation, and revision record connected in a submission packet." loading="lazy" />
+          <figcaption>Keep the artifact, design logic, observed playtest, and revision decision together.</figcaption>
+        </figure>
+        <ol>
+          <li><strong>Live artifact:</strong> public preview URL and exported GitHub URL, if available.</li>
+          <li><strong>Design argument:</strong> D2 crosswalk plus the exact Google AI Studio prompts that changed the build.</li>
+          <li><strong>Evidence:</strong> two or three screenshots, a short captioned recording, Playwright verification result, and playtest notes.</li>
+          <li><strong>Governance:</strong> Firebase rules or Workspace sharing boundary, AI provenance, generated-asset note, and known limits.</li>
+          <li><strong>Revision:</strong> one observed trace, one decision, one changed file or game behavior, and the next test.</li>
+        </ol>
+        <p><a href="../portfolio.html#ai-studio-submit">Open the TeachPlay submission portfolio ↗</a> · <a href="../admin-review.html">Instructor computational-artifact review ↗</a></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -26,6 +26,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://teachplay.dev/app/index.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://teachplay.dev/calibration.html</loc>
     <lastmod>2026-08-01</lastmod>
     <priority>0.6</priority>
@@ -37,7 +42,7 @@
   </url>
   <url>
     <loc>https://teachplay.dev/credential.html</loc>
-    <lastmod>2026-08-01</lastmod>
+    <lastmod>2026-08-02</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
@@ -51,6 +56,21 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://teachplay.dev/guides/google-ai-studio-playbook.html</loc>
+    <lastmod>2026-08-03</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/guides/post-completion-survey.html</loc>
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/guides/student-completion-guide.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://teachplay.dev/handbook.html</loc>
     <lastmod>2026-08-01</lastmod>
     <priority>0.9</priority>
@@ -59,6 +79,66 @@
     <loc>https://teachplay.dev/</loc>
     <lastmod>2026-08-01</lastmod>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/minigames/electric-circuit-lab/index.html</loc>
+    <lastmod>2026-04-18</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/minigames/orbit-sum-lab/index.html</loc>
+    <lastmod>2026-04-18</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/minigames/orbit-sum-lab/scorm-launch-orbit-lab.html</loc>
+    <lastmod>2026-04-18</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/node_modules/playwright-core/lib/vite/dashboard/index.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/node_modules/playwright-core/lib/vite/htmlReport/index.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/node_modules/playwright-core/lib/vite/recorder/index.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/node_modules/playwright-core/lib/vite/traceViewer/index.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/node_modules/playwright-core/lib/vite/traceViewer/snapshot.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/node_modules/playwright-core/lib/vite/traceViewer/uiMode.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/node_modules/qrcode-generator/test/qrcode.test.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/node_modules/qrcode-generator/test/qrcode_SJIS.test.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://teachplay.dev/node_modules/qrcode-generator/test/qrcode_UTF8.test.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://teachplay.dev/portfolio.html</loc>

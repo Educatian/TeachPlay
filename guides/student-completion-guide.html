@@ -157,6 +157,56 @@
       margin-top: 22px;
     }
 
+    .ai-studio-figure {
+      margin: 22px 0 28px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f4f0e8;
+    }
+
+    .ai-studio-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .ai-studio-figure figcaption {
+      padding: 12px 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      background: #fbfcfe;
+    }
+
+    .studio-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .studio-step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      padding: 18px;
+    }
+
+    .studio-step h3 { font-size: 18px; }
+    .studio-step ol,
+    .studio-step ul { margin: 12px 0 0; padding-left: 20px; color: var(--muted); }
+
+    .studio-prompt {
+      margin: 18px 0 0;
+      padding: 16px;
+      border-left: 4px solid var(--crimson);
+      background: #f8f4ec;
+      color: var(--ink);
+      font: 600 14px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
     video,
     audio {
       width: 100%;
@@ -293,6 +343,7 @@
       <div class="brand"><span class="ua">UA</span><span>TeachPlay Guide</span></div>
       <a href="#video">Walkthrough Video</a>
       <a href="#workflow">Student Workflow</a>
+      <a href="#studio-build">AI Studio Build + Submit</a>
       <a href="#completion">Completion And Certificate</a>
       <a href="#instructor">Instructor Notes</a>
       <a href="#faq">FAQ</a>
@@ -354,15 +405,66 @@
           </article>
           <article class="step">
             <span class="num">03</span>
-            <h3>Learn through 12 modules</h3>
-            <p>Move through the complete pathway: framing, learner context, crosswalk, mechanics, facilitation, prototype, interaction spec, playtest, audit, revision, and final defense.</p>
+            <h3>Learn and build</h3>
+            <p>Move through the 12-module pathway. By D3/D4, use Google AI Studio Build mode to turn the smallest defensible loop into a runnable game prototype.</p>
           </article>
           <article class="step">
             <span class="num">04</span>
+            <h3>Playtest and revise</h3>
+            <p>Run the live preview with a target learner or a clearly labeled rehearsal, capture observations, and revise the game before treating it as submission-ready.</p>
+          </article>
+          <article class="step">
+            <span class="num">05</span>
             <h3>Submit evidence</h3>
-            <p>Use the final submission editor to assemble context, alignment, GenAI design documentation, evidence, and reflection into one reviewable packet.</p>
+            <p>Attach the public game link, repository/export, screenshots, short recording, playtest evidence, provenance log, and revision rationale in the portfolio.</p>
           </article>
         </div>
+      </section>
+
+      <section class="content" id="studio-build">
+        <p class="section-kicker">D3 → D5 build bridge</p>
+        <h2>Build the game in Google AI Studio, then submit what the game can prove</h2>
+        <p>AI Studio is the build surface; TeachPlay is the learning and review surface. The course does not grade how much code Gemini generated. It grades whether your learning objective, game loop, feedback, observable traces, and revision decisions are visible and defensible.</p>
+        <figure class="ai-studio-figure">
+          <img src="../assets/generated/google-ai-studio-build-to-submit.png" alt="Editorial illustration of a learner moving from a game prototype and loop diagram to playtest evidence and a submitted folder." loading="lazy" />
+          <figcaption>Generated teaching visual: build a minimal loop, inspect it in the browser, collect evidence, and submit the design argument.</figcaption>
+        </figure>
+        <div class="studio-grid">
+          <article class="studio-step">
+            <h3>1. Prepare the build brief</h3>
+            <ol>
+              <li>Copy the D2 objective-to-mechanic crosswalk into a short build brief.</li>
+              <li>State one learner, one target behavior, one game loop, and one success signal.</li>
+              <li>Ask AI Studio for the smallest playable web prototype, not a full product.</li>
+            </ol>
+          </article>
+          <article class="studio-step">
+            <h3>2. Build and inspect</h3>
+            <ol>
+              <li>Open <a href="https://aistudio.google.com" target="_blank" rel="noopener">Google AI Studio</a> and use Build mode.</li>
+              <li>Read the generated files in Code and test the live preview with keyboard and pointer.</li>
+              <li>Keep the public preview or exported GitHub project link. Never put an API key in a submission.</li>
+            </ol>
+          </article>
+          <article class="studio-step">
+            <h3>3. Playtest the artifact</h3>
+            <ul>
+              <li>Run the smallest loop from prediction to action, feedback, and revision.</li>
+              <li>Capture a short screen recording plus two or three stills that show the game state.</li>
+              <li>Separate observed behavior from your interpretation and label rehearsal runs honestly.</li>
+            </ul>
+          </article>
+          <article class="studio-step">
+            <h3>4. Submit a reviewable packet</h3>
+            <ul>
+              <li>Submit the game URL and repository/export URL in D3/D5.</li>
+              <li>Attach the crosswalk, playtest notes, audit, AI provenance, and revision log.</li>
+              <li>Use the TeachPlay portfolio page to attach one artifact per deliverable, then submit for instructor review.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="studio-prompt">Build a five-minute educational game prototype from the attached objective-to-mechanic crosswalk. Keep one learner decision, one meaningful feedback state, one revision path, and a visible event trace. Use placeholder visuals if needed. Do not invent learning outcomes, learner data, or playtest findings.</div>
+        <p style="margin-top:18px;"><a href="google-ai-studio-playbook.html">Open the detailed AI Studio, Firebase, Workspace, Higgsfield, and Playwright playbook →</a></p>
       </section>
 
       <section class="content" id="completion">
@@ -411,6 +513,11 @@
               <li>D5 final defense and implementation packet</li>
             </ul>
           </div>
+        </div>
+        <div class="callout" style="margin-top:18px;">
+          <h3>Instructor registration and management</h3>
+          <p>Instructor access is provisioned through the protected Cloudflare Access policy. Add the instructor's approved email to the Access allowlist, then use the same identity to open the instructor console. The issuer key remains a controlled back-office option and is never placed in learner instructions.</p>
+          <p>Use <a href="../admin.html">Admin dashboard</a> for learner records, progress, evidence, scoring, and credential gates. Use <a href="../admin-review.html">Portfolio review</a> for computational-artifact analysis and final review actions. Access approval is separate from learner enrollment, so instructors can manage many learner records without impersonating a learner.</p>
         </div>
       </section>
 

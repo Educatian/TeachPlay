@@ -30,6 +30,8 @@ const HTML_PAGES = readdirSync(REPO_ROOT)
   .filter(f => f.endsWith('.html'))
   .filter(f => !SKIP_PAGES.has(f))
   .sort();
+const EXTRA_PUBLIC_PAGES = ['guides/google-ai-studio-playbook.html'];
+const AUDIT_PAGES = [...HTML_PAGES, ...EXTRA_PUBLIC_PAGES];
 const STATIC_AUDIT_PAGES = new Set(['credential.html', 'handbook.html']);
 
 // Collected at module load so the report at the end has everything.
@@ -95,7 +97,7 @@ test('audit · protected instructor and learner utility surfaces render their en
 // would double the audit runtime — sample the most-visited pages instead.
 const MOBILE_SAMPLE = ['index.html', 'rubrics.html', 'examples.html', 'handbook.html', 'session-03.html', 'credential.html'];
 
-for (const page_ of HTML_PAGES) {
+for (const page_ of AUDIT_PAGES) {
   test(`audit · ${page_}`, async ({ page }) => {
     // Plant a synthetic learner so enroll.js doesn't show its modal.
     await page.addInitScript(() => {
@@ -344,7 +346,7 @@ test('audit · final report', async () => {
   const warnings = ISSUES.filter(i => i.severity === 'warning');
 
   console.log('\n┌─ SITE AUDIT REPORT ─────────────────────────────────────');
-  console.log(`│ Pages audited: ${HTML_PAGES.length}`);
+  console.log(`│ Pages audited: ${AUDIT_PAGES.length}`);
   console.log(`│ Errors:        ${errors.length}`);
   console.log(`│ Warnings:      ${warnings.length}`);
   console.log('└─────────────────────────────────────────────────────────\n');

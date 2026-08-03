@@ -27,7 +27,10 @@ function json(body, status = 200) {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 async function sendRecoveryEmail(env, { to, id, token }) {
-  const link = `https://teachplay.dev/progress.html?lid=${encodeURIComponent(id)}&t=${encodeURIComponent(token)}`;
+  // The recovery link returns to the learner workspace, not a dead-end
+  // progress page. The app consumes the one-time token, seeds this device,
+  // and lets the learner continue into the same pre/post-test journey.
+  const link = `https://teachplay.dev/app/?lid=${encodeURIComponent(id)}&t=${encodeURIComponent(token)}`;
   const html = `
   <h1 style="font-size:22px;margin:0 0 16px;line-height:1.3;">Resume your progress</h1>
   <p style="font-size:15px;line-height:1.6;margin:0 0 16px;color:#333;">

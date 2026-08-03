@@ -171,10 +171,10 @@
       reference: '/examples.html'
     },
     '08': {
-      reading: 'Read Session 08 and specify states, player actions, system responses, failure states, and saved evidence.',
+      reading: 'Read Session 08 and specify states, player actions, system responses, failure states, and saved evidence. Then use that brief to build the smallest runnable slice in Google AI Studio Build mode.',
       video: 'Use the prototype/provenance-log concept primer as the video anchor for making implementation decisions reviewable.',
-      activity: 'Draw a guarded state machine and event map, including one invalid action and its feedback response.',
-      feedback: 'Check every transition against the prototype and name the evidence trace that should be saved.',
+      activity: 'Draw a guarded state machine and event map, including one invalid action and its feedback response. Paste the brief into Google AI Studio, run the preview, and save the public or exported project link.',
+      feedback: 'Check every transition against the prototype and name the evidence trace that should be saved. Do not submit generated code until you have inspected and changed the live loop yourself.',
       connects: 'The interaction spec tells Module 09 what traces the playtest must collect.',
       reference: '/portfolio.html'
     },
@@ -203,9 +203,9 @@
       reference: '/rubrics.html'
     },
     '12': {
-      reading: 'Read Session 12 and assemble the blueprint, prototype, AI disclosure, playtest evidence, audit, and revision story.',
+      reading: 'Read Session 12 and assemble the blueprint, Google AI Studio prototype link or export, AI disclosure, playtest evidence, audit, and revision story.',
       video: 'Watch the final-defense concept primer in the guided course before submitting the portfolio packet.',
-      activity: 'Defend one learning claim with one live loop, one artifact, one evidence trace, and one stated limit.',
+      activity: 'Defend one learning claim with one live loop, one artifact URL, one evidence trace, one AI provenance log, and one stated limit. Submit the packet from the portfolio page.',
       feedback: 'Use the rubric and reviewer questions to expose unsupported claims before final submission.',
       connects: 'This module closes the pathway by preparing the evidence packet for review and certificate handoff.',
       reference: '/guides/student-completion-guide.html'

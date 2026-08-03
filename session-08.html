@@ -521,6 +521,38 @@ Rules:
         </div>
       </section>
 
+      <section class="block" id="ai-studio-build">
+        <div class="block__kicker">05A · Build bridge — Google AI Studio</div>
+        <h2 class="block__title">Turn the interaction spec into a runnable, reviewable game slice.</h2>
+        <p class="lead">
+          The goal is not to outsource the design to Gemini. Use Google AI Studio Build mode as a fast
+          implementation surface: give it the bounded state machine, inspect the live preview, change the
+          parts that are wrong, and keep the evidence that makes your reasoning reviewable.
+        </p>
+        <div class="callout">
+          <div class="callout__icon">→</div>
+          <div class="callout__body">
+            <div class="callout__title">Build → play → evidence → submit</div>
+            <p>
+              Start from your D2/D3 crosswalk. Ask for one learner decision, one feedback state, one revision
+              path, and a visible event trace. Test the preview with keyboard and pointer. Then save the public
+              preview or exported GitHub URL, two or three stills, a short recording, your playtest notes, and
+              the AI provenance log. The portfolio page is where these become instructor-review evidence.
+            </p>
+            <p><a href="https://aistudio.google.com" target="_blank" rel="noopener">Open Google AI Studio Build mode ↗</a> · <a href="guides/google-ai-studio-playbook.html">Open the concrete prompt and integration playbook ↗</a> · <a href="portfolio.html">Open the TeachPlay portfolio ↗</a></p>
+          </div>
+        </div>
+        <div class="asset-figure">
+          <img src="assets/generated/google-ai-studio-build-to-submit.png" alt="Illustration of a learner building a game loop, testing a browser preview, collecting evidence, and submitting a packet." loading="lazy" />
+          <p class="asset-figure__caption">A generated visual for the build bridge: the playable artifact stays connected to the learning loop and the evidence packet.</p>
+        </div>
+        <pre class="prompt">Build a five-minute educational game prototype from this interaction spec.
+Keep the learner's target decision, the feedback state, the invalid-action path,
+and the event trace visible. Use minimal assets. Do not invent learner results,
+playtest findings, or claims of learning. Return a runnable preview and list the
+files changed so I can inspect and revise them.</pre>
+      </section>
+
       <section class="block" id="workshop">
         <div class="block__kicker">06 · Workshop — 90 min</div>
         <h2 class="block__title">Draft the spec</h2>

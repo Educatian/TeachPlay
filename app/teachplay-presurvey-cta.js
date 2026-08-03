@@ -13,9 +13,9 @@
 //   - no learner in this browser → a quieter, permanently dismissable hint
 //     telling enrolled learners to sign in to receive their pre-survey;
 //   - gate inactive or consent already recorded → renders nothing.
-// If the browser has a learner_id but no token (the pre-fix SPA discarded
-// it), we silently re-enroll with the stored email — /api/enroll is
-// idempotent and returns the row's session_token — then proceed.
+// If the browser has a learner_id but no token, the learner must use the
+// visible email-link sign-in control. This CTA never silently re-enrolls an
+// existing email address or guesses at an authenticated session.
 (() => {
   'use strict';
   if (window.__tpPresurveyCta) return;
@@ -69,6 +69,15 @@
         'display:inline-block;background:#be1a2f;color:#fff;text-decoration:none;' +
         'padding:7px 14px;border-radius:4px;font-weight:600;font-size:13.5px;white-space:nowrap;';
       bar.appendChild(a);
+    } else if (ctaLabel && onCta) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = ctaLabel;
+      button.style.cssText =
+        'display:inline-block;background:#be1a2f;color:#fff;border:0;' +
+        'padding:7px 14px;border-radius:4px;font:600 13.5px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;white-space:nowrap;';
+      button.addEventListener('click', onCta);
+      bar.appendChild(button);
     }
     const x = document.createElement('button');
     x.type = 'button';
@@ -93,25 +102,34 @@
     }).then((r) => r.json());
   }
 
-  // Pre-fix SPA sign-ins stored learner_id but discarded the session token.
-  // /api/enroll is idempotent per email and returns the row's token, so a
-  // silent re-enroll with the stored email restores an authenticated session.
+  // A token is an authentication credential, not a profile field. If this
+  // device has only the old learner_id, wait for the explicit email-link flow.
   function ensureToken(lid) {
     const token = get('hb:learner_token');
     if (token) return Promise.resolve(token);
-    const email = get('hb:learner_email') || get('tp:pending-learner-email');
-    if (!email) return Promise.resolve('');
-    const name = get('hb:learner_name') || get('tp:pending-learner-name') || email.split('@')[0];
-    return fetch('/api/enroll', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, email: email, cohort: '2026-spring' }),
-    }).then((r) => r.json()).then((d) => {
-      if (!d || !d.ok || !d.session_token) return '';
-      set('hb:learner_id', d.learner_id);
-      set('hb:learner_token', d.session_token);
-      return d.session_token;
-    }).catch(() => '');
+    return Promise.resolve('');
+  }
+
+  function openSignIn() {
+    const account = document.querySelector('button[aria-label*="learner account" i], button[aria-label*="learner" i]');
+    if (!account) return;
+    account.click();
+    setTimeout(() => {
+      const signIn = [...document.querySelectorAll('[role="dialog"] button')]
+        .find((button) => /^sign in$/i.test((button.textContent || '').trim()));
+      if (signIn) signIn.click();
+    }, 120);
+  }
+
+  function showAuthRequiredHint() {
+    renderBanner({
+      strong: 'Reconnect your learner account:',
+      message: 'This device has an enrollment record but no active sign-in. Request a one-time email link to unlock your pre-survey and progress.',
+      ctaLabel: 'Send sign-in link',
+      onCta: openSignIn,
+      ctaHref: null,
+      onDismiss: () => { try { sessionStorage.setItem('tp:presurvey-bar-dismissed', '1'); } catch (_) {} },
+    });
   }
 
   function showAnonymousHint() {
@@ -131,7 +149,7 @@
     if (!lid) { showAnonymousHint(); return; }
 
     ensureToken(lid).then((token) => {
-      if (!token) return; // can't authenticate from here; static flow still works
+      if (!token) { showAuthRequiredHint(); return; }
       return api('/api/completion-check?learner_id=' + encodeURIComponent(lid), lid, token)
         .then((data) => {
           if (!data || !data.ok || !data.gate) return;
