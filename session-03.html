@@ -162,8 +162,9 @@
           <div class="callout__body">
             <div class="callout__title">Most projects need 2–3 types, not all five</div>
             <p>
-              A good educational game picks a dominant type, supports it with one or two others, and says no
-              to the rest. A game that tries to teach all five is almost certainly teaching none of them well.
+              A good educational game usually picks a dominant type, supports it with one or two others, and says no
+              to the rest. Trying to address all five at once can dilute the target; use the crosswalk and playtest
+              evidence to decide what to keep.
             </p>
           </div>
         </div>
@@ -451,6 +452,8 @@ Rules:
             data-ai-touchpoint
             data-ai-session="s03-classify"
             data-ai-lo="LO 3.2"
+            data-ai-model="gemini-2.5-flash"
+            data-ai-temperature="0.3"
             data-ai-placeholder="Paste 2–4 candidate objectives, one per line."
             data-ai-prompt-system="You are classifying learning objectives for an educational game designer. Use ONLY these five types:
 1. Retrieval
@@ -481,9 +484,9 @@ Rules:
           <div class="aitool__body">
             <p>
               Once types are locked, run a divergent-generation pass. The point is not to find <em>the</em>
-              mechanic — it is to see three, so you can tell which one actually fits your D1 context. Almost
-              always the model's third idea is the best one; the first two are the ones it was trained to
-              expect.
+              mechanic — it is to see three, so you can compare trade-offs against your D1 context. There is
+              no reliable rule that the model's third idea is best; inspect all candidates and reject any that
+              are unsupported by the learner, constraint, or objective evidence.
             </p>
 
             <div class="aitool__usecase">Prompt</div>
@@ -505,10 +508,11 @@ defended, so I can choose.</span></pre>
             <div class="callout">
               <div class="callout__icon">i</div>
               <div class="callout__body">
-                <div class="callout__title">Why three, always</div>
+                <div class="callout__title">Why compare three options?</div>
                 <p>
                   One option is a proposal. Two is a binary. Three forces you to articulate what you are
-                  actually optimizing for. Never accept a single-option answer from the model on design questions.
+                  actually optimizing for. Treat three as a useful comparison set, not a law; if two options are
+                  enough to expose the trade-off, document why and move on.
                 </p>
               </div>
             </div>
@@ -670,5 +674,6 @@ defended, so I can choose.</span></pre>
 <script src="lightbox.js"></script>
 <script src="handbook-polish.js"></script>
 <script src="survey-gate-ui.js"></script>
+<script src="content-evidence-rails.js"></script>
 </body>
 </html>

@@ -554,6 +554,7 @@
   };
 
   const polishLanding = () => {
+    if (document.body.classList.contains('tp-fidelity-mode')) return;
     const heroTitle = findByText('h1', /Build serious learning games educators can actually defend/i, root);
     if (!heroTitle) return;
 

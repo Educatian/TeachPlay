@@ -8,7 +8,7 @@
  *
  * A "touchpoint" is any element marked `data-ai-touchpoint` with:
  *   data-ai-prompt-system   — baseline prompt that frames the task
- *   data-ai-temperature     — optional, default 0.3
+ *   data-ai-temperature     — optional, default 0.3 (0–2)
  *   data-ai-model           — optional, default gemini-2.5-flash
  *   data-ai-session         — session id (emitted in xAPI)
  *   data-ai-lo              — optional learning-outcome id the interaction targets
@@ -21,6 +21,7 @@
 
   const KEY_STORAGE = 'hb:ai:gemini-key';
   const DEFAULT_MODEL = 'gemini-2.5-flash';
+  const DEFAULT_TEMPERATURE = 0.3;
   const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
   function getKey() {
@@ -59,12 +60,18 @@
     return { text, raw: data };
   }
 
-  function render(el, { systemPrompt, userPlaceholder, sessionId, loId }) {
+  function render(el, { systemPrompt, userPlaceholder, sessionId, loId, model: requestedModel, temperature: requestedTemperature }) {
+    const model = requestedModel || DEFAULT_MODEL;
+    const parsedTemperature = Number(requestedTemperature);
+    const temperature = Number.isFinite(parsedTemperature)
+      ? Math.min(2, Math.max(0, parsedTemperature))
+      : DEFAULT_TEMPERATURE;
     const uid = 'ai-' + Math.random().toString(36).slice(2, 8);
     el.classList.add('aitry');
     el.innerHTML = `
       <div class="aitry__hdr">
         <span class="aitry__tag">Run it with your key</span>
+        <span class="aitry__config">${model} · temperature ${temperature.toFixed(1)}</span>
         <span class="aitry__hint">Your API key stays in your browser. Your prompt and the response are saved to your learning record (see the privacy notice in the footer).</span>
       </div>
       <div class="aitry__keyrow" data-keyrow>
@@ -129,29 +136,29 @@
       const started = performance.now();
       try {
         const { text } = await generate({
-          model: DEFAULT_MODEL,
+          model,
           apiKey: key,
           systemPrompt,
           userPrompt: user,
-          temperature: 0.3
+          temperature
         });
         out.textContent = text;
         out.hidden = false;
         const ms = Math.round(performance.now() - started);
         status.textContent = `✓ Response in ${ms}ms`;
-        emitXapi({ sessionId, loId, inputLen: user.length, outputLen: text.length, ms, ok: true });
-        logConversation({ sessionId, loId, systemPrompt, user, response: text, ms, ok: true });
+        emitXapi({ sessionId, loId, model, temperature, inputLen: user.length, outputLen: text.length, ms, ok: true });
+        logConversation({ sessionId, loId, model, systemPrompt, user, response: text, ms, ok: true });
       } catch (e) {
         status.textContent = `✗ ${e.message}`;
-        emitXapi({ sessionId, loId, inputLen: user.length, outputLen: 0, ms: 0, ok: false, err: e.message });
-        logConversation({ sessionId, loId, systemPrompt, user, response: '', ms: 0, ok: false, err: e.message });
+        emitXapi({ sessionId, loId, model, temperature, inputLen: user.length, outputLen: 0, ms: 0, ok: false, err: e.message });
+        logConversation({ sessionId, loId, model, systemPrompt, user, response: '', ms: 0, ok: false, err: e.message });
       } finally {
         runBtn.disabled = false;
       }
     });
   }
 
-  function emitXapi({ sessionId, loId, inputLen, outputLen, ms, ok, err }) {
+  function emitXapi({ sessionId, loId, model, temperature, inputLen, outputLen, ms, ok, err }) {
     try {
       if (!global.xapi || typeof global.xapi.emit !== 'function') return;
       const activity = global.xapi.activities.obj(
@@ -165,7 +172,8 @@
           duration: ms ? `PT${(ms / 1000).toFixed(1)}S` : undefined
         },
         contextExt: {
-          'https://teachplay.dev/ext/ai-model': DEFAULT_MODEL,
+          'https://teachplay.dev/ext/ai-model': model || DEFAULT_MODEL,
+          'https://teachplay.dev/ext/ai-temperature': temperature,
           'https://teachplay.dev/ext/ai-input-len': inputLen,
           'https://teachplay.dev/ext/ai-output-len': outputLen,
           'https://teachplay.dev/ext/ai-lo': loId || null,
@@ -179,14 +187,14 @@
   // length metadata emitXapi carries. The learner's API key still never leaves
   // the browser — only the conversation content is logged (disclosed on the
   // touchpoint card and in privacy.html).
-  function logConversation({ sessionId, loId, systemPrompt, user, response, ms, ok, err }) {
+  function logConversation({ sessionId, loId, model, systemPrompt, user, response, ms, ok, err }) {
     try {
       if (!global.xapi || typeof global.xapi.logConversation !== 'function') return;
       global.xapi.logConversation({
         source: 'touchpoint',
         session_id: sessionId || null,
         lo_id: loId || null,
-        model: DEFAULT_MODEL,
+        model: model || DEFAULT_MODEL,
         system_prompt: systemPrompt || '',
         user_prompt: user || '',
         response: response || '',
@@ -204,7 +212,9 @@
       systemPrompt: el.dataset.aiPromptSystem || '',
       userPlaceholder: el.dataset.aiPlaceholder || '',
       sessionId: el.dataset.aiSession || '',
-      loId: el.dataset.aiLo || ''
+      loId: el.dataset.aiLo || '',
+      model: el.dataset.aiModel || '',
+      temperature: el.dataset.aiTemperature || ''
     });
   }
 

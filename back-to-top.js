@@ -17,12 +17,12 @@
     s.textContent = [
       '.hb-totop {',
       '  position: fixed; bottom: 24px; left: 24px;',
-      '  width: 44px; height: 44px;',
-      '  border-radius: 50%;',
+      '  width: 36px; height: 32px;',
+      '  border-radius: 4px;',
       '  background: #be1a2f; color: #fff;',
       '  border: 0; cursor: pointer;',
       '  font-size: 20px; line-height: 1;',
-      '  box-shadow: 0 6px 20px rgba(190, 26, 47, 0.35);',
+      '  box-shadow: 0 2px 6px rgba(31, 41, 55, 0.12);',
       '  display: flex; align-items: center; justify-content: center;',
       '  opacity: 0; transform: translateY(8px);',
       '  pointer-events: none;',
@@ -33,7 +33,7 @@
       '.hb-totop.is-on { opacity: 1; transform: translateY(0); pointer-events: auto; }',
       '.hb-totop:hover { background: #9c1526; }',
       '.hb-totop:focus-visible { outline: 3px solid rgba(190,26,47,0.4); outline-offset: 2px; }',
-      '@media (max-width: 720px) { .hb-totop { bottom: 16px; left: 16px; width: 40px; height: 40px; } }',
+      '@media (max-width: 720px) { .hb-totop { bottom: 16px; left: 16px; width: 36px; height: 32px; } }',
     ].join('\n');
     document.head.appendChild(s);
   }

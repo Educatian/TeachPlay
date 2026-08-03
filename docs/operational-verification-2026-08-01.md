@@ -17,14 +17,14 @@ Scope: learner submission → computational analysis → instructor approval →
 ## Automated run
 
 ```text
-npm test
+npm run test:unit
 VC verification: VERIFIED
-tests 158
-pass 158
+tests 164
+pass 164
 fail 0
 ```
 
-The browser smoke and surface audits were previously recorded as 53 smoke passes with 3 intentional legacy skips, 38/38 audit passes with 0 errors and 0 warnings, and 8/8 accessibility passes.
+The current full CI rerun recorded 117 browser passes with 3 intentional legacy skips and 0 failures. The current surface audits recorded 38/38 checks with 0 errors and 0 warnings, 8/8 accessibility passes with 0 axe violations, and 42 pages / 41 media requests with 0 media failures.
 
 ## Production acceptance status
 
@@ -44,4 +44,6 @@ The complete production sequence is **not yet claimed as passed**. The remaining
 5. a one-time claim link redemption and downloaded signed credential;
 6. public verifier success for that credential.
 
-The current environment cannot read or control the user's already-authenticated in-app browser session. Until that session is available to the test runner, the production sequence remains unverified even though each gate is covered by automated tests.
+The deployed review surface was rechecked through an authenticated Cloudflare Access browser session on 2026-08-01. It loaded the seeded `needs_review` review, showed the stored analysis evidence, and rendered no `[object Object]` placeholder. This confirms the protected review read path, not the complete production learner-to-credential sequence.
+
+Current deployment checked: `a983f669-eee4-4c54-b240-93ec9d400715`.

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#be1a2f" />
 <title>Accessibility · AI-enhanced Educational Game Design</title>
-<meta name="description" content="Accessibility statement for the AI-enhanced Educational Game Design micro-credential — WCAG 2.1 AA conformance target, known issues, complaint mechanism, and the design choices behind the site's interactive surfaces." />
+<meta name="description" content="Accessibility statement for the AI-enhanced Educational Game Design micro-credential — WCAG 2.2 AA target, known issues, complaint mechanism, and the design choices behind the site's interactive surfaces." />
 <link rel="canonical" href="https://teachplay.dev/accessibility.html" />
 <link rel="icon" type="image/svg+xml" href="assets/gameicon-favicon.svg" />
 <link rel="stylesheet" href="handbook.css" />
@@ -110,10 +110,10 @@
 <section class="hero" style="padding-bottom: 56px;">
   <div class="hero__bg"></div>
   <div class="hero__content">
-    <div class="hero__eyebrow">Accessibility · WCAG 2.1 AA target</div>
+    <div class="hero__eyebrow">Accessibility · WCAG 2.2 AA target</div>
     <h1 class="hero__title" style="font-size: 52px; line-height: 1.05;">What you can expect.<br/>What we know is broken.</h1>
     <p class="hero__lede" style="max-width: 780px;">
-      This is a federally-adjacent ACHE-funded learning surface. We treat WCAG 2.1 AA as
+      This is a federally-adjacent ACHE-funded learning surface. We treat WCAG 2.2 AA as
       the floor, not the ceiling, and we surface the gaps we already know about — because
       a credential page that hides its accessibility limits isn't credible.
     </p>
@@ -125,16 +125,17 @@
 
 <section class="section">
   <span class="section__eyebrow">Conformance target</span>
-  <h2 class="section__title">WCAG 2.1 AA, partial conformance.</h2>
+  <h2 class="section__title">WCAG 2.2 AA target, partial conformance.</h2>
 
   <div class="a11y-section">
     <p>
-      The site targets <strong>WCAG 2.1 Level AA</strong>. That means meaningful image
+      The site targets <strong>WCAG 2.2 Level AA</strong>. That means meaningful image
       alt text, captioned video, color-contrast ratios above 4.5:1 for body text,
       keyboard operability for core navigation and content, no reliance on color alone,
       and no content that could induce seizures. We do not yet claim full conformance:
-      a few interactive minigames are still being brought to full keyboard support (see
-      below). The known gaps below describe where we fall short and what we plan to fix.
+      manual screen-reader and assistive-technology verification remains a required
+      review step. The known gaps below describe where we fall short and what we plan
+      to fix.
     </p>
   </div>
 
@@ -148,10 +149,10 @@
   <div class="a11y-section">
     <h3><span class="a11y-status a11y-status--partial">Partial</span>Keyboard navigation</h3>
     <p>The primary nav, search dropdown (↑↓ + Enter + Esc), lightbox close (Esc), Note
-       drawer Save/Cancel (Cmd/Ctrl + Enter, Esc), and the achievements panel are all
-       reachable and operable from the keyboard. Two interactive minigames (the
-       Session 7 paper-prototype and Session 11 revision-triage activities) are
-       currently mouse-only; full keyboard support for them is in progress.</p>
+       drawer Save/Cancel (Cmd/Ctrl + Enter, Esc), achievements panel, Session 7
+       paper-prototype parts, and Session 11 revision-triage cards are reachable and
+       operable from the keyboard. The remaining gap is manual screen-reader and
+       assistive-technology verification across every interactive state.</p>
   </div>
 
   <div class="a11y-section">
@@ -178,31 +179,29 @@
     <h3><span class="a11y-status a11y-status--ok">Conforms</span>Modal focus management</h3>
     <p>The lightbox, note drawer, and achievements panel each <em>open</em> with focus
        moved into them, <em>trap</em> focus so Tab cycles within the modal, and
-       <em>close</em> by returning focus to the trigger element. The enrollment modal's
-       focus management is being brought up to the same standard.</p>
+       <em>close</em> by returning focus to the trigger element, including the enrollment
+       modal.</p>
   </div>
 
   <div class="a11y-section">
-    <h3><span class="a11y-status a11y-status--known">Known issue</span>Custom cursor</h3>
+    <h3><span class="a11y-status a11y-status--ok">Conforms</span>Native pointer</h3>
     <div class="a11y-known">
-      <p>The site offers a custom cursor (small dot + lagging ring) that hides the
-         operating-system cursor on hover-capable, non-touch viewports. <strong>This is a
-         known accessibility risk</strong>: users who rely on OS-level cursor settings
-         (high contrast, large pointer, motion trails) lose those settings while on
-         this site.</p>
-      <p style="margin-top: 8px;"><strong>Mitigation:</strong> the custom cursor is
-         disabled when <code>prefers-reduced-motion: reduce</code> is set, on touch
-         devices, on viewports under 720&nbsp;px, and via the
-         <code>localStorage.setItem('hb:cursor-off', '1')</code> opt-out. We are
-         considering an in-page toggle for the next pass.</p>
+      <p>The production surface keeps the operating-system pointer visible. The former
+         game-style cursor is disabled fail-safe, so high-contrast, large-pointer, and
+         motion-trail preferences remain available to the learner.</p>
+      <p style="margin-top: 8px;"><strong>Verification:</strong> automated reduced-motion
+         coverage and the manual review record both treat the native pointer as the
+         expected state.</p>
     </div>
   </div>
 
   <div class="a11y-section">
     <h3><span class="a11y-status a11y-status--known">Known issue</span>Embedded video captions</h3>
-    <p>The "Watch the workflow" videos are YouTube embeds. Captions exist via YouTube's
-       auto-caption system; manual caption review is not yet completed. Learners with
-       hearing impairments should expect auto-caption quality, not human-edited.</p>
+    <p>The bundled avatar primers expose WebVTT captions and text transcripts alongside
+       the WebM/WAV media. The separate "Watch the workflow" videos are YouTube embeds;
+       those still rely on YouTube captions and have not completed a manual caption
+       quality review. The distinction is intentional so learners can use the local
+       transcript when an external caption track is not sufficient.</p>
   </div>
 </section>
 
@@ -210,15 +209,20 @@
   <span class="section__eyebrow">Tooling we use to check ourselves</span>
   <h2 class="section__title">Automated audit, every push.</h2>
   <div class="a11y-section">
-    <p>The site has a Playwright-driven audit suite that runs on every push to <code>main</code>:</p>
+    <p>The site has a Playwright-driven audit suite that runs in the release workflow. It checks
+       representative pages and interactions; passing automated checks is not, by itself, a
+       claim of full WCAG conformance. Manual keyboard, screen-reader, zoom, captions, and
+       assistive-technology review remain required. The latest manual review record is
+       <a href="docs/manual-accessibility-review-2026-08-01.md">available here</a>; it records
+       keyboard and caption evidence separately from the still-pending screen-reader pass.</p>
     <ul>
       <li><strong>Structural a11y:</strong> exactly one <code>&lt;h1&gt;</code> per page, viewport meta present, theme-color set, no missing image alts.</li>
       <li><strong>Console + network:</strong> no uncaught JS errors, no broken internal links.</li>
-      <li><strong>Mobile viewport:</strong> 6 representative pages spot-checked at 390×844 (iPhone 14 Pro). Every interactive element has a tap target ≥ 24×24 (32×32 target).</li>
+      <li><strong>Mobile viewport:</strong> 6 representative pages spot-checked at 390×844 (iPhone 14 Pro). The interactive elements sampled there have tap targets ≥ 24×24 (32×32 target); this is not a claim about every control on every page.</li>
     </ul>
     <p>Source: <code>tests/audit.spec.mjs</code> in the
       <a href="https://github.com/Educatian/TeachPlay" target="_blank" rel="noopener">project repository</a>.
-      Most recent run: 0 errors, 0 warnings across 26 pages.</p>
+      Most recent run: 0 errors, 0 warnings across 30 audited pages; representative-page coverage is not full conformance evidence.</p>
   </div>
 </section>
 
@@ -233,8 +237,8 @@
   <div class="a11y-settings" data-a11y-settings>
     <div class="a11y-toggle">
       <div>
-        <strong>Custom cursor</strong>
-        <p>Hides the OS pointer and replaces it with a small dot + lagging ring. Some users with motor impairments or OS-level cursor settings prefer this off.</p>
+        <strong>Native pointer</strong>
+        <p>The production surface keeps the operating-system pointer visible. The former game-style cursor is disabled fail-safe so pointer preferences remain available.</p>
       </div>
       <button type="button" class="a11y-toggle__btn" data-toggle="cursor" aria-pressed="true">…</button>
     </div>
@@ -284,7 +288,7 @@
   <script>
     (function () {
       var keys = {
-        cursor: { storage: 'hb:cursor-off',  onLabel: 'Enhanced',     offLabel: 'Native pointer' },
+        cursor: { storage: 'hb:cursor-off',  onLabel: 'Native pointer', offLabel: 'Native pointer' },
         gamify: { storage: 'hb:no-gamify',    onLabel: 'On (toasts)',  offLabel: 'Muted' },
         motion: { storage: 'hb:reduce-motion', onLabel: 'Animated',     offLabel: 'Reduced' },
       };
@@ -327,7 +331,7 @@
   </div>
 
   <p style="font-size: 12px; color: #888; max-width: 880px; margin-top: 16px;">
-    Statement last reviewed 2026-05-05. The site is in active development; this page is
+    Statement last reviewed 2026-08-01. The site is in active development; this page is
     revised when conformance status changes.
   </p>
 </section>

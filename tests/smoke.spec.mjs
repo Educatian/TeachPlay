@@ -67,11 +67,10 @@ test('1c. React create account registers through the TeachPlay enrollment API', 
   });
 
   await page.goto(BASE + '/index.html');
-  await expect(page.locator('.tp-beginner-hero-cue')).toContainText('First time here?');
-  await expect(page.locator('.tp-beginner-hero-cue')).toContainText('certificate requests are saved');
-  await expect(page.getByRole('heading', { name: /Start here: create an account/i })).toBeVisible();
-  await expect(page.getByText('The account step is what connects your progress')).toBeVisible();
-  await page.locator('.tp-beginner-hero-cue [data-tp-action="hero-create-account"]').click();
+  await expect(page.locator('.tp-fidelity-hero h1')).toContainText('AI-enhanced');
+  await expect(page.getByRole('button', { name: /Sign in or create a TeachPlay learner account/i })).toBeVisible();
+  await page.getByRole('button', { name: /Sign in or create a TeachPlay learner account/i }).click();
+  await page.getByRole('button', { name: 'Sign Up' }).click();
   await expect(page.locator('#auth-modal-title')).toHaveText('Create Account');
   await page.locator('#auth-name').fill('React Signup');
   await page.locator('#auth-email').fill(email);
@@ -82,7 +81,8 @@ test('1c. React create account registers through the TeachPlay enrollment API', 
 
   await expect(page.getByRole('button', { name: /Sign Out/i })).toBeVisible({ timeout: 8000 });
   await expect(page.getByText('Account connected.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /Continue from the same learner workspace/i })).toBeVisible();
+  await expect(page.locator('body')).toHaveClass(/tp-fidelity-mode/);
+  await expect(page.locator('.tp-fidelity-hero h1')).toContainText('AI-enhanced');
   expect(enrollPayload).toEqual({
     name: 'React Signup',
     email,
@@ -644,7 +644,8 @@ test('48. learner workspace exposes student guide and walkthrough links', async 
 
 test('49. guided course integrates 12 modules as curriculum and relabels milestones as checkpoints', async ({ page }) => {
   await page.goto(BASE + '/index.html');
-  await page.getByRole('button', { name: /Start learning/i }).click();
+  await page.locator('#tp-fidelity-landing').waitFor();
+  await page.locator('.tp-fidelity-actions button:first-child').click();
   await page.getByRole('button', { name: /Enter guided course/i }).click();
   await expect(page.getByRole('heading', { name: /embedded 12-module sequence/i })).toBeVisible();
   await expect(page.locator('.tp12-course .tp12-module-card')).toHaveCount(12);

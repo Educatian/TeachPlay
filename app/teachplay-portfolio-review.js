@@ -3,30 +3,59 @@
   'use strict';
   if (window.__tpPortfolioReviewMounted) return;
   window.__tpPortfolioReviewMounted = true;
+  let panelNode = null;
   const get = (key) => { try { return localStorage.getItem(key) || ''; } catch (_) { return ''; } };
   const authHeaders = () => ({ 'Content-Type': 'application/json', 'X-Learner-ID': get('hb:learner_id'), 'X-Learner-Token': get('hb:learner_token') });
   const inject = () => {
-    if (document.getElementById('tp-portfolio-review')) return;
+    if (panelNode || document.getElementById('tp-portfolio-review')) {
+      panelNode ||= document.getElementById('tp-portfolio-review');
+      if (panelNode && !panelNode.isConnected) {
+        const mount = document.getElementById('tp-fidelity-review-mount') || document.getElementById('root')?.parentElement || document.body;
+        mount.appendChild(panelNode);
+      }
+      return;
+    }
     const style = document.createElement('style');
-    style.textContent = '#tp-portfolio-review{width:min(760px,calc(100% - 32px));margin:24px auto;padding:20px;border:1px solid #d9e1ec;border-radius:12px;background:#fff;color:#101828;box-shadow:0 8px 24px rgba(16,24,40,.06)}#tp-portfolio-review h2{margin:0 0 8px;font-size:20px}#tp-portfolio-review p{margin:0 0 14px;color:#475467;line-height:1.55}#tp-portfolio-review form{display:flex;gap:10px;flex-wrap:wrap}#tp-portfolio-review input{flex:1 1 420px;min-height:44px;padding:10px 12px;border:1px solid #98a2b3;border-radius:8px;font:inherit}#tp-portfolio-review button{min-height:44px;padding:10px 16px;border:0;border-radius:8px;background:#9e1b32;color:#fff;font-weight:800;cursor:pointer}#tp-portfolio-review [role=status]{margin-top:12px;font-size:14px}#tp-portfolio-review-results{display:grid;gap:12px;margin-top:16px}#tp-portfolio-review-results article{padding:14px;border:1px solid #d9e1ec;border-radius:10px;background:#f8fafc}#tp-portfolio-review-results h3{margin:0 0 6px;font-size:15px}#tp-portfolio-review-results p,#tp-portfolio-review-results ul{margin:6px 0;color:#475467;font-size:14px;line-height:1.5}#tp-portfolio-review-results ul{padding-left:20px}#tp-portfolio-review-results .tp-review-status{display:inline-block;padding:3px 8px;border-radius:999px;background:#fff5f7;color:#7f1024;font-size:12px;font-weight:800}';
+    style.textContent = '#tp-portfolio-review{width:min(820px,calc(100% - 32px));margin:24px auto;padding:20px;border:1px solid #d9e1ec;border-radius:8px;background:#fff;color:#101828;box-shadow:0 4px 14px rgba(16,24,40,.05)}#tp-portfolio-review h2{margin:0 0 8px;font-size:20px}#tp-portfolio-review p{margin:0 0 14px;color:#475467;line-height:1.55}#tp-portfolio-review .tp-review-access-note{padding:10px 12px;border-left:3px solid #9e1b32;background:#fff8f8;color:#344054}#tp-portfolio-review .tp-review-method{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0 18px;padding:0;list-style:none}#tp-portfolio-review .tp-review-method li{padding:10px;border-top:2px solid #9e1b32;background:#f8fafc;color:#344054;font-size:12px;line-height:1.45}#tp-portfolio-review .tp-review-method strong{display:block;margin-bottom:4px;color:#101828;font-size:11px;text-transform:uppercase;letter-spacing:.06em}#tp-portfolio-review form{display:flex;gap:10px;flex-wrap:wrap}#tp-portfolio-review form[aria-busy="true"] button{cursor:wait;opacity:.7}#tp-portfolio-review input{flex:1 1 420px;min-height:44px;padding:10px 12px;border:1px solid #98a2b3;border-radius:4px;font:inherit}#tp-portfolio-review button{min-height:44px;padding:10px 16px;border:0;border-radius:4px;background:#9e1b32;color:#fff;font-weight:800;cursor:pointer}#tp-portfolio-review [role=status]{margin-top:12px;font-size:14px}#tp-portfolio-review-results{display:grid;gap:12px;margin-top:16px}#tp-portfolio-review-results article{padding:14px;border:1px solid #d9e1ec;border-radius:8px;background:#f8fafc}#tp-portfolio-review-results h3{margin:0 0 6px;font-size:15px}#tp-portfolio-review-results p,#tp-portfolio-review-results ul{margin:6px 0;color:#475467;font-size:14px;line-height:1.5}#tp-portfolio-review-results ul{padding-left:20px}#tp-portfolio-review-results .tp-review-status{display:inline-block;padding:3px 8px;border-radius:4px;background:#fff5f7;color:#7f1024;font-size:12px;font-weight:800}@media(max-width:680px){#tp-portfolio-review .tp-review-method{grid-template-columns:1fr 1fr}}';
     document.head.appendChild(style);
     const panel = document.createElement('section');
+    panelNode = panel;
     panel.id = 'tp-portfolio-review';
     panel.setAttribute('aria-labelledby', 'tp-portfolio-review-title');
-    panel.innerHTML = '<h2 id="tp-portfolio-review-title">Portfolio link review</h2><p>Submit a Google AI Studio or hosted prototype link. The review agent can summarize evidence and risks, but an instructor must make the final approval before a credential is issued.</p><form><label for="tp-portfolio-url" class="sr-only">Prototype URL</label><input id="tp-portfolio-url" type="url" required placeholder="https://aistudio.google.com/..." autocomplete="url"><button type="submit">Submit for review</button></form><div role="status" aria-live="polite"></div><div id="tp-portfolio-review-results" aria-live="polite"></div>';
+    panel.innerHTML = '<h2 id="tp-portfolio-review-title">Computational artifact pre-review</h2><p>Submit a Google AI Studio or hosted prototype link. The agent reads the published preview and, when available, its same-origin interaction code to map the learning objective to observable computation. It flags evidence and limits; an instructor must inspect the real artifact and make final approval.</p><p id="tp-portfolio-access-note" class="tp-review-access-note"><strong>Before you submit:</strong> sign in or enroll so the link is saved to your learner record. You can read the four-step method now; the instructor remains the final reviewer.</p><ol class="tp-review-method" aria-label="Pre-review method"><li><strong>01 · Objective</strong>What should the learner do?</li><li><strong>02 · Computation</strong>State, input, rule, output, feedback</li><li><strong>03 · Trace</strong>What behavior is actually observable?</li><li><strong>04 · Review</strong>Instructor resolves the evidence questions</li></ol><form><label for="tp-portfolio-url" class="sr-only">Prototype URL</label><input id="tp-portfolio-url" type="url" required placeholder="https://aistudio.google.com/..." autocomplete="url" aria-describedby="tp-portfolio-access-note"><button type="submit">Submit for pre-review</button></form><div role="status" aria-live="polite"></div><div id="tp-portfolio-review-results" aria-live="polite"></div>';
     const root = document.getElementById('root');
-    (root?.parentElement || document.body).appendChild(panel);
+    // The public learner landing provides a deliberate portfolio-tool slot so
+    // the review flow stays inside the course hierarchy. Workspace routes keep
+    // the fallback mount for backward compatibility.
+    const mount = document.getElementById('tp-fidelity-review-mount') || root?.parentElement || document.body;
+    mount.appendChild(panel);
+    const relocateIntoLanding = () => {
+      const landingMount = document.getElementById('tp-fidelity-review-mount');
+      if (!landingMount || landingMount.contains(panel)) return false;
+      landingMount.appendChild(panel);
+      return true;
+    };
+    if (!relocateIntoLanding()) {
+      const observer = new MutationObserver(() => {
+        if (relocateIntoLanding()) observer.disconnect();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
     const status = panel.querySelector('[role=status]');
     const results = panel.querySelector('#tp-portfolio-review-results');
     const form = panel.querySelector('form');
     const show = (message) => { status.textContent = message; };
+    const setBusy = (busy) => { form.setAttribute('aria-busy', busy ? 'true' : 'false'); };
     const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
     const renderList = (items) => Array.isArray(items) && items.length ? `<ul>${items.slice(0, 5).map((item) => `<li>${escape(item)}</li>`).join('')}</ul>` : '<p>No additional evidence was returned.</p>';
+    const renderSection = (label, items) => Array.isArray(items) && items.length ? `<strong>${escape(label)}</strong>${renderList(items)}` : '';
     const renderReviews = (reviews) => {
       results.innerHTML = (reviews || []).map((review) => {
         const analysis = review.analysis || {};
         const summary = analysis.computational_artifact_summary || analysis.summary || review.error_message || 'Analysis is still being prepared.';
-        return `<article><span class="tp-review-status">${escape(review.status || 'pending')}</span><h3>${escape(review.provider || 'Portfolio')} · ${escape(review.url)}</h3><p>${escape(summary)}</p>${analysis.risks?.length ? `<strong>Risks to review</strong>${renderList(analysis.risks)}` : ''}${analysis.evidence_questions?.length ? `<strong>Evidence questions</strong>${renderList(analysis.evidence_questions)}` : ''}</article>`;
+        const source = analysis.source_snapshot;
+        const sourceNote = source?.fetched_at ? `<p><small>Snapshot ${escape(source.fetched_at)} · ${escape(source.content_type || 'unknown')} · ${Number(source.inline_script_blocks || 0) + Number(source.external_script_urls || 0)} script asset(s) inspected</small></p>` : '';
+        return `<article><span class="tp-review-status">${escape(review.status || 'pending')}</span><h3>${escape(review.provider || 'Portfolio')} · ${escape(review.url)}</h3>${analysis.learning_objective ? `<p><strong>Learning objective:</strong> ${escape(analysis.learning_objective)}</p>` : ''}<p>${escape(summary)}</p>${sourceNote}${renderSection('Observable mechanics', analysis.observable_mechanics)}${renderSection('Evidence traces', analysis.evidence_traces)}${renderSection('Risks to review', analysis.risks)}${renderSection('Evidence questions', analysis.evidence_questions)}</article>`;
       }).join('');
     };
     const refresh = async () => {
@@ -41,6 +70,7 @@
       event.preventDefault();
       const url = panel.querySelector('input').value.trim();
       if (!get('hb:learner_id') || !get('hb:learner_token')) { show('Please sign in or enroll before submitting a portfolio link.'); return; }
+      setBusy(true);
       show('Submitting and starting the automated pre-review…');
       try {
         const res = await fetch('/api/portfolio-review', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ url }) });
@@ -59,7 +89,41 @@
           show(`Analysis in progress… (${attempt + 1}/8)`);
         }
       } catch (error) { show(error.message || 'Could not submit the link.'); }
+      finally { setBusy(false); }
     });
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inject); else inject();
+  const scheduleInject = () => {
+    inject();
+    let attempts = 0;
+    const timer = window.setInterval(() => {
+      if (document.getElementById('tp-portfolio-review') || attempts++ > 20) {
+        window.clearInterval(timer);
+        return;
+      }
+      inject();
+    }, 100);
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scheduleInject, { once: true });
+    // Defer scripts can occasionally register after the event boundary while
+    // the React shell is still hydrating. The zero-delay pass keeps the panel
+    // mount deterministic in both timing paths.
+    window.setTimeout(scheduleInject, 0);
+  } else scheduleInject();
+
+  // The React shell can briefly switch routes while it hydrates and replace
+  // the landing subtree. Keep the learner tool attached to its semantic slot
+  // if that presentation layer rebuilds the section.
+  const keepLandingMount = () => {
+    const target = document.getElementById('tp-fidelity-review-mount');
+    const panel = document.getElementById('tp-portfolio-review');
+    if (!target) return;
+    if (panel && !target.contains(panel)) target.appendChild(panel);
+    else if (!panel) inject();
+  };
+  window.setTimeout(() => {
+    keepLandingMount();
+    const observer = new MutationObserver(keepLandingMount);
+    observer.observe(document.body, { childList: true, subtree: true });
+  }, 0);
 })();
