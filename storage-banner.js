@@ -39,7 +39,7 @@
       '.hb-storage-banner {',
       '  position: fixed; bottom: 16px; right: 16px;',
       '  max-width: 360px; z-index: 99998;',
-      '  background: #1a1a1a; color: #fff;',
+      '  background: #1a1a1a !important; color: #fff !important;',
       '  border-left: 4px solid #be1a2f;',
       '  padding: 14px 18px;',
       '  border-radius: 8px;',
@@ -56,11 +56,11 @@
       '}',
       // font-size/line-height pinned — the pages\' global `p` rule (17px)
       // otherwise overrides the inherited banner size and bloats the card.
-      '.hb-storage-banner__body { color: #e8e8e8; margin: 0 0 10px; font-size: inherit; line-height: inherit; font-family: inherit; }',
-      '.hb-storage-banner__body a { color: #f0c44a; text-decoration: underline; }',
+      '.hb-storage-banner__body { color: #e8e8e8 !important; margin: 0 0 10px; font-size: inherit; line-height: inherit; font-family: inherit; }',
+      '.hb-storage-banner__body a { color: #f5d783 !important; text-decoration: underline; }',
       '.hb-storage-banner__actions { display: flex; gap: 8px; }',
       '.hb-storage-banner__actions button, .hb-storage-banner__actions a.btn-link {',
-      '  background: #be1a2f; color: #fff; border: 0;',
+      '  background: #9e1b32 !important; color: #fff !important; border: 0;',
       '  padding: 7px 14px; border-radius: 5px; cursor: pointer;',
       '  font-size: 12px; font-weight: 600; text-decoration: none;',
       '  font-family: inherit;',

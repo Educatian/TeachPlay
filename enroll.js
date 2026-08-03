@@ -247,7 +247,7 @@
         '<p style="text-align:center;margin:16px 0 0;">',
           '<a id="hb-enroll-skip" href="#" style="',
             'font-size:0.82rem;',
-            'color:#777;',
+            'color:#595959;',
             'text-decoration:underline;',
             'cursor:pointer;',
           '">Skip for now</a>',

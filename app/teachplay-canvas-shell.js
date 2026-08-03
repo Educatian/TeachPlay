@@ -1011,6 +1011,13 @@
     const nav = appShell?.querySelector('.tp-bespoke-topnav');
     if (!appShell || !nav) return;
 
+    // The React shell's skip link targets #main-content. Keep the visual
+    // landing selector stable for regression tests, but make the actual app
+    // shell the keyboard destination so the full learner surface is skipped
+    // as one coherent main-content region.
+    if (!appShell.id) appShell.id = 'main-content';
+    appShell.setAttribute('tabindex', '-1');
+
     styleFidelityLanding();
 
     let brandBar = appShell.querySelector('.tp-fidelity-brand-bar');

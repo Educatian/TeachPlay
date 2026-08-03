@@ -7,7 +7,9 @@ const Talk = {
   faintInk: '#6f6f6f',
   line: '#e0e0e0',
   panel: '#f4f4f4',
-  blue: '#0f62fe',
+  // Slightly darker than the Carbon blue so small uppercase labels remain
+  // readable on the light-gray card surface used by the animated primer.
+  blue: '#0b4f9c',
   blueSoft: '#edf5ff',
   red: '#da1e28',
   redSoft: '#fff1f1',
